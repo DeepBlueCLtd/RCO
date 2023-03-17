@@ -11,7 +11,7 @@ import {
     useSidebarState,
 } from 'react-admin';
 
-import visitors from '../visitors'
+import Users from '../users'
 
 import SubMenu from './SubMenu';
 
@@ -43,30 +43,21 @@ const Menu = ({ dense = false }: MenuProps) => {
                     }),
             }}
         >
-            {/* <DashboardMenuItem /> */}
+
             <SubMenu
                 handleToggle={() => handleToggle('menuCustomers')}
                 isOpen={state.menuCustomers}
                 name="Users"
-                icon={<visitors.icon />}
+                icon={<Users.icon />}
                 dense={dense}
             >
                 <MenuItemLink
-                    to="/customers"
+                    to="/users"
                     state={{ _scrollToTop: true }}
-                    primaryText={translate(`resources.customers.name`, {
+                    primaryText={translate(`Users`, {
                         smart_count: 2,
                     })}
-                    leftIcon={<visitors.icon />}
-                    dense={dense}
-                />
-                <MenuItemLink
-                    to="/segments"
-                    state={{ _scrollToTop: true }}
-                    primaryText={translate(`resources.segments.name`, {
-                        smart_count: 2,
-                    })}
-                    leftIcon={<LabelIcon />}
+                    leftIcon={<Users.icon />}
                     dense={dense}
                 />
             </SubMenu>

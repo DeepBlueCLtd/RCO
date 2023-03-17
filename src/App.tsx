@@ -6,7 +6,7 @@ import authProvider from './authProvider';
 import { Login, Layout } from './layout';
 import { lightTheme } from './layout/themes';
 import Configuration from './configuration/Configuration';
-import visitors from './visitors'
+import Users from './users'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,7 +23,7 @@ function App() {
       <CustomRoutes>
           <Route path="/configuration" element={<Configuration />} />
       </CustomRoutes>
-      {/* <Resource name="Customers" {...visitors} /> */}
+      <Resource name="Users" {...Users} />
 
     </Admin>
   )

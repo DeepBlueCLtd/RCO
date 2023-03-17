@@ -12,8 +12,6 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-import Logo from './Logo';
-
 const ConfigurationMenu = React.forwardRef((props, ref) => {
     const translate = useTranslate();
     return (
@@ -27,7 +25,7 @@ const ConfigurationMenu = React.forwardRef((props, ref) => {
             <ListItemIcon>
                 <SettingsIcon />
             </ListItemIcon>
-            <ListItemText>{translate('pos.configuration')}</ListItemText>
+            <ListItemText>{translate('configuration')}</ListItemText>
         </MenuItem>
     );
 });
@@ -60,7 +58,6 @@ const CustomAppBar = (props: any) => {
                 }}
                 id="react-admin-title"
             />
-            {isLargeEnough && <Logo />}
             {isLargeEnough && <Box component="span" sx={{ flex: 1 }} />}
         </AppBar>
     );
