@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
-import LabelIcon from '@mui/icons-material/Label';
+import UserIcon from '@mui/icons-material/People';
+
 
 import {
     useTranslate,
@@ -9,15 +9,18 @@ import {
     MenuItemLink,
     MenuProps,
     useSidebarState,
+    usePermissions
 } from 'react-admin';
 
-import Users from '../users'
 
-import SubMenu from './SubMenu';
+
+
 
 type MenuName = 'menuCatalog' | 'menuSales' | 'menuCustomers';
 
 const Menu = ({ dense = false }: MenuProps) => {
+  const {permissions} = usePermissions()
+
     const [state, setState] = useState({
         menuCatalog: true,
         menuSales: true,
@@ -44,23 +47,24 @@ const Menu = ({ dense = false }: MenuProps) => {
             }}
         >
 
-            <SubMenu
-                handleToggle={() => handleToggle('menuCustomers')}
-                isOpen={state.menuCustomers}
-                name="Users"
-                icon={<Users.icon />}
-                dense={dense}
-            >
                 <MenuItemLink
                     to="/users"
                     state={{ _scrollToTop: true }}
                     primaryText={translate(`Users`, {
                         smart_count: 2,
                     })}
-                    leftIcon={<Users.icon />}
+                    leftIcon={<UserIcon />}
                     dense={dense}
                 />
-            </SubMenu>
+                {permissions ? <MenuItemLink
+                    to="/audits"
+                    state={{ _scrollToTop: true }}
+                    primaryText={translate(`Aduits`, {
+                        smart_count: 2,
+                    })}
+                    leftIcon={<UserIcon />}
+                    dense={dense}
+                /> : ''}
         </Box>
     );
 };

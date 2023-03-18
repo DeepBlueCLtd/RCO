@@ -1,30 +1,58 @@
-import { useState } from 'react'
-import { Admin, CustomRoutes, Resource } from 'react-admin';
-import { Route } from 'react-router';
-
+import React from 'react';
+import { Admin, Resource, DataProvider } from 'react-admin';
 import authProvider from './authProvider';
 import { Login, Layout } from './layout';
-import { lightTheme } from './layout/themes';
-import Configuration from './configuration/Configuration';
-import Users from './users'
+import localForageDataProvider from 'ra-data-local-forage';
+import UsersList from './users/usersList';
+import UsersEdit from  './users/usersEdit';
+import AuditList from './audit/auditList';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [dataProvider, setDataProvider] = React.useState<DataProvider | undefined>();
+
+  React.useEffect(() => {
+    async function startDataProvider() {
+      const localForageProvider = await localForageDataProvider({
+        loggingEnabled: true,
+        defaultData: {
+          users: [
+            {
+              "id": 1,
+              "name": "ian",
+              "password": "admin",
+              "adminRights": true
+            },
+            {
+              "id": 2,
+              "name": "jason",
+              "password": "user",
+              "adminRights": false
+            }
+          ],
+          audits: []
+        }
+      });
+      setDataProvider(localForageProvider);
+    }
+
+    if (!dataProvider) {
+      startDataProvider();
+    }
+  }, [dataProvider]);
+
+  if (!dataProvider) return <p>Loading...</p>;
 
   return (
     <Admin
-      title=""
       authProvider={authProvider}
       loginPage={Login}
       layout={Layout}
+      dataProvider={dataProvider}
       disableTelemetry
-      theme={lightTheme}
-        >
-      <CustomRoutes>
-          <Route path="/configuration" element={<Configuration />} />
-      </CustomRoutes>
-      <Resource name="Users" {...Users} />
-
+      requireAuth
+    >
+      <Resource name="users" list={UsersList} edit={UsersEdit} />
+      <Resource name='audits' list={AuditList} />
     </Admin>
   )
 }

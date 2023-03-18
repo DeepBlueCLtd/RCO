@@ -47,11 +47,11 @@ const Login = () => {
                     type: 'warning',
                     messageArgs: {
                         _:
-                            typeof error === 'string'
-                                ? error
-                                : error && error.message
-                                ? error.message
-                                : undefined,
+                      typeof error === 'string'
+                          ? error
+                          : error && error.message
+                          ? error.message
+                          : undefined,
                     },
                 }
             );
@@ -67,8 +67,6 @@ const Login = () => {
                     minHeight: '100vh',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    background:
-                        'url(https://source.unsplash.com/random/1600x900)',
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover',
                 }}
@@ -93,7 +91,6 @@ const Login = () => {
                             color: theme => theme.palette.grey[500],
                         }}
                     >
-                        Hint: demo / demo
                     </Box>
                     <Box sx={{ padding: '0 1em 1em 1em' }}>
                         <Box sx={{ marginTop: '1em' }}>
