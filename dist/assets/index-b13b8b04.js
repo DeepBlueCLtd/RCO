@@ -63571,7 +63571,7 @@ var Uo = ((e) => (
 ))(Uo || {});
 const za = (e, t, r) => {
 		const n = localStorage.getItem('token');
-		if (!n && !r) throw new Error('User not found!');
+		if (!n && !r) return;
 		const o = r || JSON.parse(n || '');
 		_3.create('audit', {
 			data: {
