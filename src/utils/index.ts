@@ -12,7 +12,7 @@ export enum AuditType {
 
 export const trackEvent = (type: AuditType, activity_detail?: string, defaultUser?: User) => {
     const userData = localStorage.getItem('token');
-    if (!userData && !defaultUser) throw new Error("User not found!");
+    if (!userData && !defaultUser) return;
 
     const user = defaultUser || JSON.parse(userData || '') as User;
 
