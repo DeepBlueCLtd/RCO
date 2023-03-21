@@ -1,0 +1,35 @@
+.login-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-subbox {
+  background-color: whitesmoke;
+  width: 350px;
+  height: 300px;
+  padding: 16px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.login-label {
+  display: block;
+  font-size: 20px;
+}
+.login-label:nth-child(1) {
+  margin-top: 20px;
+}
+.login-input {
+  margin-top: 5px;
+  width: 100%;
+  height: 30px;
+}
+.login-button {
+  margin-top: 15px;
+  background-color: #1778f2;
+  color: white;
+}

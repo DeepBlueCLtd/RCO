@@ -1,0 +1,30 @@
+.welcome-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  height: 93vh;
+}
+.welcome-navbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 7vh;
+}
+.welcome-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 300px;
+  width: 450px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px 5px gray;
+  border: 1px solid gray;
+}
+.welcome-title > span {
+  display: block;
+}
+.admin-link {
+  font-size: 20px;
+}

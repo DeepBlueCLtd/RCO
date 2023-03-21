@@ -1,0 +1,29 @@
+.table-nav {
+  height: 7vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.table-nav > span {
+  font-weight: bold;
+  font-size: 30px;
+}
+.table-container {
+  height: 93vh;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+table {
+  border: 2px solid forestgreen;
+  width: 800px;
+  height: auto;
+}
+th {
+  border-bottom: 1px solid black;
+  padding: 5px;
+}
+
+td {
+  text-align: center;
+}
