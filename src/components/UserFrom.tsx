@@ -2,11 +2,10 @@ import { SimpleForm, TextInput, BooleanInput } from 'react-admin';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-
 const schema = yup.object({
 	name: yup.string().required(),
 	password: yup.string().max(8).min(4),
-	adminRights: yup.boolean()
+	adminRights: yup.boolean(),
 });
 
 export default function UserForm() {

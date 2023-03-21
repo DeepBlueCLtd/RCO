@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material';
-import { Title } from 'react-admin';
 
 export default function Welcome() {
 	return (
