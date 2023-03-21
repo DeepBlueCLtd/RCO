@@ -1,7 +1,9 @@
-import AuditList from "./AuditList";
+import React from "react";
+
+const AuditList = React.lazy(() => import('./AuditList'));
 
 const audit = {
-    list: AuditList
-}
+	list: AuditList,
+};
 
 export default audit;
