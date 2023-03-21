@@ -7,7 +7,7 @@ import { Table } from "./ROUTES/TABLE/Table";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename='/RCO'>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<Login />} />
