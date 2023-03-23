@@ -17,10 +17,12 @@ export const Editlist = () => (
     <Edit sx={{ width: "500px" }}>
       <SimpleForm width={500} toolbar={<CustomToolbar />}>
         <Link to={"/audit"}>
-          <Button to={"/audit"} label="BACK" />
+          <button style={{ padding: "8px", backgroundColor: "white" }}>
+            BACK
+          </button>
         </Link>
         <TextInput disabled source="id" multiline sx={{ width: "94%" }} />
-        <TextInput source="name" multiline sx={{ width: "94%" }} />
+        <TextInput source="name" multiline sx={{ width: "94%" }} disabled />
         <TextInput source="datetime" multiline sx={{ width: "94%" }} disabled />
         <TextInput source="activitytype" multiline sx={{ width: "94%" }} />
         <TextInput source="activitydetail" multiline sx={{ width: "94%" }} />

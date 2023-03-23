@@ -52,7 +52,7 @@ function App() {
       localStorage.getItem("loggedInUser")
         ? Promise.resolve()
         : Promise.reject(),
-    getPermissions: () => Promise.reject("Unknown method"),
+    getPermissions: () => Promise.resolve("Unknown method"),
     getIdentity: () => {
       return Promise.resolve({
         id: "user",
