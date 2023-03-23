@@ -31,20 +31,22 @@ const MyLoginPage = () => {
 
     return (
         <div className="loginPage">
-            <h2 className="mb-5">Welcome to RCO</h2>
+            <div className="login_box p-4">
+            <h1 className="m-0 mb-5">Welcome to RCO</h1>
             <form id="form" onSubmit={handleSubmit}>
-                <div>
-                    <label>Username</label>
+                <div className='mb-3 text_boxes'>
+                    <label className='mb-1'>Username</label>
                     <input type="text" required name="username" placeholder='username' value={username} onChange={e => setUsername(e.target.value)} />
                 </div>
-                <div>
-                    <label>Password</label>
+                <div className='mb-3 text_boxes'>
+                    <label className='mb-1'>Password</label>
                     <input type="password" required name="password" placeholder='password' value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 <div>
-                    <Button type='submit' label='Login' color='primary' size='large' startIcon={<LoginIcon />} ></Button>
+                    <Button className='subnit_btn' type='submit' label='Login' color='primary' size='large' startIcon={<LoginIcon />} ></Button>
                 </div>
             </form>
+        </div>
         </div>
     );
 };

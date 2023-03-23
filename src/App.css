@@ -15,10 +15,51 @@ label {
   text-align: center;
 }
 
-.text-center{
+.login_box {
+  background: #fff;
+  width: 450px;
+  margin: 0 auto;
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, .15);
+}
+
+.text-center {
   text-align: center;
 }
 
-.mb-5{
-  margin-bottom: 5rem;
+.p-4 {
+  padding: 1.5rem;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.mb-5 {
+  margin-bottom: 3rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.mb-1 {
+  margin-bottom: .25rem;
+}
+
+.text_boxes {
+  text-align: left
+}
+
+.text_boxes input {
+  width: 100%;
+  padding: .75rem;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+}
+
+button.subnit_btn {
+  border: 1px solid #1976d2;
 }
