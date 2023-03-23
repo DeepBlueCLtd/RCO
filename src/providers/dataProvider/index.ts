@@ -5,7 +5,6 @@ import { AuditType, trackEvent } from '../../utils';
 import users from './users';
 
 export const dataProvider = localStorageProvider({
-	loggingEnabled: true,
 	localStorageKey: constants.LOCAL_STORAGE_DB_KEY,
 	defaultData: {
 		users,

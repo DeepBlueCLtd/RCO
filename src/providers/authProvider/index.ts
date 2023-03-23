@@ -8,7 +8,7 @@ const authProvider: AuthProvider = {
 		const { username, password } = params;
 		const { users } = JSON.parse(
 			localStorage.getItem(constants.LOCAL_STORAGE_DB_KEY) ||
-				JSON.stringify({ users: userData })
+			JSON.stringify({ users: userData })
 		) as { users: User[] };
 		const user = users.find(
 			(user) => user.name === username && user.password === password
@@ -41,7 +41,7 @@ const authProvider: AuthProvider = {
 	},
 	getIdentity: () => {
 		const token = localStorage.getItem('token');
-		return Promise.resolve(JSON.parse(token || ''));
+		return Promise.resolve(JSON.parse(token || JSON.stringify({})));
 	},
 	getPermissions: () => {
 		const token = localStorage.getItem('token');
