@@ -4,6 +4,8 @@ import { setProfileDetails } from "../../REDUX/profileDetailSlice.js";
 import { useLogin } from "react-admin";
 //@ts-ignore
 import "./login.css";
+import { toast } from "react-toastify";
+import { Flip } from "react-toastify";
 
 export const Login = (props: any) => {
   interface IDetails {
@@ -88,6 +90,12 @@ export const Login = (props: any) => {
         localStorage.setItem("name", auth.name);
         //@ts-ignore
         localStorage.setItem("password", auth.password);
+        toast.warning("Wrong Credentails", {
+          theme: "colored",
+          position: "bottom-center",
+          hideProgressBar: true,
+          transition: Flip,
+        });
         dateAndTimeHandler(tableData);
 
         return;
