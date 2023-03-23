@@ -1,35 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Admin, Resource, CustomRoutes } from "react-admin";
+import { Route } from "react-router-dom";
+import localStorageDataProvider from 'ra-data-local-storage';
+import { UserList, UserEdit } from "./modules/Users";
+import { Dashboard } from "./modules/Dashboard";
+import { ReportsList } from "./modules/ReportsList";
+import MyLoginPage from "./modules/LoginPage";
+import { LayoutComponent } from "./components/Layout";
+import { authProvider } from "./providers/authProvider"
+import { dataStore } from "./dataService";
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const dataProvider = localStorageDataProvider({
+  defaultData: dataStore.default
+});
+const App = () => (
+  <Admin layout={LayoutComponent} authProvider={authProvider} loginPage={MyLoginPage} dataProvider={dataProvider}>
+    <CustomRoutes>
+      <Route path="/dashboard" element={<Dashboard />} />
+    </CustomRoutes>
+    <Resource edit={UserEdit} name="users" list={UserList} />
+    <Resource name="reports" list={ReportsList} />
+  </Admin>
+);
 
-  return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
-}
-
-export default App
+export default App;
