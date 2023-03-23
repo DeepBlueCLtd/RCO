@@ -3,13 +3,15 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
+	"homepage": "https://salony75way.github.io/RCO/",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
 		"lint": "eslint . --fix --max-warnings=0",
 		"format": "prettier . --write",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"deploy": "gh-pages -d build"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.10.6",
@@ -19,6 +21,7 @@
 		"@mui/material": "^5.11.13",
 		"@mui/styles": "^5.11.13",
 		"dayjs": "^1.11.7",
+		"gh-pages": "^5.0.0",
 		"ra-data-local-storage": "^4.8.3",
 		"react": "^18.2.0",
 		"react-admin": "^4.8.3",
