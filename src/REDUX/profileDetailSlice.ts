@@ -13,7 +13,6 @@ const profileDetailSlice = createSlice({
   initialState,
   reducers: {
     setProfileDetails(state, action) {
-      const temp = action.payload;
       state = Object.assign(state, action.payload);
     },
   },

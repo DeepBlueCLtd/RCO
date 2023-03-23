@@ -1,63 +1,98 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux/es/exports";
-import { useNavigate } from "react-router-dom";
 import { setProfileDetails } from "../../REDUX/profileDetailSlice.js";
+import { useLogin } from "react-admin";
 //@ts-ignore
-import lodash from "lodash";
 import "./login.css";
 
-export const Login = () => {
+export const Login = (props: any) => {
   interface IDetails {
     name: String;
     password: String;
   }
-  const [details, setDetails] = useState<IDetails>({ name: "", password: "" });
+  const name = localStorage.getItem("name");
+  const password = localStorage.getItem("password");
+
+  const [auth, setAuth] = useState<IDetails>({
+    name: name || "",
+    password: password || "",
+  });
   const [msg, setMsg] = useState("");
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const dateAndTimeHandler = (tabledata: any) => {
+    const newTableData = tabledata?.audit?.map((data: any, idx: any) => {
+      if (typeof data.datetime === "number") {
+        let datetime = new Date(data.datetime).toLocaleDateString("en-GB");
+        datetime += " " + new Date(data.datetime).toLocaleTimeString();
+
+        return { ...data, no: data.realid, id: idx + 1, datetime };
+      }
+      return { ...data, no: data.realid, id: idx + 1 };
+    });
+    if (newTableData) tabledata.audit = newTableData;
+    props.setFinalTableData(tabledata);
+    localStorage.setItem("tabledata", JSON.stringify(tabledata));
+  };
 
   const inputHandler = (e: any) => {
     if (msg) setMsg("");
     const { name, value } = e.target;
-    setDetails({ ...details, [name]: value });
+    setAuth({ ...auth, [name]: value });
   };
 
-  const submitHandler = () => {
-    if (!details.name && !details.password) return;
+  const login = useLogin();
+  useEffect(() => {
+    localStorage.removeItem("name");
+    localStorage.removeItem("password");
+    setAuth({ name: "", password: "" });
+  }, []);
+  //@ts-ignore
+  const submitHandler = (e) => {
+    e.preventDefault();
     //@ts-ignore
     const data = JSON.parse(localStorage.getItem("data"));
-    //@ts-ignore
-    const tableData = JSON.parse(localStorage.getItem("tabledata")) || [];
     let i = 0;
+    //@ts-ignore
+    const tableData = JSON.parse(localStorage.getItem("tabledata")) || {};
+    const arr = [];
+    let tempUserData: any = {};
     for (i = 0; i < data.length; i++) {
-      if (
-        data[i].name === details.name &&
-        data[i].password === details.password
-      ) {
-        //@ts-ignore
-        localStorage.setItem("isLoggedIn", true);
-
-        const tempUserData = data[i];
+      if (auth.name === data[i].name && auth.password === data[i].password) {
+        tempUserData = { ...data[i] };
+        dispatch(setProfileDetails(data[i]));
+        delete tempUserData.password;
+        tempUserData.realid = data[i].id;
         tempUserData.datetime = Date.now();
-        tempUserData.activitytype = "login";
-        tempUserData.activitydetail = "Successfull Login";
-        const userData = lodash.omit(data[i], "password");
-        localStorage.setItem("loggedInUser", JSON.stringify(userData));
-        tableData.push(tempUserData);
-        localStorage.setItem("tabledata", JSON.stringify(tableData));
-        dispatch(setProfileDetails(userData));
-        setMsg("");
-        return navigate("/");
+        tempUserData.activitydetail = "Successfully logged in";
+        tempUserData.activitytype = "Login";
+        if (!tableData.audit) tableData.audit = [tempUserData];
+        else tableData.audit = [...tableData.audit, tempUserData];
+        localStorage.removeItem("name");
+        localStorage.removeItem("password");
+        dateAndTimeHandler(tableData);
+        login(tempUserData, "/");
+        return;
       }
     }
-    const tempUserData = data[i - 1];
-    tempUserData.datetime = Date.now();
-    tempUserData.activitytype = "login";
-    tempUserData.activitydetail = "Login Failed";
-    const userData = lodash.omit(data[i], "password");
-    tableData.push(tempUserData);
-    localStorage.setItem("tabledata", JSON.stringify(tableData));
-    setMsg("Wrong Credentials");
+    for (i = 0; i < data.length; i++) {
+      if (auth.name === data[i].name) {
+        tempUserData = { ...data[i] };
+        delete tempUserData.password;
+        tempUserData.realid = data[i].id;
+        tempUserData.datetime = Date.now();
+        tempUserData.activitydetail = "Log in failed";
+        tempUserData.activitytype = "Login";
+        if (!tableData.audit) tableData.audit = [tempUserData];
+        else tableData.audit = [...tableData.audit, tempUserData];
+        //@ts-ignore
+        localStorage.setItem("name", auth.name);
+        //@ts-ignore
+        localStorage.setItem("password", auth.password);
+        dateAndTimeHandler(tableData);
+
+        return;
+      }
+    }
   };
   return (
     <div className="login-box">
@@ -68,6 +103,8 @@ export const Login = () => {
             type="text"
             className="login-input"
             name="name"
+            //@ts-ignore
+            value={auth.name}
             onChange={inputHandler}
             autoComplete="off"
           />
@@ -79,16 +116,21 @@ export const Login = () => {
             name="password"
             className="login-input"
             autoComplete="off"
+            //@ts-ignore
+            value={auth.password}
             onChange={inputHandler}
           />
         </div>
+        {/* <Link to={"/wel"}> */}
         <button
           className="login-button"
           name="password"
-          onClick={submitHandler}
+          onClick={(e) => submitHandler(e)}
         >
           LOGIN
         </button>
+        {/* </Link> */}
+        {/* <MenuItemLink primaryText="LOGIN" to={"/wel"} /> */}
         <div style={{ marginTop: "5px", color: "red" }} className="login-msg">
           {msg}
         </div>
