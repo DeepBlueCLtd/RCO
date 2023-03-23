@@ -14,7 +14,7 @@ const dataProvider = localStorageDataProvider({
   defaultData: dataStore.default
 });
 const App = () => (
-  <Admin layout={LayoutComponent} authProvider={authProvider} loginPage={MyLoginPage} dataProvider={dataProvider}>
+  <Admin basename="/RCO" layout={LayoutComponent} authProvider={authProvider} loginPage={MyLoginPage} dataProvider={dataProvider}>
     <CustomRoutes>
       <Route path="/dashboard" element={<Dashboard />} />
     </CustomRoutes>
