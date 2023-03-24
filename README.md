@@ -10,3 +10,7 @@ Secure asset register
 ### Setup husky to install git hooks
 
 - Run command `yarn prepare` in root project folder
+
+### Run the application
+
+- Run command `yarn build && yarn dev` in root project folder
