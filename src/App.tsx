@@ -13,6 +13,7 @@ import Welcome from './pages/Welcome';
 import users from './resources/users';
 import audit from './resources/audit';
 import { Suspense } from 'react';
+import platforms from './resources/platforms';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
 
@@ -37,7 +38,8 @@ function App() {
 								<Resource name="audit" {...audit} />,
 							]
 							: []),
-						<CustomRoutes>
+							<Resource name="platforms" {...platforms} />,
+							<CustomRoutes>
 							<Route path="/" element={<Welcome />} />
 						</CustomRoutes>,
 					];
