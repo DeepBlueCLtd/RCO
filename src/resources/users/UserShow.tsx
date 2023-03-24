@@ -1,7 +1,8 @@
+import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { BooleanField, Show, TextField } from 'react-admin';
 
-const ValueField = ({ label, children }: { label: string; children: any }) => {
+const ValueField = ({ label, children }: { label: string; children: any }): React.ReactElement => {
 	return (
 		<Typography fontWeight="bold">
 			{label}: {children}
@@ -9,7 +10,7 @@ const ValueField = ({ label, children }: { label: string; children: any }) => {
 	);
 };
 
-export default function UserShow() {
+export default function UserShow(): React.ReactElement {
 	return (
 		<Show>
 			<Card>

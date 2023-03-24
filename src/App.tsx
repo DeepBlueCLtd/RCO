@@ -1,7 +1,7 @@
-import { Admin, Resource, CustomRoutes, Loading, DataProvider } from 'react-admin';
+import { Admin, Resource, CustomRoutes, Loading, type DataProvider } from 'react-admin';
 import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
-import { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Person } from '@mui/icons-material';
 
 import { getDataProvider } from './providers/dataProvider';
@@ -17,17 +17,20 @@ import { rcoTheme } from './themes/rco-theme';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
 
-function App() {
-	const [dataProvider, setDataProvider] = useState<DataProvider>();
+function App(): React.ReactElement {
+	const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(undefined);
 
-	const handleGetProvider = () => {
-		if (dataProvider) return;
-		getDataProvider().then(setDataProvider)
+	const handleGetProvider = (): any => {
+		if (dataProvider !== undefined) return;
+		getDataProvider().then(setDataProvider).then(
+			() => {},
+			() => {},
+		  )
 	}
 
 	useEffect(handleGetProvider, [dataProvider])
 
-	if (!dataProvider) return LoadingPage;
+	if (dataProvider === undefined) return LoadingPage;
 
 	return (
 		<Suspense
@@ -41,13 +44,13 @@ function App() {
 			>
 				{(permissions) => {
 					return [
-						...(permissions == 'admin'
+						...(permissions === 'admin'
 							? [
-								<Resource icon={Person} name="users" {...users} />,
-								<Resource name="audit" {...audit} />,
+								<Resource key='users' icon={Person} name="users" {...users} />,
+								<Resource key='audit' name="audit" {...audit} />,
 							]
 							: []),
-						<CustomRoutes>
+						<CustomRoutes key='routes'>
 							<Route path="/" element={<Welcome />} />
 						</CustomRoutes>,
 					];

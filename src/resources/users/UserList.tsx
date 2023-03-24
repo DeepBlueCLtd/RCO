@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	BooleanField,
 	BulkDeleteButton,
@@ -10,7 +11,7 @@ import {
 	TopToolbar,
 } from 'react-admin';
 
-export default function UserList() {
+export default function UserList(): React.ReactElement {
 	const ListActions = () => (
 		<TopToolbar>
 			<CreateButton />
