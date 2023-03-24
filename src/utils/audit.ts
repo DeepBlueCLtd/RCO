@@ -1,4 +1,4 @@
-import { dataProvider } from '../providers/dataProvider';
+import { DataProvider } from 'react-admin';
 
 export enum AuditType {
 	LOGIN = 'login',
@@ -8,7 +8,7 @@ export enum AuditType {
 	EDIT_USER = 'edit_user',
 }
 
-export const trackEvent = async (type: AuditType, activity_detail?: string) => {
+export const trackEvent = (dataProvider: DataProvider) => async (type: AuditType, activity_detail?: string) => {
 	try {
 		const { data } = await dataProvider.me();
 		await dataProvider.create<Audit>('audit', {

@@ -1,18 +1,11 @@
 import localForageDataProvider from 'ra-data-local-forage';
-import { withLifecycleCallbacks } from 'react-admin';
+import { DataProvider, withLifecycleCallbacks } from 'react-admin';
 import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 import { getToken } from '../authProvider';
 import users from './users';
 
-export const provider = await localForageDataProvider({
-	prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-	defaultData: {
-		users,
-	},
-});
-
-const customProvider = {
+const customProvider = (dataProvider: DataProvider) => ({
 	login: (params: { username: string; password: string }) => {
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -54,25 +47,36 @@ const customProvider = {
 			}
 		});
 	},
-};
+});
 
-export const dataProvider = withLifecycleCallbacks(
-	{ ...provider, ...customProvider },
-	[
-		{
-			resource: 'users',
-			afterDelete: async (record) => {
-				trackEvent(AuditType.DELETE_USER, `User deleted (${record.data.id})`);
-				return record;
-			},
-			afterCreate: async (record) => {
-				trackEvent(AuditType.CREATE_USER, `User created (${record.data.id})`);
-				return record;
-			},
-			afterUpdate: async (record) => {
-				trackEvent(AuditType.EDIT_USER, `User updated (${record.data.id})`);
-				return record;
-			},
+export const getDataProvider = async () => {
+	const provider = await localForageDataProvider({
+		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+		defaultData: {
+			users,
 		},
-	]
-);
+	});
+
+	const providerWithCustomMethods = { ...provider, ...customProvider(provider) };
+	const audit = trackEvent(providerWithCustomMethods);
+	return withLifecycleCallbacks(
+		providerWithCustomMethods,
+		[
+			{
+				resource: 'users',
+				afterDelete: async (record) => {
+					audit(AuditType.DELETE_USER, `User deleted (${record.data.id})`);
+					return record;
+				},
+				afterCreate: async (record) => {
+					audit(AuditType.CREATE_USER, `User created (${record.data.id})`);
+					return record;
+				},
+				afterUpdate: async (record) => {
+					audit(AuditType.EDIT_USER, `User updated (${record.data.id})`);
+					return record;
+				},
+			},
+		]
+	)
+};
