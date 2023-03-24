@@ -4,7 +4,7 @@ import MyLayout from './components/Layout';
 import { Suspense, useEffect, useState } from 'react';
 import { Person } from '@mui/icons-material';
 
-import * as providers from './providers/dataProvider';
+import { getDataProvider } from './providers/dataProvider';
 import autProvider from './providers/authProvider';
 
 // pages
@@ -21,9 +21,7 @@ function App() {
 
 	const handleGetProvider = () => {
 		if (dataProvider) return;
-		providers.provider.then((provider) => {
-			setDataProvider(providers.getDataProvider(provider))
-		})
+		getDataProvider().then(setDataProvider)
 	}
 
 	useEffect(handleGetProvider, [dataProvider])

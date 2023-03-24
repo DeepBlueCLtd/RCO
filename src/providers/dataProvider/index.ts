@@ -5,13 +5,6 @@ import { AuditType, trackEvent } from '../../utils/audit';
 import { getToken } from '../authProvider';
 import users from './users';
 
-export const provider = localForageDataProvider({
-	prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-	defaultData: {
-		users,
-	},
-});
-
 const customProvider = (dataProvider: DataProvider) => ({
 	login: (params: { username: string; password: string }) => {
 		return new Promise(async (resolve, reject) => {
@@ -56,7 +49,14 @@ const customProvider = (dataProvider: DataProvider) => ({
 	},
 });
 
-export const getDataProvider = (provider: DataProvider) => {
+export const getDataProvider = async () => {
+	const provider = await localForageDataProvider({
+		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+		defaultData: {
+			users,
+		},
+	});
+
 	const providerWithCustomMethods = { ...provider, ...customProvider(provider) };
 	const audit = trackEvent(providerWithCustomMethods);
 	return withLifecycleCallbacks(
