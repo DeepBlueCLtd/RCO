@@ -13,6 +13,7 @@ import Welcome from './pages/Welcome';
 // resources
 import users from './resources/users';
 import audit from './resources/audit';
+import { rcoTheme } from './themes/rco-theme';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
 
@@ -36,6 +37,7 @@ function App() {
 				dataProvider={dataProvider}
 				authProvider={autProvider(dataProvider)}
 				layout={MyLayout}
+				theme={rcoTheme}
 			>
 				{(permissions) => {
 					return [
