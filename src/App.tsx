@@ -1,9 +1,9 @@
 import { Admin, Resource, CustomRoutes, Loading } from 'react-admin';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
 import { Person } from '@mui/icons-material';
 
-import { dataProviderWithLifeCycle } from './providers/dataProvider';
+import { dataProvider } from './providers/dataProvider';
 import autProvider from './providers/authProvider';
 
 // pages
@@ -14,11 +14,18 @@ import users from './resources/users';
 import audit from './resources/audit';
 import { Suspense } from 'react';
 
+const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
+
 function App() {
+
+	if (!dataProvider) return LoadingPage;
+
 	return (
-		<Suspense fallback={<Loading loadingPrimary='Loading' loadingSecondary='' />}>
+		<Suspense
+			fallback={LoadingPage}
+		>
 			<Admin
-				dataProvider={dataProviderWithLifeCycle}
+				dataProvider={dataProvider}
 				authProvider={autProvider}
 				layout={MyLayout}
 			>

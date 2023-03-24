@@ -1,55 +1,56 @@
 import { AuthProvider } from 'react-admin';
 import constants from '../../constants';
-import { AuditType, trackEvent } from '../../utils';
-import userData from '../dataProvider/users';
+import { AuditType, trackEvent } from '../../utils/audit';
+import { dataProvider } from '../dataProvider';
+
+export const getToken = () => {
+	return localStorage.getItem(constants.TOKEN_KEY);
+};
+
+const setToken = (token: string) => {
+	return localStorage.setItem(constants.TOKEN_KEY, token);
+};
+
+const removeToken = () => {
+	return localStorage.removeItem(constants.TOKEN_KEY);
+};
 
 const authProvider: AuthProvider = {
-	login: (params) => {
-		const { username, password } = params;
-		const { users } = JSON.parse(
-			localStorage.getItem(constants.LOCAL_STORAGE_DB_KEY) ||
-			JSON.stringify({ users: userData })
-		) as { users: User[] };
-		const user = users.find(
-			(user) => user.name === username && user.password === password
-		);
-
-		if (user) {
-			localStorage.setItem('token', JSON.stringify(user));
-			trackEvent(AuditType.LOGIN, 'Logged in');
-			return Promise.resolve();
-		}
-
-		return Promise.reject('Invalid credentials!');
+	login: async (params) => {
+		const { data } = await dataProvider.login(params);
+		setToken(data.token);
+		trackEvent(AuditType.LOGIN, 'Logged in');
+		return Promise.resolve(data);
 	},
 	logout: () => {
 		trackEvent(AuditType.LOGOUT, 'Logged out');
-		localStorage.removeItem('token');
+		removeToken();
 		return Promise.resolve();
 	},
 	checkAuth: () => {
-		const token = localStorage.getItem('token');
+		const token = getToken();
 		return token ? Promise.resolve() : Promise.reject();
 	},
 	checkError: (error) => {
 		const status = error.status;
 		if (status === 401 || status === 403) {
-			localStorage.removeItem('token');
+			removeToken();
 			return Promise.reject();
 		}
 		return Promise.resolve();
 	},
-	getIdentity: () => {
-		const token = localStorage.getItem('token');
-		return Promise.resolve(JSON.parse(token || JSON.stringify({})));
+	getIdentity: async () => {
+		const { data } = await dataProvider.me();
+		return data;
 	},
-	getPermissions: () => {
-		const token = localStorage.getItem('token');
-		if (token) {
-			const { adminRights } = JSON.parse(token);
-			return Promise.resolve(adminRights ? 'admin' : 'user');
+
+	getPermissions: async () => {
+		try {
+			const { data } = await dataProvider.me();
+			return Promise.resolve(data.adminRights ? 'admin' : 'user');
+		} catch (error) {
+			return Promise.resolve();
 		}
-		return Promise.resolve();
 	},
 };
 

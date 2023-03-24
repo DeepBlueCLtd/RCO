@@ -2043,6 +2043,11 @@ ignore@^5.1.1, ignore@^5.2.0:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
 
+immediate@~3.0.5:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==
+
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.3.0.tgz#37162c25fcb9ebaa2e6e53d5b4d88ce17d9e0c2b"
@@ -2387,6 +2392,13 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
+lie@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==
+  dependencies:
+    immediate "~3.0.5"
+
 lilconfig@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.1.0.tgz#78e23ac89ebb7e1bfbf25b18043de756548e7f52"
@@ -2429,6 +2441,13 @@ listr2@^5.0.7:
     rxjs "^7.8.0"
     through "^2.3.8"
     wrap-ansi "^7.0.0"
+
+localforage@^1.7.1:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
+  integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
+  dependencies:
+    lie "3.1.1"
 
 locate-path@^6.0.0:
   version "6.0.0"
@@ -2853,20 +2872,21 @@ ra-core@^4.8.3:
     react-is "^17.0.2"
     react-query "^3.32.1"
 
-ra-data-fakerest@^4.8.3:
-  version "4.8.3"
-  resolved "https://registry.yarnpkg.com/ra-data-fakerest/-/ra-data-fakerest-4.8.3.tgz#f8eae3696fbc74b7b00ccfeb470220d02f3760b3"
-  integrity sha512-Ta4KX92nEPK8aOUndh/7wmBCxt50GU1MR0HKtI7MXz3675ESNBZ/laLHQB5Ky0AeY0kUxlfeWJYBDWKgffPiBw==
+ra-data-fakerest@^4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/ra-data-fakerest/-/ra-data-fakerest-4.8.4.tgz#88ab01de288d16930ba0c64724737f74935ef328"
+  integrity sha512-nBd3dizUJ84Y67NT3KdufKMH/kik43yitWJANFxx1+UBz4O686b02mrByfv/+kuivQ7v6JKJ1uB2uTGPbQubgw==
   dependencies:
     fakerest "^3.0.0"
 
-ra-data-local-storage@^4.8.3:
-  version "4.8.3"
-  resolved "https://registry.yarnpkg.com/ra-data-local-storage/-/ra-data-local-storage-4.8.3.tgz#6de83a274ed11a5947e387b49f10b77c9205b57d"
-  integrity sha512-zfuwEWeZ9LgBA+xvD9YZkjYdM3KVPKQXzhN47yE3P9G/19ll9xUZn7oem0wzy1dKoXpA0yMsKmZYPBS7GADTxg==
+ra-data-local-forage@^4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/ra-data-local-forage/-/ra-data-local-forage-4.8.4.tgz#fa9bf8bc260dbb2555a0a4e580789f5dd908de8c"
+  integrity sha512-l3EC6/6lBYWPMBV79xt3/eTxVcYGUWWW9tdgHPojIG9piANGP4GP+kBwfoLKfZKwcvnWRmBikUE3erzHY5Pzmw==
   dependencies:
+    localforage "^1.7.1"
     lodash "~4.17.5"
-    ra-data-fakerest "^4.8.3"
+    ra-data-fakerest "^4.8.4"
 
 ra-i18n-polyglot@^4.8.3:
   version "4.8.3"
