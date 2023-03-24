@@ -2,6 +2,9 @@
 	"name": "rco",
 	"private": true,
 	"version": "0.0.0",
+	"engines": {
+		"node": "18.x"
+	},
 	"type": "module",
 	"homepage": "https://salony75way.github.io/RCO/",
 	"scripts": {
