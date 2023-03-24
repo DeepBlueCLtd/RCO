@@ -11,3 +11,9 @@ interface Audit {
 	date_time: string;
 	activity_detail?: string;
 }
+
+interface Platform {
+	id: number;
+	name: string;
+	active: boolean;
+}
