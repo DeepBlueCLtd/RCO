@@ -3,6 +3,7 @@ import { DataProvider, withLifecycleCallbacks } from 'react-admin';
 import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 import { getToken } from '../authProvider';
+import platforms from './platforms';
 import users from './users';
 
 const customProvider = (dataProvider: DataProvider) => ({
@@ -54,6 +55,7 @@ export const getDataProvider = async () => {
 		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
 		defaultData: {
 			users,
+			platforms
 		},
 	});
 
