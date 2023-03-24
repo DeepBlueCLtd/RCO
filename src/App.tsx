@@ -1,4 +1,11 @@
-import { Admin, Resource, CustomRoutes, Loading, DataProvider } from 'react-admin';
+import {
+	Admin,
+	Resource,
+	CustomRoutes,
+	Loading,
+	DataProvider,
+	Login,
+} from 'react-admin';
 import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
 import { Suspense, useEffect, useState } from 'react';
@@ -14,36 +21,37 @@ import Welcome from './pages/Welcome';
 import users from './resources/users';
 import audit from './resources/audit';
 
-const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
+const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />;
 
 function App() {
 	const [dataProvider, setDataProvider] = useState<DataProvider>();
 
 	const handleGetProvider = () => {
 		if (dataProvider) return;
-		getDataProvider().then(setDataProvider)
-	}
+		getDataProvider().then(setDataProvider);
+	};
 
-	useEffect(handleGetProvider, [dataProvider])
+	useEffect(handleGetProvider, [dataProvider]);
 
 	if (!dataProvider) return LoadingPage;
 
 	return (
-		<Suspense
-			fallback={LoadingPage}
-		>
+		<Suspense fallback={LoadingPage}>
 			<Admin
 				dataProvider={dataProvider}
+				loginPage={Login}
 				authProvider={autProvider(dataProvider)}
 				layout={MyLayout}
+				disableTelemetry
+				requireAuth
 			>
 				{(permissions) => {
 					return [
 						...(permissions == 'admin'
 							? [
-								<Resource icon={Person} name="users" {...users} />,
-								<Resource name="audit" {...audit} />,
-							]
+									<Resource icon={Person} name="users" {...users} />,
+									<Resource name="audit" {...audit} />,
+							  ]
 							: []),
 						<CustomRoutes>
 							<Route path="/" element={<Welcome />} />
