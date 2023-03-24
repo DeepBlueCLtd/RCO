@@ -4,6 +4,7 @@ import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 import { getToken } from '../authProvider';
 import users from './users';
+import localForage from 'localforage'
 
 const customProvider = (dataProvider: DataProvider) => ({
 	login: (params: { username: string; password: string }) => {
@@ -15,6 +16,8 @@ const customProvider = (dataProvider: DataProvider) => ({
 					pagination: { page: 1, perPage: 1 },
 					filter: { name: username, password }
 				});
+				console.log('dataProvider', dataProvider)
+				console.log('data', data)
 				const user = data[0];
 				if (user) {
 					const token = JSON.stringify(user);
@@ -50,13 +53,18 @@ const customProvider = (dataProvider: DataProvider) => ({
 });
 
 export const getDataProvider = async () => {
+
+
 	const provider = await localForageDataProvider({
 		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
 		defaultData: {
 			users,
 		},
 	});
-
+	localForage.config({
+		name: `${constants.LOCAL_STORAGE_DB_KEY}users`
+	})
+	localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}users`, users)
 	const providerWithCustomMethods = { ...provider, ...customProvider(provider) };
 	const audit = trackEvent(providerWithCustomMethods);
 	return withLifecycleCallbacks(
