@@ -43,12 +43,12 @@ function App() {
 						...(permissions == 'admin'
 							? [
 								<Resource icon={Person} name="users" {...users} />,
-								<Resource name="audit" {...audit} />,
+								<Resource name="audit" {...audit} />
 							]
 							: []),
-							<Resource name="platforms" {...platforms} />,
-							<CustomRoutes>
+						<CustomRoutes>
 							<Route path="/" element={<Welcome />} />
+							<Resource name="platforms" {...platforms} />
 						</CustomRoutes>,
 					];
 				}}
