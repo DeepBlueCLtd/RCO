@@ -7,7 +7,7 @@ export const rcoTheme = {
             main: '#1F3860'
         },
         secondary: {
-            main: '#DD1D3D'
+            main: '#1F3860'
         }
     }
 };

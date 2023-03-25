@@ -69,7 +69,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 const MyAppBar = (props: AppBarProps): React.ReactElement => (
 	<AppBar {...props} userMenu={<MyUserMenu />} >
 		<Box flex={1} /> 
-		Some text in the app bar
+		[RCO]
 		<Box flex={1} /> 
 	</AppBar>
 );
