@@ -16,8 +16,6 @@ const customProvider = (dataProvider: DataProvider) => ({
 					pagination: { page: 1, perPage: 1 },
 					filter: { name: username, password }
 				});
-				console.log('dataProvider', dataProvider)
-				console.log('data', data)
 				const user = data[0];
 				if (user) {
 					const token = JSON.stringify(user);
