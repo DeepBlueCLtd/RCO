@@ -1,5 +1,5 @@
 import localForageDataProvider from 'ra-data-local-forage';
-import { DataProvider, withLifecycleCallbacks } from 'react-admin';
+import { type DataProvider, withLifecycleCallbacks } from 'react-admin';
 import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 import { getToken } from '../authProvider';

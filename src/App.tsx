@@ -3,7 +3,7 @@ import {
 	Resource,
 	CustomRoutes,
 	Loading,
-	DataProvider,
+	type DataProvider,
 	Login,
 } from 'react-admin';
 import { Route } from 'react-router-dom';
@@ -20,26 +20,22 @@ import Welcome from './pages/Welcome';
 // resources
 import users from './resources/users';
 import audit from './resources/audit';
+import { rcoTheme } from './themes/rco-theme';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />;
 
-function App() {
-	const [dataProvider, setDataProvider] = useState<DataProvider>();
+function App(): React.ReactElement {
+	const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(undefined);
 
-	const handleGetProvider = () => {
-		if (dataProvider) return;
+	const handleGetProvider = (): any => {
+		if (dataProvider !== undefined) return;
 		getDataProvider().then(setDataProvider);
 	};
 
-	// const appBuildDate = preval`module.exports = process.env = 'development' = new Date().toISOString().slice(0, 19).replace('T', ' ')`;
-	// console.log('appBuildDate', appBuildDate);
-	// const trimmedAppBuildDate = appBuildDate.substring(
-	// 	0,
-	// 	appBuildDate.length - 3
-	// );
+
 	useEffect(handleGetProvider, [dataProvider]);
 
-	if (!dataProvider) return LoadingPage;
+	if (dataProvider === undefined) return LoadingPage;
 
 	return (
 		<Suspense fallback={LoadingPage}>
@@ -48,18 +44,19 @@ function App() {
 				loginPage={Login}
 				authProvider={autProvider(dataProvider)}
 				layout={MyLayout}
+				theme={rcoTheme}
 				disableTelemetry
 				requireAuth
 			>
 				{(permissions) => {
 					return [
-						...(permissions == 'admin'
+						...(permissions === 'admin'
 							? [
-									<Resource icon={Person} name="users" {...users} />,
-									<Resource name="audit" {...audit} />,
-							  ]
+								<Resource key='users' icon={Person} name="users" {...users} />,
+								<Resource key='audit' name="audit" {...audit} />,
+							]
 							: []),
-						<CustomRoutes>
+						<CustomRoutes key='routes'>
 							<Route path="/" element={<Welcome />} />
 						</CustomRoutes>,
 					];

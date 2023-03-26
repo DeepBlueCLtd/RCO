@@ -1,22 +1,25 @@
+import React from 'react';
 import { Login } from '@mui/icons-material';
-import { Icon } from '@mui/material';
-import { Theme } from '@mui/system';
+import { Box, Icon } from '@mui/material';
+import { type Theme } from '@mui/system';
 import { makeStyles } from '@mui/styles';
+import { Image } from 'mui-image';
 
 import {
 	AppBar,
-	AppBarProps,
+	type AppBarProps,
 	Button,
 	Layout,
-	LayoutProps,
+	type LayoutProps,
 	Logout,
 	useAuthState,
 	useRedirect,
 	UserMenu,
-	UserMenuProps,
+	type UserMenuProps,
 } from 'react-admin';
 import { SideMenus } from './SideMenus';
 import Footer from './Footer';
+import AppIcon from '../../assets/app-icon.png';
 
 const useStyles = makeStyles((theme: Theme) => ({
 	root: {
@@ -38,18 +41,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 	},
 }));
 
-const MyUserMenu = (props: UserMenuProps) => {
+const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 	const styles = useStyles();
 	const { authenticated } = useAuthState();
 	const redirect = useRedirect();
 
-	const handleLogin = () => {
+	const handleLogin = (): void => {
 		redirect('/login');
 	};
 
 	return (
 		<UserMenu {...props}>
-			{!authenticated && (
+			{authenticated === null && (
 				<Button
 					onClick={handleLogin}
 					classes={{ root: styles.root, startIcon: styles.startIcon }}
@@ -66,16 +69,31 @@ const MyUserMenu = (props: UserMenuProps) => {
 	);
 };
 
-const MyAppBar = (props: AppBarProps) => (
+const MyAppBar = (props: AppBarProps): React.ReactElement => (
 	<AppBar {...props} userMenu={<MyUserMenu />}>
-		{props.children}
-		<span style={{ textAlign: 'left', marginLeft: '4px', marginRight: 'auto' }}>
+		<span
+			style={{
+				backgroundColor: 'white',
+				borderRadius: '50px',
+				width: '35px',
+				height: '35px',
+				display: 'flex',
+				justifyContent: 'center',
+			}}
+		>
 			<img
-				src="/app-icon.png"
-				alt="app"
-				style={{ width: '32px', marginTop: '10px' }}
+				src={AppIcon}
+				style={{
+					width: '28px',
+					height: '28px',
+					padding: '3px',
+					marginTop: '5px',
+				}}
 			/>
 		</span>
+		<Box flex={1} />
+		[RCO]
+		<Box flex={1} />
 	</AppBar>
 );
 
