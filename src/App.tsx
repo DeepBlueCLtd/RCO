@@ -8,9 +8,9 @@ import {
 } from 'react-admin';
 import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
-import { Suspense, useEffect, useState } from 'react';
+import preval from 'preval.macro';
+import { Suspense, useState, useEffect } from 'react';
 import { Person } from '@mui/icons-material';
-
 import { getDataProvider } from './providers/dataProvider';
 import autProvider from './providers/authProvider';
 
@@ -31,6 +31,12 @@ function App() {
 		getDataProvider().then(setDataProvider);
 	};
 
+	// const appBuildDate = preval`module.exports = process.env = 'development' = new Date().toISOString().slice(0, 19).replace('T', ' ')`;
+	// console.log('appBuildDate', appBuildDate);
+	// const trimmedAppBuildDate = appBuildDate.substring(
+	// 	0,
+	// 	appBuildDate.length - 3
+	// );
 	useEffect(handleGetProvider, [dataProvider]);
 
 	if (!dataProvider) return LoadingPage;
