@@ -21,6 +21,7 @@ export const SideMenus = (): React.ReactElement => {
         <Menu className={styles.root}>
             <Menu.ResourceItem name="users" />
             <Menu.ResourceItem name="audit" />
+            <Menu.ResourceItem name="platforms" />
         </Menu>
     );
 };

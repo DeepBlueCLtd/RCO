@@ -30,6 +30,7 @@
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.9.0",
 		"vite-plugin-babel-macros": "^1.0.6",
+		"vite": "^4.2.0",
 		"yup": "^1.0.2"
 	},
 	"devDependencies": {

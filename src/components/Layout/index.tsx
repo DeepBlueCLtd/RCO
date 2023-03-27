@@ -96,7 +96,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => (
 	</AppBar>
 );
 
-const MyLayout = (props: LayoutProps) => (
+const MyLayout = (props: LayoutProps): React.ReactElement => (
 	<Layout {...props} appBar={MyAppBar} menu={SideMenus}>
 		{props.children}
 		<Footer />
