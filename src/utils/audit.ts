@@ -1,5 +1,7 @@
 import { DataProvider } from 'react-admin';
 import constants from '../constants';
+import { getToken } from '../providers/authProvider';
+
 export enum AuditType {
 	LOGIN = 'login',
 	LOGOUT = 'logout',
@@ -10,9 +12,9 @@ export enum AuditType {
 
 export const trackEvent = (dataProvider: DataProvider) => async (type: AuditType, activity_detail?: string) => {
 	try {
-
-		const data = JSON.parse(localStorage.getItem(constants.TOKEN_KEY)??'')
-		if (data) {
+		const token = getToken();
+		if (token) {
+			const data = JSON.parse(token);
 			await dataProvider.create<Audit>('audit', {
 				data: {
 					user_id: data.id,
@@ -22,7 +24,6 @@ export const trackEvent = (dataProvider: DataProvider) => async (type: AuditType
 				},
 			});
 		}
-
 	} catch (error) {
 		console.log(error);
 	}
