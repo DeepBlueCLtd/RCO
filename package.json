@@ -6,7 +6,7 @@
 		"node": "18.x"
 	},
 	"type": "module",
-	"homepage": "https://salony75way.github.io/RCO/",
+	"homepage": ".",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
