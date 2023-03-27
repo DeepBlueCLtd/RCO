@@ -47,13 +47,13 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			const token = getToken();
 			return (token !== null) ? Promise.resolve() : Promise.reject();
 		},
-		checkError: async (error) => {
+		checkError:  async (error): Promise<any> => {
 			const status = error.status;
 			if (status === 401 || status === 403) {
 				removeToken();
-				await Promise.reject();
+				return Promise.reject();
 			}
-			await Promise.resolve();
+			return Promise.resolve();
 		},
 		getIdentity: async () => {
 			const { data } = await dataProvider.me();
