@@ -51,7 +51,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			const status = error.status;
 			if (status === 401 || status === 403) {
 				removeToken();
-				await Promise.reject(); return;
+				await Promise.reject();
 			}
 			await Promise.resolve();
 		},
