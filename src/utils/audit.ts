@@ -1,4 +1,4 @@
-import { DataProvider } from 'react-admin';
+import { type DataProvider } from 'react-admin';
 
 export enum AuditType {
 	LOGIN = 'login',

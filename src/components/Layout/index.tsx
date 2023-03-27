@@ -17,6 +17,8 @@ import {
 	type UserMenuProps,
 } from 'react-admin';
 import { SideMenus } from './SideMenus';
+import Footer from './Footer';
+import AppIcon from '../../assets/app-icon.png';
 
 const useStyles = makeStyles((theme: Theme) => ({
 	root: {
@@ -67,15 +69,38 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 };
 
 const MyAppBar = (props: AppBarProps): React.ReactElement => (
-	<AppBar {...props} userMenu={<MyUserMenu />} >
-		<Box flex={1} /> 
+	<AppBar {...props} userMenu={<MyUserMenu />}>
+		<span
+			style={{
+				backgroundColor: 'white',
+				borderRadius: '50px',
+				width: '35px',
+				height: '35px',
+				display: 'flex',
+				justifyContent: 'center',
+			}}
+		>
+			<img
+				src={AppIcon}
+				style={{
+					width: '28px',
+					height: '28px',
+					padding: '3px',
+					marginTop: '5px',
+				}}
+			/>
+		</span>
+		<Box flex={1} />
 		[RCO]
-		<Box flex={1} /> 
+		<Box flex={1} />
 	</AppBar>
 );
 
 const MyLayout = (props: LayoutProps): React.ReactElement => (
-	<Layout {...props} appBar={MyAppBar} menu={SideMenus} />
+	<Layout {...props} appBar={MyAppBar} menu={SideMenus}>
+		{props.children}
+		<Footer />
+	</Layout>
 );
 
 export default MyLayout;

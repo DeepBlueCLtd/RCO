@@ -10,7 +10,6 @@ import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Person } from '@mui/icons-material';
-
 import { getDataProvider } from './providers/dataProvider';
 import autProvider from './providers/authProvider';
 
@@ -31,6 +30,7 @@ function App(): React.ReactElement {
 		if (dataProvider !== undefined) return;
 		getDataProvider().then(setDataProvider);
 	};
+
 
 	useEffect(handleGetProvider, [dataProvider]);
 
