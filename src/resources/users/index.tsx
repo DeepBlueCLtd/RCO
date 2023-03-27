@@ -1,11 +1,11 @@
 import React from 'react';
-import { Create, Edit, Show } from 'react-admin';
+import { Create, Edit } from 'react-admin';
 import UserForm from '../../components/UserForm';
 
 const UserList = React.lazy(() => import('./UserList'));
 const UserShow = React.lazy(() => import('./UserShow'));
 
-const UserCreate = () => {
+const UserCreate = (): React.ReactElement => {
 	return (
 		<Create>
 			<UserForm />
@@ -13,7 +13,7 @@ const UserCreate = () => {
 	);
 }
 
-const UserEdit = () => {
+const UserEdit = (): React.ReactElement => {
 	return (
 		<Edit>
 			<UserForm />

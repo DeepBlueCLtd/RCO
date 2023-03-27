@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Datagrid,
 	List,
@@ -8,8 +9,8 @@ import {
 import dayjs from 'dayjs';
 import constants from '../../constants';
 
-export default function AuditList() {
-	const renderDateTime = (record: Audit) =>
+export default function AuditList(): React.ReactElement {
+	const renderDateTime = (record: Audit): string =>
 		dayjs(record.date_time).format(constants.DATETIME_FORMAT);
 
 	return (

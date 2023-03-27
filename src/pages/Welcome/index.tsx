@@ -1,6 +1,7 @@
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-export default function Welcome() {
+export default function Welcome(): React.ReactElement {
 	return (
 		<>
 			<Box

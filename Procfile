@@ -1,1 +1,1 @@
-web: yarn vite preview
+web: yarn vite preview --port $PORT
