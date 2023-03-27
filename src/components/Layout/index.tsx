@@ -3,7 +3,6 @@ import { Login } from '@mui/icons-material';
 import { Box, Icon } from '@mui/material';
 import { type Theme } from '@mui/system';
 import { makeStyles } from '@mui/styles';
-import { Image } from 'mui-image';
 
 import {
 	AppBar,
