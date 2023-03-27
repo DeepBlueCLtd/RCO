@@ -8,8 +8,7 @@ import {
 } from 'react-admin';
 import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
-import preval from 'preval.macro';
-import { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Person } from '@mui/icons-material';
 import { getDataProvider } from './providers/dataProvider';
 import autProvider from './providers/authProvider';

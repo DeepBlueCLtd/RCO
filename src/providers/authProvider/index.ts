@@ -30,7 +30,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 						const token = JSON.stringify(user)
 						setToken(token);
 						audit(AuditType.LOGIN, 'Logged in');
-						return Promise.resolve(data);
+						return await Promise.resolve(data);
 					} else {
 						throw new Error("Wrong password");
 					}
@@ -40,7 +40,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 				}
 				
 			} else {
-				return Promise.reject();
+				return await Promise.reject();
 			}
 			
 		},
@@ -53,13 +53,13 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			const token = getToken();
 			return (token !== null) ? Promise.resolve() : Promise.reject();
 		},
-		checkError: (error) => {
+		checkError: async (error) => {
 			const status = error.status;
 			if (status === 401 || status === 403) {
 				removeToken();
-				return Promise.reject();
+				await Promise.reject(); return;
 			}
-			return Promise.resolve();
+			await Promise.resolve();
 		},
 		getIdentity: async () => {
 			const { data } = await dataProvider.me();
@@ -69,14 +69,14 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 		getPermissions: async () => {
 			try {
 				const token = getToken();
-				if (token) {
+				if (token != null) {
 					const user = JSON.parse(token);
-					return Promise.resolve(user.adminRights ? 'admin' : 'user');
+					return await Promise.resolve(user.adminRights ? 'admin' : 'user');
 				} else {
 					throw new Error('You are not a registered user.')
 				}
 			} catch (error) {
-				return Promise.resolve();
+				await Promise.resolve(); 
 			}
 		},
 	});
