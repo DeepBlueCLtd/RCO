@@ -62,8 +62,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			return Promise.resolve();
 		},
 		getIdentity: async () => {
-			const { data } = await dataProvider.me();
-			return data;
+			const token = getToken();
+			if (token) {
+				const data = JSON.parse(token)
+				return data;
+			}
 		},
 
 		getPermissions: async () => {
