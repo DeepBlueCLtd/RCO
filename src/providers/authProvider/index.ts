@@ -20,8 +20,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 		login: async ({ username, password }) => {
 			const data = await dataProvider.getList('users', {
 				sort: { field: "id", order: "ASC" },
-					pagination: { page: 1, perPage: 1 },
-					filter: { name: username, password }
+				pagination: { page: 1, perPage: 1 },
+				filter: { name: username, password }
 			})
 			const user = data.data.find((item: any) => item.name === username);
 			if (user !== undefined) {
@@ -36,7 +36,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			}
 			else {
 				throw new Error("Wrong username");
-			}	
+			}
 		},
 		logout: (): any => {
 			audit(AuditType.LOGOUT, 'Logged out');
@@ -47,7 +47,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			const token = getToken();
 			return (token !== null) ? Promise.resolve() : Promise.reject();
 		},
-		checkError:  async (error): Promise<any> => {
+		checkError: async (error): Promise<any> => {
 			const status = error.status;
 			if (status === 401 || status === 403) {
 				removeToken();
@@ -57,9 +57,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 		},
 		getIdentity: async () => {
 			const token = getToken();
-			if (token) {
-				const data = JSON.parse(token)
-				return data;
+			if (token !== null) {
+				return JSON.parse(token);
 			}
 		},
 
@@ -74,7 +73,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 					throw new Error('You are not a registered user.')
 				}
 			} catch (error) {
-				await Promise.resolve(); 
+				await Promise.resolve();
 			}
 		},
 	});
