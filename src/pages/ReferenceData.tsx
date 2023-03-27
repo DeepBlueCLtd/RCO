@@ -1,10 +1,10 @@
-import { Box, Card, CardActionArea, CardContent, Theme, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardContent, type Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useMemo } from "react";
-import { CreatePathParams, ResourceContextProvider, useCreatePath, useRedirect } from "react-admin";
+import React, { useMemo } from "react";
+import { type CreatePathParams, ResourceContextProvider, useCreatePath, useRedirect } from "react-admin";
 import { Outlet, useLocation } from "react-router-dom";
 
-type CardWithNavigationProps = {
+interface CardWithNavigationProps {
   title: string;
   path: CreatePathParams['resource'];
   type?: CreatePathParams['type'],
@@ -31,14 +31,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const CardWithNavigation = (props: CardWithNavigationProps) => {
+const CardWithNavigation = (props: CardWithNavigationProps): React.ReactElement => {
   const { path, title, type = 'list', active } = props;
   const createPath = useCreatePath();
   const styles = useStyles();
   const redirect = useRedirect();
   const to = createPath({ resource: `/reference-data${path}`, type });
   return (
-    <Card onClick={() => redirect(to)} className={`${styles.root} ${active ? 'active' : ''}`}>
+    <Card onClick={() => { redirect(to); }} className={`${styles.root} ${((active !== undefined) && active) ? 'active' : ''}`}>
       <CardActionArea>
         <CardContent className={styles.content}>
           <Typography>{title}</Typography>
@@ -57,11 +57,12 @@ const routes = [
   { path: "/platform-originator", title: 'Platform Originator' },
 ];
 
-export default function ReferenceData() {
+export default function ReferenceData(): React.ReactElement {
   const location = useLocation();
 
   const { resource, title } = useMemo(() => {
-    const resource = location.pathname.split('/')[2] || '';
+    const items = location.pathname.split('/')
+    const resource =  items.length > 2 ? items[2] : ''
     const title = routes.find(route => route.path === `/${resource}`)?.title
     return { resource, title };
   }, [location]);
@@ -74,7 +75,7 @@ export default function ReferenceData() {
         ))}
       </Box>
 
-      {resource && (
+      {resource.length > 0 && (
         <>
           <Box my={5}>
             <Typography textAlign="center" variant="h4">{title}</Typography>

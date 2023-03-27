@@ -57,7 +57,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 		},
 		getIdentity: async () => {
 			const token = getToken();
-			if (token) {
+			if (token !== null) {
 				return JSON.parse(token);
 			}
 
