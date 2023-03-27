@@ -2,6 +2,7 @@ import React from 'react';
 import { type Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Menu } from 'react-admin';
+import { AddLink } from '@mui/icons-material';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -22,6 +23,7 @@ export const SideMenus = (): React.ReactElement => {
             <Menu.ResourceItem name="users" />
             <Menu.ResourceItem name="audit" />
             <Menu.ResourceItem name="platforms" />
+            <Menu.Item to="/reference-data" primaryText="Reference Data" leftIcon={<AddLink />} />
         </Menu>
     );
 };
