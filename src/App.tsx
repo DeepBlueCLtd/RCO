@@ -53,8 +53,7 @@ function App(): React.ReactElement {
 						...(permissions === 'admin'
 							? [
 								<Resource key='users' icon={Person} name="users" {...users} />,
-								<Resource key='audit' name="audit" {...audit} />,
-								<Resource key='platforms' name="platforms" {...platforms} />
+								<Resource key='audit' name="audit" {...audit} />
 							]
 							: []),
 						<CustomRoutes key='routes'>
