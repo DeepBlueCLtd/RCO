@@ -25,7 +25,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			})
 			if (data.data) {
 				const user = data.data.find((item: any) => item.name === username);
-				if (user) {
+				if (user !== undefined) {
 					if (user.password === password) {
 						const token = JSON.stringify(user)
 						setToken(token);
@@ -71,7 +71,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 				const token = getToken();
 				if (token != null) {
 					const user = JSON.parse(token);
-					return await Promise.resolve(user.adminRights ? 'admin' : 'user');
+					const isAdmin = user.adminRights as boolean
+					return await Promise.resolve(isAdmin ? 'admin' : 'user');
 				} else {
 					throw new Error('You are not a registered user.')
 				}
