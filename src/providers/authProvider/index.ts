@@ -17,11 +17,26 @@ const removeToken = (): void => {
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
 	const audit = trackEvent(dataProvider);
 	return ({
-		login: async (params) => {
-			const { data } = await dataProvider.login(params);
-			setToken(data.token);
-			audit(AuditType.LOGIN, 'Logged in');
-			return Promise.resolve(data);
+		login: async ({ username, password }) => {
+			const data = await dataProvider.getList('users', {
+				sort: { field: "id", order: "ASC" },
+					pagination: { page: 1, perPage: 1 },
+					filter: { name: username, password }
+			})
+			const user = data.data.find((item: any) => item.name === username);
+			if (user !== undefined) {
+				if (user.password === password) {
+					const token = JSON.stringify(user)
+					setToken(token);
+					audit(AuditType.LOGIN, 'Logged in');
+					return await Promise.resolve(data);
+				} else {
+					throw new Error("Wrong password");
+				}
+			}
+			else {
+				throw new Error("Wrong username");
+			}	
 		},
 		logout: (): any => {
 			audit(AuditType.LOGOUT, 'Logged out');
@@ -32,7 +47,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			const token = getToken();
 			return (token !== null) ? Promise.resolve() : Promise.reject();
 		},
-		checkError: (error) => {
+		checkError:  async (error): Promise<any> => {
 			const status = error.status;
 			if (status === 401 || status === 403) {
 				removeToken();
@@ -47,11 +62,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 
 		getPermissions: async () => {
 			try {
-				const { data } = await dataProvider.me();
-				const user = data as User
-				return Promise.resolve(user.adminRights ? 'admin' : 'user');
+				const token = getToken();
+				if (token != null) {
+					const user = JSON.parse(token);
+					const isAdmin = user.adminRights as boolean
+					return await Promise.resolve(isAdmin ? 'admin' : 'user');
+				} else {
+					throw new Error('You are not a registered user.')
+				}
 			} catch (error) {
-				return Promise.resolve();
+				await Promise.resolve(); 
 			}
 		},
 	});
