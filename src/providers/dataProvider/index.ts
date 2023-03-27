@@ -1,10 +1,11 @@
 import localForageDataProvider from 'ra-data-local-forage';
-import { DataProvider, withLifecycleCallbacks } from 'react-admin';
+import { type DataProvider, withLifecycleCallbacks } from 'react-admin';
 import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 import { getToken } from '../authProvider';
 import platforms from './platforms';
 import users from './users';
+import localForage from 'localforage'
 
 const customProvider = (dataProvider: DataProvider) => ({
 	login: (params: { username: string; password: string }) => {
@@ -51,6 +52,8 @@ const customProvider = (dataProvider: DataProvider) => ({
 });
 
 export const getDataProvider = async () => {
+
+
 	const provider = await localForageDataProvider({
 		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
 		defaultData: {
@@ -58,7 +61,11 @@ export const getDataProvider = async () => {
 			platforms
 		},
 	});
-
+	localForage.config({
+		name: `${constants.LOCAL_STORAGE_DB_KEY}users`
+	})
+	localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}users`, users)
+	localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}platforms`, platforms)
 	const providerWithCustomMethods = { ...provider, ...customProvider(provider) };
 	const audit = trackEvent(providerWithCustomMethods);
 	return withLifecycleCallbacks(

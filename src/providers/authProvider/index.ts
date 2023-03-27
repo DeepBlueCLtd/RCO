@@ -1,17 +1,17 @@
-import { AuthProvider, DataProvider } from 'react-admin';
+import { type AuthProvider, type DataProvider } from 'react-admin';
 import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 
-export const getToken = () => {
+export const getToken = (): string | null => {
 	return localStorage.getItem(constants.TOKEN_KEY);
 };
 
-const setToken = (token: string) => {
-	return localStorage.setItem(constants.TOKEN_KEY, token);
+const setToken = (token: string): void => {
+	localStorage.setItem(constants.TOKEN_KEY, token);
 };
 
-const removeToken = () => {
-	return localStorage.removeItem(constants.TOKEN_KEY);
+const removeToken = (): void => {
+	localStorage.removeItem(constants.TOKEN_KEY);
 };
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
@@ -23,14 +23,14 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			audit(AuditType.LOGIN, 'Logged in');
 			return Promise.resolve(data);
 		},
-		logout: () => {
+		logout: (): any => {
 			audit(AuditType.LOGOUT, 'Logged out');
 			removeToken();
 			return Promise.resolve();
 		},
-		checkAuth: () => {
+		checkAuth: (): any => {
 			const token = getToken();
-			return token ? Promise.resolve() : Promise.reject();
+			return (token !== null) ? Promise.resolve() : Promise.reject();
 		},
 		checkError: (error) => {
 			const status = error.status;
@@ -48,7 +48,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 		getPermissions: async () => {
 			try {
 				const { data } = await dataProvider.me();
-				return Promise.resolve(data.adminRights ? 'admin' : 'user');
+				const user = data as User
+				return Promise.resolve(user.adminRights ? 'admin' : 'user');
 			} catch (error) {
 				return Promise.resolve();
 			}
