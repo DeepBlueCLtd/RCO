@@ -54,7 +54,7 @@ function App(): React.ReactElement {
 							? [
 								<Resource key='users' icon={Person} name="users" {...users} />,
 								<Resource key='audit' name="audit" {...audit} />,
-								<Resource name="platforms" {...platforms} />
+								<Resource key='platforms' name="platforms" {...platforms} />
 							]
 							: []),
 						<CustomRoutes key='routes'>
