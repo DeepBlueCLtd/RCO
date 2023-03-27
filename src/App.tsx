@@ -53,8 +53,8 @@ function App(): React.ReactElement {
 					return [
 						...(permissions === 'admin'
 							? [
-								<Resource icon={Person} name="users" {...users} />,
-								<Resource name="audit" {...audit} />,
+								<Resource key='users' icon={Person} name="users" {...users} />,
+								<Resource key='audit' name="audit" {...audit} />,
 								<CustomRoutes key='routes'>
 									<Route path='/reference-data' element={<ReferenceData />}>
 										<Route path="protective-marking" element={<ReferenceDataList />} />

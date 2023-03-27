@@ -7,15 +7,6 @@ import users from './users';
 import localForage from 'localforage'
 import { getReferenceData } from './reference-data';
 
-const routes = [
-	{ path: "/organisation", title: 'Organisation' },
-	{ path: "/protective-marking", title: 'Protective Marking' },
-	{ path: "/protective-marking-authority", title: 'Protective Marking Authority' },
-	{ path: "/department", title: 'Department' },
-	{ path: "/vault", title: 'Vault' },
-	{ path: "/platform-originator", title: 'Platform Originator' },
-];
-
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
 	const defaultData: Record<string, any> = {
 		users,
