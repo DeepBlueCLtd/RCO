@@ -20,6 +20,8 @@ import Welcome from './pages/Welcome';
 import users from './resources/users';
 import audit from './resources/audit';
 import { rcoTheme } from './themes/rco-theme';
+import ReferenceData from './pages/ReferenceData';
+import ReferenceDataList from './components/ReferenceDataList';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />;
 
@@ -51,8 +53,18 @@ function App(): React.ReactElement {
 					return [
 						...(permissions === 'admin'
 							? [
-								<Resource key='users' icon={Person} name="users" {...users} />,
-								<Resource key='audit' name="audit" {...audit} />
+								<Resource icon={Person} name="users" {...users} />,
+								<Resource name="audit" {...audit} />,
+								<CustomRoutes key='routes'>
+									<Route path='/reference-data' element={<ReferenceData />}>
+										<Route path="protective-marking" element={<ReferenceDataList />} />
+										<Route path="protective-marking-authority" element={<ReferenceDataList />} />
+										<Route path="department" element={<ReferenceDataList />} />
+										<Route path="vault" element={<ReferenceDataList />} />
+										<Route path="platform-originator" element={<ReferenceDataList />} />
+										<Route path="organisation" element={<ReferenceDataList />} />
+									</Route>
+								</CustomRoutes>
 							]
 							: []),
 						<CustomRoutes key='routes'>
