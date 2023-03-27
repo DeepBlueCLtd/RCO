@@ -23,26 +23,20 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 					pagination: { page: 1, perPage: 1 },
 					filter: { name: username, password }
 			})
-			if (data.data) {
-				const user = data.data.find((item: any) => item.name === username);
-				if (user !== undefined) {
-					if (user.password === password) {
-						const token = JSON.stringify(user)
-						setToken(token);
-						audit(AuditType.LOGIN, 'Logged in');
-						return await Promise.resolve(data);
-					} else {
-						throw new Error("Wrong password");
-					}
+			const user = data.data.find((item: any) => item.name === username);
+			if (user !== undefined) {
+				if (user.password === password) {
+					const token = JSON.stringify(user)
+					setToken(token);
+					audit(AuditType.LOGIN, 'Logged in');
+					return await Promise.resolve(data);
+				} else {
+					throw new Error("Wrong password");
 				}
-				else {
-					throw new Error("Wrong username");
-				}
-				
-			} else {
-				return await Promise.reject();
 			}
-			
+			else {
+				throw new Error("Wrong username");
+			}	
 		},
 		logout: (): any => {
 			audit(AuditType.LOGOUT, 'Logged out');
