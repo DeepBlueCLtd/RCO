@@ -1,3 +1,4 @@
+import React from 'react';
 import { SimpleForm, TextInput, BooleanInput, Create, Edit, Show } from 'react-admin';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -30,7 +31,7 @@ const PlatformCreate = (): React.ReactElement => {
 	);
 }
 
-const PlatformEdit = () => {
+const PlatformEdit = (): React.ReactElement => {
 	return (
 		<Edit>
 			<PlatformForm />
@@ -38,7 +39,7 @@ const PlatformEdit = () => {
 	);
 }
 
-const PlatformShow = () => {
+const PlatformShow = (): React.ReactElement => {
 	return (
 		<Show>
 			<PlatformForm />

@@ -19,7 +19,6 @@ import Welcome from './pages/Welcome';
 // resources
 import users from './resources/users';
 import audit from './resources/audit';
-import platforms from './resources/platforms';
 import { rcoTheme } from './themes/rco-theme';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />;
