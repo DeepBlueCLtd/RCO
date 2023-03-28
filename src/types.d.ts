@@ -17,3 +17,12 @@ interface Platform {
 	name: string;
 	active: boolean;
 }
+
+interface Project {
+	id: number;
+	name: string;
+	start_date: string;
+	end_date: string;
+	project_code: string;
+	remarks: string;
+}

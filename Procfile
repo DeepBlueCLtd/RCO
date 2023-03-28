@@ -1,1 +1,1 @@
-web: yarn dev --host 0.0.0.0 --port $PORT
+web: yarn preview --host 0.0.0.0 --base /RCO/ --port $PORT
