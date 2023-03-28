@@ -28,7 +28,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 
 	const provider = await localForageDataProvider({
 		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-		loggingEnabled: true,
 		defaultData,
 	});
 	const providerWithCustomMethods = { ...provider };
