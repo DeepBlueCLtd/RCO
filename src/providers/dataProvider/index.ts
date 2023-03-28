@@ -4,7 +4,6 @@ import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
 import platforms from './platforms';
 import users from './users';
-import localForage from 'localforage'
 import { getReferenceData } from './reference-data';
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
@@ -23,15 +22,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
 		defaultData,
 	});
-	localForage.config({
-		name: `${constants.LOCAL_STORAGE_DB_KEY}users`
-	})
-
-	await Promise.all(Object.keys(defaultData).map(async (key) => {
-		const values = defaultData[key];
-		await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, values)
-	}))
-
 	const providerWithCustomMethods = { ...provider };
 	const audit = trackEvent(providerWithCustomMethods);
 	return withLifecycleCallbacks(

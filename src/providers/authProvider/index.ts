@@ -60,7 +60,6 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 			if (token !== null) {
 				return JSON.parse(token);
 			}
-
 		},
 
 		getPermissions: async () => {
