@@ -51,10 +51,8 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 		{
 			resource: 'projects',
 			afterDelete: async (record: DeleteResult<Project>) => {
-				await audit(
-					AuditType.DELETE_PROJECT,
-					`Project deleted (${record.data.id})`
-				);
+				const recId = record.data.id;
+				await audit(AuditType.DELETE_PROJECT, `Project deleted (${recId})`);
 				return record;
 			},
 			afterCreate: async (record: CreateResult<Project>) => {
