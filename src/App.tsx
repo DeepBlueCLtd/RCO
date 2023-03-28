@@ -62,12 +62,6 @@ function App(): React.ReactElement {
 										{...users}
 									/>,
 									<Resource key="audit" name="audit" {...audit} />,
-									<Resource
-										key="projects"
-										icon={SettingsSuggest}
-										name="projects"
-										{...projects}
-									/>,
 									<CustomRoutes key="routes">
 										<Route path="/reference-data" element={<ReferenceData />}>
 											<Route
@@ -95,6 +89,13 @@ function App(): React.ReactElement {
 									</CustomRoutes>,
 							  ]
 							: []),
+						<Resource
+							key="projects"
+							icon={SettingsSuggest}
+							name="projects"
+							{...projects}
+						/>,
+
 						<CustomRoutes key="routes">
 							<Route path="/" element={<Welcome />} />
 						</CustomRoutes>,
