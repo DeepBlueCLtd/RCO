@@ -53,8 +53,11 @@
 		"vite": "^4.2.0"
 	},
 	"lint-staged": {
-		"*.--write": "prettier --write",
-		"*.{js,css,md,html,json}": "prettier --cache --write",
-		"*.js": "eslint --cache --fix"
+		"**/*.{ts,tsx,js,jsx}": [
+			"eslint --fix --ignore-path .eslintignore"
+		],
+		"**/*.{ts,tsx,js,jsx,json,md,html,css,less}": [
+			"prettier --write --ignore-path .prettierignore"
+		]
 	}
 }

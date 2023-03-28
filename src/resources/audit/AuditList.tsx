@@ -3,16 +3,11 @@ import {
 	Datagrid,
 	List,
 	TextField,
-	FunctionField,
 	ReferenceField,
+	DateField,
 } from 'react-admin';
-import dayjs from 'dayjs';
-import constants from '../../constants';
 
 export default function AuditList(): React.ReactElement {
-	const renderDateTime = (record: Audit): string =>
-		dayjs(record.date_time).format(constants.DATETIME_FORMAT);
-
 	return (
 		<List
 			perPage={25}
@@ -23,7 +18,7 @@ export default function AuditList(): React.ReactElement {
 		>
 			<Datagrid bulkActionButtons={false}>
 				<ReferenceField source="user_id" reference="users" />
-				<FunctionField label="Date Time" render={renderDateTime} />;
+				<DateField source="date_time" label="Date Time" showTime />;
 				<TextField source="activity_type" label="Activity Type" />
 				<TextField source="activity_detail" label="Activity Details" />
 			</Datagrid>

@@ -9,7 +9,7 @@ import {
 import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
 import React, { Suspense, useEffect, useState } from 'react';
-import { Person } from '@mui/icons-material';
+import { Person, SettingsSuggest } from '@mui/icons-material';
 import { getDataProvider } from './providers/dataProvider';
 import autProvider from './providers/authProvider';
 
@@ -22,17 +22,19 @@ import audit from './resources/audit';
 import { rcoTheme } from './themes/rco-theme';
 import ReferenceData from './pages/ReferenceData';
 import ReferenceDataList from './components/ReferenceDataList';
+import projects from './resources/projects';
 
 const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />;
 
 function App(): React.ReactElement {
-	const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(undefined);
+	const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
+		undefined
+	);
 
 	const handleGetProvider = (): any => {
 		if (dataProvider !== undefined) return;
-		getDataProvider().then(setDataProvider);
+		getDataProvider().then(setDataProvider).catch(console.log);
 	};
-
 
 	useEffect(handleGetProvider, [dataProvider]);
 
@@ -53,21 +55,47 @@ function App(): React.ReactElement {
 					return [
 						...(permissions === 'admin'
 							? [
-								<Resource key='users' icon={Person} name="users" {...users} />,
-								<Resource key='audit' name="audit" {...audit} />,
-								<CustomRoutes key='routes'>
-									<Route path='/reference-data' element={<ReferenceData />}>
-										<Route path="protective-marking" element={<ReferenceDataList />} />
-										<Route path="protective-marking-authority" element={<ReferenceDataList />} />
-										<Route path="department" element={<ReferenceDataList />} />
-										<Route path="vault" element={<ReferenceDataList />} />
-										<Route path="platform-originator" element={<ReferenceDataList />} />
-										<Route path="organisation" element={<ReferenceDataList />} />
-									</Route>
-								</CustomRoutes>
-							]
+									<Resource
+										key="users"
+										icon={Person}
+										name="users"
+										{...users}
+									/>,
+									<Resource key="audit" name="audit" {...audit} />,
+									<Resource
+										key="projects"
+										icon={SettingsSuggest}
+										name="projects"
+										{...projects}
+									/>,
+									<CustomRoutes key="routes">
+										<Route path="/reference-data" element={<ReferenceData />}>
+											<Route
+												path="protective-marking"
+												element={<ReferenceDataList />}
+											/>
+											<Route
+												path="protective-marking-authority"
+												element={<ReferenceDataList />}
+											/>
+											<Route
+												path="department"
+												element={<ReferenceDataList />}
+											/>
+											<Route path="vault" element={<ReferenceDataList />} />
+											<Route
+												path="platform-originator"
+												element={<ReferenceDataList />}
+											/>
+											<Route
+												path="organisation"
+												element={<ReferenceDataList />}
+											/>
+										</Route>
+									</CustomRoutes>,
+							  ]
 							: []),
-						<CustomRoutes key='routes'>
+						<CustomRoutes key="routes">
 							<Route path="/" element={<Welcome />} />
 						</CustomRoutes>,
 					];
