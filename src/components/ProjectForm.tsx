@@ -3,6 +3,7 @@ import { SimpleForm, TextInput, DateInput } from 'react-admin';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
+import { Box } from '@mui/material';
 
 const schema = yup.object({
 	name: yup.string().required('Name is a required field'),
@@ -33,12 +34,10 @@ export default function ProjectForm(): React.ReactElement {
 	return (
 		<SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
 			<TextInput source="name" variant="outlined" sx={{ width: '100%' }} />
-			<DateInput
-				source="start_date"
-				variant="outlined"
-				sx={{ width: '100%' }}
-			/>
-			<DateInput source="end_date" variant="outlined" sx={{ width: '100%' }} />
+			<Box display="flex" width="100%" columnGap="20px">
+				<DateInput source="start_date" variant="outlined" sx={{ flex: 1 }} />
+				<DateInput source="end_date" variant="outlined" sx={{ flex: 1 }} />
+			</Box>
 			<TextInput
 				source="project_code"
 				variant="outlined"
