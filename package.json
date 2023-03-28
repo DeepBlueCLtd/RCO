@@ -2,8 +2,11 @@
 	"name": "rco",
 	"private": true,
 	"version": "0.0.0",
+	"engines": {
+		"node": "18.x"
+	},
 	"type": "module",
-	"homepage": "https://salony75way.github.io/RCO/",
+	"homepage": ".",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
@@ -31,6 +34,7 @@
 		"react-router-dom": "^6.9.0",
 		"vite-plugin-babel-macros": "^1.0.6",
 		"vite": "^4.2.0",
+		"@vitejs/plugin-react": "^3.1.0",
 		"yup": "^1.0.2"
 	},
 	"devDependencies": {
