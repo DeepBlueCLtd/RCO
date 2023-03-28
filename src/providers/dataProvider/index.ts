@@ -50,21 +50,21 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 		},
 		{
 			resource: 'projects',
-			afterDelete: async (record: DeleteResult<User>) => {
+			afterDelete: async (record: DeleteResult<Project>) => {
 				await audit(
 					AuditType.DELETE_PROJECT,
 					`Project deleted (${record.data.id})`
 				);
 				return record;
 			},
-			afterCreate: async (record: CreateResult<User>) => {
+			afterCreate: async (record: CreateResult<Project>) => {
 				await audit(
 					AuditType.CREATE_PROJECT,
 					`Project created (${record.data.id})`
 				);
 				return record;
 			},
-			afterUpdate: async (record: UpdateResult<User>) => {
+			afterUpdate: async (record: UpdateResult<Project>) => {
 				await audit(
 					AuditType.EDIT_PROJECT,
 					`Project updated (${record.data.id})`
