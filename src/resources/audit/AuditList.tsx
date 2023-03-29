@@ -17,9 +17,7 @@ export default function AuditList(): React.ReactElement {
 			}}
 		>
 			<Datagrid bulkActionButtons={false}>
-				<ReferenceField source="user_id" reference="users">
-					<TextField source="name" />
-				</ReferenceField>
+				<ReferenceField source="user_id" reference="users" />
 				<DateField source="date_time" label="Date Time" showTime />;
 				<TextField source="activity_type" label="Activity Type" />
 				<TextField source="activity_detail" label="Activity Details" />
