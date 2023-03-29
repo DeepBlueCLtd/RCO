@@ -95,9 +95,9 @@ export default function ReferenceData(): React.ReactElement {
   return (
     <div>
       <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
-        {routes.map((route, index) => (
+        {routes.map((route) => (
           <CardWithNavigation
-            key={index}
+            key={route.title}
             {...route}
             active={title === route.title}
           />
