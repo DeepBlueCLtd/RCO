@@ -1,13 +1,17 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
-
+import { decryptData, encryptData } from '../../utils/ecnryption'
+const salt =
+  (import.meta.env.SALT as string) ?? '6d090796-ecdf-11ea-adc1-0242ac112345'
 export const getToken = (): string | null => {
-  return localStorage.getItem(constants.TOKEN_KEY)
+  const user = decryptData(localStorage.getItem(constants.TOKEN_KEY), salt)
+  return user
 }
 
 const setToken = (token: string): void => {
-  localStorage.setItem(constants.TOKEN_KEY, token)
+  const secureToken = encryptData(token, salt)
+  localStorage.setItem(constants.TOKEN_KEY, secureToken)
 }
 
 const removeToken = (): void => {
