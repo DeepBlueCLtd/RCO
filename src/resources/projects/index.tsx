@@ -6,26 +6,26 @@ const ProjectList = React.lazy(async () => await import('./ProjectList'));
 const ProjectShow = React.lazy(async () => await import('./ProjectShow'));
 
 const ProjectCreate = (): React.ReactElement => {
-	return (
-		<Create>
-			<ProjectForm />
-		</Create>
-	);
+  return (
+    <Create>
+      <ProjectForm />
+    </Create>
+  );
 };
 
 const ProjectEdit = (): React.ReactElement => {
-	return (
-		<Edit>
-			<ProjectForm />
-		</Edit>
-	);
+  return (
+    <Edit>
+      <ProjectForm />
+    </Edit>
+  );
 };
 
 const projects = {
-	create: ProjectCreate,
-	edit: ProjectEdit,
-	list: ProjectList,
-	show: ProjectShow,
+  create: ProjectCreate,
+  edit: ProjectEdit,
+  list: ProjectList,
+  show: ProjectShow,
 };
 
 export default projects;

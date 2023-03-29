@@ -14,21 +14,21 @@ export enum AuditType {
 
 export const trackEvent =
 	(dataProvider: DataProvider) =>
-	async (type: AuditType, activityDetail?: string) => {
-		try {
-			const token = getToken();
-			if (token !== null) {
-				const data = JSON.parse(token);
-				await dataProvider.create<Audit>('audit', {
-					data: {
-						user_id: data.id,
-						activity_type: type,
-						date_time: new Date().toISOString(),
-						activity_detail: activityDetail,
-					},
-				});
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	};
+	  async (type: AuditType, activityDetail?: string) => {
+	    try {
+	      const token = getToken();
+	      if (token !== null) {
+	        const data = JSON.parse(token);
+	        await dataProvider.create<Audit>('audit', {
+	          data: {
+	            user_id: data.id,
+	            activity_type: type,
+	            date_time: new Date().toISOString(),
+	            activity_detail: activityDetail,
+	          },
+	        });
+	      }
+	    } catch (error) {
+	      console.log(error);
+	    }
+	  };

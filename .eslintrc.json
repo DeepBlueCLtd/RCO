@@ -17,7 +17,8 @@
 	"plugins": ["react"],
 	"rules": {
 		"@typescript-eslint/explicit-function-return-type": "off",
-		"quotes": [2, "single"]
+		"quotes": [2, "single"],
+		"indent": [1, 2]
 	},
 	"settings": {
 		"react": {
