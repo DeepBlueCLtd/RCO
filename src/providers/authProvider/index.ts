@@ -16,44 +16,47 @@ const removeToken = (): void => {
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
 	const audit = trackEvent(dataProvider);
-	return ({
+	return {
 		login: async ({ username, password }) => {
 			const data = await dataProvider.getList('users', {
-				sort: { field: "id", order: "ASC" },
+				sort: { field: 'id', order: 'ASC' },
 				pagination: { page: 1, perPage: 1 },
-				filter: { name: username, password }
-			})
+				filter: { name: username, password },
+			});
 			const user = data.data.find((item: any) => item.name === username);
 			if (user !== undefined) {
 				if (user.password === password) {
-					const token = JSON.stringify(user)
+					const token = JSON.stringify(user);
 					setToken(token);
-					audit(AuditType.LOGIN, 'Logged in');
+					await audit(AuditType.LOGIN, 'Logged in');
 					return await Promise.resolve(data);
 				} else {
-					throw new Error("Wrong password");
+					throw new Error('Wrong password');
 				}
-			}
-			else {
-				throw new Error("Wrong username");
+			} else {
+				throw new Error('Wrong username');
 			}
 		},
-		logout: (): any => {
-			audit(AuditType.LOGOUT, 'Logged out');
+		logout: async (): Promise<void> => {
+			await audit(AuditType.LOGOUT, 'Logged out');
 			removeToken();
-			return Promise.resolve();
+			await Promise.resolve();
 		},
-		checkAuth: (): any => {
+		checkAuth: async (): Promise<void> => {
 			const token = getToken();
-			return (token !== null) ? Promise.resolve() : Promise.reject();
+			token !== null
+				? await Promise.resolve()
+				: await Promise.reject(new Error('Token not found'));
 		},
 		checkError: async (error): Promise<any> => {
 			const status = error.status;
 			if (status === 401 || status === 403) {
 				removeToken();
-				return Promise.reject();
+				await Promise.reject(
+					new Error('Server returned code ' + String(status))
+				);
 			}
-			return Promise.resolve();
+			await Promise.resolve();
 		},
 		getIdentity: async () => {
 			const token = getToken();
@@ -67,16 +70,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 				const token = getToken();
 				if (token != null) {
 					const user = JSON.parse(token);
-					const isAdmin = user.adminRights as boolean
+					const isAdmin = user.adminRights as boolean;
 					return await Promise.resolve(isAdmin ? 'admin' : 'user');
 				} else {
-					throw new Error('You are not a registered user.')
+					throw new Error('You are not a registered user.');
 				}
 			} catch (error) {
 				await Promise.resolve();
 			}
 		},
-	});
+	};
 };
 
 export default authProvider;
