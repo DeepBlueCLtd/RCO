@@ -1,5 +1,12 @@
 import React from 'react';
-import { SimpleForm, TextInput, BooleanInput, Create, Edit, Show } from 'react-admin';
+import {
+	SimpleForm,
+	TextInput,
+	BooleanInput,
+	Create,
+	Edit,
+	Show,
+} from 'react-admin';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import PlatformList from './PlatformList';
@@ -13,7 +20,7 @@ const schema = yup.object({
 const PlatformForm = (): React.ReactElement => {
 	const defaultValues = {
 		name: '',
-		active: true
+		active: true,
 	};
 	return (
 		<SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
@@ -21,7 +28,7 @@ const PlatformForm = (): React.ReactElement => {
 			<BooleanInput source="active" />
 		</SimpleForm>
 	);
-}
+};
 
 const PlatformCreate = (): React.ReactElement => {
 	return (
@@ -29,7 +36,7 @@ const PlatformCreate = (): React.ReactElement => {
 			<PlatformForm />
 		</Create>
 	);
-}
+};
 
 const PlatformEdit = (): React.ReactElement => {
 	return (
@@ -37,7 +44,7 @@ const PlatformEdit = (): React.ReactElement => {
 			<PlatformForm />
 		</Edit>
 	);
-}
+};
 
 const PlatformShow = (): React.ReactElement => {
 	return (
@@ -45,7 +52,7 @@ const PlatformShow = (): React.ReactElement => {
 			<PlatformForm />
 		</Show>
 	);
-}
+};
 
 const platforms = {
 	create: PlatformCreate,

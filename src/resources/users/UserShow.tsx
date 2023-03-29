@@ -2,7 +2,13 @@ import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { BooleanField, Show, TextField } from 'react-admin';
 
-const ValueField = ({ label, children }: { label: string; children: any }): React.ReactElement => {
+const ValueField = ({
+	label,
+	children,
+}: {
+	label: string;
+	children: any;
+}): React.ReactElement => {
 	return (
 		<Typography fontWeight="bold">
 			{label}: {children}

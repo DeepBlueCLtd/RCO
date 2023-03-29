@@ -13,12 +13,15 @@ export default function Welcome(): React.ReactElement {
 					height: '100vh',
 				}}
 			>
-				<img src={AppIcon} style={{
-					width: '228px',
-					height: '228px'
-				}} />
+				<img
+					src={AppIcon}
+					style={{
+						width: '228px',
+						height: '228px',
+					}}
+				/>
 				<Typography variant="h1">&nbsp;Welcome to RCO</Typography>
 			</Box>
 		</>
-	)
-};
+	);
+}
