@@ -4,7 +4,7 @@ import {
   CustomRoutes,
   Loading,
   type DataProvider,
-  Login,
+  Login
 } from 'react-admin';
 import { Route } from 'react-router-dom';
 import MyLayout from './components/Layout';
@@ -92,7 +92,7 @@ function App(): React.ReactElement {
                       element={<ReferenceDataList />}
                     />
                   </Route>
-                </CustomRoutes>,
+                </CustomRoutes>
 							  ]
               : []),
             <Resource
@@ -104,7 +104,7 @@ function App(): React.ReactElement {
 
             <CustomRoutes key="routes">
               <Route path="/" element={<Welcome />} />
-            </CustomRoutes>,
+            </CustomRoutes>
           ];
         }}
       </Admin>

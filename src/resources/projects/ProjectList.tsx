@@ -6,7 +6,7 @@ import {
   DateField,
   List,
   TextField,
-  TopToolbar,
+  TopToolbar
 } from 'react-admin';
 
 export default function ProjectList(): React.ReactElement {

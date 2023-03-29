@@ -6,14 +6,14 @@ import * as yup from 'yup';
 const schema = yup.object({
   name: yup.string().required(),
   password: yup.string().max(8).min(4),
-  adminRights: yup.boolean(),
+  adminRights: yup.boolean()
 });
 
 export default function UserForm(): React.ReactElement {
   const defaultValues = {
     name: '',
     password: '',
-    adminRights: false,
+    adminRights: false
   };
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>

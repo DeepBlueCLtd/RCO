@@ -4,7 +4,7 @@ import {
   List,
   TextField,
   ReferenceField,
-  DateField,
+  DateField
 } from 'react-admin';
 
 export default function AuditList(): React.ReactElement {
@@ -13,7 +13,7 @@ export default function AuditList(): React.ReactElement {
       perPage={25}
       sort={{
         field: 'date_time',
-        order: 'DESC',
+        order: 'DESC'
       }}
     >
       <Datagrid bulkActionButtons={false}>

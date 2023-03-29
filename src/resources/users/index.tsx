@@ -25,7 +25,7 @@ const users = {
   create: UserCreate,
   edit: UserEdit,
   list: UserList,
-  show: UserShow,
+  show: UserShow
 };
 
 export default users;

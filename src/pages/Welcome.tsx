@@ -10,14 +10,14 @@ export default function Welcome(): React.ReactElement {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100vh',
+          height: '100vh'
         }}
       >
         <img
           src={AppIcon}
           style={{
             width: '228px',
-            height: '228px',
+            height: '228px'
           }}
         />
         <Typography variant="h1">&nbsp;Welcome to RCO</Typography>

@@ -8,7 +8,7 @@ import {
   EditButton,
   List,
   TextField,
-  TopToolbar,
+  TopToolbar
 } from 'react-admin';
 
 export default function UserList(): React.ReactElement {

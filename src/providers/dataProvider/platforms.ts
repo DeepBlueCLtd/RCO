@@ -2,18 +2,18 @@ const platforms: Platform[] = [
   {
     id: 1,
     name: 'plat-1',
-    active: true,
+    active: true
   },
   {
     id: 2,
     name: 'plat-2',
-    active: false,
+    active: false
   },
   {
     id: 3,
     name: 'plat-3',
-    active: true,
-  },
+    active: true
+  }
 ];
 
 export default platforms;

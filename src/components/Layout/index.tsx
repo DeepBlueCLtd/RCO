@@ -14,7 +14,7 @@ import {
   useAuthState,
   useRedirect,
   UserMenu,
-  type UserMenuProps,
+  type UserMenuProps
 } from 'react-admin';
 import { SideMenus } from './SideMenus';
 import Footer from './Footer';
@@ -31,13 +31,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& span': {
       height: 'auto',
       width: 'auto',
-      lineHeight: 1,
-    },
+      lineHeight: 1
+    }
   },
   startIcon: {
     margin: 0,
-    minWidth: '40px',
-  },
+    minWidth: '40px'
+  }
 }));
 
 const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
@@ -77,7 +77,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => (
         width: '35px',
         height: '35px',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'center'
       }}
     >
       <img
@@ -86,7 +86,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => (
           width: '28px',
           height: '28px',
           padding: '3px',
-          marginTop: '5px',
+          marginTop: '5px'
         }}
       />
     </span>

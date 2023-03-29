@@ -21,7 +21,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       const data = await dataProvider.getList('users', {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
-        filter: { name: username, password },
+        filter: { name: username, password }
       });
       const user = data.data.find((item: any) => item.name === username);
       if (user !== undefined) {
@@ -78,7 +78,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       } catch (error) {
         await Promise.resolve();
       }
-    },
+    }
   };
 };
 

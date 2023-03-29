@@ -3,14 +3,14 @@ const users: User[] = [
     id: 1,
     name: 'jan',
     password: 'admin',
-    adminRights: true,
+    adminRights: true
   },
   {
     id: 2,
     name: 'jason',
     password: 'user',
-    adminRights: false,
-  },
+    adminRights: false
+  }
 ];
 
 export default users;

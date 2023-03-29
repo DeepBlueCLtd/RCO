@@ -14,7 +14,7 @@ const Footer = (): React.ReactElement => {
         zIndex: '20',
         left: '0',
         padding: '5px',
-        backgroundColor: '#1F3860',
+        backgroundColor: '#1F3860'
       }}
     >
       <span style={{ color: 'white', textAlign: 'left', marginLeft: '5px' }}>

@@ -4,7 +4,7 @@ import {
   CardActionArea,
   CardContent,
   type Theme,
-  Typography,
+  Typography
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import React, { useMemo } from 'react';
@@ -12,7 +12,7 @@ import {
   type CreatePathParams,
   ResourceContextProvider,
   useCreatePath,
-  useRedirect,
+  useRedirect
 } from 'react-admin';
 import { Outlet, useLocation } from 'react-router-dom';
 
@@ -29,9 +29,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       background: theme.palette.primary.light,
       color: theme.palette.common.white,
       '& p': {
-        fill: theme.palette.common.white,
-      },
-    },
+        fill: theme.palette.common.white
+      }
+    }
   },
   content: {
     height: '150px',
@@ -39,8 +39,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    textAlign: 'center',
-  },
+    textAlign: 'center'
+  }
 }));
 
 const CardWithNavigation = (
@@ -74,11 +74,11 @@ const routes = [
   { path: '/protective-marking', title: 'Protective Marking' },
   {
     path: '/protective-marking-authority',
-    title: 'Protective Marking Authority',
+    title: 'Protective Marking Authority'
   },
   { path: '/department', title: 'Department' },
   { path: '/vault', title: 'Vault' },
-  { path: '/platform-originator', title: 'Platform Originator' },
+  { path: '/platform-originator', title: 'Platform Originator' }
 ];
 
 export default function ReferenceData(): React.ReactElement {

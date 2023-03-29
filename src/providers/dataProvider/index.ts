@@ -4,7 +4,7 @@ import {
   type DeleteResult,
   type CreateResult,
   type UpdateResult,
-  type DataProvider,
+  type DataProvider
 } from 'react-admin';
 import constants from '../../constants';
 import { AuditType, trackEvent } from '../../utils/audit';
@@ -24,12 +24,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     'protective-marking-authority': getReferenceData(
       'Protective Marking Authority'
     ),
-    'platform-originator': getReferenceData('Platform Originator'),
+    'platform-originator': getReferenceData('Platform Originator')
   };
 
   const provider = await localForageDataProvider({
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-    defaultData,
+    defaultData
   });
   // in the localForage, the data doesn't get pushed to
   // indexedDB until it's modified. But, that means the app
@@ -60,7 +60,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       afterUpdate: async (record: UpdateResult<User>) => {
         await audit(AuditType.EDIT_USER, `User updated (${record.data.id})`);
         return record;
-      },
+      }
     },
     {
       resource: 'projects',
@@ -84,7 +84,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           `Project updated (${String(record.data.id)})`
         );
         return record;
-      },
-    },
+      }
+    }
   ]);
 };

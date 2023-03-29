@@ -24,8 +24,8 @@ export const trackEvent =
 	            user_id: data.id,
 	            activity_type: type,
 	            date_time: new Date().toISOString(),
-	            activity_detail: activityDetail,
-	          },
+	            activity_detail: activityDetail
+	          }
 	        });
 	      }
 	    } catch (error) {

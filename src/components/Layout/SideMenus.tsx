@@ -10,10 +10,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       background: theme.palette.primary.light,
       color: theme.palette.common.white,
       '& svg': {
-        fill: theme.palette.common.white,
-      },
-    },
-  },
+        fill: theme.palette.common.white
+      }
+    }
+  }
 }));
 
 export const SideMenus = (): React.ReactElement => {

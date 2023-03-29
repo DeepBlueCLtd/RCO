@@ -25,7 +25,7 @@ const projects = {
   create: ProjectCreate,
   edit: ProjectEdit,
   list: ProjectList,
-  show: ProjectShow,
+  show: ProjectShow
 };
 
 export default projects;

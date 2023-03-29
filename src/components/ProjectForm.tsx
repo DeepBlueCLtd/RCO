@@ -20,7 +20,7 @@ const schema = yup.object({
       }
     ),
   project_code: yup.string().required('Project code is a required field'),
-  remarks: yup.string(),
+  remarks: yup.string()
 });
 
 export default function ProjectForm(): React.ReactElement {
@@ -29,7 +29,7 @@ export default function ProjectForm(): React.ReactElement {
     start_date: '',
     end_date: '',
     project_code: '',
-    remarks: '',
+    remarks: ''
   };
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>

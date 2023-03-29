@@ -4,7 +4,7 @@ import { BooleanField, Show, TextField } from 'react-admin';
 
 const ValueField = ({
   label,
-  children,
+  children
 }: {
 	label: string;
 	children: any;

@@ -5,7 +5,7 @@ import {
   BooleanInput,
   Create,
   Edit,
-  Show,
+  Show
 } from 'react-admin';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -14,13 +14,13 @@ import PlatformList from './PlatformList';
 const schema = yup.object({
   name: yup.string().required(),
   password: yup.string().max(8).min(4),
-  adminRights: yup.boolean(),
+  adminRights: yup.boolean()
 });
 
 const PlatformForm = (): React.ReactElement => {
   const defaultValues = {
     name: '',
-    active: true,
+    active: true
   };
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
@@ -58,7 +58,7 @@ const platforms = {
   create: PlatformCreate,
   edit: PlatformEdit,
   list: PlatformList,
-  show: PlatformShow,
+  show: PlatformShow
 };
 
 export default platforms;
