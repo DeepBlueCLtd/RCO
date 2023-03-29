@@ -5,40 +5,40 @@ import {
   Loading,
   type DataProvider,
   Login
-} from 'react-admin';
-import { Route } from 'react-router-dom';
-import MyLayout from './components/Layout';
-import React, { Suspense, useEffect, useState } from 'react';
-import { Person, SettingsSuggest } from '@mui/icons-material';
-import { getDataProvider } from './providers/dataProvider';
-import autProvider from './providers/authProvider';
+} from 'react-admin'
+import { Route } from 'react-router-dom'
+import MyLayout from './components/Layout'
+import React, { Suspense, useEffect, useState } from 'react'
+import { Person, SettingsSuggest } from '@mui/icons-material'
+import { getDataProvider } from './providers/dataProvider'
+import autProvider from './providers/authProvider'
 
 // pages
-import Welcome from './pages/Welcome';
+import Welcome from './pages/Welcome'
 
 // resources
-import users from './resources/users';
-import audit from './resources/audit';
-import { rcoTheme } from './themes/rco-theme';
-import ReferenceData from './pages/ReferenceData';
-import ReferenceDataList from './components/ReferenceDataList';
-import projects from './resources/projects';
+import users from './resources/users'
+import audit from './resources/audit'
+import { rcoTheme } from './themes/rco-theme'
+import ReferenceData from './pages/ReferenceData'
+import ReferenceDataList from './components/ReferenceDataList'
+import projects from './resources/projects'
 
-const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />;
+const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
-  );
+  )
 
   const handleGetProvider = (): any => {
-    if (dataProvider !== undefined) return;
-    getDataProvider().then(setDataProvider).catch(console.log);
-  };
+    if (dataProvider !== undefined) return
+    getDataProvider().then(setDataProvider).catch(console.log)
+  }
 
-  useEffect(handleGetProvider, [dataProvider]);
+  useEffect(handleGetProvider, [dataProvider])
 
-  if (dataProvider === undefined) return LoadingPage;
+  if (dataProvider === undefined) return LoadingPage
 
   return (
     <Suspense fallback={LoadingPage}>
@@ -105,11 +105,11 @@ function App(): React.ReactElement {
             <CustomRoutes key="routes">
               <Route path="/" element={<Welcome />} />
             </CustomRoutes>
-          ];
+          ]
         }}
       </Admin>
     </Suspense>
-  );
+  )
 }
 
-export default App;
+export default App
