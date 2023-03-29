@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   BulkDeleteButton,
   CreateButton,
@@ -7,14 +7,14 @@ import {
   List,
   TextField,
   TopToolbar
-} from 'react-admin';
+} from 'react-admin'
 
 export default function ProjectList(): React.ReactElement {
   const ListActions = () => (
     <TopToolbar>
       <CreateButton />
     </TopToolbar>
-  );
+  )
 
   return (
     <List actions={<ListActions />} perPage={25}>
@@ -29,5 +29,5 @@ export default function ProjectList(): React.ReactElement {
         <TextField source="remarks" />
       </Datagrid>
     </List>
-  );
+  )
 }

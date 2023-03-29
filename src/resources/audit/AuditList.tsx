@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 import {
   Datagrid,
   List,
   TextField,
   ReferenceField,
   DateField
-} from 'react-admin';
+} from 'react-admin'
 
 export default function AuditList(): React.ReactElement {
   return (
@@ -23,5 +23,5 @@ export default function AuditList(): React.ReactElement {
         <TextField source="activity_detail" label="Activity Details" />
       </Datagrid>
     </List>
-  );
+  )
 }

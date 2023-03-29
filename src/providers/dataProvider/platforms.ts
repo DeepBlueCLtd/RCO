@@ -14,6 +14,6 @@ const platforms: Platform[] = [
     name: 'plat-3',
     active: true
   }
-];
+]
 
-export default platforms;
+export default platforms

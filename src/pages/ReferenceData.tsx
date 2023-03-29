@@ -5,16 +5,16 @@ import {
   CardContent,
   type Theme,
   Typography
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import React, { useMemo } from 'react';
+} from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import React, { useMemo } from 'react'
 import {
   type CreatePathParams,
   ResourceContextProvider,
   useCreatePath,
   useRedirect
-} from 'react-admin';
-import { Outlet, useLocation } from 'react-router-dom';
+} from 'react-admin'
+import { Outlet, useLocation } from 'react-router-dom'
 
 interface CardWithNavigationProps {
 	title: string;
@@ -41,20 +41,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     textAlign: 'center'
   }
-}));
+}))
 
 const CardWithNavigation = (
   props: CardWithNavigationProps
 ): React.ReactElement => {
-  const { path, title, type = 'list', active } = props;
-  const createPath = useCreatePath();
-  const styles = useStyles();
-  const redirect = useRedirect();
-  const to = createPath({ resource: `/reference-data${path}`, type });
+  const { path, title, type = 'list', active } = props
+  const createPath = useCreatePath()
+  const styles = useStyles()
+  const redirect = useRedirect()
+  const to = createPath({ resource: `/reference-data${path}`, type })
   return (
     <Card
       onClick={() => {
-        redirect(to);
+        redirect(to)
       }}
       className={`${styles.root} ${
         active !== undefined && active ? 'active' : ''
@@ -66,8 +66,8 @@ const CardWithNavigation = (
         </CardContent>
       </CardActionArea>
     </Card>
-  );
-};
+  )
+}
 
 const routes = [
   { path: '/organisation', title: 'Organisation' },
@@ -79,17 +79,17 @@ const routes = [
   { path: '/department', title: 'Department' },
   { path: '/vault', title: 'Vault' },
   { path: '/platform-originator', title: 'Platform Originator' }
-];
+]
 
 export default function ReferenceData(): React.ReactElement {
-  const location = useLocation();
+  const location = useLocation()
 
   const { resource, title } = useMemo(() => {
-    const items = location.pathname.split('/');
-    const resource = items.length > 2 ? items[2] : '';
-    const title = routes.find((route) => route.path === `/${resource}`)?.title;
-    return { resource, title };
-  }, [location]);
+    const items = location.pathname.split('/')
+    const resource = items.length > 2 ? items[2] : ''
+    const title = routes.find((route) => route.path === `/${resource}`)?.title
+    return { resource, title }
+  }, [location])
 
   return (
     <div>
@@ -116,5 +116,5 @@ export default function ReferenceData(): React.ReactElement {
         </>
       )}
     </div>
-  );
+  )
 }

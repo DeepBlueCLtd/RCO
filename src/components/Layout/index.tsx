@@ -1,8 +1,8 @@
-import React from 'react';
-import { Login } from '@mui/icons-material';
-import { Box, Icon } from '@mui/material';
-import { type Theme } from '@mui/system';
-import { makeStyles } from '@mui/styles';
+import React from 'react'
+import { Login } from '@mui/icons-material'
+import { Box, Icon } from '@mui/material'
+import { type Theme } from '@mui/system'
+import { makeStyles } from '@mui/styles'
 
 import {
   AppBar,
@@ -15,10 +15,10 @@ import {
   useRedirect,
   UserMenu,
   type UserMenuProps
-} from 'react-admin';
-import { SideMenus } from './SideMenus';
-import Footer from './Footer';
-import AppIcon from '../../assets/app-icon.png';
+} from 'react-admin'
+import { SideMenus } from './SideMenus'
+import Footer from './Footer'
+import AppIcon from '../../assets/app-icon.png'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -38,16 +38,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: 0,
     minWidth: '40px'
   }
-}));
+}))
 
 const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
-  const styles = useStyles();
-  const { authenticated } = useAuthState();
-  const redirect = useRedirect();
+  const styles = useStyles()
+  const { authenticated } = useAuthState()
+  const redirect = useRedirect()
 
   const handleLogin = (): void => {
-    redirect('/login');
-  };
+    redirect('/login')
+  }
 
   return (
     <UserMenu {...props}>
@@ -65,8 +65,8 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
       )}
       <Logout />
     </UserMenu>
-  );
-};
+  )
+}
 
 const MyAppBar = (props: AppBarProps): React.ReactElement => (
   <AppBar {...props} userMenu={<MyUserMenu />}>
@@ -94,13 +94,13 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => (
 		[RCO]
     <Box flex={1} />
   </AppBar>
-);
+)
 
 const MyLayout = (props: LayoutProps): React.ReactElement => (
   <Layout {...props} appBar={MyAppBar} menu={SideMenus}>
     {props.children}
     <Footer />
   </Layout>
-);
+)
 
-export default MyLayout;
+export default MyLayout

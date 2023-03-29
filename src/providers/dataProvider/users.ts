@@ -11,6 +11,6 @@ const users: User[] = [
     password: 'user',
     adminRights: false
   }
-];
+]
 
-export default users;
+export default users

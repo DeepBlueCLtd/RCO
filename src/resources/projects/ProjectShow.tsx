@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
-import { DateField, Show, TextField } from 'react-admin';
+import React from 'react'
+import { Card, CardContent, Typography } from '@mui/material'
+import { DateField, Show, TextField } from 'react-admin'
 
 const ValueField = ({
   label,
@@ -13,8 +13,8 @@ const ValueField = ({
     <Typography fontWeight="bold">
       {label}: {children}
     </Typography>
-  );
-};
+  )
+}
 
 export default function ProjectShow(): React.ReactElement {
   return (
@@ -42,5 +42,5 @@ export default function ProjectShow(): React.ReactElement {
         </CardContent>
       </Card>
     </Show>
-  );
+  )
 }

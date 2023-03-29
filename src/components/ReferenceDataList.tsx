@@ -1,5 +1,5 @@
-import React from 'react';
-import { Datagrid, FunctionField, List } from 'react-admin';
+import React from 'react'
+import { Datagrid, FunctionField, List } from 'react-admin'
 
 export default function ReferenceDataList(): React.ReactElement {
   return (
@@ -11,5 +11,5 @@ export default function ReferenceDataList(): React.ReactElement {
         />
       </Datagrid>
     </List>
-  );
+  )
 }

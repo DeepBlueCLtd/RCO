@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   BooleanField,
   BulkDeleteButton,
@@ -9,14 +9,14 @@ import {
   List,
   TextField,
   TopToolbar
-} from 'react-admin';
+} from 'react-admin'
 
 export default function UserList(): React.ReactElement {
   const ListActions = () => (
     <TopToolbar>
       <CreateButton />
     </TopToolbar>
-  );
+  )
 
   return (
     <List actions={<ListActions />} perPage={25}>
@@ -31,5 +31,5 @@ export default function UserList(): React.ReactElement {
         <DeleteButton mutationMode="pessimistic" />
       </Datagrid>
     </List>
-  );
+  )
 }

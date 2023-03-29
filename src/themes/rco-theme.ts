@@ -1,4 +1,4 @@
-import { defaultTheme } from 'react-admin';
+import { defaultTheme } from 'react-admin'
 
 export const rcoTheme = {
   ...defaultTheme,
@@ -10,4 +10,4 @@ export const rcoTheme = {
       main: '#1F3860'
     }
   }
-};
+}

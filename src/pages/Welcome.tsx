@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import AppIcon from '../assets/rco_transparent.png';
+import React from 'react'
+import { Box, Typography } from '@mui/material'
+import AppIcon from '../assets/rco_transparent.png'
 
 export default function Welcome(): React.ReactElement {
   return (
@@ -23,5 +23,5 @@ export default function Welcome(): React.ReactElement {
         <Typography variant="h1">&nbsp;Welcome to RCO</Typography>
       </Box>
     </>
-  );
+  )
 }

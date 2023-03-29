@@ -1,9 +1,9 @@
-import React from 'react';
-import { SimpleForm, TextInput, DateInput } from 'react-admin';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import dayjs from 'dayjs';
-import { Box } from '@mui/material';
+import React from 'react'
+import { SimpleForm, TextInput, DateInput } from 'react-admin'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import dayjs from 'dayjs'
+import { Box } from '@mui/material'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
@@ -16,12 +16,12 @@ const schema = yup.object({
       'end_date',
       'End date must be greater than start date',
       function (value) {
-        return dayjs(value).diff(this.parent.start_date) > 0;
+        return dayjs(value).diff(this.parent.start_date) > 0
       }
     ),
   project_code: yup.string().required('Project code is a required field'),
   remarks: yup.string()
-});
+})
 
 export default function ProjectForm(): React.ReactElement {
   const defaultValues = {
@@ -30,7 +30,7 @@ export default function ProjectForm(): React.ReactElement {
     end_date: '',
     project_code: '',
     remarks: ''
-  };
+  }
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
       <TextInput source="name" variant="outlined" sx={{ width: '100%' }} />
@@ -50,5 +50,5 @@ export default function ProjectForm(): React.ReactElement {
         sx={{ width: '100%' }}
       />
     </SimpleForm>
-  );
+  )
 }

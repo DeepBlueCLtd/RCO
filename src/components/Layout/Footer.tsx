@@ -1,9 +1,9 @@
-import React from 'react';
-import preval from 'preval.macro';
+import React from 'react'
+import preval from 'preval.macro'
 
 const Footer = (): React.ReactElement => {
-  const buildDate = preval`module.exports = new Date().toISOString().slice(0, 19).replace('T', ' ')`;
-  const trimmedAppBuildDate = buildDate.substring(0, buildDate.length - 3);
+  const buildDate = preval`module.exports = new Date().toISOString().slice(0, 19).replace('T', ' ')`
+  const trimmedAppBuildDate = buildDate.substring(0, buildDate.length - 3)
 
   return (
     <div
@@ -21,7 +21,7 @@ const Footer = (): React.ReactElement => {
         {trimmedAppBuildDate}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
