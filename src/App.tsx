@@ -59,9 +59,15 @@ function App(): React.ReactElement {
 										key="users"
 										icon={Person}
 										name="users"
+										recordRepresentation="name"
 										{...users}
 									/>,
-									<Resource key="audit" name="audit" {...audit} />,
+									<Resource
+										key="audit"
+										options={{ label: 'Audit Log' }}
+										name="audit"
+										{...audit}
+									/>,
 									<CustomRoutes key="routes">
 										<Route path="/reference-data" element={<ReferenceData />}>
 											<Route
