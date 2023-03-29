@@ -54,45 +54,45 @@ function App(): React.ReactElement {
           return [
             ...(permissions === 'admin'
               ? [
-                <Resource
-                  key='users'
-                  icon={Person}
-                  name='users'
-                  recordRepresentation='name'
-                  {...users}
-                />,
-                <Resource
-                  key='audit'
-                  options={{ label: 'Audit Log' }}
-                  name='audit'
-                  {...audit}
-                />,
-                <CustomRoutes key='routes'>
-                  <Route path='/reference-data' element={<ReferenceData />}>
-                    <Route
-                      path='protective-marking'
-                      element={<ReferenceDataList />}
-                    />
-                    <Route
-                      path='protective-marking-authority'
-                      element={<ReferenceDataList />}
-                    />
-                    <Route
-                      path='department'
-                      element={<ReferenceDataList />}
-                    />
-                    <Route path='vault' element={<ReferenceDataList />} />
-                    <Route
-                      path='platform-originator'
-                      element={<ReferenceDataList />}
-                    />
-                    <Route
-                      path='organisation'
-                      element={<ReferenceDataList />}
-                    />
-                  </Route>
-                </CustomRoutes>
-              ]
+                  <Resource
+                    key='users'
+                    icon={Person}
+                    name='users'
+                    recordRepresentation='name'
+                    {...users}
+                  />,
+                  <Resource
+                    key='audit'
+                    options={{ label: 'Audit Log' }}
+                    name='audit'
+                    {...audit}
+                  />,
+                  <CustomRoutes key='routes'>
+                    <Route path='/reference-data' element={<ReferenceData />}>
+                      <Route
+                        path='protective-marking'
+                        element={<ReferenceDataList />}
+                      />
+                      <Route
+                        path='protective-marking-authority'
+                        element={<ReferenceDataList />}
+                      />
+                      <Route
+                        path='department'
+                        element={<ReferenceDataList />}
+                      />
+                      <Route path='vault' element={<ReferenceDataList />} />
+                      <Route
+                        path='platform-originator'
+                        element={<ReferenceDataList />}
+                      />
+                      <Route
+                        path='organisation'
+                        element={<ReferenceDataList />}
+                      />
+                    </Route>
+                  </CustomRoutes>
+                ]
               : []),
             <Resource
               key='projects'
