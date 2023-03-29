@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react'
 
-const AuditList = React.lazy(async () => await import('./AuditList'));
+const AuditList = React.lazy(async () => await import('./AuditList'))
 
 const audit = {
-	list: AuditList,
-};
+  list: AuditList
+}
 
-export default audit;
+export default audit
