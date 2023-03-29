@@ -18,7 +18,6 @@
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
     "quotes": [2, "single"],
-    "indent": [1, 2],
     "comma-dangle": ["error", "never"],
     "semi": [2, "never"]
   },
