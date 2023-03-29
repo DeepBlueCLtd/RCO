@@ -20,7 +20,7 @@ const schema = yup.object({
       }
     ),
   project_code: yup.string().required('Project code is a required field'),
-  remarks: yup.string().required('Remark is a required field'),
+  remarks: yup.string(),
 });
 
 export default function ProjectForm(): React.ReactElement {
