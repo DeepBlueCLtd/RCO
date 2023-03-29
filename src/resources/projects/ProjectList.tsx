@@ -20,8 +20,7 @@ export default function ProjectList(): React.ReactElement {
     <List actions={<ListActions />} perPage={25}>
       <Datagrid
         rowClick='show'
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}
-      >
+        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
         <DateField source='start_date' />
         <DateField source='end_date' />

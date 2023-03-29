@@ -78,8 +78,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => (
         height: '35px',
         display: 'flex',
         justifyContent: 'center'
-      }}
-    >
+      }}>
       <img
         src={AppIcon}
         style={{

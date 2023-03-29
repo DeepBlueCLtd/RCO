@@ -15,8 +15,7 @@ const Footer = (): React.ReactElement => {
         left: '0',
         padding: '5px',
         backgroundColor: '#1F3860'
-      }}
-    >
+      }}>
       <span style={{ color: 'white', textAlign: 'left', marginLeft: '5px' }}>
         {trimmedAppBuildDate}
       </span>

@@ -14,8 +14,7 @@ export default function AuditList(): React.ReactElement {
       sort={{
         field: 'date_time',
         order: 'DESC'
-      }}
-    >
+      }}>
       <Datagrid bulkActionButtons={false}>
         <ReferenceField source='user_id' reference='users' />
         <DateField source='date_time' label='Date Time' showTime />;

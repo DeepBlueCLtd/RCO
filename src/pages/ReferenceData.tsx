@@ -58,8 +58,7 @@ const CardWithNavigation = (
       }}
       className={`${styles.root} ${
         active !== undefined && active ? 'active' : ''
-      }`}
-    >
+      }`}>
       <CardActionArea>
         <CardContent className={styles.content}>
           <Typography>{title}</Typography>

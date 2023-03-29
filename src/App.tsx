@@ -49,8 +49,7 @@ function App(): React.ReactElement {
         layout={MyLayout}
         theme={rcoTheme}
         disableTelemetry
-        requireAuth
-      >
+        requireAuth>
         {(permissions) => {
           return [
             ...(permissions === 'admin'

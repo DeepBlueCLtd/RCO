@@ -11,8 +11,7 @@ export default function Welcome(): React.ReactElement {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100vh'
-        }}
-      >
+        }}>
         <img
           src={AppIcon}
           style={{

@@ -22,8 +22,7 @@ export default function UserList(): React.ReactElement {
     <List actions={<ListActions />} perPage={25}>
       <Datagrid
         rowClick='show'
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}
-      >
+        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
         <TextField source='password' />
         <BooleanField source='adminRights' label='Admin Rights' />

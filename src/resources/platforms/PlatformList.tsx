@@ -22,8 +22,7 @@ export default function PlatformList(): React.ReactElement {
     <List actions={<ListActions />} perPage={25}>
       <Datagrid
         rowClick='show'
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}
-      >
+        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
         <BooleanField source='active' label='Active Platform' />
         <EditButton />
