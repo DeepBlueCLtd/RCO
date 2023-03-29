@@ -24,7 +24,7 @@ import ReferenceData from './pages/ReferenceData'
 import ReferenceDataList from './components/ReferenceDataList'
 import projects from './resources/projects'
 
-const LoadingPage = <Loading loadingPrimary="Loading" loadingSecondary="" />
+const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
@@ -56,54 +56,54 @@ function App(): React.ReactElement {
             ...(permissions === 'admin'
               ? [
                 <Resource
-                  key="users"
+                  key='users'
                   icon={Person}
-                  name="users"
-                  recordRepresentation="name"
+                  name='users'
+                  recordRepresentation='name'
                   {...users}
                 />,
                 <Resource
-                  key="audit"
+                  key='audit'
                   options={{ label: 'Audit Log' }}
-                  name="audit"
+                  name='audit'
                   {...audit}
                 />,
-                <CustomRoutes key="routes">
-                  <Route path="/reference-data" element={<ReferenceData />}>
+                <CustomRoutes key='routes'>
+                  <Route path='/reference-data' element={<ReferenceData />}>
                     <Route
-                      path="protective-marking"
+                      path='protective-marking'
                       element={<ReferenceDataList />}
                     />
                     <Route
-                      path="protective-marking-authority"
+                      path='protective-marking-authority'
                       element={<ReferenceDataList />}
                     />
                     <Route
-                      path="department"
+                      path='department'
                       element={<ReferenceDataList />}
                     />
-                    <Route path="vault" element={<ReferenceDataList />} />
+                    <Route path='vault' element={<ReferenceDataList />} />
                     <Route
-                      path="platform-originator"
+                      path='platform-originator'
                       element={<ReferenceDataList />}
                     />
                     <Route
-                      path="organisation"
+                      path='organisation'
                       element={<ReferenceDataList />}
                     />
                   </Route>
                 </CustomRoutes>
-							  ]
+              ]
               : []),
             <Resource
-              key="projects"
+              key='projects'
               icon={SettingsSuggest}
-              name="projects"
+              name='projects'
               {...projects}
             />,
 
-            <CustomRoutes key="routes">
-              <Route path="/" element={<Welcome />} />
+            <CustomRoutes key='routes'>
+              <Route path='/' element={<Welcome />} />
             </CustomRoutes>
           ]
         }}

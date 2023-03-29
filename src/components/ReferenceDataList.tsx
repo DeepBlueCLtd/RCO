@@ -7,7 +7,7 @@ export default function ReferenceDataList(): React.ReactElement {
       <Datagrid>
         <FunctionField
           render={({ id, name }: any) => `${name as string}-${id as number}`}
-          label="Name"
+          label='Name'
         />
       </Datagrid>
     </List>

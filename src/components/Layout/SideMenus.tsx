@@ -20,13 +20,13 @@ export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
   return (
     <Menu className={styles.root}>
-      <Menu.ResourceItem name="users" />
-      <Menu.ResourceItem name="audit" />
-      <Menu.ResourceItem name="platforms" />
-      <Menu.ResourceItem name="projects" />
+      <Menu.ResourceItem name='users' />
+      <Menu.ResourceItem name='audit' />
+      <Menu.ResourceItem name='platforms' />
+      <Menu.ResourceItem name='projects' />
       <Menu.Item
-        to="/reference-data"
-        primaryText="Reference Data"
+        to='/reference-data'
+        primaryText='Reference Data'
         leftIcon={<AddLink />}
       />
     </Menu>

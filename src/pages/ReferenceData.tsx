@@ -17,10 +17,10 @@ import {
 import { Outlet, useLocation } from 'react-router-dom'
 
 interface CardWithNavigationProps {
-	title: string;
-	path: CreatePathParams['resource'];
-	type?: CreatePathParams['type'];
-	active?: boolean;
+  title: string
+  path: CreatePathParams['resource']
+  type?: CreatePathParams['type']
+  active?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -93,7 +93,7 @@ export default function ReferenceData(): React.ReactElement {
 
   return (
     <div>
-      <Box display="flex" flexWrap="wrap" gap="20px" padding="20px">
+      <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
         {routes.map((route, index) => (
           <CardWithNavigation
             key={index}
@@ -106,7 +106,7 @@ export default function ReferenceData(): React.ReactElement {
       {resource.length > 0 && (
         <>
           <Box my={5}>
-            <Typography textAlign="center" variant="h4">
+            <Typography textAlign='center' variant='h4'>
               {title}
             </Typography>
             <ResourceContextProvider value={resource}>

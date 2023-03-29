@@ -17,9 +17,9 @@ export default function UserForm(): React.ReactElement {
   }
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
-      <TextInput source="name" variant="outlined" sx={{ width: '100%' }} />
-      <TextInput source="password" variant="outlined" sx={{ width: '100%' }} />
-      <BooleanInput source="adminRights" />
+      <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
+      <TextInput source='password' variant='outlined' sx={{ width: '100%' }} />
+      <BooleanInput source='adminRights' />
     </SimpleForm>
   )
 }

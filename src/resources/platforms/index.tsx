@@ -24,8 +24,8 @@ const PlatformForm = (): React.ReactElement => {
   }
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
-      <TextInput source="name" variant="outlined" sx={{ width: '100%' }} />
-      <BooleanInput source="active" />
+      <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
+      <BooleanInput source='active' />
     </SimpleForm>
   )
 }

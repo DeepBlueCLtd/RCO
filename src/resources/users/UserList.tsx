@@ -21,14 +21,14 @@ export default function UserList(): React.ReactElement {
   return (
     <List actions={<ListActions />} perPage={25}>
       <Datagrid
-        rowClick="show"
-        bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
+        rowClick='show'
+        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}
       >
-        <TextField source="name" />
-        <TextField source="password" />
-        <BooleanField source="adminRights" label="Admin Rights" />
+        <TextField source='name' />
+        <TextField source='password' />
+        <BooleanField source='adminRights' label='Admin Rights' />
         <EditButton />
-        <DeleteButton mutationMode="pessimistic" />
+        <DeleteButton mutationMode='pessimistic' />
       </Datagrid>
     </List>
   )

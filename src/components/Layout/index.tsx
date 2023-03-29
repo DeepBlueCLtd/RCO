@@ -60,7 +60,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
               <Login />
             </Icon>
           }
-          label="Login"
+          label='Login'
         />
       )}
       <Logout />
@@ -91,7 +91,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => (
       />
     </span>
     <Box flex={1} />
-		[RCO]
+    [RCO]
     <Box flex={1} />
   </AppBar>
 )

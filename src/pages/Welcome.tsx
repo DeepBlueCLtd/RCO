@@ -20,7 +20,7 @@ export default function Welcome(): React.ReactElement {
             height: '228px'
           }}
         />
-        <Typography variant="h1">&nbsp;Welcome to RCO</Typography>
+        <Typography variant='h1'>&nbsp;Welcome to RCO</Typography>
       </Box>
     </>
   )
