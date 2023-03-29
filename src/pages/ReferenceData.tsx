@@ -50,13 +50,15 @@ const CardWithNavigation = (
   const createPath = useCreatePath()
   const styles = useStyles()
   const redirect = useRedirect()
-  const to = createPath({ resource: `/reference-data${path}`, type })
+  const pathStr: string = path
+  const to = createPath({ resource: `/reference-data${pathStr}`, type })
+  const rootStyle: string = styles.root
   return (
     <Card
       onClick={() => {
         redirect(to)
       }}
-      className={`${styles.root} ${
+      className={`${rootStyle} ${
         active !== undefined && active ? 'active' : ''
       }`}>
       <CardActionArea>
@@ -85,7 +87,7 @@ export default function ReferenceData(): React.ReactElement {
 
   const { resource, title } = useMemo(() => {
     const items = location.pathname.split('/')
-    const resource = items.length > 2 ? items[2] : ''
+    const resource: string = items.length > 2 ? items[2] : ''
     const title = routes.find((route) => route.path === `/${resource}`)?.title
     return { resource, title }
   }, [location])
