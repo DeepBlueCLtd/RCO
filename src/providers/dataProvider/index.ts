@@ -11,6 +11,7 @@ import { AuditType, trackEvent } from '../../utils/audit';
 import platforms from './platforms';
 import users from './users';
 import { getReferenceData } from './reference-data';
+import localForage from 'localforage';
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
 	const defaultData: Record<string, any> = {
@@ -30,6 +31,19 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 		prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
 		defaultData,
 	});
+	// in the localForage, the data doesn't get pushed to
+	// indexedDB until it's modified. But, that means the app
+	// loses the default values on restart (since the database
+	// doesn't have ALL of the tables).  So, push the data to localForage
+	await Promise.all(
+		Object.keys(defaultData).map(async (key) => {
+			const values = defaultData[key];
+			await localForage.setItem(
+				`${constants.LOCAL_STORAGE_DB_KEY}${key}`,
+				values
+			);
+		})
+	);
 	const providerWithCustomMethods = { ...provider };
 	const audit = trackEvent(providerWithCustomMethods);
 	return withLifecycleCallbacks(providerWithCustomMethods, [
