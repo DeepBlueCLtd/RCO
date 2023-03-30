@@ -23,7 +23,7 @@ export default function BatchList(): React.ReactElement {
     <List perPage={25} actions={<ListActions />}>
       <DatagridConfigurable>
         <TextField source='id' />
-        <TextField source='name' />
+        <TextField label='Reference' source='batch_number' />
         <TextField source='year_of_receipt' label='Year of receipt' />
         <ReferenceField source='vault' reference='vault' label='Vault' />
         <ReferenceField
