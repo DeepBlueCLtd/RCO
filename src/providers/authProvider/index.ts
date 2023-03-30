@@ -35,7 +35,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       })
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
-        if (await bcrypt.compare(password, user.password)) {
+        const compareResult: boolean = await bcrypt.compare(
+          password,
+          user.password
+        )
+        if (compareResult) {
           const clonedUser = { ...user }
           const id: number = clonedUser.id
           const idVal: string = String(id)
