@@ -95,8 +95,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         try {
           const { data } = record
           const { id, year_of_receipt: year } = data
-
-          const batchNumber = `${year}/${id}`
+          const yearVal: string = year
+          const idVal: string = (id + 1).toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+          })
+          const batchNumber = `V${idVal}/${yearVal}`
 
           await dataProvider.update<Batch>('batches', {
             id,
