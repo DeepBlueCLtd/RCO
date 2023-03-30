@@ -24,7 +24,10 @@
     "@mui/material": "^5.11.13",
     "@mui/styles": "^5.11.13",
     "@mui/system": "^5.11.14",
+    "@types/bcryptjs": "^2.4.2",
     "@types/preval.macro": "^3.0.0",
+    "@vitejs/plugin-react": "^3.1.0",
+    "bcryptjs": "^2.4.3",
     "dayjs": "^1.11.7",
     "preval.macro": "^5.0.0",
     "ra-data-local-forage": "^4.8.4",
@@ -32,9 +35,8 @@
     "react-admin": "^4.8.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.9.0",
-    "vite-plugin-babel-macros": "^1.0.6",
     "vite": "^4.2.0",
-    "@vitejs/plugin-react": "^3.1.0",
+    "vite-plugin-babel-macros": "^1.0.6",
     "yup": "^1.0.2"
   },
   "devDependencies": {

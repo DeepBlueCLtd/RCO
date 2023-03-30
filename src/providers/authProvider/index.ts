@@ -1,6 +1,7 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
+import bcrypt from 'bcryptjs'
 
 export const getToken = (): string | null => {
   return localStorage.getItem(constants.TOKEN_KEY)
@@ -21,11 +22,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       const data = await dataProvider.getList('users', {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
-        filter: { name: username, password }
+        filter: { name: username }
       })
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
-        if (user.password === password) {
+        if (await bcrypt.compare(password, user.password)) {
           const token = JSON.stringify(user)
           setToken(token)
           await audit(AuditType.LOGIN, 'Logged in')

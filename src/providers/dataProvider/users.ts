@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 const users: User[] = [
   {
     id: 1,
@@ -12,5 +13,10 @@ const users: User[] = [
     adminRights: false
   }
 ]
+
+export const encryptUserPassword = async (user: User) => {
+  const hashedPassword = await bcrypt.hash(user.password, 10)
+  return { ...user, password: hashedPassword }
+}
 
 export default users

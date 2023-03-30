@@ -9,13 +9,12 @@ import {
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import platforms from './platforms'
-import users from './users'
+import users, { encryptUserPassword } from './users'
 import { getReferenceData } from './reference-data'
 import localForage from 'localforage'
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const defaultData: Record<string, any> = {
-    users,
     platforms,
     organisation: getReferenceData('Organisation'),
     department: getReferenceData('Department'),
@@ -31,6 +30,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
     defaultData
   })
+
+  const encryptedUsers = await Promise.all(users.map(encryptUserPassword))
+  await localForage.setItem(
+    `${constants.LOCAL_STORAGE_DB_KEY}users`,
+    encryptedUsers
+  )
   // in the localForage, the data doesn't get pushed to
   // indexedDB until it's modified. But, that means the app
   // loses the default values on restart (since the database
