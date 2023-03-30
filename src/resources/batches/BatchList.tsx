@@ -19,7 +19,8 @@ const ListActions = () => (
 const omitColumns: string[] = [
   'protective_marking_authority',
   'maximum_protective_marking',
-  'remarks'
+  'remarks',
+  'id'
 ]
 
 export default function BatchList(): React.ReactElement {
