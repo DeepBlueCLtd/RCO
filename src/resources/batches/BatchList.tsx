@@ -3,8 +3,6 @@ import {
   List,
   TextField,
   ReferenceField,
-  EditButton,
-  DeleteButton,
   DatagridConfigurable,
   TopToolbar,
   SelectColumnsButton,
@@ -38,13 +36,18 @@ const StockReferenceField = (
   )
 }
 
+const omitColumns: string[] = [
+  'protective_marking_authority',
+  'maximum_protective_marking',
+  'remarks'
+]
+
 export default function BatchList(): React.ReactElement {
   return (
     <List perPage={25} actions={<ListActions />}>
-      <DatagridConfigurable>
+      <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
         <TextField label='Reference' source='batch_number' />
-        <TextField source='year_of_receipt' label='Year of receipt' />
         <StockReferenceField source='department' label='Department' />
         <StockReferenceField
           source='project'
@@ -68,8 +71,6 @@ export default function BatchList(): React.ReactElement {
           label='Maximum protective marking'
         />
         <TextField source='remarks' />
-        <EditButton />
-        <DeleteButton />
       </DatagridConfigurable>
     </List>
   )
