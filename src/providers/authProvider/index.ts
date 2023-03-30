@@ -36,8 +36,9 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       if (user !== undefined) {
         if (user.password === password) {
           const id: number = user.id
-          const salt = generateSalt()
-          user.id = encryptData(`${id}${salt}`)
+          const salt: string = generateSalt()
+          const idStr: string = String(id)
+          user.id = encryptData(`${idStr}${salt}`)
           user.salt = salt
           const token = JSON.stringify(user)
           setToken(token)
