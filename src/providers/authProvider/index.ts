@@ -2,9 +2,18 @@ import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import bcrypt from 'bcryptjs'
-
+import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
 export const getToken = (): string | null => {
-  return localStorage.getItem(constants.TOKEN_KEY)
+  const JsonUser = localStorage.getItem(constants.TOKEN_KEY)
+  if (JsonUser !== null) {
+    const user = JSON.parse(JsonUser) as User & { salt: string }
+    const decryptedData = decryptData(`${user.id}${user.salt}`)
+    user.id = decryptedData.substring(
+      0,
+      decryptedData.length - user.salt.length
+    )
+    return JSON.stringify(user)
+  } else return null
 }
 
 const setToken = (token: string): void => {
@@ -27,7 +36,13 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
         if (await bcrypt.compare(password, user.password)) {
-          const token = JSON.stringify(user)
+          const clonedUser = { ...user }
+          const id: number = clonedUser.id
+          const idVal: string = String(id)
+          const salt: string = generateSalt()
+          clonedUser.id = encryptData(`${idVal}${salt}`)
+          clonedUser.salt = salt
+          const token = JSON.stringify(clonedUser)
           setToken(token)
           await audit(AuditType.LOGIN, 'Logged in')
           return await Promise.resolve(data)
