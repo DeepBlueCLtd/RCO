@@ -2,12 +2,12 @@ import React from 'react'
 import {
   List,
   TextField,
-  ReferenceField,
   DatagridConfigurable,
   TopToolbar,
   SelectColumnsButton,
   CreateButton
 } from 'react-admin'
+import SourceField from '../../components/SourceField'
 
 const ListActions = () => (
   <TopToolbar>
@@ -15,26 +15,6 @@ const ListActions = () => (
     <SelectColumnsButton />
   </TopToolbar>
 )
-
-interface ReferenceFieldProps {
-  source: string
-  label: string
-  reference?: string
-}
-
-const StockReferenceField = (
-  props: ReferenceFieldProps
-): React.ReactElement => {
-  const { source, label, reference } = props
-  return (
-    <ReferenceField
-      source={source}
-      reference={reference !== undefined ? reference : source}
-      label={label}>
-      <TextField source='name' />
-    </ReferenceField>
-  )
-}
 
 const omitColumns: string[] = [
   'protective_marking_authority',
@@ -48,24 +28,16 @@ export default function BatchList(): React.ReactElement {
       <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
         <TextField label='Reference' source='batch_number' />
-        <StockReferenceField source='department' label='Department' />
-        <StockReferenceField
-          source='project'
-          reference='projects'
-          label='Project'
-        />
-        <StockReferenceField
-          source='platform'
-          reference='platforms'
-          label='Platform'
-        />
-        <StockReferenceField source='organisation' label='Organisation' />
-        <StockReferenceField
+        <SourceField source='department' label='Department' />
+        <SourceField source='project' reference='projects' label='Project' />
+        <SourceField source='platform' reference='platforms' label='Platform' />
+        <SourceField source='organisation' label='Organisation' />
+        <SourceField
           source='protective_marking_authority'
           reference='protective-marking-authority'
           label='Protective marking authorityg'
         />
-        <StockReferenceField
+        <SourceField
           source='maximum_protective_marking'
           reference='protective-marking'
           label='Maximum protective marking'
