@@ -1,17 +1,22 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
-import { decryptData, encryptData } from '../../utils/ecnryption'
-const salt =
-  (import.meta.env.SALT as string) ?? '6d090796-ecdf-11ea-adc1-0242ac112345'
+import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
 export const getToken = (): string | null => {
-  const user = decryptData(localStorage.getItem(constants.TOKEN_KEY), salt)
-  return user
+  const JsonUser = localStorage.getItem(constants.TOKEN_KEY)
+  if (JsonUser !== null) {
+    const user = JSON.parse(JsonUser) as User & { salt: string }
+    const decryptedData = decryptData(`${user.id}${user.salt}`)
+    user.id = decryptedData.substring(
+      0,
+      decryptedData.length - user.salt.length
+    )
+    return JSON.stringify(user)
+  } else return null
 }
 
 const setToken = (token: string): void => {
-  const secureToken = encryptData(token, salt)
-  localStorage.setItem(constants.TOKEN_KEY, secureToken)
+  localStorage.setItem(constants.TOKEN_KEY, token)
 }
 
 const removeToken = (): void => {
@@ -30,6 +35,10 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
         if (user.password === password) {
+          const id: number = user.id
+          const salt = generateSalt()
+          user.id = encryptData(`${id}${salt}`)
+          user.salt = salt
           const token = JSON.stringify(user)
           setToken(token)
           await audit(AuditType.LOGIN, 'Logged in')
