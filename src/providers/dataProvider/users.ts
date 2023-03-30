@@ -1,7 +1,7 @@
 const users: User[] = [
   {
     id: 1,
-    name: 'jan',
+    name: 'ian',
     password: 'admin',
     adminRights: true
   },
