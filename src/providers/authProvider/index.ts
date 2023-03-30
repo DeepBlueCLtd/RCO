@@ -38,7 +38,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           const clonedUser = { ...user }
           const id: number = clonedUser.id
           const idVal: string = String(id)
-          const salt = generateSalt()
+          const salt: string = generateSalt()
           clonedUser.id = encryptData(`${idVal}${salt}`)
           clonedUser.salt = salt
           const token = JSON.stringify(clonedUser)
