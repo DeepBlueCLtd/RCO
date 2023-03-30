@@ -7,7 +7,7 @@ import {
 } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import dayjs from 'dayjs'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { type TextInputProps, useInput } from 'react-admin'
 
 type Props = Omit<TextInputProps, 'format'> & {
@@ -35,7 +35,7 @@ export default function DatePicker(props: Props) {
   const styles = useStyles()
 
   const value: Date | null = useMemo(() => {
-    if (typeof field.value === 'string' && field.value === '') return null
+    if (typeof field.value !== 'string' || field.value === '') return null
 
     if (typeof format === 'undefined') {
       return new Date(field.value)

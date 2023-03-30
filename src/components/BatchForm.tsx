@@ -21,6 +21,7 @@ const schema = yup.object({
 const BatchForm = (): React.ReactElement => {
   const defaultValues = {
     name: '',
+    batch_number: '',
     vault: '',
     year_of_receipt: '',
     department: '',
@@ -32,7 +33,7 @@ const BatchForm = (): React.ReactElement => {
     remarks: ''
   }
 
-  const optionsText = (value: Batch) => `${value.name}-${value.id}`
+  const optionsText = (value: Batch) => value.name
 
   const sx = { width: '100%' }
 

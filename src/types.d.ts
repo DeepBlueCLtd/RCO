@@ -29,7 +29,8 @@ interface Project {
 
 interface Batch {
   id: number
-  name: ''
+  name: string
+  batch_number: string
   vault: number
   year_of_receipt: string
   department: number

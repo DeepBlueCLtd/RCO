@@ -85,6 +85,30 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         )
         return record
       }
+    },
+    {
+      resource: 'batches',
+      afterCreate: async (
+        record: CreateResult<Batch>,
+        dataProvider: DataProvider
+      ) => {
+        try {
+          const { data } = record
+          const { id, year_of_receipt: year } = data
+
+          const batchNumber = `${year}/${id}`
+
+          await dataProvider.update<Batch>('batches', {
+            id,
+            previousData: data,
+            data: { batch_number: batchNumber }
+          })
+          return record
+        } catch (error) {
+          console.log({ error })
+          return record
+        }
+      }
     }
   ])
 }
