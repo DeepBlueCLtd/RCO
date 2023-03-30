@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js'
-const key = import.meta.env.VITE_SALT
+const key: string =
+  import.meta.env.VITE_SALT ?? '68adsqf-poac-154s-adqkc-05s8q2c5a65s'
 
 export const encryptData = (data: string) =>
   CryptoJS.AES.encrypt(JSON.stringify(data), key).toString()

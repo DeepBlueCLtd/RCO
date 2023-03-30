@@ -35,12 +35,12 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
         if (user.password === password) {
-          const id: number = user.id
-          const salt: string = generateSalt()
-          const idStr: string = String(id)
-          user.id = encryptData(`${idStr}${salt}`)
-          user.salt = salt
-          const token = JSON.stringify(user)
+          const clonedUser = { ...user }
+          const id: number = clonedUser.id
+          const salt = generateSalt()
+          clonedUser.id = encryptData(`${id}${salt}`)
+          clonedUser.salt = salt
+          const token = JSON.stringify(clonedUser)
           setToken(token)
           await audit(AuditType.LOGIN, 'Logged in')
           return await Promise.resolve(data)
