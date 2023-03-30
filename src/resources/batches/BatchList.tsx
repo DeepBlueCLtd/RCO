@@ -25,7 +25,6 @@ export default function BatchList(): React.ReactElement {
         <TextField source='id' />
         <TextField label='Reference' source='batch_number' />
         <TextField source='year_of_receipt' label='Year of receipt' />
-        <ReferenceField source='vault' reference='vault' label='Vault' />
         <ReferenceField
           source='department'
           reference='department'

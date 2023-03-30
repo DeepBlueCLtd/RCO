@@ -6,8 +6,6 @@ import * as yup from 'yup'
 import DatePicker from './DatePicker'
 
 const schema = yup.object({
-  name: yup.string().required(),
-  vault: yup.string().required(),
   year_of_receipt: yup.string().required(),
   department: yup.string().required(),
   project: yup.string().required(),
@@ -20,9 +18,7 @@ const schema = yup.object({
 
 const BatchForm = (): React.ReactElement => {
   const defaultValues = {
-    name: '',
     batch_number: '',
-    vault: '',
     year_of_receipt: '',
     department: '',
     project: '',
@@ -39,7 +35,12 @@ const BatchForm = (): React.ReactElement => {
 
   return (
     <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
-      <TextInput source='name' variant='outlined' sx={sx} />
+      <ReferenceInput
+        variant='outlined'
+        source='platform'
+        reference='platforms'>
+        <SelectInput optionText={optionsText} sx={sx} />
+      </ReferenceInput>
       <FlexBox>
         <DatePicker
           label='Year of receipt'
@@ -58,8 +59,8 @@ const BatchForm = (): React.ReactElement => {
       <FlexBox>
         <ReferenceInput
           variant='outlined'
-          source='platform'
-          reference='platforms'>
+          source='organisation'
+          reference='organisation'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <ReferenceInput
@@ -80,17 +81,6 @@ const BatchForm = (): React.ReactElement => {
           variant='outlined'
           source='maximum_protective_marking'
           reference='protective-marking'>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
-      </FlexBox>
-      <FlexBox>
-        <ReferenceInput variant='outlined' source='vault' reference='vault'>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
-        <ReferenceInput
-          variant='outlined'
-          source='organisation'
-          reference='organisation'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
       </FlexBox>
