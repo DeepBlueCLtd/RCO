@@ -15,18 +15,21 @@ type Props = Omit<TextInputProps, 'format'> & {
   dataPickerProps?: DatePickerProps<Date>
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    '&.error': {
-      '& label': {
-        color: theme.palette.error.main
-      },
-      '& .MuiInputBase-root::before': {
-        borderBottom: `1px solid ${theme.palette.error.main}`
+const useStyles = makeStyles((theme: Theme) => {
+  const mainTheme: string = theme.palette.error.main
+  return {
+    root: {
+      '&.error': {
+        '& label': {
+          color: theme.palette.error.main
+        },
+        '& .MuiInputBase-root::before': {
+          borderBottom: `1px solid ${mainTheme}`
+        }
       }
     }
   }
-}))
+})
 
 export default function DatePicker(props: Props) {
   const { label, dataPickerProps, format, ...rest } = props
@@ -61,11 +64,13 @@ export default function DatePicker(props: Props) {
     setError(error)
   }
 
+  const rootStyle: string = styles.root
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box display='flex' flexDirection='column' width='100%'>
         <MuiDatePicker
-          className={`${styles.root} ${
+          className={`${rootStyle} ${
             typeof errorMessage === 'string' && errorMessage !== ''
               ? 'error'
               : ''
