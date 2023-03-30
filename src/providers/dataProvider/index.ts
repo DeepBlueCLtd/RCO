@@ -95,7 +95,8 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           const { data } = record
           const { id, year_of_receipt: year } = data
           const yearVal: string = year
-          const idVal: string = (id + 1).toLocaleString('en-US', {
+          const idCtr: number = id + 1
+          const idVal: string = idCtr.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
           })
