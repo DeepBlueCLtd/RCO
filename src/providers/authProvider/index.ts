@@ -1,15 +1,14 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
-import bcrypt from 'bcryptjs'
 import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
-export const getToken = (): string | null => {
+export const getUser = (): string | undefined => {
   const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
   const salt = localStorage.getItem(constants.SALT)
   if (encryptedUser !== null && salt !== null) {
     const decryptedData = decryptData(`${encryptedUser}`)
-    return decryptedData.substring(0, decryptedData.length - 32)
-  } else return null
+    return decryptedData.substring(0, decryptedData.length - salt.length)
+  }
 }
 
 const setToken = (token: string, salt: string): void => {
@@ -33,7 +32,14 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       })
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
-        if (await bcrypt.compare(password, user.password)) {
+        const salt: string = user.salt
+        const userHashedPassword: string = user.password
+        const decryptedData = decryptData(`${userHashedPassword}`)
+        const decryptedPassword = decryptedData.substring(
+          0,
+          decryptedData.length - salt.length
+        )
+        if (password === decryptedPassword) {
           const clonedUser = { ...user }
           delete clonedUser.password
           const salt = generateSalt()
@@ -54,8 +60,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
-      const token = getToken()
-      token !== null
+      const token = getUser()
+      token !== undefined
         ? await Promise.resolve()
         : await Promise.reject(new Error('Token not found'))
     },
@@ -70,16 +76,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     getIdentity: async () => {
-      const token = getToken()
-      if (token !== null) {
+      const token = getUser()
+      if (token !== undefined) {
         return JSON.parse(token)
       }
     },
 
     getPermissions: async () => {
       try {
-        const token = getToken()
-        if (token != null) {
+        const token = getUser()
+        if (token !== undefined) {
           const user = JSON.parse(token)
           const isAdmin = user.adminRights as boolean
           return await Promise.resolve(isAdmin ? 'admin' : 'user')

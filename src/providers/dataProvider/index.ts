@@ -9,9 +9,10 @@ import {
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import platforms from './platforms'
-import users, { encryptUserPassword } from './users'
+import users from './users'
 import { getReferenceData } from './reference-data'
 import localForage from 'localforage'
+import { encryptData, generateSalt } from '../../utils/ecnryption'
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const defaultData: Record<string, any> = {
@@ -31,7 +32,15 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     defaultData
   })
 
-  const encryptedUsers = await Promise.all(users.map(encryptUserPassword))
+  const encryptedUsers = users.map((user) => {
+    const salt = generateSalt()
+    const updatedUser = {
+      ...user,
+      salt,
+      password: encryptData(`${user.password}${salt}`)
+    }
+    return updatedUser
+  })
   await localForage.setItem(
     `${constants.LOCAL_STORAGE_DB_KEY}users`,
     encryptedUsers
