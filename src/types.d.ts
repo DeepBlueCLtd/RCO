@@ -7,7 +7,7 @@ interface User {
 
 interface Audit {
   id: number
-  activity_type: AuditType
+  activity_type: string
   date_time: string
   activity_detail?: string
 }
@@ -24,5 +24,20 @@ interface Project {
   start_date: string
   end_date: string
   project_code: string
+  remarks: string
+}
+
+interface Batch {
+  id: number
+  name: string
+  batch_number: string
+  vault: number
+  year_of_receipt: string
+  department: number
+  project: number
+  platform: number
+  organisation: number
+  protective_marking_authority: number
+  maximum_protective_marking: number
   remarks: string
 }

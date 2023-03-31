@@ -1,7 +1,6 @@
 import React from 'react'
 import { Login } from '@mui/icons-material'
 import { Box, Icon } from '@mui/material'
-import { type Theme } from '@mui/system'
 import { makeStyles } from '@mui/styles'
 
 import {
@@ -20,7 +19,7 @@ import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
     height: '36px',

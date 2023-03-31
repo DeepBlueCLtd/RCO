@@ -24,6 +24,7 @@
     "@mui/material": "^5.11.13",
     "@mui/styles": "^5.11.13",
     "@mui/system": "^5.11.14",
+    "@mui/x-date-pickers": "^6.0.3",
     "@types/preval.macro": "^3.0.0",
     "@vitejs/plugin-react": "^3.1.0",
     "crypto-js": "^4.1.1",
