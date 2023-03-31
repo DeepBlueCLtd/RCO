@@ -81,7 +81,10 @@ function App(): React.ReactElement {
                         path='department'
                         element={<ReferenceDataList />}
                       />
-                      <Route path='vault' element={<ReferenceDataList />} />
+                      <Route
+                        path='vault-location'
+                        element={<ReferenceDataList />}
+                      />
                       <Route
                         path='platform-originator'
                         element={<ReferenceDataList />}

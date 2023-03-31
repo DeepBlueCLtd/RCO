@@ -19,7 +19,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     platforms,
     organisation: getReferenceData('Organisation'),
     department: getReferenceData('Department'),
-    vault: getReferenceData('Vault'),
+    'vault-location': getReferenceData('Vault Location'),
     'protective-marking': getReferenceData('Protective Marking'),
     'protective-marking-authority': getReferenceData(
       'Protective Marking Authority'
