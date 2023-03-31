@@ -51,7 +51,7 @@ export default function BatchShow(): React.ReactElement {
             <SourceField source='platform' reference='platforms' />
           </ValueField>
           <ValueField label='Organisation'>
-            <SourceField source='clearorganisation' reference='organisation' />
+            <SourceField source='organisation' reference='organisation' />
           </ValueField>
           <ValueField label='Department'>
             <SourceField source='department' reference='department' />

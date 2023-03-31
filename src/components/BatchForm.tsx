@@ -7,25 +7,19 @@ import DatePicker from './DatePicker'
 
 const schema = yup.object({
   year_of_receipt: yup.string().required(),
-  department: yup.string().required(),
-  project: yup.string().required(),
-  platform: yup.string().required(),
-  organisation: yup.string().required(),
-  protective_marking_authority: yup.string().required(),
-  maximum_protective_marking: yup.string().required(),
+  department: yup.number().required(),
+  project: yup.number().required(),
+  platform: yup.number().required(),
+  organisation: yup.number().required(),
+  protective_marking_authority: yup.number().required(),
+  maximum_protective_marking: yup.number().required(),
   remarks: yup.string().required()
 })
 
 const BatchForm = (): React.ReactElement => {
-  const defaultValues = {
+  const defaultValues: Partial<Batch> = {
     batch_number: '',
     year_of_receipt: '',
-    department: '',
-    project: '',
-    platform: '',
-    organisation: '',
-    protective_marking_authority: '',
-    maximum_protective_marking: '',
     remarks: ''
   }
 
