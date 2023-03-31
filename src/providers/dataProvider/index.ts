@@ -33,11 +33,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   })
 
   const encryptedUsers = users.map((user) => {
-    const salt = generateSalt()
+    const salt: string = generateSalt()
+    const userPassword: string = user.password
     const updatedUser = {
       ...user,
       salt,
-      password: encryptData(`${user.password}${salt}`)
+      password: encryptData(`${userPassword}${salt}`)
     }
     return updatedUser
   })

@@ -46,7 +46,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
             ...user
           }
           delete clonedUser.password
-          const salt = generateSalt()
+          const salt: string = generateSalt()
           const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
           setToken(token, salt)
           await audit(AuditType.LOGIN, 'Logged in')
