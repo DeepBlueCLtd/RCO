@@ -27,9 +27,10 @@ const ValueField = ({
 
 const ShowActions = () => {
   const { id = '' } = useParams()
+  const batchId: string = id
   return (
     <TopToolbar>
-      <CreateButton label='Create item' to={`/items/create?batch=${id}`} />
+      <CreateButton label='Create item' to={`/items/create?batch=${batchId}`} />
       <EditButton />
       <DeleteButton />
     </TopToolbar>
