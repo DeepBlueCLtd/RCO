@@ -16,9 +16,9 @@ export const trackEvent =
   (dataProvider: DataProvider) =>
   async (type: AuditType, activityDetail?: string) => {
     try {
-      const token = getUser()
-      if (token !== undefined) {
-        const data = JSON.parse(token)
+      const user = getUser()
+      if (user !== undefined) {
+        const data = user
         await dataProvider.create<Audit>('audit', {
           data: {
             user_id: data.id,

@@ -2,12 +2,14 @@ import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
-export const getUser = (): string | undefined => {
+export const getUser = (): User | undefined => {
   const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
   const salt = localStorage.getItem(constants.SALT)
   if (encryptedUser !== null && salt !== null) {
     const decryptedData = decryptData(`${encryptedUser}`)
-    return decryptedData.substring(0, decryptedData.length - salt.length)
+    return JSON.parse(
+      decryptedData.substring(0, decryptedData.length - salt.length)
+    )
   }
 }
 
@@ -40,7 +42,9 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           decryptedData.length - salt.length
         )
         if (password === decryptedPassword) {
-          const clonedUser = { ...user }
+          const clonedUser: Omit<User, 'password'> & { password?: string } = {
+            ...user
+          }
           delete clonedUser.password
           const salt = generateSalt()
           const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
@@ -76,18 +80,17 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     getIdentity: async () => {
-      const token = getUser()
-      if (token !== undefined) {
-        return JSON.parse(token)
-      }
+      const user = getUser()
+      if (user !== undefined) {
+        return user
+      } else return await Promise.reject(new Error('user not found'))
     },
 
     getPermissions: async () => {
       try {
-        const token = getUser()
-        if (token !== undefined) {
-          const user = JSON.parse(token)
-          const isAdmin = user.adminRights as boolean
+        const user = getUser()
+        if (user !== undefined) {
+          const isAdmin = user.adminRights
           return await Promise.resolve(isAdmin ? 'admin' : 'user')
         } else {
           throw new Error('You are not a registered user.')
