@@ -4,24 +4,22 @@ import { AuditType, trackEvent } from '../../utils/audit'
 import bcrypt from 'bcryptjs'
 import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
 export const getToken = (): string | null => {
-  const JsonUser = localStorage.getItem(constants.TOKEN_KEY)
-  if (JsonUser !== null) {
-    const user = JSON.parse(JsonUser) as User & { salt: string }
-    const decryptedData = decryptData(`${user.id}${user.salt}`)
-    user.id = decryptedData.substring(
-      0,
-      decryptedData.length - user.salt.length
-    )
-    return JSON.stringify(user)
+  const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
+  const salt = localStorage.getItem(constants.SALT)
+  if (encryptedUser !== null && salt !== null) {
+    const decryptedData = decryptData(`${encryptedUser}`)
+    return decryptedData.substring(0, decryptedData.length - 32)
   } else return null
 }
 
-const setToken = (token: string): void => {
+const setToken = (token: string, salt: string): void => {
   localStorage.setItem(constants.TOKEN_KEY, token)
+  localStorage.setItem(constants.SALT, salt)
 }
 
 const removeToken = (): void => {
   localStorage.removeItem(constants.TOKEN_KEY)
+  localStorage.removeItem(constants.SALT)
 }
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
@@ -37,14 +35,10 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       if (user !== undefined) {
         if (await bcrypt.compare(password, user.password)) {
           const clonedUser = { ...user }
-          const id: number = clonedUser.id
-          const idVal: string = String(id)
-          const salt: string = generateSalt()
-          clonedUser.id = encryptData(`${idVal}${salt}`)
-          clonedUser.salt = salt
           delete clonedUser.password
-          const token = JSON.stringify(clonedUser)
-          setToken(token)
+          const salt = generateSalt()
+          const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
+          setToken(token, salt)
           await audit(AuditType.LOGIN, 'Logged in')
           return await Promise.resolve(data)
         } else {
