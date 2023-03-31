@@ -100,6 +100,10 @@ function App(): React.ReactElement {
                         path='organisation'
                         element={<ReferenceDataList />}
                       />
+                      <Route
+                        path='media-type'
+                        element={<ReferenceDataList />}
+                      />
                     </Route>
                   </CustomRoutes>
                 ]
