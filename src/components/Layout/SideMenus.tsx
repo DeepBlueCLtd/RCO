@@ -24,6 +24,7 @@ export const SideMenus = (): React.ReactElement => {
       <Menu.ResourceItem name='audit' />
       <Menu.ResourceItem name='platforms' />
       <Menu.ResourceItem name='projects' />
+      <Menu.ResourceItem name='batches' />
       <Menu.Item
         to='/reference-data'
         primaryText='Reference Data'

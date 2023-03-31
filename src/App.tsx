@@ -9,7 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Person, SettingsSuggest } from '@mui/icons-material'
+import { Layers, Person, SettingsSuggest } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -23,6 +23,7 @@ import { rcoTheme } from './themes/rco-theme'
 import ReferenceData from './pages/ReferenceData'
 import ReferenceDataList from './components/ReferenceDataList'
 import projects from './resources/projects'
+import batches from './resources/batches'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -67,6 +68,12 @@ function App(): React.ReactElement {
                     name='audit'
                     {...audit}
                   />,
+                  <Resource
+                    key='batches'
+                    icon={Layers}
+                    name='batches'
+                    {...batches}
+                  />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>
                       <Route
@@ -81,7 +88,6 @@ function App(): React.ReactElement {
                         path='department'
                         element={<ReferenceDataList />}
                       />
-                      <Route path='vault' element={<ReferenceDataList />} />
                       <Route
                         path='platform-originator'
                         element={<ReferenceDataList />}

@@ -19,7 +19,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     platforms,
     organisation: getReferenceData('Organisation'),
     department: getReferenceData('Department'),
-    vault: getReferenceData('Vault'),
     'protective-marking': getReferenceData('Protective Marking'),
     'protective-marking-authority': getReferenceData(
       'Protective Marking Authority'
@@ -84,6 +83,35 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           `Project updated (${String(record.data.id)})`
         )
         return record
+      }
+    },
+    {
+      resource: 'batches',
+      afterCreate: async (
+        record: CreateResult<Batch>,
+        dataProvider: DataProvider
+      ) => {
+        try {
+          const { data } = record
+          const { id, year_of_receipt: year } = data
+          const yearVal: string = year
+          const idCtr: number = id
+          const idVal: string = (idCtr + 1).toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+          })
+          const batchNumber = `V${idVal}/${yearVal}`
+
+          await dataProvider.update<Batch>('batches', {
+            id,
+            previousData: data,
+            data: { batch_number: batchNumber }
+          })
+          return record
+        } catch (error) {
+          console.log({ error })
+          return record
+        }
       }
     }
   ])
