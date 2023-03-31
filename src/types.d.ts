@@ -73,9 +73,4 @@ interface Item {
   paper: Paper
 }
 
-enum MediaType {
-  DVD = 'DVD',
-  TAPE = 'Tape',
-  PAPER = 'Paper',
-  LOANS = 'Loans'
-}
+type MediaType = 'DVD' | 'Tape' | 'Paper'
