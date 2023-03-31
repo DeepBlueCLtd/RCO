@@ -70,20 +70,8 @@ export default function ItemForm() {
       <TabbedForm.Tab label='Core'>
         <SelectInput source='media_type' choices={mediaTypeOptions} sx={sx} />
         <FlexBox>
-          <DatePicker
-            source='start'
-            label='Start'
-            variant='outlined'
-            format='YYYY'
-            dataPickerProps={{ views: ['year'] }}
-          />
-          <DatePicker
-            source='end'
-            variant='outlined'
-            label='End'
-            format='YYYY'
-            dataPickerProps={{ views: ['year'] }}
-          />
+          <DatePicker source='start' label='Start' variant='outlined' />
+          <DatePicker source='end' variant='outlined' label='End' />
         </FlexBox>
         <FlexBox>
           <ReferenceInput source='vault_location' reference='vault-location'>
