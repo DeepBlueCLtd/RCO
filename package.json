@@ -27,6 +27,7 @@
     "@mui/x-date-pickers": "^6.0.3",
     "@types/preval.macro": "^3.0.0",
     "@vitejs/plugin-react": "^3.1.0",
+    "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "preval.macro": "^5.0.0",
     "ra-data-local-forage": "^4.8.4",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@eslint/create-config": "^0.4.2",
+    "@types/crypto-js": "^4.1.1",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
