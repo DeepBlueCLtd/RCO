@@ -1,26 +1,31 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
-import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
-export const getToken = (): string | null => {
-  const JsonUser = localStorage.getItem(constants.TOKEN_KEY)
-  if (JsonUser !== null) {
-    const user = JSON.parse(JsonUser) as User & { salt: string }
-    const decryptedData = decryptData(`${user.id}${user.salt}`)
-    user.id = decryptedData.substring(
-      0,
-      decryptedData.length - user.salt.length
+import {
+  decryptData,
+  decryptPassword,
+  encryptData,
+  generateSalt
+} from '../../utils/encryption'
+export const getUser = (): User | undefined => {
+  const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
+  const salt = localStorage.getItem(constants.SALT)
+  if (encryptedUser !== null && salt !== null) {
+    const decryptedData = decryptData(`${encryptedUser}`)
+    return JSON.parse(
+      decryptedData.substring(0, decryptedData.length - salt.length)
     )
-    return JSON.stringify(user)
-  } else return null
+  }
 }
 
-const setToken = (token: string): void => {
+const setToken = (token: string, salt: string): void => {
   localStorage.setItem(constants.TOKEN_KEY, token)
+  localStorage.setItem(constants.SALT, salt)
 }
 
 const removeToken = (): void => {
   localStorage.removeItem(constants.TOKEN_KEY)
+  localStorage.removeItem(constants.SALT)
 }
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
@@ -30,19 +35,21 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       const data = await dataProvider.getList('users', {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
-        filter: { name: username, password }
+        filter: { name: username }
       })
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
-        if (user.password === password) {
-          const clonedUser = { ...user }
-          const id: number = clonedUser.id
-          const idVal: string = String(id)
+        const salt: string = user.salt
+        const userHashedPassword: string = user.password
+        const decryptedPassword = decryptPassword(userHashedPassword, salt)
+        if (password === decryptedPassword) {
+          const clonedUser: Omit<User, 'password'> & { password?: string } = {
+            ...user
+          }
+          delete clonedUser.password
           const salt: string = generateSalt()
-          clonedUser.id = encryptData(`${idVal}${salt}`)
-          clonedUser.salt = salt
-          const token = JSON.stringify(clonedUser)
-          setToken(token)
+          const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
+          setToken(token, salt)
           await audit(AuditType.LOGIN, 'Logged in')
           return await Promise.resolve(data)
         } else {
@@ -58,8 +65,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
-      const token = getToken()
-      token !== null
+      const token = getUser()
+      token !== undefined
         ? await Promise.resolve()
         : await Promise.reject(new Error('Token not found'))
     },
@@ -74,18 +81,17 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     getIdentity: async () => {
-      const token = getToken()
-      if (token !== null) {
-        return JSON.parse(token)
-      }
+      const user = getUser()
+      if (user !== undefined) {
+        return user
+      } else return await Promise.reject(new Error('user not found'))
     },
 
     getPermissions: async () => {
       try {
-        const token = getToken()
-        if (token != null) {
-          const user = JSON.parse(token)
-          const isAdmin = user.adminRights as boolean
+        const user = getUser()
+        if (user !== undefined) {
+          const isAdmin = user.adminRights
           return await Promise.resolve(isAdmin ? 'admin' : 'user')
         } else {
           throw new Error('You are not a registered user.')
