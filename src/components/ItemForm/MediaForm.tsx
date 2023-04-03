@@ -1,4 +1,4 @@
-import React, { useMemo , useEffect } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { NumberInput, TextInput } from 'react-admin'
 
@@ -42,7 +42,7 @@ function DVDForm(props: FormProps): React.ReactElement {
   const { source } = props
   return (
     <>
-      <NumberInput min={1} sx={sx} source={`${source}.size`} />
+      <NumberInput min={1} label='Size' sx={sx} source={`${source}.size`} />
     </>
   )
 }
@@ -51,8 +51,13 @@ function TapeForm(props: FormProps): React.ReactElement {
   const { source } = props
   return (
     <>
-      <NumberInput min={1} sx={sx} source={`${source}.minutes`} />
-      <TextInput sx={sx} source={`${source}.brand`} />
+      <NumberInput
+        label='Minutes'
+        min={1}
+        sx={sx}
+        source={`${source}.minutes`}
+      />
+      <TextInput label='Brand' sx={sx} source={`${source}.brand`} />
     </>
   )
 }
@@ -61,7 +66,7 @@ function PaperForm(props: FormProps): React.ReactElement {
   const { source } = props
   return (
     <>
-      <TextInput sx={sx} source={`${source}.pending`} />
+      <TextInput label='Pending' sx={sx} source={`${source}.pending`} />
     </>
   )
 }

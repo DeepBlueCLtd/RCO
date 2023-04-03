@@ -64,6 +64,7 @@ interface Item {
   media_type: MediaType
   start: string
   batch_id: number
+  item_number: string
   end: string
   vault_location: number
   remarks: string

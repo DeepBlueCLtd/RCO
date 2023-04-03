@@ -10,6 +10,7 @@ import CoreForm from './CoreForm'
 import { mediaTypeOptions } from '../../utils/media'
 import dayjs from 'dayjs'
 import MediaForm from './MediaForm'
+import ItemFormToolbar from './ItemFormToolbar'
 
 const schema = yup.object({
   media_type: yup
@@ -32,11 +33,17 @@ const schema = yup.object({
   protective_marking: yup.number().required(),
   remarks: yup.string().required(),
   mag_tape: yup.object({
-    brand: yup.string().required(),
-    minutes: yup.number().required()
+    brand: yup.string().required('Brand is a required field'),
+    minutes: yup
+      .number()
+      .required('Minutes is a required field')
+      .typeError('Invalid value')
   }),
   dvd: yup.object({
-    size: yup.number().required()
+    size: yup
+      .number()
+      .required('Size is a required field')
+      .typeError('Invalid value')
   })
 })
 
@@ -61,7 +68,11 @@ export default function ItemForm() {
   }, [])
 
   return (
-    <TabbedForm warnWhenUnsavedChanges resolver={yupResolver(schema)}>
+    <TabbedForm
+      warnWhenUnsavedChanges
+      resolver={yupResolver(schema)}
+      defaultValues={{ item_number: '' }}
+      toolbar={<ItemFormToolbar />}>
       <TabbedForm.Tab label='Core'>
         <CoreForm batchId={batchId} />
       </TabbedForm.Tab>
