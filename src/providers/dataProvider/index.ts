@@ -12,7 +12,7 @@ import platforms from './platforms'
 import users from './users'
 import { getReferenceData } from './reference-data'
 import localForage from 'localforage'
-import { encryptData, generateSalt } from '../../utils/ecnryption'
+import { encryptData, generateSalt } from '../../utils/encryption'
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const defaultData: Record<string, any> = {

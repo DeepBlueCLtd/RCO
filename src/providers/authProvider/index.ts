@@ -1,7 +1,12 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
-import { decryptData, encryptData, generateSalt } from '../../utils/ecnryption'
+import {
+  decryptData,
+  decryptPassword,
+  encryptData,
+  generateSalt
+} from '../../utils/encryption'
 export const getUser = (): User | undefined => {
   const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
   const salt = localStorage.getItem(constants.SALT)
@@ -36,11 +41,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       if (user !== undefined) {
         const salt: string = user.salt
         const userHashedPassword: string = user.password
-        const decryptedData = decryptData(`${userHashedPassword}`)
-        const decryptedPassword = decryptedData.substring(
-          0,
-          decryptedData.length - salt.length
-        )
+        const decryptedPassword = decryptPassword(userHashedPassword, salt)
         if (password === decryptedPassword) {
           const clonedUser: Omit<User, 'password'> & { password?: string } = {
             ...user

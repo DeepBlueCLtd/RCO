@@ -10,4 +10,17 @@ export const decryptData = (ciphertext: string) => {
   return bytes.toString(CryptoJS.enc.Utf8)
 }
 
+export const decryptPassword = (
+  hashedPassword: string,
+  salt: string
+): string => {
+  const password: string = hashedPassword
+  const decryptedData = decryptData(`${password}`)
+  const decryptedPassword = decryptedData.substring(
+    0,
+    decryptedData.length - salt.length
+  )
+  return decryptedPassword
+}
+
 export const generateSalt = () => CryptoJS.lib.WordArray.random(16).toString()
