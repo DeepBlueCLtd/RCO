@@ -32,7 +32,7 @@ export default function UserForm(): React.ReactElement {
         format={(password) => {
           if (password?.length === 88)
             return decryptPassword(password, record.salt)
-          else return password
+          else return password !== null ? password : ''
         }}
       />
       <BooleanInput source='adminRights' />
