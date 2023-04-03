@@ -48,7 +48,7 @@ interface MagTape {
 }
 
 interface CoreMedia {
-  readonly mediaType: MediaType
+  readonly media_type: MediaType
 }
 interface DVD extends CoreMedia {
   size: number

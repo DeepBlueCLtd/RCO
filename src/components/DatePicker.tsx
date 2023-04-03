@@ -38,7 +38,9 @@ export default function DatePicker(props: Props) {
   const styles = useStyles()
 
   const value: Date | null = useMemo(() => {
-    if (typeof field.value !== 'string' || field.value === '') return null
+    if (field.value instanceof Date) return field.value
+
+    if (typeof field.value === 'string' && field.value === '') return null
 
     if (typeof format === 'undefined') {
       return new Date(field.value)

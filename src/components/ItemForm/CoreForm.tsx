@@ -1,0 +1,50 @@
+import { ReferenceInput, SelectInput, TextInput } from 'react-admin'
+import { mediaTypeOptions } from '../../utils/media'
+import DatePicker from '../DatePicker'
+import FlexBox from '../FlexBox'
+import { useFormContext } from 'react-hook-form'
+import { useEffect } from 'react'
+
+const sx = { width: '100%' }
+
+interface OptionsText {
+  name: string
+}
+
+interface Props {
+  batchId?: number
+}
+
+const optionsText = (item: OptionsText) => item.name
+
+const CoreForm = (props: Props): React.ReactElement => {
+  const { batchId } = props
+  const formContext = useFormContext()
+
+  useEffect(() => {
+    formContext?.setValue('batch_id', batchId)
+  }, [batchId])
+
+  return (
+    <>
+      <SelectInput source='media_type' choices={mediaTypeOptions} sx={sx} />
+      <FlexBox>
+        <DatePicker source='start' label='Start' variant='outlined' />
+        <DatePicker source='end' variant='outlined' label='End' />
+      </FlexBox>
+      <FlexBox>
+        <ReferenceInput source='vault_location' reference='vault-location'>
+          <SelectInput optionText={optionsText} sx={sx} />
+        </ReferenceInput>
+        <ReferenceInput
+          source='protective_marking'
+          reference='protective-marking'>
+          <SelectInput optionText={optionsText} sx={sx} />
+        </ReferenceInput>
+      </FlexBox>
+      <TextInput multiline source='remarks' sx={sx} />
+    </>
+  )
+}
+
+export default CoreForm

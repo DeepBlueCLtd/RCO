@@ -1,5 +1,6 @@
 import {
   Datagrid,
+  DateField,
   DeleteButton,
   EditButton,
   List,
@@ -12,8 +13,8 @@ export default function ItemList(): React.ReactElement {
     <List hasCreate={false}>
       <Datagrid rowClick='show'>
         <TextField source='id' />
-        <TextField source='start' />
-        <TextField source='end' />
+        <DateField source='start' />
+        <DateField source='end' />
         <TextField source='vault_location' />
         <TextField source='remarks' />
         <SourceField
