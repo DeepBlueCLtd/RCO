@@ -18,10 +18,9 @@ export const trackEvent =
     try {
       const user = getUser()
       if (user !== undefined) {
-        const data = user
         await dataProvider.create<Audit>('audit', {
           data: {
-            user_id: data.id,
+            user_id: user.id,
             activity_type: type,
             date_time: new Date().toISOString(),
             activity_detail: activityDetail
