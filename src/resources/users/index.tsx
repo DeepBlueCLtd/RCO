@@ -19,7 +19,7 @@ const transform = (data: any) => {
 
 const UserCreate = (): React.ReactElement => {
   return (
-    <Create>
+    <Create transform={transform}>
       <UserForm />
     </Create>
   )
