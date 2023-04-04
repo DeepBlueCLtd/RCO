@@ -84,26 +84,27 @@ export default function ItemForm() {
 
   return (
     <Box>
-      <TextField
-        disabled
-        sx={{ margin: '16px' }}
-        value={batch?.batch_number}
-        InputProps={{
-          sx: {
-            padding: '13px',
-            '& input': {
-              padding: 0,
-              lineHeight: 1
-            }
-          },
-          endAdornment: (
-            <InputAdornment position='end'>
-              <Save />
-            </InputAdornment>
-          )
-        }}
-        onChange={console.log}
-      />
+      {(batch != null) && (
+        <TextField
+          disabled
+          sx={{ margin: '16px' }}
+          defaultValue={batch?.batch_number}
+          InputProps={{
+            sx: {
+              padding: '13px',
+              '& input': {
+                padding: 0,
+                lineHeight: 1
+              }
+            },
+            endAdornment: (
+              <InputAdornment position='end'>
+                <Save />
+              </InputAdornment>
+            )
+          }}
+        />
+      )}
       <TabbedForm
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
