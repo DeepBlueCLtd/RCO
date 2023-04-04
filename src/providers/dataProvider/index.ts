@@ -73,7 +73,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     const listContainingGivenYear = batches?.data?.filter(
       (batch) => batch.year_of_receipt === year
     )
-    return (listContainingGivenYear?.length).toLocaleString('en-US', {
+    return listContainingGivenYear.length.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
       useGrouping: false
     })
