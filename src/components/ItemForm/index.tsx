@@ -1,9 +1,15 @@
-import { Album, GroupWork, MenuBook } from '@mui/icons-material'
+import { Album, GroupWork, MenuBook, Save } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { TabbedForm, useCreatePath, useRedirect } from 'react-admin'
+import {
+  TabbedForm,
+  useCreatePath,
+  useDataProvider,
+  useRecordContext,
+  useRedirect
+} from 'react-admin'
 import { useLocation, useParams } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import CoreForm from './CoreForm'
@@ -11,6 +17,7 @@ import { mediaTypeOptions } from '../../utils/media'
 import dayjs from 'dayjs'
 import MediaForm from './MediaForm'
 import ItemFormToolbar from './ItemFormToolbar'
+import { Box, InputAdornment, TextField } from '@mui/material'
 
 const schema = yup.object({
   media_type: yup
@@ -48,43 +55,76 @@ const schema = yup.object({
 })
 
 export default function ItemForm() {
-  const [batchId, setBatchId] = useState<number>()
+  const [batch, setBatch] = useState<Batch>()
   const location = useLocation()
   const redirect = useRedirect()
   const createPath = useCreatePath()
   const { id } = useParams()
+  const record = useRecordContext<Item>()
+  const dataProvider = useDataProvider()
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const batch = searchParams.get('batch') ?? ''
+    const batch = searchParams.get('batch') ?? record.batch_id
 
     const isValidNumber = isNumber(batch)
-
-    setBatchId(isValidNumber ? Number(batch) : undefined)
-
-    if (!isValidNumber && typeof id === 'undefined') {
-      redirect(createPath({ resource: 'items', type: 'list' }))
+    if (isValidNumber) {
+      dataProvider
+        .getOne<Batch>('batches', { id: Number(batch) })
+        .then(({ data }) => {
+          setBatch(data)
+        })
+        .catch(console.log)
+    } else {
+      if (typeof id === 'undefined') {
+        redirect(createPath({ resource: 'items', type: 'list' }))
+      }
     }
   }, [])
 
   return (
-    <TabbedForm
-      warnWhenUnsavedChanges
-      resolver={yupResolver(schema)}
-      defaultValues={{ item_number: '' }}
-      toolbar={<ItemFormToolbar />}>
-      <TabbedForm.Tab label='Core'>
-        <CoreForm batchId={batchId} />
-      </TabbedForm.Tab>
-      <TabbedForm.Tab label='Map tape' icon={<GroupWork />} iconPosition='end'>
-        <MediaForm type='Tape' source='mag_tape' />
-      </TabbedForm.Tab>
-      <TabbedForm.Tab label='DVD' icon={<Album />} iconPosition='end'>
-        <MediaForm type='DVD' source='dvd' />
-      </TabbedForm.Tab>
-      <TabbedForm.Tab label='Paper' icon={<MenuBook />} iconPosition='end'>
-        <MediaForm type='Paper' source='paper' />
-      </TabbedForm.Tab>
-    </TabbedForm>
+    <Box>
+      <TextField
+        disabled
+        sx={{ margin: '16px' }}
+        value={batch?.batch_number}
+        InputProps={{
+          sx: {
+            padding: '13px',
+            '& input': {
+              padding: 0,
+              lineHeight: 1
+            }
+          },
+          endAdornment: (
+            <InputAdornment position='end'>
+              <Save />
+            </InputAdornment>
+          )
+        }}
+        onChange={console.log}
+      />
+      <TabbedForm
+        warnWhenUnsavedChanges
+        resolver={yupResolver(schema)}
+        defaultValues={{ item_number: '' }}
+        toolbar={<ItemFormToolbar />}>
+        <TabbedForm.Tab label='Core'>
+          <CoreForm batchId={batch?.id} />
+        </TabbedForm.Tab>
+        <TabbedForm.Tab
+          label='Map tape'
+          icon={<GroupWork />}
+          iconPosition='end'>
+          <MediaForm type='Tape' source='mag_tape' />
+        </TabbedForm.Tab>
+        <TabbedForm.Tab label='DVD' icon={<Album />} iconPosition='end'>
+          <MediaForm type='DVD' source='dvd' />
+        </TabbedForm.Tab>
+        <TabbedForm.Tab label='Paper' icon={<MenuBook />} iconPosition='end'>
+          <MediaForm type='Paper' source='paper' />
+        </TabbedForm.Tab>
+      </TabbedForm>
+    </Box>
   )
 }
