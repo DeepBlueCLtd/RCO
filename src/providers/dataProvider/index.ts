@@ -62,6 +62,19 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   )
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
+
+  const generateBatchId = async (year: string): Promise<string> => {
+    const batches = await provider.getList('batches', {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: { year_of_receipt: year }
+    })
+    return batches.data.length.toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+      useGrouping: false
+    })
+  }
+
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
       resource: 'users',
@@ -112,13 +125,8 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           const { data } = record
           const { id, year_of_receipt: year } = data
           const yearVal: string = year
-          const idCtr: number = id
-          const idVal: string = (idCtr + 1).toLocaleString('en-US', {
-            minimumIntegerDigits: 2,
-            useGrouping: false
-          })
+          const idVal: string = await generateBatchId(year)
           const batchNumber = `V${idVal}/${yearVal}`
-
           await dataProvider.update<Batch>('batches', {
             id,
             previousData: data,
