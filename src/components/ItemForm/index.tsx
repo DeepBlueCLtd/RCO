@@ -40,17 +40,11 @@ const schema = yup.object({
   protective_marking: yup.number().required(),
   remarks: yup.string().required(),
   mag_tape: yup.object({
-    brand: yup.string().required('Brand is a required field'),
-    minutes: yup
-      .number()
-      .required('Minutes is a required field')
-      .typeError('Invalid value')
+    brand: yup.string(),
+    minutes: yup.number().typeError('Invalid value')
   }),
   dvd: yup.object({
-    size: yup
-      .number()
-      .required('Size is a required field')
-      .typeError('Invalid value')
+    size: yup.number().typeError('Invalid value')
   })
 })
 
@@ -82,9 +76,21 @@ export default function ItemForm() {
     }
   }, [])
 
+  const defaultValues: Partial<Item> = {
+    item_number: '',
+    dvd: {
+      media_type: 'DVD',
+      size: 0
+    },
+    mag_tape: {
+      media_type: 'Tape',
+      minutes: 0,
+      brand: ''
+    }
+  }
   return (
     <Box>
-      {(batch != null) && (
+      {batch != null && (
         <TextField
           disabled
           sx={{ margin: '16px' }}
@@ -108,7 +114,7 @@ export default function ItemForm() {
       <TabbedForm
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
-        defaultValues={{ item_number: '' }}
+        defaultValues={defaultValues}
         toolbar={<ItemFormToolbar />}>
         <TabbedForm.Tab label='Core'>
           <CoreForm batchId={batch?.id} />

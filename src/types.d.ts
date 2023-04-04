@@ -42,11 +42,6 @@ interface Batch {
   remarks: string
 }
 
-interface MagTape {
-  brand: string
-  minutes: number
-}
-
 interface CoreMedia {
   readonly media_type: MediaType
 }
@@ -69,7 +64,7 @@ interface Item {
   vault_location: number
   remarks: string
   protective_marking: number
-  mag_tape: MagTape
+  mag_tape: Tape
   dvd: DVD
   paper: Paper
 }
