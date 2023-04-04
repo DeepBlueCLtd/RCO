@@ -1,5 +1,5 @@
 import { type DataProvider } from 'react-admin'
-import { getToken } from '../providers/authProvider'
+import { getUser } from '../providers/authProvider'
 
 export enum AuditType {
   LOGIN = 'login',
@@ -26,12 +26,11 @@ export const trackEvent =
   (dataProvider: DataProvider) =>
   async (type: AuditType, activityDetail?: string) => {
     try {
-      const token = getToken()
-      if (token !== null) {
-        const data = JSON.parse(token)
+      const user = getUser()
+      if (user !== undefined) {
         await dataProvider.create<Audit>('audit', {
           data: {
-            user_id: data.id,
+            user_id: user.id,
             activity_type: type,
             date_time: new Date().toISOString(),
             activity_detail: activityDetail

@@ -24,7 +24,6 @@ export default function UserList(): React.ReactElement {
         rowClick='show'
         bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
-        <TextField source='password' />
         <BooleanField source='adminRights' label='Admin Rights' />
         <EditButton />
         <DeleteButton mutationMode='pessimistic' />
