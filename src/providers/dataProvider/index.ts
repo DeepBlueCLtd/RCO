@@ -63,17 +63,13 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
 
-  const generateBatchId = async (year: string) => {
+  const generateBatchId = async (year: string): Promise<string> => {
     const batches = await provider.getList('batches', {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
-      filter: {}
+      filter: { year_of_receipt: year }
     })
-
-    const listContainingGivenYear = batches?.data?.filter(
-      (batch) => batch.year_of_receipt === year
-    )
-    return listContainingGivenYear.length.toLocaleString('en-US', {
+    return batches.data.length.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
       useGrouping: false
     })
