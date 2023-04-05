@@ -1,14 +1,17 @@
 import {
-  Datagrid,
+  DatagridConfigurable,
   DateField,
   DateInput,
   DeleteButton,
   EditButton,
+  FilterButton,
   List,
   SearchInput,
+  SelectColumnsButton,
   SelectInput,
   TextField,
-  TextInput
+  TextInput,
+  TopToolbar
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -48,10 +51,17 @@ const filters = [
   <TextInput key='remarks' source='remarks' />
 ]
 
+const ItemActions = () => (
+  <TopToolbar>
+    <FilterButton />
+    <SelectColumnsButton />
+  </TopToolbar>
+)
+
 export default function ItemList(): React.ReactElement {
   return (
-    <List hasCreate={false} filters={filters}>
-      <Datagrid rowClick='show'>
+    <List hasCreate={false} actions={<ItemActions />} filters={filters}>
+      <DatagridConfigurable rowClick='show'>
         <TextField source='id' />
         <TextField source='item_number' label='Reference' />
         <TextField source='media_type' label='Media type' />
@@ -65,7 +75,7 @@ export default function ItemList(): React.ReactElement {
         <TextField source='remarks' />
         <EditButton />
         <DeleteButton />
-      </Datagrid>
+      </DatagridConfigurable>
     </List>
   )
 }
