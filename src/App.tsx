@@ -24,6 +24,9 @@ import ReferenceData from './pages/ReferenceData'
 import ReferenceDataList from './components/ReferenceDataList'
 import projects from './resources/projects'
 import batches from './resources/batches'
+import ReferenceDataCreate, {
+  ReferenceDataEdit
+} from './resources/reference-data'
 import items from './resources/items'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
@@ -83,34 +86,27 @@ function App(): React.ReactElement {
                   />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>
-                      <Route
-                        path='protective-marking'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='protective-marking-authority'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='department'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='vault-location'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='platform-originator'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='organisation'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='media-type'
-                        element={<ReferenceDataList />}
-                      />
+                      <Route path='protective-marking'>
+                        {...createRoutes('protective-marking')}
+                      </Route>
+                      <Route path='protective-marking-authority'>
+                        {...createRoutes('protective-marking-authority')}
+                      </Route>
+                      <Route path='department'>
+                        {...createRoutes('department')}
+                      </Route>
+                      <Route path='vault-location'>
+                        {...createRoutes('vault-location')}
+                      </Route>
+                      <Route path='platform-originator'>
+                        {...createRoutes('platform-originator')}
+                      </Route>
+                      <Route path='organisation'>
+                        {...createRoutes('organisation')}
+                      </Route>
+                      <Route path='media-type'>
+                        {...createRoutes('media-type')}
+                      </Route>
                     </Route>
                   </CustomRoutes>
                 ]
@@ -130,6 +126,27 @@ function App(): React.ReactElement {
       </Admin>
     </Suspense>
   )
+}
+
+const createRoutes = (name: string) => {
+  const cName: string = name
+  return [
+    <Route
+      key={`${cName}list`}
+      index
+      element={<ReferenceDataList name={name} />}
+    />,
+    <Route
+      key={`${cName}edit`}
+      path=':id'
+      element={<ReferenceDataEdit name={name} />}
+    />,
+    <Route
+      key={`${cName}create`}
+      path='create'
+      element={<ReferenceDataCreate name={name} />}
+    />
+  ]
 }
 
 export default App

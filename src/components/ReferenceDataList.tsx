@@ -1,11 +1,35 @@
 import React from 'react'
-import { Datagrid, FunctionField, List } from 'react-admin'
+import {
+  CreateButton,
+  Datagrid,
+  FunctionField,
+  type Identifier,
+  List,
+  TopToolbar
+} from 'react-admin'
 
-export default function ReferenceDataList(): React.ReactElement {
+interface PropType {
+  name: string
+}
+
+export default function ReferenceDataList({
+  name
+}: PropType): React.ReactElement {
+  const cName: string = name
+  const ListActions = () => (
+    <TopToolbar>
+      <CreateButton to={`/reference-data/${cName}/create`} />
+    </TopToolbar>
+  )
   return (
-    <List>
-      <Datagrid>
+    <List actions={<ListActions />}>
+      <Datagrid
+        rowClick={(id: Identifier) => {
+          const cID: string = id.toString()
+          return `/reference-data/${cName}/${cID}`
+        }}>
         <FunctionField
+          style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
