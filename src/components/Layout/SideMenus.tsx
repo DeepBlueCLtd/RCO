@@ -2,7 +2,6 @@ import React from 'react'
 import { type Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Menu } from 'react-admin'
-import { AddLink } from '@mui/icons-material'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -25,11 +24,13 @@ export const SideMenus = (): React.ReactElement => {
       <Menu.ResourceItem name='platforms' />
       <Menu.ResourceItem name='projects' />
       <Menu.ResourceItem name='batches' />
-      <Menu.Item
-        to='/reference-data'
-        primaryText='Reference Data'
-        leftIcon={<AddLink />}
-      />
+      <Menu.ResourceItem name='organisation' />
+      <Menu.ResourceItem name='protective-marking' />
+      <Menu.ResourceItem name='department' />
+      <Menu.ResourceItem name='vault-location' />
+      <Menu.ResourceItem name='platform-originator' />
+      <Menu.ResourceItem name='media-type' />
+      <Menu.ResourceItem name='protective-marking-authority' />
     </Menu>
   )
 }

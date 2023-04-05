@@ -9,7 +9,18 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Layers, Person, SettingsSuggest } from '@mui/icons-material'
+import {
+  Layers,
+  Person,
+  SettingsSuggest,
+  Business,
+  Workspaces,
+  Security,
+  LocationOn,
+  Widgets,
+  Shield,
+  Camera
+} from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -20,10 +31,15 @@ import Welcome from './pages/Welcome'
 import users from './resources/users'
 import audit from './resources/audit'
 import { rcoTheme } from './themes/rco-theme'
-import ReferenceData from './pages/ReferenceData'
-import ReferenceDataList from './components/ReferenceDataList'
 import projects from './resources/projects'
 import batches from './resources/batches'
+import organisations from './resources/organisation'
+import protectivemarkings from './resources/protective-marking'
+import departments from './resources/department'
+import vaultLocations from './resources/vault-location'
+import platformOriginators from './resources/platform-originator'
+import mediaTypes from './resources/media-type'
+import protectiveMarkingAuthorities from './resources/protective-marking-authority'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -74,38 +90,53 @@ function App(): React.ReactElement {
                     name='batches'
                     {...batches}
                   />,
-                  <CustomRoutes key='routes'>
-                    <Route path='/reference-data' element={<ReferenceData />}>
-                      <Route
-                        path='protective-marking'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='protective-marking-authority'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='department'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='vault-location'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='platform-originator'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='organisation'
-                        element={<ReferenceDataList />}
-                      />
-                      <Route
-                        path='media-type'
-                        element={<ReferenceDataList />}
-                      />
-                    </Route>
-                  </CustomRoutes>
+                  <Resource
+                    key='organisation'
+                    name='organisation'
+                    icon={Business}
+                    {...organisations}
+                  />,
+                  <Resource
+                    key='protective-marking'
+                    name='protective-marking'
+                    icon={Security}
+                    options={{ label: 'Protective Marking' }}
+                    {...protectivemarkings}
+                  />,
+                  <Resource
+                    key='department'
+                    name='department'
+                    icon={Workspaces}
+                    {...departments}
+                  />,
+                  <Resource
+                    key='vault-location'
+                    name='vault-location'
+                    icon={LocationOn}
+                    options={{ label: 'Vault Location' }}
+                    {...vaultLocations}
+                  />,
+                  <Resource
+                    key='platform-originator'
+                    name='platform-originator'
+                    icon={Widgets}
+                    options={{ label: 'Platform Originator' }}
+                    {...platformOriginators}
+                  />,
+                  <Resource
+                    key='media-type'
+                    name='media-type'
+                    icon={Camera}
+                    options={{ label: 'Media Type' }}
+                    {...mediaTypes}
+                  />,
+                  <Resource
+                    key='protective-marking-authority'
+                    name='protective-marking-authority'
+                    icon={Shield}
+                    options={{ label: 'Protective Marking Authority' }}
+                    {...protectiveMarkingAuthorities}
+                  />
                 ]
               : []),
             <Resource
