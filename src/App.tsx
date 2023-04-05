@@ -9,7 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Layers, Person, SettingsSuggest } from '@mui/icons-material'
+import { Category, Layers, Person, SettingsSuggest } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -24,6 +24,7 @@ import ReferenceData from './pages/ReferenceData'
 import ReferenceDataList from './components/ReferenceDataList'
 import projects from './resources/projects'
 import batches from './resources/batches'
+import items from './resources/items'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -73,6 +74,12 @@ function App(): React.ReactElement {
                     icon={Layers}
                     name='batches'
                     {...batches}
+                  />,
+                  <Resource
+                    key='items'
+                    icon={Category}
+                    name='items'
+                    {...items}
                   />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>

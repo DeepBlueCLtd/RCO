@@ -1,9 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box } from '@mui/material'
 import React from 'react'
 import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from './DatePicker'
+import FlexBox from './FlexBox'
 
 const schema = yup.object({
   year_of_receipt: yup.string().required(),
@@ -84,15 +84,3 @@ const BatchForm = (): React.ReactElement => {
 }
 
 export default BatchForm
-
-interface FlexBoxProps {
-  children: React.ReactElement | React.ReactElement[]
-}
-
-const FlexBox = (props: FlexBoxProps): React.ReactElement => {
-  return (
-    <Box display='flex' width='100%' alignItems='center' columnGap='20px'>
-      {props.children}
-    </Box>
-  )
-}

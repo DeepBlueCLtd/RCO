@@ -132,11 +132,72 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
             previousData: data,
             data: { batch_number: batchNumber }
           })
+          await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
           return record
         } catch (error) {
           console.log({ error })
           return record
         }
+      },
+      afterUpdate: async (record: UpdateResult<Batch>) => {
+        await audit(
+          AuditType.EDIT_BATCH,
+          `Batch updated (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterDelete: async (record: DeleteResult<Batch>) => {
+        await audit(
+          AuditType.DELETE_BATCH,
+          `Batch deleted (${String(record.data.id)})`
+        )
+        return record
+      }
+    },
+    {
+      resource: 'items',
+      afterCreate: async (
+        record: CreateResult<Item>,
+        dataProvider: DataProvider
+      ) => {
+        try {
+          const { data } = record
+          const { batch_id: batchId, id } = data
+          const { data: batch } = await dataProvider.getOne<Batch>('batches', {
+            id: batchId
+          })
+          const idCtr: number = id
+          const idVal: string = (idCtr + 1).toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+          })
+          const itemNumber = `${batch.batch_number}/${idVal}`
+
+          await dataProvider.update<Item>('items', {
+            id,
+            previousData: data,
+            data: { item_number: itemNumber }
+          })
+          await audit(AuditType.CREATE_ITEM, `Item created (${String(id)})`)
+          return record
+        } catch (error) {
+          console.log({ error })
+          return record
+        }
+      },
+      afterUpdate: async (record: UpdateResult<Item>) => {
+        await audit(
+          AuditType.EDIT_ITEM,
+          `Item updated (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterDelete: async (record: DeleteResult<Item>) => {
+        await audit(
+          AuditType.DELETE_ITEM,
+          `Item deleted (${String(record.data.id)})`
+        )
+        return record
       }
     }
   ])
