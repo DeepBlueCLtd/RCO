@@ -15,7 +15,7 @@ const RerferenceDataCreate = ({
   )
 }
 
-export const RerferenceDataEdit = ({
+export const ReferenceDataEdit = ({
   name
 }: {
   name: string

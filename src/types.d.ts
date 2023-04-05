@@ -41,3 +41,32 @@ interface Batch {
   maximum_protective_marking: number
   remarks: string
 }
+
+interface CoreMedia {
+  readonly media_type: MediaType
+}
+interface DVD extends CoreMedia {
+  size: number
+}
+
+interface Tape extends CoreMedia {
+  minutes: number
+  brand: string
+}
+
+interface Item {
+  id: number
+  media_type: MediaType
+  start: string
+  batch_id: number
+  item_number: string
+  end: string
+  vault_location: number
+  remarks: string
+  protective_marking: number
+  mag_tape: Tape
+  dvd: DVD
+  paper: Paper
+}
+
+type MediaType = 'DVD' | 'Tape' | 'Paper'

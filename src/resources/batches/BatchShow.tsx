@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import {
+  CreateButton,
   DeleteButton,
   EditButton,
   Show,
@@ -8,6 +9,7 @@ import {
   TopToolbar
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
+import { useParams } from 'react-router-dom'
 
 const ValueField = ({
   label,
@@ -23,12 +25,17 @@ const ValueField = ({
   )
 }
 
-const ShowActions = () => (
-  <TopToolbar>
-    <EditButton />
-    <DeleteButton />
-  </TopToolbar>
-)
+const ShowActions = () => {
+  const { id = '' } = useParams()
+  const batchId: string = id
+  return (
+    <TopToolbar>
+      <CreateButton label='Create item' to={`/items/create?batch=${batchId}`} />
+      <EditButton />
+      <DeleteButton />
+    </TopToolbar>
+  )
+}
 
 export default function BatchShow(): React.ReactElement {
   return (
