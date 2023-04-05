@@ -24,7 +24,10 @@ export default function ReferenceDataList({
   return (
     <List actions={<ListActions />}>
       <Datagrid
-        rowClick={(id: Identifier) => `/reference-data/${cName}/${id}/show`}>
+        rowClick={(id: Identifier) => {
+          const cID: string = id.toString()
+          return `/reference-data/${cName}/${cID}`
+        }}>
         <FunctionField
           style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}

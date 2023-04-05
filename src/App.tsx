@@ -24,7 +24,6 @@ import ReferenceData from './pages/ReferenceData'
 import ReferenceDataList from './components/ReferenceDataList'
 import projects from './resources/projects'
 import batches from './resources/batches'
-import ReferenceDataShow from './components/ReferenceDataShow'
 import ReferenceDataCreate, {
   ReferenceDataEdit
 } from './resources/reference-data'
@@ -132,11 +131,6 @@ function App(): React.ReactElement {
 const createRoutes = (name: string) => {
   const cName: string = name
   return [
-    <Route
-      key={`${cName}show`}
-      path=':id/show'
-      element={<ReferenceDataShow name={name} />}
-    />,
     <Route
       key={`${cName}list`}
       index
