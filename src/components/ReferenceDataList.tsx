@@ -8,14 +8,10 @@ import {
   TopToolbar
 } from 'react-admin'
 
-interface PropType {
-  name: string
-}
-
-export default function ReferenceDataList({
-  name
-}: PropType): React.ReactElement {
-  const cName: string = name
+export default function ReferenceDataList(
+  item: ReferenceItem
+): React.ReactElement {
+  const cName: string = item.name
   const ListActions = () => (
     <TopToolbar>
       <CreateButton to={`/reference-data/${cName}/create`} />
