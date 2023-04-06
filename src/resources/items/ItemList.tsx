@@ -15,6 +15,7 @@ import {
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
+import SourceNestedFilterInput from '../../components/SourceNestedFilterInput'
 import { mediaTypeOptions } from '../../utils/media'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
@@ -26,6 +27,13 @@ const filters = [
     source='media_type'
     key='media_type'
     choices={mediaTypeOptions}
+  />,
+  <SourceNestedFilterInput
+    key='batch.project'
+    source='batch.project'
+    reference='projects'
+    label='Project'
+    child={{ source: 'project', reference: 'projects' }}
   />,
   <DateInput source='start' key='start' />,
   <DateInput source='end' key='end' />,
