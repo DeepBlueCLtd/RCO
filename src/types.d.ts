@@ -33,13 +33,21 @@ interface Batch {
   batch_number: string
   vault: number
   year_of_receipt: string
-  department: number
-  project: number
-  platform: number
-  organisation: number
-  protective_marking_authority: number
-  maximum_protective_marking: number
+  department: ReferenceItem['id']
+  project: Project['id']
+  platform: Platform['id']
+  organisation: ReferenceItem['id']
+  protective_marking_authority: ReferenceItem['id']
+  maximum_protective_marking: ReferenceItem['id']
   remarks: string
+}
+
+/** a generic type, used for our assorted reference data lists. Once the
+ * interface becomes more complex, introduce a type-specific interface
+ */
+interface ReferenceItem {
+  id: number
+  name: string
 }
 
 interface CoreMedia {
@@ -58,12 +66,12 @@ interface Item {
   id: number
   media_type: MediaType
   start: string
-  batch_id: number
+  batch_id: Batch['id']
   item_number: string
   end: string
-  vault_location: number
+  vault_location: ReferenceItem['id']
   remarks: string
-  protective_marking: number
+  protective_marking: ReferenceItem['id']
   mag_tape: Tape
   dvd: DVD
   paper: Paper

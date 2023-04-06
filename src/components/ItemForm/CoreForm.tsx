@@ -7,15 +7,11 @@ import { useEffect } from 'react'
 
 const sx = { width: '100%' }
 
-interface OptionsText {
-  name: string
-}
-
 interface Props {
   batchId?: number
 }
 
-const optionsText = (item: OptionsText) => item.name
+const optionsText = (item: ReferenceItem) => item.name
 
 const CoreForm = (props: Props): React.ReactElement => {
   const { batchId } = props
