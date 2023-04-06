@@ -2,11 +2,11 @@ import React from 'react'
 import { Create, Edit } from 'react-admin'
 import ReferenceDataForm from '../../components/ReferenceDataForm'
 
-const RerferenceDataCreate = ({
-  name
-}: {
+interface PropType {
   name: string
-}): React.ReactElement => {
+}
+
+const RerferenceDataCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
     <Create redirect={`/reference-data/${cName}`}>
@@ -15,13 +15,8 @@ const RerferenceDataCreate = ({
   )
 }
 
-export const ReferenceDataEdit = ({
-  name
-}: {
-  name: string
-}): React.ReactElement => {
+export const ReferenceDataEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
-
   return (
     <Edit redirect={`/reference-data/${cName}`}>
       <ReferenceDataForm />
