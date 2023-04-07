@@ -120,7 +120,7 @@ export default function ItemForm() {
           <CoreForm batchId={batch?.id} />
         </TabbedForm.Tab>
         <TabbedForm.Tab
-          label='Map tape'
+          label='Mag tape'
           icon={<GroupWork />}
           iconPosition='end'>
           <MediaForm type='Tape' source='mag_tape' />
