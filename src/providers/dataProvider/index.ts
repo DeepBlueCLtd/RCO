@@ -20,6 +20,10 @@ import {
   generateProject
 } from '../../utils/generateData'
 
+const nowDate = (): string => {
+  return DateTime.now().toFormat('yyyy-MM-dd')
+}
+
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const platforms = generatePlatform(10)
   const projects = generateProject(10)
@@ -161,7 +165,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         await dataProvider.update<Project>('projects', {
           id,
           previousData: data,
-          data: { created_at: DateTime.now().toFormat('yyyy-MM-dd') }
+          data: { created_at: nowDate() }
         })
         return record
       },
@@ -190,7 +194,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
             previousData: data,
             data: {
               batch_number: batchNumber,
-              created_at: DateTime.now().toFormat('yyyy-MM-dd')
+              created_at: nowDate()
             }
           })
           await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
@@ -239,7 +243,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
             previousData: data,
             data: {
               item_number: itemNumber,
-              created_at: DateTime.now().toFormat('yyyy-MM-dd')
+              created_at: nowDate()
             }
           })
           await audit(AuditType.CREATE_ITEM, `Item created (${String(id)})`)
