@@ -8,24 +8,40 @@ import {
 } from 'react-admin'
 import constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
-import platforms from './platforms'
 import users from './users'
 import { getReferenceData } from './reference-data'
 import localForage from 'localforage'
 import { encryptData, generateSalt } from '../../utils/encryption'
+import {
+  generateBatch,
+  generateItems,
+  generatePlatform,
+  generateProject
+} from '../../utils/generateData'
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
+  const platforms = generatePlatform(10)
+  const projects = generateProject(10)
+  const organisation = getReferenceData('Organisation')
+  const department = getReferenceData('Department')
+  const vaults = getReferenceData('Vault Location')
+  const mediaType = getReferenceData('Media')
+  const protectiveMarking = getReferenceData('Protective Marking')
+  const protectiveMarkingAuthority = getReferenceData(
+    'Protective Marking Authority'
+  )
+  const platformOriginator = getReferenceData('Platform Originator')
+
   const defaultData: Record<string, any> = {
     platforms,
-    organisation: getReferenceData('Organisation'),
-    department: getReferenceData('Department'),
-    'vault-location': getReferenceData('Vault Location'),
-    'media-type': getReferenceData('Media'),
-    'protective-marking': getReferenceData('Protective Marking'),
-    'protective-marking-authority': getReferenceData(
-      'Protective Marking Authority'
-    ),
-    'platform-originator': getReferenceData('Platform Originator')
+    projects,
+    organisation,
+    department,
+    'vault-location': vaults,
+    'media-type': mediaType,
+    'protective-marking': protectiveMarking,
+    'protective-marking-authority': protectiveMarkingAuthority,
+    'platform-originator': platformOriginator
   }
 
   const provider = await localForageDataProvider({
@@ -43,10 +59,40 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     }
     return updatedUser
   })
+
   await localForage.setItem(
     `${constants.LOCAL_STORAGE_DB_KEY}users`,
     encryptedUsers
   )
+  const batches = generateBatch(
+    10,
+    platforms.length,
+    department.length,
+    projects.length,
+    organisation.length,
+    protectiveMarkingAuthority.length,
+    protectiveMarking.length
+  )
+
+  await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}batches`, batches)
+
+  const items: Item[] = []
+  for (let i = 0; i < batches.length; i++) {
+    const { data } = await provider.getOne<Project>('projects', {
+      id: batches[i].project
+    })
+    items.push(
+      ...generateItems(
+        10,
+        batches[i],
+        vaults.length,
+        protectiveMarking.length,
+        data
+      )
+    )
+  }
+  await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}items`, items)
+
   // in the localForage, the data doesn't get pushed to
   // indexedDB until it's modified. But, that means the app
   // loses the default values on restart (since the database
@@ -60,6 +106,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       )
     })
   )
+
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
 
