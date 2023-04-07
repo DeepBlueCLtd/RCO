@@ -25,6 +25,7 @@ interface Project {
   end_date: string
   project_code: string
   remarks: string
+  created_at: Date
 }
 
 interface Batch {
@@ -40,6 +41,7 @@ interface Batch {
   protective_marking_authority: ReferenceItem['id']
   maximum_protective_marking: ReferenceItem['id']
   remarks: string
+  created_at: Date
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
@@ -75,6 +77,7 @@ interface Item {
   mag_tape: Tape
   dvd: DVD
   paper: Paper
+  created_at: Date
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'

@@ -13,6 +13,7 @@ import users from './users'
 import { getReferenceData } from './reference-data'
 import localForage from 'localforage'
 import { encryptData, generateSalt } from '../../utils/encryption'
+import { DateTime } from 'luxon'
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const defaultData: Record<string, any> = {
@@ -100,11 +101,21 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         )
         return record
       },
-      afterCreate: async (record: CreateResult<Project>) => {
+      afterCreate: async (
+        record: CreateResult<Project>,
+        dataProvider: DataProvider
+      ) => {
+        const { data } = record
+        const { id } = data
         await audit(
           AuditType.CREATE_PROJECT,
           `Project created (${String(record.data.id)})`
         )
+        await dataProvider.update<Project>('projects', {
+          id,
+          previousData: data,
+          data: { created_at: DateTime.now().toFormat('yyyy-MM-dd') }
+        })
         return record
       },
       afterUpdate: async (record: UpdateResult<Project>) => {
@@ -130,7 +141,10 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           await dataProvider.update<Batch>('batches', {
             id,
             previousData: data,
-            data: { batch_number: batchNumber }
+            data: {
+              batch_number: batchNumber,
+              created_at: DateTime.now().toFormat('yyyy-MM-dd')
+            }
           })
           await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
           return record
@@ -176,7 +190,10 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           await dataProvider.update<Item>('items', {
             id,
             previousData: data,
-            data: { item_number: itemNumber }
+            data: {
+              item_number: itemNumber,
+              created_at: DateTime.now().toFormat('yyyy-MM-dd')
+            }
           })
           await audit(AuditType.CREATE_ITEM, `Item created (${String(id)})`)
           return record
