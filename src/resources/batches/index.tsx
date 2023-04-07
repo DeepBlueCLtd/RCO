@@ -1,6 +1,6 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
-import BatchForm from '../../components/BatchForm'
+import BatchForm from './BatchForm'
 
 const BatchList = React.lazy(async () => await import('./BatchList'))
 const BatchShow = React.lazy(async () => await import('./BatchShow'))
