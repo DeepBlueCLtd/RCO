@@ -78,8 +78,17 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 
   const items: Item[] = []
   for (let i = 0; i < batches.length; i++) {
+    const { data } = await provider.getOne<Project>('projects', {
+      id: batches[i].project
+    })
     items.push(
-      ...generateItems(10, batches[i], vaults.length, protectiveMarking.length)
+      ...generateItems(
+        10,
+        batches[i],
+        vaults.length,
+        protectiveMarking.length,
+        data
+      )
     )
   }
   await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}items`, items)

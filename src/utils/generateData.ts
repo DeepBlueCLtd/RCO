@@ -9,25 +9,31 @@ function generateRandomNumber(min: number, max: number): number {
   return randomInteger
 }
 
-function generateRandomDate(): DateTime[] {
-  const earliestDate = DateTime.now().minus({ days: 2 })
-  const daysAgo = Math.floor(Math.random() * 31)
-  const secondDate = earliestDate.minus({ days: daysAgo })
-  const firstDate = secondDate.minus({
-    days: generateRandomNumber(4 * 7, 10 * 7)
+function generateRandomDate(): [DateTime, DateTime] {
+  const startYear = 2020
+  const endYear = 2023
+  const randomStartYear = generateRandomNumber(startYear, endYear)
+  const randomStartMonth = Math.floor(Math.random() * 12) + 1
+  const randomStartDay = Math.floor(Math.random() * 28) + 1
+  const randomStartDate = DateTime.fromObject({
+    year: randomStartYear,
+    month: randomStartMonth,
+    day: randomStartDay
   })
-  return [firstDate, secondDate]
+  const endWeeks = Math.floor(Math.random() * 7) + 4
+  const endDate = randomStartDate.plus({ weeks: endWeeks })
+  return [randomStartDate, endDate]
 }
 
-// function generateRandomDateInRange(startDate: Date, endDate: Date): Date {
-//   const luxonStartDate = DateTime.fromJSDate(startDate)
-//   const luxonEndDate = DateTime.fromJSDate(endDate)
-//   const rangeInMs = luxonEndDate.toMillis() - luxonStartDate.toMillis()
-//   const randomDate = luxonStartDate.plus({
-//     milliseconds: Math.random() * rangeInMs
-//   })
-//   return randomDate.toJSDate()
-// }
+function generateRandomDateInRange(startDate: Date, endDate: Date): string {
+  const luxonStartDate = DateTime.fromJSDate(startDate)
+  const luxonEndDate = DateTime.fromJSDate(endDate)
+  const rangeInMs = luxonEndDate.toMillis() - luxonStartDate.toMillis()
+  const maxDurationMs = 10 * 24 * 60 * 60 * 1000
+  const durationMs = Math.min(rangeInMs, generateRandomNumber(0, maxDurationMs))
+  const randomDate = luxonStartDate.plus({ milliseconds: durationMs })
+  return randomDate.toJSDate().toString()
+}
 
 const generateBatchId = (year: string, batch: Batch[]): string => {
   const yearsFound = batch.filter((b) => b.year_of_receipt === year)
@@ -49,13 +55,13 @@ export const generateProject = (length: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
     const [startDate, endDate] = generateRandomDate()
-    const obj = {
+    const obj: Project = {
       id: i,
       name: `project-${i}`,
       start_date: startDate.toString(),
       end_date: endDate.toString(),
       project_code: String(generateRandomNumber(1, 1000)),
-      remarks: `project remarks ${i}`
+      remarks: `project-remarks-${i}`
     }
     projects.push(obj)
   }
@@ -74,7 +80,7 @@ export const generateBatch = (
   const batches: Batch[] = []
 
   for (let i = 1; i <= length; i++) {
-    const year = String(generateRandomNumber(2000, 2023))
+    const year = String(generateRandomNumber(2020, 2023))
     const obj: Batch = {
       id: i,
       name: `batch-${i}`,
@@ -104,30 +110,40 @@ export const generateItems = (
   length: number,
   batch: Batch,
   vaults: number,
-  protectiveMarking: number
+  protectiveMarking: number,
+  project: Project
 ): Item[] => {
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
+    const endDate = generateRandomDateInRange(
+      new Date(project.start_date),
+      new Date(project.end_date)
+    )
+    const startDate = generateRandomDateInRange(
+      new Date(project.start_date),
+      new Date(endDate)
+    )
+    const id: number = generateRandomNumber(1, 100000)
     const obj: Item = {
-      id: generateRandomNumber(1, 100000),
+      id,
       media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
-      start: DateTime.now().toString(),
+      start: startDate,
       batch_id: batch.id,
-      item_number: `${batch.batch_number}/${i}`,
-      end: DateTime.now().toString(),
+      item_number: `${batch.batch_number}/${id + 1}`,
+      end: endDate,
       vault_location: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
       protective_marking: generateRandomNumber(1, protectiveMarking - 1),
       mag_tape: {
         minutes: i,
-        brand: 'brand',
+        brand: `brand-${i}`,
         media_type: MediaType[generateRandomNumber(0, 3)] as MediaType
       },
       dvd: {
         media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
-        size: 1
+        size: i
       },
-      paper: 'abc'
+      paper: `paper-${i}`
     }
     items.push(obj)
   }
