@@ -54,11 +54,16 @@ export const generatePlatform = (length: number): Platform[] => {
   return platforms
 }
 
+/** the set of fields that are essential for our data-types
+ * but which get created by the data-provider/backend
+ */
+type fieldsToOmit = 'id' | 'created_at'
+
 export const generateProject = (length: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
     const [startDate, endDate] = generateRandomDate()
-    const obj: Omit<Project, 'id'> = {
+    const obj: Omit<Project, fieldsToOmit> = {
       name: `project-${i}`,
       start_date: startDate.toString(),
       end_date: endDate.toString(),
@@ -83,7 +88,7 @@ export const generateBatch = (
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
-    const obj: Omit<Batch, 'id'> = {
+    const obj: Omit<Batch, fieldsToOmit> = {
       name: `batch-${i}`,
       batch_number: `V${generateBatchId(year, batches)}/${year}`,
       vault: generateRandomNumber(0, length),
@@ -124,7 +129,7 @@ export const generateItems = (
       new Date(project.start_date),
       new Date(endDate)
     )
-    const obj: Omit<Item, 'id'> = {
+    const obj: Omit<Item, fieldsToOmit> = {
       media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
       start: startDate,
       batch_id: batch.id,
