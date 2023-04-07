@@ -1,6 +1,6 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
-import ReferenceDataForm from '../../components/ReferenceDataForm'
+import ReferenceDataForm from './ReferenceDataForm'
 
 interface PropType {
   name: string

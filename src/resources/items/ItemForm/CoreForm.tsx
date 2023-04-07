@@ -1,7 +1,7 @@
 import { ReferenceInput, SelectInput, TextInput } from 'react-admin'
-import { mediaTypeOptions } from '../../utils/media'
-import DatePicker from '../DatePicker'
-import FlexBox from '../FlexBox'
+import { mediaTypeOptions } from '../../../utils/media'
+import DatePicker from '../../../components/DatePicker'
+import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'
 

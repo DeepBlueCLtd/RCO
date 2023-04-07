@@ -1,6 +1,6 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
-import UserForm from '../../components/UserForm'
+import UserForm from './UserForm'
 import { encryptData, generateSalt } from '../../utils/encryption'
 
 const UserList = React.lazy(async () => await import('./UserList'))

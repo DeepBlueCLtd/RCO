@@ -1,6 +1,6 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
-import ProjectForm from '../../components/ProjectForm'
+import ProjectForm from './ProjectForm'
 
 const ProjectList = React.lazy(async () => await import('./ProjectList'))
 const ProjectShow = React.lazy(async () => await import('./ProjectShow'))

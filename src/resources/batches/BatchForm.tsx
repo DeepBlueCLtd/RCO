@@ -2,9 +2,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import React from 'react'
 import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
 import * as yup from 'yup'
-import DatePicker from './DatePicker'
-import EditToolBar from './EditToolBar'
-import FlexBox from './FlexBox'
+import DatePicker from '../../components/DatePicker'
+import FlexBox from '../../components/FlexBox'
+import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
   year_of_receipt: yup.string().required(),
