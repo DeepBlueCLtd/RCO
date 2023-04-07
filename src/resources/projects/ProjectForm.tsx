@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import dayjs from 'dayjs'
 import { Box } from '@mui/material'
-import EditToolBar from './EditToolBar'
+import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
