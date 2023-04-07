@@ -2,7 +2,6 @@ import {
   DatagridConfigurable,
   DateField,
   DateInput,
-  DeleteButton,
   EditButton,
   FilterButton,
   List,
@@ -82,7 +81,6 @@ export default function ItemList(): React.ReactElement {
         />
         <TextField source='remarks' />
         <EditButton />
-        <DeleteButton />
       </DatagridConfigurable>
     </List>
   )
