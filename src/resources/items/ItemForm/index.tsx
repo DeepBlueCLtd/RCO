@@ -11,9 +11,9 @@ import {
   useRedirect
 } from 'react-admin'
 import { useLocation, useParams } from 'react-router-dom'
-import { isNumber } from '../../utils/number'
+import { isNumber } from '../../../utils/number'
 import CoreForm from './CoreForm'
-import { mediaTypeOptions } from '../../utils/media'
+import { mediaTypeOptions } from '../../../utils/media'
 import dayjs from 'dayjs'
 import MediaForm from './MediaForm'
 import ItemFormToolbar from './ItemFormToolbar'

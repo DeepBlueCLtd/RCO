@@ -7,7 +7,7 @@ import {
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { decryptPassword } from '../utils/encryption'
+import { decryptPassword } from '../../utils/encryption'
 
 const schema = yup.object({
   name: yup.string().required(),

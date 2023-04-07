@@ -1,7 +1,7 @@
 import { SaveButton, Toolbar, useNotify } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import FlexBox from '../FlexBox'
+import FlexBox from '../../../components/FlexBox'
 
 const ItemFormToolbar = () => {
   const { reset } = useFormContext()
