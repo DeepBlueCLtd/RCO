@@ -58,7 +58,9 @@ export default function BatchList(): React.ReactElement {
             value={date}
             label='Days'
             labelId='days-label'
-            onChange={(e) => { setDate(e.target.value) }}>
+            onChange={(e) => {
+              setDate(e.target.value)
+            }}>
             {options.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
@@ -66,7 +68,10 @@ export default function BatchList(): React.ReactElement {
             ))}
           </Select>
         </FormControl>
-        <IconButton onClick={() => { setDate('') }}>
+        <IconButton
+          onClick={() => {
+            setDate('')
+          }}>
           <Delete />
         </IconButton>
       </Box>
