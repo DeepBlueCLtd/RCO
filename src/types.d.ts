@@ -1,25 +1,25 @@
 interface User {
-  id: number
+  readonly id: number
   name: string
   password: string
   adminRights: boolean
 }
 
 interface Audit {
-  id: number
+  readonly id: number
   activity_type: string
   date_time: string
   activity_detail?: string
 }
 
 interface Platform {
-  id: number
+  readonly id: number
   name: string
   active: boolean
 }
 
 interface Project {
-  id: number
+  readonly id: number
   name: string
   start_date: string
   end_date: string
@@ -29,7 +29,7 @@ interface Project {
 }
 
 interface Batch {
-  id: number
+  readonly id: number
   name: string
   batch_number: string
   vault: number
@@ -48,7 +48,7 @@ interface Batch {
  * interface becomes more complex, introduce a type-specific interface
  */
 interface ReferenceItem {
-  id: number
+  readonly id: number
   name: string
 }
 
@@ -65,7 +65,7 @@ interface Tape extends CoreMedia {
 }
 
 interface Item {
-  id: number
+  readonly id: number
   media_type: MediaType
   start: string
   batch_id: Batch['id']
