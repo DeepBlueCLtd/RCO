@@ -3,7 +3,9 @@ import { DateTime } from 'luxon'
 const MediaType = ['DVD', 'Tape', 'Paper']
 
 function generateRandomNumber(min: number, max: number): number {
-  const randomNumber = Math.random()
+  const array = new Uint32Array(1)
+  const generatedRandomNumber = window.crypto.getRandomValues(array)
+  const randomNumber = generatedRandomNumber[0] / (Math.pow(2, 32) - 1)
   const scaledRandomNumber = randomNumber * (max - min) + min
   const randomInteger = Math.floor(scaledRandomNumber)
   return randomInteger
@@ -13,14 +15,14 @@ function generateRandomDate(): [DateTime, DateTime] {
   const startYear = 2020
   const endYear = 2023
   const randomStartYear = generateRandomNumber(startYear, endYear)
-  const randomStartMonth = Math.floor(Math.random() * 12) + 1
-  const randomStartDay = Math.floor(Math.random() * 28) + 1
+  const randomStartMonth = generateRandomNumber(1, 12)
+  const randomStartDay = generateRandomNumber(1, 28)
   const randomStartDate = DateTime.fromObject({
     year: randomStartYear,
     month: randomStartMonth,
     day: randomStartDay
   })
-  const endWeeks = Math.floor(Math.random() * 7) + 4
+  const endWeeks = generateRandomNumber(4, 10)
   const endDate = randomStartDate.plus({ weeks: endWeeks })
   return [randomStartDate, endDate]
 }
