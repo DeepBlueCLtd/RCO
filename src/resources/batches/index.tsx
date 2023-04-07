@@ -16,7 +16,7 @@ const BatchCreate = (): React.ReactElement => {
 const BatchEdit = (): React.ReactElement => {
   return (
     <Edit>
-      <BatchForm />
+      <BatchForm isEdit />
     </Edit>
   )
 }

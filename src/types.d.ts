@@ -81,3 +81,11 @@ interface Item {
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
+
+/** properties common to a number of forms */
+interface FormProps {
+  /** if the form is currently in edit mode (rather than create mode),
+   * since we may display a `Delete` button when in edit mode
+   */
+  isEdit?: boolean
+}

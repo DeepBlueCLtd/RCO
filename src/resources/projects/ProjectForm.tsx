@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import dayjs from 'dayjs'
 import { Box } from '@mui/material'
+import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
@@ -23,7 +24,7 @@ const schema = yup.object({
   remarks: yup.string()
 })
 
-export default function ProjectForm(): React.ReactElement {
+export default function ProjectForm(props: FormProps): React.ReactElement {
   const defaultValues = {
     name: '',
     start_date: '',
@@ -32,7 +33,10 @@ export default function ProjectForm(): React.ReactElement {
     remarks: ''
   }
   return (
-    <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
+    <SimpleForm
+      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      defaultValues={defaultValues}
+      resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <Box display='flex' width='100%' columnGap='20px'>
         <DateInput source='start_date' variant='outlined' sx={{ flex: 1 }} />

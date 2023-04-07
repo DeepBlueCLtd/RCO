@@ -4,6 +4,7 @@ import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
+import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
   year_of_receipt: yup.string().required(),
@@ -16,7 +17,7 @@ const schema = yup.object({
   remarks: yup.string().required()
 })
 
-const BatchForm = (): React.ReactElement => {
+const BatchForm = (props: FormProps): React.ReactElement => {
   const defaultValues: Partial<Batch> = {
     batch_number: '',
     year_of_receipt: '',
@@ -28,7 +29,10 @@ const BatchForm = (): React.ReactElement => {
   const sx = { width: '100%' }
 
   return (
-    <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
+    <SimpleForm
+      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      defaultValues={defaultValues}
+      resolver={yupResolver(schema)}>
       <ReferenceInput
         variant='outlined'
         source='platform'
