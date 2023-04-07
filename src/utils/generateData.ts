@@ -37,7 +37,7 @@ function generateRandomDateInRange(startDate: Date, endDate: Date): string {
   return randomDate.toJSDate().toString()
 }
 
-const generateBatchId = (year: string, batch: newBatchType[]): string => {
+const generateBatchId = (year: string, batch: Batch[]): string => {
   const yearsFound = batch.filter((b) => b.year_of_receipt === year)
   return (yearsFound.length + 1).toLocaleString('en-US', {
     minimumIntegerDigits: 2,
@@ -45,33 +45,31 @@ const generateBatchId = (year: string, batch: newBatchType[]): string => {
   })
 }
 
-type newPlatformType = Omit<Platform, 'id'>
-export const generatePlatform = (length: number): newPlatformType[] => {
-  const platforms: newPlatformType[] = []
+export const generatePlatform = (length: number): Platform[] => {
+  const platforms: Platform[] = []
   for (let i = 1; i <= length; i++) {
-    platforms.push({ name: `platform-${i}`, active: true })
+    const newP: Omit<Platform, 'id'> = { name: `platform-${i}`, active: true }
+    platforms.push(newP as Platform)
   }
   return platforms
 }
 
-type newProjectType = Omit<Project, 'id'>
-export const generateProject = (length: number): newProjectType[] => {
-  const projects: newProjectType[] = []
+export const generateProject = (length: number): Project[] => {
+  const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
     const [startDate, endDate] = generateRandomDate()
-    const obj: newProjectType = {
+    const obj: Omit<Project, 'id'> = {
       name: `project-${i}`,
       start_date: startDate.toString(),
       end_date: endDate.toString(),
       project_code: String(generateRandomNumber(1, 1000)),
       remarks: `project-remarks-${i}`
     }
-    projects.push(obj)
+    projects.push(obj as Project)
   }
   return projects
 }
 
-type newBatchType = Omit<Batch, 'id'>
 export const generateBatch = (
   length: number,
   platforms: number,
@@ -80,12 +78,12 @@ export const generateBatch = (
   organisations: number,
   protectiveMarkingAuthority: number,
   protectiveMarking: number
-): newBatchType[] => {
-  const batches: newBatchType[] = []
+): Batch[] => {
+  const batches: Batch[] = []
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
-    const obj: newBatchType = {
+    const obj: Omit<Batch, 'id'> = {
       name: `batch-${i}`,
       batch_number: `V${generateBatchId(year, batches)}/${year}`,
       vault: generateRandomNumber(0, length),
@@ -104,20 +102,19 @@ export const generateBatch = (
       ),
       remarks: `remarks-batch-${i}`
     }
-    batches.push(obj)
+    batches.push(obj as Batch)
   }
   return batches
 }
 
-type newItemType = Omit<Item, 'id'>
 export const generateItems = (
   length: number,
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
   project: Project
-): newItemType[] => {
-  const items: newItemType[] = []
+): Item[] => {
+  const items: Item[] = []
   for (let i = 1; i <= length; i++) {
     const endDate = generateRandomDateInRange(
       new Date(project.start_date),
@@ -127,7 +124,7 @@ export const generateItems = (
       new Date(project.start_date),
       new Date(endDate)
     )
-    const obj: newItemType = {
+    const obj: Omit<Item, 'id'> = {
       media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
       start: startDate,
       batch_id: batch.id,
@@ -147,7 +144,7 @@ export const generateItems = (
       },
       paper: `paper-${i}`
     }
-    items.push(obj)
+    items.push(obj as Item)
   }
   return items
 }
