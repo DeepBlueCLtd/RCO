@@ -28,7 +28,7 @@ const UserCreate = (): React.ReactElement => {
 const UserEdit = (): React.ReactElement => {
   return (
     <Edit transform={transform}>
-      <UserForm />
+      <UserForm isEdit />
     </Edit>
   )
 }

@@ -8,6 +8,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { decryptPassword } from '../utils/encryption'
+import EditToolBar from './EditToolBar'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -15,7 +16,7 @@ const schema = yup.object({
   adminRights: yup.boolean()
 })
 
-export default function UserForm(): React.ReactElement {
+export default function UserForm(props: FormProps): React.ReactElement {
   const defaultValues = {
     name: '',
     password: '',
@@ -23,7 +24,10 @@ export default function UserForm(): React.ReactElement {
   }
   const { record } = useEditContext()
   return (
-    <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
+    <SimpleForm
+      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      defaultValues={defaultValues}
+      resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <TextInput
         source='password'

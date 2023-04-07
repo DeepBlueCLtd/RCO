@@ -78,3 +78,7 @@ interface Item {
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
+
+interface FormProps {
+  isEdit?: boolean
+}

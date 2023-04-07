@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import {
   CreateButton,
-  DeleteButton,
+  DeleteWithConfirmButton,
   EditButton,
   Show,
   TextField,
@@ -32,7 +32,7 @@ const ShowActions = () => {
     <TopToolbar>
       <CreateButton label='Create item' to={`/items/create?batch=${batchId}`} />
       <EditButton />
-      <DeleteButton />
+      <DeleteWithConfirmButton />
     </TopToolbar>
   )
 }

@@ -1,7 +1,7 @@
 import {
   Datagrid,
   DateField,
-  DeleteButton,
+  DeleteWithConfirmButton,
   EditButton,
   List,
   TextField
@@ -24,7 +24,7 @@ export default function ItemList(): React.ReactElement {
           reference='protective-marking'
         />
         <EditButton />
-        <DeleteButton />
+        <DeleteWithConfirmButton />
       </Datagrid>
     </List>
   )
