@@ -70,6 +70,7 @@ export default function ItemList(): React.ReactElement {
     <List hasCreate={false} actions={<ItemActions />} filters={filters}>
       <DatagridConfigurable rowClick='show'>
         <TextField source='id' />
+        <TextField source='created_at' label='Created' />
         <TextField source='item_number' label='Reference' />
         <TextField source='media_type' label='Media type' />
         <DateField source='start' />
