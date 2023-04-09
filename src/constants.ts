@@ -3,7 +3,7 @@ export const DATE_FORMAT = 'DD-MM-YYYY'
 export const DATETIME_FORMAT = 'DD-MM-YYYY HH =mm =ss'
 export const TOKEN_KEY = 'rco-user'
 export const SALT = 'salt'
-// table/resource names
+// major table/resource names
 export const R_USERS = 'users'
 export const R_BATCHES = 'batches'
 export const R_PROJECTS = 'projects'
