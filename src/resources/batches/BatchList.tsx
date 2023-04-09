@@ -35,12 +35,12 @@ export default function BatchList(): React.ReactElement {
         <SourceField source='organisation' label='Organisation' />
         <SourceField
           source='protective_marking_authority'
-          reference='protective-marking-authority'
+          reference='protectiveMarkingAuthority'
           label='Protective marking authorityg'
         />
         <SourceField
           source='maximum_protective_marking'
-          reference='protective-marking'
+          reference='protectiveMarking'
           label='Maximum protective marking'
         />
         <TextField source='remarks' />

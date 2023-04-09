@@ -39,13 +39,13 @@ const filters = [
     source='vault_location'
     key='vault_location'
     sort={sort()}
-    reference='vault-location'
+    reference='vaultLocation'
   />,
   <SourceInput
     source='protective_marking'
     key='protective_marking'
     sort={sort()}
-    reference='protective-marking'
+    reference='protectiveMarking'
   />,
   <SourceInput
     source='batch_id'
@@ -74,10 +74,10 @@ export default function ItemList(): React.ReactElement {
         <TextField source='media_type' label='Media type' />
         <DateField source='start' />
         <DateField source='end' />
-        <SourceField source='vault_location' reference='vault-location' />
+        <SourceField source='vault_location' reference='vaultLocation' />
         <SourceField
           source='protective_marking'
-          reference='protective-marking'
+          reference='protectiveMarking'
         />
         <TextField source='remarks' />
         <EditButton />

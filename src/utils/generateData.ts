@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+import { nowDate } from '../providers/dataProvider'
 
 const MediaType = ['DVD', 'Tape', 'Paper']
 
@@ -54,23 +55,20 @@ export const generatePlatform = (length: number): Platform[] => {
   return platforms
 }
 
-/** the set of fields that are essential for our data-types
- * but which get created by the data-provider/backend
- */
-type fieldsToOmit = 'id' | 'created_at'
-
 export const generateProject = (length: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
     const [startDate, endDate] = generateRandomDate()
-    const obj: Omit<Project, fieldsToOmit> = {
+    const obj: Project = {
+      id: i,
+      created_at: nowDate(),
       name: `project-${i}`,
       start_date: startDate.toString(),
       end_date: endDate.toString(),
       project_code: String(generateRandomNumber(1, 1000)),
       remarks: `project-remarks-${i}`
     }
-    projects.push(obj as Project)
+    projects.push(obj)
   }
   return projects
 }
@@ -88,7 +86,9 @@ export const generateBatch = (
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
-    const obj: Omit<Batch, fieldsToOmit> = {
+    const obj: Batch = {
+      id: i,
+      created_at: nowDate(),
       name: `batch-${i}`,
       batch_number: `V${generateBatchId(year, batches)}/${year}`,
       vault: generateRandomNumber(0, length),
@@ -107,13 +107,14 @@ export const generateBatch = (
       ),
       remarks: `remarks-batch-${i}`
     }
-    batches.push(obj as Batch)
+    batches.push(obj)
   }
   return batches
 }
 
 export const generateItems = (
   length: number,
+  offset: number,
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
@@ -129,7 +130,9 @@ export const generateItems = (
       new Date(project.start_date),
       new Date(endDate)
     )
-    const obj: Omit<Item, fieldsToOmit> = {
+    const obj: Item = {
+      id: offset + i,
+      created_at: nowDate(),
       media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
       start: startDate,
       batch_id: batch.id,
@@ -149,7 +152,7 @@ export const generateItems = (
       },
       paper: `paper-${i}`
     }
-    items.push(obj as Item)
+    items.push(obj)
   }
   return items
 }

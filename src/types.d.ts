@@ -89,3 +89,18 @@ interface FormProps {
    */
   isEdit?: boolean
 }
+
+interface RCOStore {
+  users: User[]
+  batches: Batch[]
+  items: Item[]
+  platforms: Platform[]
+  projects: Project[]
+  organisation: ReferenceItem[]
+  department: ReferenceItem[]
+  vaultLocation: ReferenceItem[]
+  mediaType: ReferenceItem[]
+  protectiveMarking: ReferenceItem[]
+  protectiveMarkingAuthority: ReferenceItem[]
+  platformOriginator: ReferenceItem[]
+}

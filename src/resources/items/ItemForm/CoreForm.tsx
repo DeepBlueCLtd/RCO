@@ -29,12 +29,12 @@ const CoreForm = (props: Props): React.ReactElement => {
         <DatePicker source='end' variant='outlined' label='End' />
       </FlexBox>
       <FlexBox>
-        <ReferenceInput source='vault_location' reference='vault-location'>
+        <ReferenceInput source='vault_location' reference='vaultLocation'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <ReferenceInput
           source='protective_marking'
-          reference='protective-marking'>
+          reference='protectiveMarking'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
       </FlexBox>

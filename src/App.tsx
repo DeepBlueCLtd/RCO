@@ -86,26 +86,26 @@ function App(): React.ReactElement {
                   />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>
-                      <Route path='protective-marking'>
-                        {...createRoutes('protective-marking')}
+                      <Route path='protectiveMarking'>
+                        {...createRoutes('protectiveMarking')}
                       </Route>
-                      <Route path='protective-marking-authority'>
-                        {...createRoutes('protective-marking-authority')}
+                      <Route path='protectiveMarkingAuthority'>
+                        {...createRoutes('protectiveMarkingAuthority')}
                       </Route>
                       <Route path='department'>
                         {...createRoutes('department')}
                       </Route>
-                      <Route path='vault-location'>
-                        {...createRoutes('vault-location')}
+                      <Route path='vaultLocation'>
+                        {...createRoutes('vaultLocation')}
                       </Route>
-                      <Route path='platform-originator'>
-                        {...createRoutes('platform-originator')}
+                      <Route path='platformOriginator'>
+                        {...createRoutes('platformOriginator')}
                       </Route>
                       <Route path='organisation'>
                         {...createRoutes('organisation')}
                       </Route>
-                      <Route path='media-type'>
-                        {...createRoutes('media-type')}
+                      <Route path='mediaType'>
+                        {...createRoutes('mediaType')}
                       </Route>
                     </Route>
                   </CustomRoutes>

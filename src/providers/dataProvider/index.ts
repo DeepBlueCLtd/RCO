@@ -19,8 +19,9 @@ import {
   generatePlatform,
   generateProject
 } from '../../utils/generateData'
+import '../../types.d'
 
-const nowDate = (): string => {
+export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
 }
 
@@ -29,30 +30,13 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const projects = generateProject(10)
   const organisation = getReferenceData('Organisation')
   const department = getReferenceData('Department')
-  const vaults = getReferenceData('Vault Location')
+  const vaultLocation = getReferenceData('Vault Location')
   const mediaType = getReferenceData('Media')
   const protectiveMarking = getReferenceData('Protective Marking')
   const protectiveMarkingAuthority = getReferenceData(
     'Protective Marking Authority'
   )
   const platformOriginator = getReferenceData('Platform Originator')
-
-  const defaultData: Record<string, any> = {
-    platforms,
-    projects,
-    organisation,
-    department,
-    'vault-location': vaults,
-    'media-type': mediaType,
-    'protective-marking': protectiveMarking,
-    'protective-marking-authority': protectiveMarkingAuthority,
-    'platform-originator': platformOriginator
-  }
-
-  const provider = await localForageDataProvider({
-    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-    defaultData
-  })
 
   const encryptedUsers = users.map((user) => {
     const salt: string = generateSalt()
@@ -65,10 +49,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     return updatedUser
   })
 
-  await localForage.setItem(
-    `${constants.LOCAL_STORAGE_DB_KEY}users`,
-    encryptedUsers
-  )
   const batches = generateBatch(
     10,
     platforms.length,
@@ -79,38 +59,62 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     protectiveMarking.length
   )
 
-  await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}batches`, batches)
-
   const items: Item[] = []
+  const numItems = 10
   for (let i = 0; i < batches.length; i++) {
-    const { data } = await provider.getOne<Project>('projects', {
-      id: batches[i].project
-    })
-    items.push(
-      ...generateItems(
-        10,
-        batches[i],
-        vaults.length,
-        protectiveMarking.length,
-        data
-      )
+    const project = projects.find(
+      (project) => project.id === batches[i].project
     )
-  }
-  await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}items`, items)
-
-  // in the localForage, the data doesn't get pushed to
-  // indexedDB until it's modified. But, that means the app
-  // loses the default values on restart (since the database
-  // doesn't have ALL of the tables).  So, push the data to localForage
-  await Promise.all(
-    Object.keys(defaultData).map(async (key) => {
-      const values = defaultData[key]
-      await localForage.setItem(
-        `${constants.LOCAL_STORAGE_DB_KEY}${key}`,
-        values
+    if (project !== undefined) {
+      items.push(
+        ...generateItems(
+          numItems,
+          numItems * i,
+          batches[i],
+          vaultLocation.length,
+          protectiveMarking.length,
+          project
+        )
       )
-    })
-  )
+    }
+  }
+
+  const defaultData: RCOStore = {
+    users: encryptedUsers,
+    batches,
+    items,
+    platforms,
+    projects,
+    organisation,
+    department,
+    vaultLocation,
+    mediaType,
+    protectiveMarking,
+    protectiveMarkingAuthority,
+    platformOriginator
+  }
+
+  for (const [key, value] of Object.entries(defaultData)) {
+    await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+  }
+
+  // Object.keys(defaultData).map(async (key) => {
+  //     console.log('storing', key)
+  //   })
+
+  // Object.keys(defaultData).forEach(async (key) => {
+  //   const values = defaultData[key]
+  //   await localForage.setItem(
+  //     `${constants.LOCAL_STORAGE_DB_KEY}${key}`,
+  //     values
+  //   )
+  // })
+  // )
+
+  const provider = await localForageDataProvider({
+    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+    defaultData
+  })
 
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)

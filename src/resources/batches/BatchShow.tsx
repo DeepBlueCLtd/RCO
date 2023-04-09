@@ -66,13 +66,13 @@ export default function BatchShow(): React.ReactElement {
           <ValueField label='Protective marking authority'>
             <SourceField
               source='protective_marking_authority'
-              reference='protective-marking-authority'
+              reference='protectiveMarkingAuthority'
             />
           </ValueField>
           <ValueField label='Maximum protective marking'>
             <SourceField
               source='maximum_protective_marking'
-              reference='protective-marking'
+              reference='protectiveMarking'
             />
           </ValueField>
           <ValueField label='Remarks'>
