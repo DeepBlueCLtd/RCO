@@ -36,7 +36,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <ReferenceInput
         variant='outlined'
         source='platform'
-        reference='platforms'>
+        reference={constants.R_PLATFORMS}>
         <SelectInput optionText={optionsText} sx={sx} />
       </ReferenceInput>
       <FlexBox>
@@ -50,7 +50,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
         <ReferenceInput
           variant='outlined'
           source='project'
-          reference='projects'>
+          reference={constants.R_PROJECTS}>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
       </FlexBox>

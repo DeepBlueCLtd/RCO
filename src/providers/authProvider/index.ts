@@ -32,7 +32,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
     login: async ({ username, password }) => {
-      const data = await dataProvider.getList('users', {
+      const data = await dataProvider.getList(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
         filter: { name: username }

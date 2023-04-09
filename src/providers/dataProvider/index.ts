@@ -94,22 +94,10 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     platformOriginator
   }
 
+  // push all the default data into resources in localForage
   for (const [key, value] of Object.entries(defaultData)) {
     await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
   }
-
-  // Object.keys(defaultData).map(async (key) => {
-  //     console.log('storing', key)
-  //   })
-
-  // Object.keys(defaultData).forEach(async (key) => {
-  //   const values = defaultData[key]
-  //   await localForage.setItem(
-  //     `${constants.LOCAL_STORAGE_DB_KEY}${key}`,
-  //     values
-  //   )
-  // })
-  // )
 
   const provider = await localForageDataProvider({
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
@@ -120,7 +108,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const audit = trackEvent(providerWithCustomMethods)
 
   const generateBatchId = async (year: string): Promise<string> => {
-    const batches = await provider.getList('batches', {
+    const batches = await provider.getList(constants.R_BATCHES, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
       filter: { yearOfReceipt: year }
@@ -133,7 +121,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
-      resource: 'users',
+      resource: constants.R_USERS,
       afterDelete: async (record: DeleteResult<User>) => {
         await audit(AuditType.DELETE_USER, `User deleted (${record.data.id})`)
         return record
@@ -148,7 +136,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       }
     },
     {
-      resource: 'projects',
+      resource: constants.R_PROJECTS,
       afterDelete: async (record: DeleteResult<Project>) => {
         await audit(
           AuditType.DELETE_PROJECT,
@@ -166,7 +154,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           AuditType.CREATE_PROJECT,
           `Project created (${String(record.data.id)})`
         )
-        await dataProvider.update<Project>('projects', {
+        await dataProvider.update<Project>(constants.R_PROJECTS, {
           id,
           previousData: data,
           data: { createdAt: nowDate() }
@@ -182,7 +170,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       }
     },
     {
-      resource: 'batches',
+      resource: constants.R_BATCHES,
       afterCreate: async (
         record: CreateResult<Batch>,
         dataProvider: DataProvider
@@ -193,7 +181,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           const yearVal: string = year
           const idVal: string = await generateBatchId(year)
           const batchNumber = `V${idVal}/${yearVal}`
-          await dataProvider.update<Batch>('batches', {
+          await dataProvider.update<Batch>(constants.R_BATCHES, {
             id,
             previousData: data,
             data: {
@@ -224,7 +212,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       }
     },
     {
-      resource: 'items',
+      resource: constants.R_ITEMS,
       afterCreate: async (
         record: CreateResult<Item>,
         dataProvider: DataProvider
@@ -232,9 +220,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         try {
           const { data } = record
           const { batchId, id } = data
-          const { data: batch } = await dataProvider.getOne<Batch>('batches', {
-            id: batchId
-          })
+          const { data: batch } = await dataProvider.getOne<Batch>(
+            constants.R_BATCHES,
+            {
+              id: batchId
+            }
+          )
           const idCtr: number = id
           const idVal: string = (idCtr + 1).toLocaleString('en-US', {
             minimumIntegerDigits: 2,
@@ -242,7 +233,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           })
           const itemNumber = `${batch.batchNumber}/${idVal}`
 
-          await dataProvider.update<Item>('items', {
+          await dataProvider.update<Item>(constants.R_ITEMS, {
             id,
             previousData: data,
             data: {

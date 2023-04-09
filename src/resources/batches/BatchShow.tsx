@@ -52,10 +52,10 @@ export default function BatchShow(): React.ReactElement {
             <TextField source='yearOfReceipt' />
           </ValueField>
           <ValueField label='Project'>
-            <SourceField source='project' reference='projects' />
+            <SourceField source='project' reference={constants.R_PROJECTS} />
           </ValueField>
           <ValueField label='Platform'>
-            <SourceField source='platform' reference='platforms' />
+            <SourceField source='platform' reference={constants.R_PLATFORMS} />
           </ValueField>
           <ValueField label='Organisation'>
             <SourceField source='organisation' reference='organisation' />

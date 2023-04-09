@@ -64,14 +64,14 @@ export default function ItemForm() {
     const isValidNumber = isNumber(batch)
     if (isValidNumber) {
       dataProvider
-        .getOne<Batch>('batches', { id: Number(batch) })
+        .getOne<Batch>(constants.R_BATCHES, { id: Number(batch) })
         .then(({ data }) => {
           setBatch(data)
         })
         .catch(console.log)
     } else {
       if (typeof id === 'undefined') {
-        redirect(createPath({ resource: 'items', type: 'list' }))
+        redirect(createPath({ resource: constants.R_ITEMS, type: 'list' }))
       }
     }
   }, [])

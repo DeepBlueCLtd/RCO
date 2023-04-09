@@ -15,6 +15,7 @@ import {
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
+import constants from '../../constants'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
@@ -25,9 +26,9 @@ const filters = [
   // <SourceNestedFilterInput
   //   key='batch.project'
   //   source='batch.project'
-  //   reference='projects'
+  //   reference= {constants.R_PROJECTS}
   //   label='Project'
-  //   child={{ source: 'project', reference: 'projects' }}
+  //   child={{ source: 'project', reference: constants.R_PROJECTS }}
   // />,
   <DateInput source='start' key='start' />,
   <DateInput source='end' key='end' />,
@@ -47,7 +48,7 @@ const filters = [
     source='batchId'
     key='batchId'
     sort={sort('batchNumber')}
-    reference='batches'
+    reference={constants.R_BATCHES}
     optionField='batchNumber'
   />,
   <TextInput key='remarks' source='remarks' />

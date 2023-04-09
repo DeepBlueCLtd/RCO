@@ -6,6 +6,7 @@ import {
   ReferenceField,
   DateField
 } from 'react-admin'
+import constants from '../../constants'
 
 export default function AuditList(): React.ReactElement {
   return (
@@ -16,7 +17,7 @@ export default function AuditList(): React.ReactElement {
         order: 'DESC'
       }}>
       <Datagrid bulkActionButtons={false}>
-        <ReferenceField source='user_id' reference='users' />
+        <ReferenceField source='user_id' reference={constants.R_USERS} />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='activityType' label='Activity Type' />
         <TextField source='activityDetail' label='Activity Details' />

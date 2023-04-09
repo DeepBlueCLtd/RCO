@@ -38,7 +38,7 @@ export default function SourceNestedFilterInput(
           setChildren(res)
         })
         .catch(console.log)
-      getData('batches')
+      getData(constants.R_BATCHES)
         .then((res) => {
           setSources(res)
         })
