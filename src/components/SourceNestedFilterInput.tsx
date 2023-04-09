@@ -4,6 +4,7 @@ import {
   useDataProvider,
   SelectInput
 } from 'react-admin'
+import * as constants from '../constants'
 
 interface Props {
   child: ReferenceInputProps

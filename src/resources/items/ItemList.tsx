@@ -15,7 +15,7 @@ import {
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
-import constants from '../../constants'
+import * as constants from '../../constants'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 

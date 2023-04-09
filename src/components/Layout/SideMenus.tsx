@@ -3,7 +3,7 @@ import { type Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Menu } from 'react-admin'
 import { AddLink } from '@mui/icons-material'
-import constants from '../../constants'
+import * as constants from '../../constants'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {

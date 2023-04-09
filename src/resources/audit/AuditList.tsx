@@ -6,7 +6,7 @@ import {
   ReferenceField,
   DateField
 } from 'react-admin'
-import constants from '../../constants'
+import * as constants from '../../constants'
 
 export default function AuditList(): React.ReactElement {
   return (

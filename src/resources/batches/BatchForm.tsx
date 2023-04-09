@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
 import EditToolBar from '../../components/EditToolBar'
+import * as constants from '../../constants'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),

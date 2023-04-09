@@ -28,7 +28,7 @@ import ReferenceDataCreate, {
   ReferenceDataEdit
 } from './resources/reference-data'
 import items from './resources/items'
-import constants from './constants'
+import * as constants from './constants'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 

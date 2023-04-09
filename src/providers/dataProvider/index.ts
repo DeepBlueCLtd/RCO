@@ -6,7 +6,7 @@ import {
   type UpdateResult,
   type DataProvider
 } from 'react-admin'
-import constants from '../../constants'
+import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import users from './users'
 import { getReferenceData } from './reference-data'

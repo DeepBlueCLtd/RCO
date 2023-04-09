@@ -8,6 +8,7 @@ import {
   CreateButton
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
+import * as constants from '../../constants'
 
 const ListActions = () => (
   <TopToolbar>

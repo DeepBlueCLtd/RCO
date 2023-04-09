@@ -10,6 +10,7 @@ import {
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import { useParams } from 'react-router-dom'
+import * as constants from '../../constants'
 
 const ValueField = ({
   label,

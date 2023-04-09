@@ -1,5 +1,5 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
-import constants from '../../constants'
+import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import {
   decryptData,
