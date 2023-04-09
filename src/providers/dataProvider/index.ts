@@ -231,7 +231,8 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
             minimumIntegerDigits: 2,
             useGrouping: false
           })
-          const itemNumber = `${batch.batchNumber}/${idVal}`
+          const batchNumber: string = batch.batchNumber
+          const itemNumber = `${batchNumber}/${idVal}`
 
           await dataProvider.update<Item>(constants.R_ITEMS, {
             id,
