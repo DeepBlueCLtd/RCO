@@ -12,12 +12,12 @@ export default function ItemShow(): React.ReactElement {
           <FieldWithLabel label='Reference' source='item_number' />
           <FieldWithLabel
             label='Vault location'
-            source='vault_location'
+            source='vaultLocation'
             reference='vaultLocation'
           />
           <FieldWithLabel
             label='Protective marking'
-            source='protective_marking'
+            source='protectiveMarking'
             reference='protectiveMarking'
           />
           <FieldWithLabel label='Start' source='start' component={DateField} />

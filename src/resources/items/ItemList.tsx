@@ -21,11 +21,7 @@ const sort = (field = 'name') => ({ field, order: 'ASC' })
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
-  <SelectInput
-    source='media_type'
-    key='media_type'
-    choices={mediaTypeOptions}
-  />,
+  <SelectInput source='mediaType' key='mediaType' choices={mediaTypeOptions} />,
   // <SourceNestedFilterInput
   //   key='batch.project'
   //   source='batch.project'
@@ -36,23 +32,23 @@ const filters = [
   <DateInput source='start' key='start' />,
   <DateInput source='end' key='end' />,
   <SourceInput
-    source='vault_location'
-    key='vault_location'
+    source='vaultLocation'
+    key='vaultLocation'
     sort={sort()}
     reference='vaultLocation'
   />,
   <SourceInput
-    source='protective_marking'
-    key='protective_marking'
+    source='protectiveMarking'
+    key='protectiveMarking'
     sort={sort()}
     reference='protectiveMarking'
   />,
   <SourceInput
-    source='batch_id'
-    key='batch_id'
-    sort={sort('batch_number')}
+    source='batchId'
+    key='batchId'
+    sort={sort('batchNumber')}
     reference='batches'
-    optionField='batch_number'
+    optionField='batchNumber'
   />,
   <TextInput key='remarks' source='remarks' />
 ]
@@ -69,16 +65,13 @@ export default function ItemList(): React.ReactElement {
     <List hasCreate={false} actions={<ItemActions />} filters={filters}>
       <DatagridConfigurable rowClick='show'>
         <TextField source='id' />
-        <TextField source='created_at' label='Created' />
+        <TextField source='createdAt' label='Created' />
         <TextField source='item_number' label='Reference' />
-        <TextField source='media_type' label='Media type' />
+        <TextField source='mediaType' label='Media type' />
         <DateField source='start' />
         <DateField source='end' />
-        <SourceField source='vault_location' reference='vaultLocation' />
-        <SourceField
-          source='protective_marking'
-          reference='protectiveMarking'
-        />
+        <SourceField source='vaultLocation' reference='vaultLocation' />
+        <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <TextField source='remarks' />
         <EditButton />
       </DatagridConfigurable>

@@ -18,22 +18,22 @@ const CoreForm = (props: Props): React.ReactElement => {
   const formContext = useFormContext()
 
   useEffect(() => {
-    formContext?.setValue('batch_id', batchId)
+    formContext?.setValue('batchId', batchId)
   }, [batchId])
 
   return (
     <>
-      <SelectInput source='media_type' choices={mediaTypeOptions} sx={sx} />
+      <SelectInput source='mediaType' choices={mediaTypeOptions} sx={sx} />
       <FlexBox>
         <DatePicker source='start' label='Start' variant='outlined' />
         <DatePicker source='end' variant='outlined' label='End' />
       </FlexBox>
       <FlexBox>
-        <ReferenceInput source='vault_location' reference='vaultLocation'>
+        <ReferenceInput source='vaultLocation' reference='vaultLocation'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <ReferenceInput
-          source='protective_marking'
+          source='protectiveMarking'
           reference='protectiveMarking'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>

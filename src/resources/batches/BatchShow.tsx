@@ -46,10 +46,10 @@ export default function BatchShow(): React.ReactElement {
             <TextField source='id' />
           </ValueField>
           <ValueField label='Reference'>
-            <TextField source='batch_number' />
+            <TextField source='batchNumber' />
           </ValueField>
           <ValueField label='Year of receipt'>
-            <TextField source='year_of_receipt' />
+            <TextField source='yearOfReceipt' />
           </ValueField>
           <ValueField label='Project'>
             <SourceField source='project' reference='projects' />
@@ -65,13 +65,13 @@ export default function BatchShow(): React.ReactElement {
           </ValueField>
           <ValueField label='Protective marking authority'>
             <SourceField
-              source='protective_marking_authority'
+              source='protectiveMarkingAuthority'
               reference='protectiveMarkingAuthority'
             />
           </ValueField>
           <ValueField label='Maximum protective marking'>
             <SourceField
-              source='maximum_protective_marking'
+              source='maximumProtectiveMarking'
               reference='protectiveMarking'
             />
           </ValueField>

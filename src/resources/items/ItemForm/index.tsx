@@ -20,7 +20,7 @@ import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField } from '@mui/material'
 
 const schema = yup.object({
-  media_type: yup
+  mediaType: yup
     .string()
     .required()
     .oneOf(mediaTypeOptions.map(({ id }) => id)),
@@ -29,17 +29,17 @@ const schema = yup.object({
     .date()
     .required()
     .test(
-      'end_date',
+      'endDate',
       'End date must be greater than start date',
       function (value) {
         return dayjs(value).diff(this.parent.start) > 0
       }
     ),
-  batch_id: yup.number().required(),
-  vault_location: yup.number().required(),
-  protective_marking: yup.number().required(),
+  batchId: yup.number().required(),
+  vaultLocation: yup.number().required(),
+  protectiveMarking: yup.number().required(),
   remarks: yup.string().required(),
-  mag_tape: yup.object({
+  magTape: yup.object({
     brand: yup.string(),
     minutes: yup.number().typeError('Invalid value')
   }),
@@ -59,7 +59,7 @@ export default function ItemForm() {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const batch = searchParams.get('batch') ?? record.batch_id
+    const batch = searchParams.get('batch') ?? record.batchId
 
     const isValidNumber = isNumber(batch)
     if (isValidNumber) {
@@ -79,11 +79,11 @@ export default function ItemForm() {
   const defaultValues: Partial<Item> = {
     item_number: '',
     dvd: {
-      media_type: 'DVD',
+      mediaType: 'DVD',
       size: 0
     },
-    mag_tape: {
-      media_type: 'Tape',
+    magTape: {
+      mediaType: 'Tape',
       minutes: 0,
       brand: ''
     }
@@ -94,7 +94,7 @@ export default function ItemForm() {
         <TextField
           disabled
           sx={{ margin: '16px' }}
-          defaultValue={batch?.batch_number}
+          defaultValue={batch?.batchNumber}
           InputProps={{
             sx: {
               padding: '13px',
@@ -123,7 +123,7 @@ export default function ItemForm() {
           label='Mag tape'
           icon={<GroupWork />}
           iconPosition='end'>
-          <MediaForm type='Tape' source='mag_tape' />
+          <MediaForm type='Tape' source='magTape' />
         </TabbedForm.Tab>
         <TabbedForm.Tab label='DVD' icon={<Album />} iconPosition='end'>
           <MediaForm type='DVD' source='dvd' />

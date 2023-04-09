@@ -123,7 +123,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     const batches = await provider.getList('batches', {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
-      filter: { year_of_receipt: year }
+      filter: { yearOfReceipt: year }
     })
     return batches.data.length.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
@@ -169,7 +169,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         await dataProvider.update<Project>('projects', {
           id,
           previousData: data,
-          data: { created_at: nowDate() }
+          data: { createdAt: nowDate() }
         })
         return record
       },
@@ -189,7 +189,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       ) => {
         try {
           const { data } = record
-          const { id, year_of_receipt: year } = data
+          const { id, yearOfReceipt: year } = data
           const yearVal: string = year
           const idVal: string = await generateBatchId(year)
           const batchNumber = `V${idVal}/${yearVal}`
@@ -197,8 +197,8 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
             id,
             previousData: data,
             data: {
-              batch_number: batchNumber,
-              created_at: nowDate()
+              batchNumber,
+              createdAt: nowDate()
             }
           })
           await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
@@ -231,7 +231,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       ) => {
         try {
           const { data } = record
-          const { batch_id: batchId, id } = data
+          const { batchId, id } = data
           const { data: batch } = await dataProvider.getOne<Batch>('batches', {
             id: batchId
           })
@@ -240,14 +240,14 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
             minimumIntegerDigits: 2,
             useGrouping: false
           })
-          const itemNumber = `${batch.batch_number}/${idVal}`
+          const itemNumber = `${batch.batchNumber}/${idVal}`
 
           await dataProvider.update<Item>('items', {
             id,
             previousData: data,
             data: {
               item_number: itemNumber,
-              created_at: nowDate()
+              createdAt: nowDate()
             }
           })
           await audit(AuditType.CREATE_ITEM, `Item created (${String(id)})`)

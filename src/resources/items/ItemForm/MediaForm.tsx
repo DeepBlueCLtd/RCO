@@ -19,7 +19,7 @@ export default function MediaForm(
   const formContext = useFormContext()
 
   useEffect(() => {
-    formContext?.setValue(`${rest.source}.media_type`, type)
+    formContext?.setValue(`${rest.source}.mediaType`, type)
   }, [type])
 
   const Component = useMemo(() => {

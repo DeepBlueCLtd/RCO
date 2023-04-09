@@ -28,13 +28,13 @@ export default function ProjectShow(): React.ReactElement {
             <TextField variant='h6' source='name' />
           </ValueField>
           <ValueField label='Start Date'>
-            <DateField source='start_date' />
+            <DateField source='startDate' />
           </ValueField>
           <ValueField label='End Date'>
-            <DateField source='end_date' />
+            <DateField source='endDate' />
           </ValueField>
           <ValueField label='Project code'>
-            <TextField source='project_code' />
+            <TextField source='projectCode' />
           </ValueField>
           <ValueField label='Remarks'>
             <TextField source='remarks' />

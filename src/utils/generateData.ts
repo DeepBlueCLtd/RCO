@@ -39,7 +39,7 @@ function generateRandomDateInRange(startDate: Date, endDate: Date): string {
 }
 
 const generateBatchId = (year: string, batch: Batch[]): string => {
-  const yearsFound = batch.filter((b) => b.year_of_receipt === year)
+  const yearsFound = batch.filter((b) => b.yearOfReceipt === year)
   return (yearsFound.length + 1).toLocaleString('en-US', {
     minimumIntegerDigits: 2,
     useGrouping: false
@@ -61,11 +61,11 @@ export const generateProject = (length: number): Project[] => {
     const [startDate, endDate] = generateRandomDate()
     const obj: Project = {
       id: i,
-      created_at: nowDate(),
+      createdAt: nowDate(),
       name: `project-${i}`,
-      start_date: startDate.toString(),
-      end_date: endDate.toString(),
-      project_code: String(generateRandomNumber(1, 1000)),
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
+      projectCode: String(generateRandomNumber(1, 1000)),
       remarks: `project-remarks-${i}`
     }
     projects.push(obj)
@@ -88,23 +88,20 @@ export const generateBatch = (
     const year = String(generateRandomNumber(2020, 2023))
     const obj: Batch = {
       id: i,
-      created_at: nowDate(),
+      createdAt: nowDate(),
       name: `batch-${i}`,
-      batch_number: `V${generateBatchId(year, batches)}/${year}`,
+      batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       vault: generateRandomNumber(0, length),
-      year_of_receipt: year,
+      yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
       project: generateRandomNumber(1, projects - 1),
       platform: generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
-      protective_marking_authority: generateRandomNumber(
+      protectiveMarkingAuthority: generateRandomNumber(
         1,
         protectiveMarkingAuthority - 1
       ),
-      maximum_protective_marking: generateRandomNumber(
-        1,
-        protectiveMarking - 1
-      ),
+      maximumProtectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`
     }
     batches.push(obj)
@@ -123,31 +120,31 @@ export const generateItems = (
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
     const endDate = generateRandomDateInRange(
-      new Date(project.start_date),
-      new Date(project.end_date)
+      new Date(project.startDate),
+      new Date(project.endDate)
     )
     const startDate = generateRandomDateInRange(
-      new Date(project.start_date),
+      new Date(project.startDate),
       new Date(endDate)
     )
     const obj: Item = {
       id: offset + i,
-      created_at: nowDate(),
-      media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
+      createdAt: nowDate(),
+      mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
       start: startDate,
-      batch_id: batch.id,
+      batchId: batch.id,
       item_number: `item-number-${i}`,
       end: endDate,
-      vault_location: generateRandomNumber(1, vaults - 1),
+      vaultLocation: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
-      protective_marking: generateRandomNumber(1, protectiveMarking - 1),
-      mag_tape: {
+      protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
+      magTape: {
         minutes: i,
         brand: `brand-${i}`,
-        media_type: MediaType[generateRandomNumber(0, 3)] as MediaType
+        mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType
       },
       dvd: {
-        media_type: MediaType[generateRandomNumber(0, 3)] as MediaType,
+        mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
         size: i
       },
       paper: `paper-${i}`

@@ -12,14 +12,14 @@ export default function AuditList(): React.ReactElement {
     <List
       perPage={25}
       sort={{
-        field: 'date_time',
+        field: 'dateTime',
         order: 'DESC'
       }}>
       <Datagrid bulkActionButtons={false}>
         <ReferenceField source='user_id' reference='users' />
-        <DateField source='date_time' label='Date Time' showTime />;
-        <TextField source='activity_type' label='Activity Type' />
-        <TextField source='activity_detail' label='Activity Details' />
+        <DateField source='dateTime' label='Date Time' showTime />;
+        <TextField source='activityType' label='Activity Type' />
+        <TextField source='activityDetail' label='Activity Details' />
       </Datagrid>
     </List>
   )

@@ -7,20 +7,20 @@ import FlexBox from '../../components/FlexBox'
 import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
-  year_of_receipt: yup.string().required(),
+  yearOfReceipt: yup.string().required(),
   department: yup.number().required(),
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  protective_marking_authority: yup.number().required(),
-  maximum_protective_marking: yup.number().required(),
+  protectiveMarkingAuthority: yup.number().required(),
+  maximumProtectiveMarking: yup.number().required(),
   remarks: yup.string().required()
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
   const defaultValues: Partial<Batch> = {
-    batch_number: '',
-    year_of_receipt: '',
+    batchNumber: '',
+    yearOfReceipt: '',
     remarks: ''
   }
 
@@ -42,7 +42,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <FlexBox>
         <DatePicker
           label='Year of receipt'
-          source='year_of_receipt'
+          source='yearOfReceipt'
           variant='outlined'
           format='YYYY'
           dataPickerProps={{ views: ['year'] }}
@@ -71,13 +71,13 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <FlexBox>
         <ReferenceInput
           variant='outlined'
-          source='protective_marking_authority'
+          source='protectiveMarkingAuthority'
           reference='protectiveMarkingAuthority'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <ReferenceInput
           variant='outlined'
-          source='maximum_protective_marking'
+          source='maximumProtectiveMarking'
           reference='protectiveMarking'>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
