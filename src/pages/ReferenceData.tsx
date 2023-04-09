@@ -73,7 +73,7 @@ const CardWithNavigation = (
 const routes = [
   { path: '/organisation', title: 'Organisation' },
   { path: '/protectiveMarking', title: 'Protective Marking' },
-  { path: '/media-type', title: 'Media Type' },
+  { path: '/mediaType', title: 'Media Type' },
   {
     path: '/protectiveMarkingAuthority',
     title: 'Protective Marking Authority'
