@@ -1,5 +1,5 @@
 import { type AuthProvider, type DataProvider } from 'react-admin'
-import constants from '../../constants'
+import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import {
   decryptData,
@@ -32,7 +32,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
     login: async ({ username, password }) => {
-      const data = await dataProvider.getList('users', {
+      const data = await dataProvider.getList(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
         filter: { name: username }

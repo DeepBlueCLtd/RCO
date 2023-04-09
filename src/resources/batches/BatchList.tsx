@@ -8,6 +8,7 @@ import {
   CreateButton
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
+import * as constants from '../../constants'
 
 const ListActions = () => (
   <TopToolbar>
@@ -17,8 +18,8 @@ const ListActions = () => (
 )
 
 const omitColumns: string[] = [
-  'protective_marking_authority',
-  'maximum_protective_marking',
+  'protectiveMarkingAuthority',
+  'maximumProtectiveMarking',
   'remarks',
   'id'
 ]
@@ -28,19 +29,27 @@ export default function BatchList(): React.ReactElement {
     <List perPage={25} actions={<ListActions />}>
       <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
-        <TextField label='Reference' source='batch_number' />
+        <TextField label='Reference' source='batchNumber' />
         <SourceField source='department' label='Department' />
-        <SourceField source='project' reference='projects' label='Project' />
-        <SourceField source='platform' reference='platforms' label='Platform' />
+        <SourceField
+          source='project'
+          reference={constants.R_PROJECTS}
+          label='Project'
+        />
+        <SourceField
+          source='platform'
+          reference={constants.R_PLATFORMS}
+          label='Platform'
+        />
         <SourceField source='organisation' label='Organisation' />
         <SourceField
-          source='protective_marking_authority'
-          reference='protective-marking-authority'
+          source='protectiveMarkingAuthority'
+          reference='protectiveMarkingAuthority'
           label='Protective marking authorityg'
         />
         <SourceField
-          source='maximum_protective_marking'
-          reference='protective-marking'
+          source='maximumProtectiveMarking'
+          reference='protectiveMarking'
           label='Maximum protective marking'
         />
         <TextField source='remarks' />

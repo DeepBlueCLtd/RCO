@@ -22,9 +22,9 @@ export default function ProjectList(): React.ReactElement {
         rowClick='show'
         bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
-        <DateField source='start_date' />
-        <DateField source='end_date' />
-        <TextField source='project_code' />
+        <DateField source='startDate' />
+        <DateField source='endDate' />
+        <TextField source='projectCode' />
         <TextField source='remarks' />
       </Datagrid>
     </List>

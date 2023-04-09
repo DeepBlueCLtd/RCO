@@ -7,9 +7,9 @@ interface User {
 
 interface Audit {
   readonly id: number
-  activity_type: string
-  date_time: string
-  activity_detail?: string
+  activityType: string
+  dateTime: string
+  activityDetail?: string
 }
 
 interface Platform {
@@ -21,27 +21,27 @@ interface Platform {
 interface Project {
   readonly id: number
   name: string
-  start_date: string
-  end_date: string
-  project_code: string
+  startDate: string
+  endDate: string
+  projectCode: string
   remarks: string
-  created_at: string
+  createdAt: string
 }
 
 interface Batch {
   readonly id: number
   name: string
-  batch_number: string
+  batchNumber: string
   vault: number
-  year_of_receipt: string
+  yearOfReceipt: string
   department: ReferenceItem['id']
   project: Project['id']
   platform: Platform['id']
   organisation: ReferenceItem['id']
-  protective_marking_authority: ReferenceItem['id']
-  maximum_protective_marking: ReferenceItem['id']
+  protectiveMarkingAuthority: ReferenceItem['id']
+  maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
-  created_at: string
+  createdAt: string
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
@@ -53,7 +53,7 @@ interface ReferenceItem {
 }
 
 interface CoreMedia {
-  readonly media_type: MediaType
+  readonly mediaType: MediaType
 }
 interface DVD extends CoreMedia {
   size: number
@@ -66,18 +66,18 @@ interface Tape extends CoreMedia {
 
 interface Item {
   readonly id: number
-  media_type: MediaType
+  mediaType: MediaType
   start: string
-  batch_id: Batch['id']
+  batchId: Batch['id']
   item_number: string
   end: string
-  vault_location: ReferenceItem['id']
+  vaultLocation: ReferenceItem['id']
   remarks: string
-  protective_marking: ReferenceItem['id']
-  mag_tape: Tape
+  protectiveMarking: ReferenceItem['id']
+  magTape: Tape
   dvd: DVD
   paper: Paper
-  created_at: string
+  createdAt: string
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -88,4 +88,19 @@ interface FormProps {
    * since we may display a `Delete` button when in edit mode
    */
   isEdit?: boolean
+}
+
+interface RCOStore {
+  users: User[]
+  batches: Batch[]
+  items: Item[]
+  platforms: Platform[]
+  projects: Project[]
+  organisation: ReferenceItem[]
+  department: ReferenceItem[]
+  vaultLocation: ReferenceItem[]
+  mediaType: ReferenceItem[]
+  protectiveMarking: ReferenceItem[]
+  protectiveMarkingAuthority: ReferenceItem[]
+  platformOriginator: ReferenceItem[]
 }

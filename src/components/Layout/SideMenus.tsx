@@ -3,6 +3,7 @@ import { type Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Menu } from 'react-admin'
 import { AddLink } from '@mui/icons-material'
+import * as constants from '../../constants'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -20,12 +21,12 @@ export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
   return (
     <Menu className={styles.root}>
-      <Menu.ResourceItem name='users' />
-      <Menu.ResourceItem name='audit' />
-      <Menu.ResourceItem name='platforms' />
-      <Menu.ResourceItem name='projects' />
-      <Menu.ResourceItem name='batches' />
-      <Menu.ResourceItem name='items' />
+      <Menu.ResourceItem name={constants.R_USERS} />
+      <Menu.ResourceItem name={constants.R_AUDIT} />
+      <Menu.ResourceItem name={constants.R_PLATFORMS} />
+      <Menu.ResourceItem name={constants.R_PROJECTS} />
+      <Menu.ResourceItem name={constants.R_BATCHES} />
+      <Menu.ResourceItem name={constants.R_ITEMS} />
       <Menu.Item
         to='/reference-data'
         primaryText='Reference Data'

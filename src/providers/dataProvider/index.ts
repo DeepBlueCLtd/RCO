@@ -6,7 +6,7 @@ import {
   type UpdateResult,
   type DataProvider
 } from 'react-admin'
-import constants from '../../constants'
+import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import users from './users'
 import { getReferenceData } from './reference-data'
@@ -19,8 +19,9 @@ import {
   generatePlatform,
   generateProject
 } from '../../utils/generateData'
+import '../../types.d'
 
-const nowDate = (): string => {
+export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
 }
 
@@ -29,30 +30,13 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const projects = generateProject(10)
   const organisation = getReferenceData('Organisation')
   const department = getReferenceData('Department')
-  const vaults = getReferenceData('Vault Location')
+  const vaultLocation = getReferenceData('Vault Location')
   const mediaType = getReferenceData('Media')
   const protectiveMarking = getReferenceData('Protective Marking')
   const protectiveMarkingAuthority = getReferenceData(
     'Protective Marking Authority'
   )
   const platformOriginator = getReferenceData('Platform Originator')
-
-  const defaultData: Record<string, any> = {
-    platforms,
-    projects,
-    organisation,
-    department,
-    'vault-location': vaults,
-    'media-type': mediaType,
-    'protective-marking': protectiveMarking,
-    'protective-marking-authority': protectiveMarkingAuthority,
-    'platform-originator': platformOriginator
-  }
-
-  const provider = await localForageDataProvider({
-    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-    defaultData
-  })
 
   const encryptedUsers = users.map((user) => {
     const salt: string = generateSalt()
@@ -65,10 +49,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     return updatedUser
   })
 
-  await localForage.setItem(
-    `${constants.LOCAL_STORAGE_DB_KEY}users`,
-    encryptedUsers
-  )
   const batches = generateBatch(
     10,
     platforms.length,
@@ -79,47 +59,59 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     protectiveMarking.length
   )
 
-  await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}batches`, batches)
-
   const items: Item[] = []
+  const numItems = 10
   for (let i = 0; i < batches.length; i++) {
-    const { data } = await provider.getOne<Project>('projects', {
-      id: batches[i].project
-    })
-    items.push(
-      ...generateItems(
-        10,
-        batches[i],
-        vaults.length,
-        protectiveMarking.length,
-        data
-      )
+    const project = projects.find(
+      (project) => project.id === batches[i].project
     )
-  }
-  await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}items`, items)
-
-  // in the localForage, the data doesn't get pushed to
-  // indexedDB until it's modified. But, that means the app
-  // loses the default values on restart (since the database
-  // doesn't have ALL of the tables).  So, push the data to localForage
-  await Promise.all(
-    Object.keys(defaultData).map(async (key) => {
-      const values = defaultData[key]
-      await localForage.setItem(
-        `${constants.LOCAL_STORAGE_DB_KEY}${key}`,
-        values
+    if (project !== undefined) {
+      items.push(
+        ...generateItems(
+          numItems,
+          numItems * i,
+          batches[i],
+          vaultLocation.length,
+          protectiveMarking.length,
+          project
+        )
       )
-    })
-  )
+    }
+  }
+
+  const defaultData: RCOStore = {
+    users: encryptedUsers,
+    batches,
+    items,
+    platforms,
+    projects,
+    organisation,
+    department,
+    vaultLocation,
+    mediaType,
+    protectiveMarking,
+    protectiveMarkingAuthority,
+    platformOriginator
+  }
+
+  // push all the default data into resources in localForage
+  for (const [key, value] of Object.entries(defaultData)) {
+    await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+  }
+
+  const provider = await localForageDataProvider({
+    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+    defaultData
+  })
 
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
 
   const generateBatchId = async (year: string): Promise<string> => {
-    const batches = await provider.getList('batches', {
+    const batches = await provider.getList(constants.R_BATCHES, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
-      filter: { year_of_receipt: year }
+      filter: { yearOfReceipt: year }
     })
     return batches.data.length.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
@@ -129,7 +121,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
-      resource: 'users',
+      resource: constants.R_USERS,
       afterDelete: async (record: DeleteResult<User>) => {
         await audit(AuditType.DELETE_USER, `User deleted (${record.data.id})`)
         return record
@@ -144,7 +136,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       }
     },
     {
-      resource: 'projects',
+      resource: constants.R_PROJECTS,
       afterDelete: async (record: DeleteResult<Project>) => {
         await audit(
           AuditType.DELETE_PROJECT,
@@ -162,10 +154,10 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           AuditType.CREATE_PROJECT,
           `Project created (${String(record.data.id)})`
         )
-        await dataProvider.update<Project>('projects', {
+        await dataProvider.update<Project>(constants.R_PROJECTS, {
           id,
           previousData: data,
-          data: { created_at: nowDate() }
+          data: { createdAt: nowDate() }
         })
         return record
       },
@@ -178,23 +170,23 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       }
     },
     {
-      resource: 'batches',
+      resource: constants.R_BATCHES,
       afterCreate: async (
         record: CreateResult<Batch>,
         dataProvider: DataProvider
       ) => {
         try {
           const { data } = record
-          const { id, year_of_receipt: year } = data
+          const { id, yearOfReceipt: year } = data
           const yearVal: string = year
           const idVal: string = await generateBatchId(year)
           const batchNumber = `V${idVal}/${yearVal}`
-          await dataProvider.update<Batch>('batches', {
+          await dataProvider.update<Batch>(constants.R_BATCHES, {
             id,
             previousData: data,
             data: {
-              batch_number: batchNumber,
-              created_at: nowDate()
+              batchNumber,
+              createdAt: nowDate()
             }
           })
           await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
@@ -220,30 +212,33 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
       }
     },
     {
-      resource: 'items',
+      resource: constants.R_ITEMS,
       afterCreate: async (
         record: CreateResult<Item>,
         dataProvider: DataProvider
       ) => {
         try {
           const { data } = record
-          const { batch_id: batchId, id } = data
-          const { data: batch } = await dataProvider.getOne<Batch>('batches', {
-            id: batchId
-          })
+          const { batchId, id } = data
+          const { data: batch } = await dataProvider.getOne<Batch>(
+            constants.R_BATCHES,
+            {
+              id: batchId
+            }
+          )
           const idCtr: number = id
           const idVal: string = (idCtr + 1).toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
           })
-          const itemNumber = `${batch.batch_number}/${idVal}`
+          const itemNumber = `${batch.batchNumber}/${idVal}`
 
-          await dataProvider.update<Item>('items', {
+          await dataProvider.update<Item>(constants.R_ITEMS, {
             id,
             previousData: data,
             data: {
               item_number: itemNumber,
-              created_at: nowDate()
+              createdAt: nowDate()
             }
           })
           await audit(AuditType.CREATE_ITEM, `Item created (${String(id)})`)

@@ -28,6 +28,7 @@ import ReferenceDataCreate, {
   ReferenceDataEdit
 } from './resources/reference-data'
 import items from './resources/items'
+import * as constants from './constants'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -60,61 +61,61 @@ function App(): React.ReactElement {
             ...(permissions === 'admin'
               ? [
                   <Resource
-                    key='users'
+                    key={constants.R_USERS}
                     icon={Person}
-                    name='users'
+                    name={constants.R_USERS}
                     recordRepresentation='name'
                     {...users}
                   />,
                   <Resource
-                    key='audit'
+                    key={constants.R_AUDIT}
                     options={{ label: 'Audit Log' }}
-                    name='audit'
+                    name={constants.R_AUDIT}
                     {...audit}
                   />,
                   <Resource
-                    key='batches'
+                    key={constants.R_BATCHES}
                     icon={Layers}
-                    name='batches'
+                    name={constants.R_BATCHES}
                     {...batches}
                   />,
                   <Resource
-                    key='items'
+                    key={constants.R_ITEMS}
                     icon={Category}
-                    name='items'
+                    name={constants.R_ITEMS}
                     {...items}
                   />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>
-                      <Route path='protective-marking'>
-                        {...createRoutes('protective-marking')}
+                      <Route path='protectiveMarking'>
+                        {...createRoutes('protectiveMarking')}
                       </Route>
-                      <Route path='protective-marking-authority'>
-                        {...createRoutes('protective-marking-authority')}
+                      <Route path='protectiveMarkingAuthority'>
+                        {...createRoutes('protectiveMarkingAuthority')}
                       </Route>
                       <Route path='department'>
                         {...createRoutes('department')}
                       </Route>
-                      <Route path='vault-location'>
-                        {...createRoutes('vault-location')}
+                      <Route path='vaultLocation'>
+                        {...createRoutes('vaultLocation')}
                       </Route>
-                      <Route path='platform-originator'>
-                        {...createRoutes('platform-originator')}
+                      <Route path='platformOriginator'>
+                        {...createRoutes('platformOriginator')}
                       </Route>
                       <Route path='organisation'>
                         {...createRoutes('organisation')}
                       </Route>
-                      <Route path='media-type'>
-                        {...createRoutes('media-type')}
+                      <Route path='mediaType'>
+                        {...createRoutes('mediaType')}
                       </Route>
                     </Route>
                   </CustomRoutes>
                 ]
               : []),
             <Resource
-              key='projects'
+              key={constants.R_PROJECTS}
               icon={SettingsSuggest}
-              name='projects'
+              name={constants.R_PROJECTS}
               {...projects}
             />,
 

@@ -10,6 +10,7 @@ import {
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import { useParams } from 'react-router-dom'
+import * as constants from '../../constants'
 
 const ValueField = ({
   label,
@@ -46,16 +47,16 @@ export default function BatchShow(): React.ReactElement {
             <TextField source='id' />
           </ValueField>
           <ValueField label='Reference'>
-            <TextField source='batch_number' />
+            <TextField source='batchNumber' />
           </ValueField>
           <ValueField label='Year of receipt'>
-            <TextField source='year_of_receipt' />
+            <TextField source='yearOfReceipt' />
           </ValueField>
           <ValueField label='Project'>
-            <SourceField source='project' reference='projects' />
+            <SourceField source='project' reference={constants.R_PROJECTS} />
           </ValueField>
           <ValueField label='Platform'>
-            <SourceField source='platform' reference='platforms' />
+            <SourceField source='platform' reference={constants.R_PLATFORMS} />
           </ValueField>
           <ValueField label='Organisation'>
             <SourceField source='organisation' reference='organisation' />
@@ -65,14 +66,14 @@ export default function BatchShow(): React.ReactElement {
           </ValueField>
           <ValueField label='Protective marking authority'>
             <SourceField
-              source='protective_marking_authority'
-              reference='protective-marking-authority'
+              source='protectiveMarkingAuthority'
+              reference='protectiveMarkingAuthority'
             />
           </ValueField>
           <ValueField label='Maximum protective marking'>
             <SourceField
-              source='maximum_protective_marking'
-              reference='protective-marking'
+              source='maximumProtectiveMarking'
+              reference='protectiveMarking'
             />
           </ValueField>
           <ValueField label='Remarks'>

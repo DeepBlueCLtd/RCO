@@ -1,5 +1,6 @@
 import { type DataProvider } from 'react-admin'
 import { getUser } from '../providers/authProvider'
+import * as constants from '../constants'
 
 export enum AuditType {
   LOGIN = 'login',
@@ -28,12 +29,12 @@ export const trackEvent =
     try {
       const user = getUser()
       if (user !== undefined) {
-        await dataProvider.create<Audit>('audit', {
+        await dataProvider.create<Audit>(constants.R_AUDIT, {
           data: {
             user_id: user.id,
-            activity_type: type,
-            date_time: new Date().toISOString(),
-            activity_detail: activityDetail
+            activityType: type,
+            dateTime: new Date().toISOString(),
+            activityDetail
           }
         })
       }
