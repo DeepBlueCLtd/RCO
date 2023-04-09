@@ -22,7 +22,7 @@ export const SideMenus = (): React.ReactElement => {
   return (
     <Menu className={styles.root}>
       <Menu.ResourceItem name={constants.R_USERS} />
-      <Menu.ResourceItem name='audit' />
+      <Menu.ResourceItem name={constants.R_AUDIT} />
       <Menu.ResourceItem name={constants.R_PLATFORMS} />
       <Menu.ResourceItem name={constants.R_PROJECTS} />
       <Menu.ResourceItem name={constants.R_BATCHES} />

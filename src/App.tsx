@@ -68,9 +68,9 @@ function App(): React.ReactElement {
                     {...users}
                   />,
                   <Resource
-                    key='audit'
+                    key={constants.R_AUDIT}
                     options={{ label: 'Audit Log' }}
-                    name='audit'
+                    name={constants.R_AUDIT}
                     {...audit}
                   />,
                   <Resource

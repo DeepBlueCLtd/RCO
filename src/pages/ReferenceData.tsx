@@ -72,15 +72,15 @@ const CardWithNavigation = (
 
 const routes = [
   { path: '/organisation', title: 'Organisation' },
-  { path: '/protective-marking', title: 'Protective Marking' },
+  { path: '/protectiveMarking', title: 'Protective Marking' },
   { path: '/media-type', title: 'Media Type' },
   {
-    path: '/protective-marking-authority',
+    path: '/protectiveMarkingAuthority',
     title: 'Protective Marking Authority'
   },
   { path: '/department', title: 'Department' },
-  { path: '/vault-location', title: 'Vault Location' },
-  { path: '/platform-originator', title: 'Platform Originator' }
+  { path: '/vaultLocation', title: 'Vault Location' },
+  { path: '/platformOriginator', title: 'Platform Originator' }
 ]
 
 export default function ReferenceData(): React.ReactElement {
