@@ -1,7 +1,7 @@
 import {
   DatagridConfigurable,
   DateField,
-  DateInput,
+  DateTimeInput,
   EditButton,
   FilterButton,
   List,
@@ -30,8 +30,8 @@ const filters = [
   //   label='Project'
   //   child={{ source: 'project', reference: constants.R_PROJECTS }}
   // />,
-  <DateInput source='start' key='start' />,
-  <DateInput source='end' key='end' />,
+  <DateTimeInput source='start' key='start' />,
+  <DateTimeInput source='end' key='end' />,
   <SourceInput
     source='vaultLocation'
     key='vaultLocation'
@@ -69,8 +69,8 @@ export default function ItemList(): React.ReactElement {
         <TextField source='createdAt' label='Created' />
         <TextField source='item_number' label='Reference' />
         <TextField source='mediaType' label='Media type' />
-        <DateField source='start' />
-        <DateField source='end' />
+        <DateField showTime source='start' />
+        <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <TextField source='remarks' />
