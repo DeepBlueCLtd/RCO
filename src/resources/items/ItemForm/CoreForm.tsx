@@ -1,6 +1,10 @@
-import { ReferenceInput, SelectInput, TextInput } from 'react-admin'
+import {
+  DateTimeInput,
+  ReferenceInput,
+  SelectInput,
+  TextInput
+} from 'react-admin'
 import { mediaTypeOptions } from '../../../utils/media'
-import DatePicker from '../../../components/DatePicker'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'
@@ -25,8 +29,13 @@ const CoreForm = (props: Props): React.ReactElement => {
     <>
       <SelectInput source='mediaType' choices={mediaTypeOptions} sx={sx} />
       <FlexBox>
-        <DatePicker source='start' label='Start' variant='outlined' />
-        <DatePicker source='end' variant='outlined' label='End' />
+        <DateTimeInput
+          sx={sx}
+          source='start'
+          label='Start'
+          variant='outlined'
+        />
+        <DateTimeInput sx={sx} source='end' variant='outlined' label='End' />
       </FlexBox>
       <FlexBox>
         <ReferenceInput source='vaultLocation' reference='vaultLocation'>

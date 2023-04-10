@@ -38,6 +38,15 @@ function generateRandomDateInRange(startDate: Date, endDate: Date): string {
   return randomDate.toJSDate().toString()
 }
 
+function setMinuteToStep(date: string, step = 15): string {
+  const luxonDate = DateTime.fromJSDate(new Date(date))
+  const updatedDate = luxonDate.minus({
+    minute: luxonDate.minute % step,
+    second: luxonDate.second
+  })
+  return updatedDate.toJSDate().toString()
+}
+
 const generateBatchId = (year: string, batch: Batch[]): string => {
   const yearsFound = batch.filter((b) => b.yearOfReceipt === year)
   return (yearsFound.length + 1).toLocaleString('en-US', {
@@ -119,14 +128,16 @@ export const generateItems = (
 ): Item[] => {
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
-    const endDate = generateRandomDateInRange(
-      new Date(project.startDate),
-      new Date(project.endDate)
+    const endDate = setMinuteToStep(
+      generateRandomDateInRange(
+        new Date(project.startDate),
+        new Date(project.endDate)
+      )
     )
-    const startDate = generateRandomDateInRange(
-      new Date(project.startDate),
-      new Date(endDate)
+    const startDate = setMinuteToStep(
+      generateRandomDateInRange(new Date(project.startDate), new Date(endDate))
     )
+
     const obj: Item = {
       id: offset + i,
       createdAt: nowDate(),
