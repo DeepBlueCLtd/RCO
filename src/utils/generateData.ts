@@ -40,7 +40,10 @@ function generateRandomDateInRange(startDate: Date, endDate: Date): string {
 
 function setMinuteToStep(date: string, step = 15): string {
   const luxonDate = DateTime.fromJSDate(new Date(date))
-  const updatedDate = luxonDate.minus({ minute: luxonDate.minute % step })
+  const updatedDate = luxonDate.minus({
+    minute: luxonDate.minute % step,
+    second: luxonDate.second
+  })
   return updatedDate.toJSDate().toString()
 }
 
