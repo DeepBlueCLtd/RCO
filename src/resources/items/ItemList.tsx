@@ -5,6 +5,7 @@ import {
   EditButton,
   FilterButton,
   List,
+  type ListProps,
   SearchInput,
   SelectColumnsButton,
   SelectInput,
@@ -61,9 +62,16 @@ const ItemActions = () => (
   </TopToolbar>
 )
 
-export default function ItemList(): React.ReactElement {
+export default function ItemList(
+  props?: Omit<ListProps, 'children'>
+): React.ReactElement {
   return (
-    <List hasCreate={false} actions={<ItemActions />} filters={filters}>
+    <List
+      hasCreate={false}
+      actions={<ItemActions />}
+      resource='items'
+      filters={filters}
+      {...props}>
       <DatagridConfigurable rowClick='show'>
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />

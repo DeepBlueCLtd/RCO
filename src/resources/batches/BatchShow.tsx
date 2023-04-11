@@ -1,30 +1,21 @@
-import React from 'react'
-import { Card, CardContent, Typography } from '@mui/material'
+import React, { useState } from 'react'
 import {
+  BulkDeleteButton,
   CreateButton,
   DeleteWithConfirmButton,
   EditButton,
   Show,
+  TabbedShowLayout,
   TextField,
   TopToolbar
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
-
-const ValueField = ({
-  label,
-  children
-}: {
-  label: string
-  children: any
-}): React.ReactElement => {
-  return (
-    <Typography fontWeight='bold'>
-      {label}: {children}
-    </Typography>
-  )
-}
+import ItemList from '../items/ItemList'
+import { Button, Modal } from '@mui/material'
+import ChangeLocation from '../items/ItemForm/ChangeLocation'
+import FlexBox from '../../components/FlexBox'
 
 const ShowActions = () => {
   const { id = '' } = useParams()
@@ -38,49 +29,65 @@ const ShowActions = () => {
   )
 }
 
+const BulkActions = ({ selectedIds }: any) => {
+  const [open, setOpen] = useState(false)
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  return (
+    <>
+      <FlexBox>
+        <BulkDeleteButton />
+        <Button
+          size='small'
+          variant='outlined'
+          onClick={() => { setOpen((value) => !value) }}>
+          Change Location
+        </Button>
+      </FlexBox>
+      <Modal open={open} onClose={handleClose}>
+        <ChangeLocation
+          successCallback={handleClose}
+          onCancel={handleClose}
+          ids={selectedIds}
+        />
+      </Modal>
+    </>
+  )
+}
+
 export default function BatchShow(): React.ReactElement {
+  const { id } = useParams()
   return (
     <Show actions={<ShowActions />}>
-      <Card>
-        <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <ValueField label='Id'>
-            <TextField source='id' />
-          </ValueField>
-          <ValueField label='Reference'>
-            <TextField source='batchNumber' />
-          </ValueField>
-          <ValueField label='Year of receipt'>
-            <TextField source='yearOfReceipt' />
-          </ValueField>
-          <ValueField label='Project'>
-            <SourceField source='project' reference={constants.R_PROJECTS} />
-          </ValueField>
-          <ValueField label='Platform'>
-            <SourceField source='platform' reference={constants.R_PLATFORMS} />
-          </ValueField>
-          <ValueField label='Organisation'>
-            <SourceField source='organisation' reference='organisation' />
-          </ValueField>
-          <ValueField label='Department'>
-            <SourceField source='department' reference='department' />
-          </ValueField>
-          <ValueField label='Protective marking authority'>
-            <SourceField
-              source='protectiveMarkingAuthority'
-              reference='protectiveMarkingAuthority'
-            />
-          </ValueField>
-          <ValueField label='Maximum protective marking'>
-            <SourceField
-              source='maximumProtectiveMarking'
-              reference='protectiveMarking'
-            />
-          </ValueField>
-          <ValueField label='Remarks'>
-            <TextField source='remarks' />
-          </ValueField>
-        </CardContent>
-      </Card>
+      <TabbedShowLayout>
+        <TabbedShowLayout.Tab label='Details'>
+          <TextField source='id' />
+          <TextField source='batchNumber' />
+          <TextField source='yearOfReceipt' />
+          <SourceField source='project' reference={constants.R_PROJECTS} />
+          <SourceField source='platform' reference={constants.R_PLATFORMS} />
+          <SourceField source='organisation' reference='organisation' />
+          <SourceField source='department' reference='department' />
+          <SourceField
+            source='protectiveMarkingAuthority'
+            reference='protectiveMarkingAuthority'
+          />
+          <SourceField
+            source='maximumProtectiveMarking'
+            reference='protectiveMarking'
+          />
+          <TextField source='remarks' />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label='Items'>
+          <ItemList
+            filter={{ batchId: id }}
+            bulkActionButtons={<BulkActions />}
+          />
+        </TabbedShowLayout.Tab>
+      </TabbedShowLayout>
     </Show>
   )
 }
