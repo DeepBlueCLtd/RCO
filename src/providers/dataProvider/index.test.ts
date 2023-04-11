@@ -1,6 +1,6 @@
 import * as constants from '../../constants'
-import { describe, it, beforeAll, afterEach } from '@jest/globals'
-import { getDataProvider , generateBatchId } from '.'
+import { describe, it, beforeAll } from '@jest/globals'
+import { getDataProvider, generateBatchId } from '.'
 import { type DataProvider } from 'react-admin'
 interface BatchType {
   data: Batch[]
@@ -23,6 +23,10 @@ const mockProvider = {
   async create(resource: string, params: { data: Batch }) {
     batches[resource].data.push({ ...params.data })
     return batches
+  },
+
+  async clear(resource: string) {
+    batches[resource].data = []
   }
 }
 
@@ -64,12 +68,9 @@ describe('generateBatchId', () => {
     provider = await getDataProvider()
   })
 
-  afterEach(async () => {
-    await generateBatch(provider, year)
-  })
-
   describe('when there are no batches in the specified year', () => {
     it('should return 00', async () => {
+      provider.clear(constants.R_BATCHES)
       const result = await generateBatchId(provider, year)
       expect(result).toBe('00')
     })
@@ -77,6 +78,8 @@ describe('generateBatchId', () => {
 
   describe('when there is one batch in the specified year', () => {
     it('should return 01', async () => {
+      provider.clear(constants.R_BATCHES)
+      await generateBatch(provider, year)
       const result = await generateBatchId(provider, year)
       expect(result).toBe('01')
     })
@@ -84,6 +87,9 @@ describe('generateBatchId', () => {
 
   describe('when there are multiple batches in the specified year', () => {
     it('should return 02', async () => {
+      provider.clear(constants.R_BATCHES)
+      await generateBatch(provider, year)
+      await generateBatch(provider, year)
       const result = await generateBatchId(provider, year)
       expect(result).toBe('02')
     })
