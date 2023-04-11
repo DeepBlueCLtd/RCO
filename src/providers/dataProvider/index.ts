@@ -25,6 +25,21 @@ export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
 }
 
+export const generateBatchId = async (
+  provider: DataProvider,
+  year: string
+): Promise<string> => {
+  const batches = await provider.getList(constants.R_BATCHES, {
+    sort: { field: 'id', order: 'ASC' },
+    pagination: { page: 1, perPage: 1000 },
+    filter: { yearOfReceipt: year }
+  })
+  return batches.data.length.toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+    useGrouping: false
+  })
+}
+
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const platforms = generatePlatform(10)
   const projects = generateProject(10)
@@ -107,18 +122,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
 
-  const generateBatchId = async (year: string): Promise<string> => {
-    const batches = await provider.getList(constants.R_BATCHES, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: { yearOfReceipt: year }
-    })
-    return batches.data.length.toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
-      useGrouping: false
-    })
-  }
-
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
       resource: constants.R_USERS,
@@ -179,7 +182,7 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           const { data } = record
           const { id, yearOfReceipt: year } = data
           const yearVal: string = year
-          const idVal: string = await generateBatchId(year)
+          const idVal: string = await generateBatchId(provider, year)
           const batchNumber = `V${idVal}/${yearVal}`
           await dataProvider.update<Batch>(constants.R_BATCHES, {
             id,

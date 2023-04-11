@@ -1,12 +1,7 @@
 import * as constants from '../../constants'
 import { describe, it, beforeAll, afterEach } from '@jest/globals'
-import { getDataProvider } from '.'
+import { getDataProvider , generateBatchId } from '.'
 import { type DataProvider } from 'react-admin'
-
-/**
- * @jest-environment jsdom
- */
-
 interface BatchType {
   data: Batch[]
 }
@@ -31,11 +26,15 @@ const mockProvider = {
   }
 }
 
-jest.mock('.', () => ({
-  async getDataProvider() {
-    return mockProvider
+jest.mock('.', () => {
+  const originalModule = jest.requireActual('.')
+  return {
+    ...originalModule,
+    async getDataProvider() {
+      return mockProvider
+    }
   }
-}))
+})
 
 const generateBatch = async (provider: DataProvider, year: string) => {
   const obj: Batch = {
@@ -69,35 +68,23 @@ describe('generateBatchId', () => {
     await generateBatch(provider, year)
   })
 
-  const generateBatchId = async (year: string) => {
-    const batches = await provider.getList(constants.R_BATCHES, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: { yearOfReceipt: year }
-    })
-    return batches.data.length.toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
-      useGrouping: false
-    })
-  }
-
   describe('when there are no batches in the specified year', () => {
     it('should return 00', async () => {
-      const result = await generateBatchId(year)
+      const result = await generateBatchId(provider, year)
       expect(result).toBe('00')
     })
   })
 
   describe('when there is one batch in the specified year', () => {
     it('should return 01', async () => {
-      const result = await generateBatchId(year)
+      const result = await generateBatchId(provider, year)
       expect(result).toBe('01')
     })
   })
 
   describe('when there are multiple batches in the specified year', () => {
     it('should return 02', async () => {
-      const result = await generateBatchId(year)
+      const result = await generateBatchId(provider, year)
       expect(result).toBe('02')
     })
   })
@@ -105,9 +92,9 @@ describe('generateBatchId', () => {
   describe('when an invalid value is provided for year (non-integer)', () => {
     it('should throw a TypeError', async () => {
       const year = 'aaa'
-      await expect(async () => await generateBatchId(year)).rejects.toThrow(
-        TypeError
-      )
+      await expect(
+        async () => await generateBatchId(provider, year)
+      ).rejects.toThrow(TypeError)
     })
   })
 })
