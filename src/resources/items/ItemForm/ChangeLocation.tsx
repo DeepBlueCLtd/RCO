@@ -77,7 +77,8 @@ export default function ChangeLocation(props: ChangeLocationProps) {
       .catch(console.log)
   }, [])
 
-  const disabled: boolean = !isDirty || typeof vaultLocationValue === 'string'
+  const dirtyVal: boolean = isDirty
+  const disabled: boolean = !dirtyVal || typeof vaultLocationValue === 'string'
 
   return (
     <Box sx={style}>
