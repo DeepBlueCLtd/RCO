@@ -12,7 +12,7 @@ import * as constants from '../../constants'
 
 const ListActions = () => (
   <TopToolbar>
-    <CreateButton />
+    <CreateButton label='ADD NEW BATCH' />
     <SelectColumnsButton />
   </TopToolbar>
 )
