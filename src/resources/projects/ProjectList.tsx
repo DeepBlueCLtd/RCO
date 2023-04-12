@@ -4,20 +4,25 @@ import {
   CreateButton,
   Datagrid,
   DateField,
+  FilterButton,
   List,
+  SearchInput,
   TextField,
   TopToolbar
 } from 'react-admin'
 
+const filters = [<SearchInput source='name' key='name' alwaysOn />]
+
 export default function ProjectList(): React.ReactElement {
   const ListActions = () => (
     <TopToolbar>
+      <FilterButton />
       <CreateButton />
     </TopToolbar>
   )
 
   return (
-    <List actions={<ListActions />} perPage={25}>
+    <List actions={<ListActions />} perPage={25} filters={filters}>
       <Datagrid
         rowClick='show'
         bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
