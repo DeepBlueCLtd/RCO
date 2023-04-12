@@ -26,6 +26,18 @@ export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
 }
 
+const compareVersions = (v1: string, v2: string): number => {
+  const s1 = parseInt(v1.substring(1))
+  const s2 = parseInt(v2.substring(1))
+  if (s1 < s2) {
+    return -1
+  } else if (s1 > s2) {
+    return 1
+  } else {
+    return 0
+  }
+}
+
 export const generateBatchId = async (
   provider: DataProvider,
   year: string
@@ -36,10 +48,27 @@ export const generateBatchId = async (
     pagination: { page: 1, perPage: 1000 },
     filter: { yearOfReceipt: year }
   })
-  return batches.data.length.toLocaleString('en-US', {
-    minimumIntegerDigits: 2,
-    useGrouping: false
-  })
+
+  if (batches.data.length === 1 || batches.data.length === 0) {
+    return batches.data.length.toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+      useGrouping: false
+    })
+  }
+
+  const greatestBatch = batches.data.reduce((prev, current) =>
+    compareVersions(prev.batchNumber, current.batchNumber) === -1
+      ? current
+      : prev
+  )
+
+  return (parseInt(greatestBatch.batchNumber.substring(1)) + 1).toLocaleString(
+    'en-US',
+    {
+      minimumIntegerDigits: 2,
+      useGrouping: false
+    }
+  )
 }
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {

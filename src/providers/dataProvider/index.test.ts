@@ -10,7 +10,7 @@ const batches: Record<string, BatchType> = {
   [constants.R_BATCHES]: { data: [] }
 }
 const year = '2025'
-let id = 1
+let id: number = 0
 
 const mockProvider = {
   async getList(resource: string, filter: any) {
@@ -72,7 +72,7 @@ describe('generateBatchId', () => {
     it('should return 00', async () => {
       provider.clear(constants.R_BATCHES)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('00')
+      expect(result).toBe(`0${id}`)
     })
   })
 
@@ -81,7 +81,7 @@ describe('generateBatchId', () => {
       provider.clear(constants.R_BATCHES)
       await generateBatch(provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('01')
+      expect(result).toBe(`0${id}`)
     })
   })
 
@@ -91,7 +91,7 @@ describe('generateBatchId', () => {
       await generateBatch(provider, year)
       await generateBatch(provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('02')
+      expect(result).toBe(`0${id}`)
     })
   })
 
