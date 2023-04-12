@@ -1,8 +1,15 @@
 import { Box, Button } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import * as constants from '../../../constants'
 
-import { Form, type Identifier, SelectInput, useDataProvider } from 'react-admin'
+import {
+  Form,
+  type Identifier,
+  SelectInput,
+  useDataProvider,
+  useNotify
+} from 'react-admin'
 import FlexBox from '../../../components/FlexBox'
 
 interface ChangeLocationProps {
@@ -30,6 +37,7 @@ interface FormState {
 
 export default function ChangeLocation(props: ChangeLocationProps) {
   const { ids, onCancel, successCallback, errorCallback } = props
+  const notify = useNotify()
 
   const {
     control,
@@ -38,17 +46,18 @@ export default function ChangeLocation(props: ChangeLocationProps) {
     formState: { isDirty }
   } = useForm<FormState>()
 
-  const vaultLocationValue = watch('vaultLocation')
+  const vaultLocationValue: number | string = watch('vaultLocation')
 
   const [vaultLocation, setVaultLocation] = useState<ReferenceItem[]>([])
   const dataProvider = useDataProvider()
 
   async function onSubmit(values: FormState) {
     try {
-      const { data } = await dataProvider.updateMany<Item>('items', {
+      const { data } = await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids,
         data: values
       })
+      notify('Elements updated')
       successCallback?.(data)
     } catch (error) {
       errorCallback?.(error)
@@ -57,7 +66,7 @@ export default function ChangeLocation(props: ChangeLocationProps) {
 
   useEffect(() => {
     dataProvider
-      .getList<ReferenceItem>('vaultLocation', {
+      .getList<ReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: {}
@@ -67,6 +76,8 @@ export default function ChangeLocation(props: ChangeLocationProps) {
       })
       .catch(console.log)
   }, [])
+
+  const disabled: boolean = !isDirty || typeof vaultLocationValue === 'string'
 
   return (
     <Box sx={style}>
@@ -89,7 +100,7 @@ export default function ChangeLocation(props: ChangeLocationProps) {
         <FlexBox>
           <Button
             variant='contained'
-            disabled={!isDirty || typeof vaultLocationValue !== 'number'}
+            disabled={disabled}
             onClick={handleSubmit(onSubmit) as any}>
             Submit
           </Button>
