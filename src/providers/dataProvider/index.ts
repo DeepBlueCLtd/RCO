@@ -20,6 +20,7 @@ import {
   generateProject
 } from '../../utils/generateData'
 import '../../types.d'
+import { isNumber } from '../../utils/number'
 
 export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
@@ -29,6 +30,7 @@ export const generateBatchId = async (
   provider: DataProvider,
   year: string
 ): Promise<string> => {
+  if (!isNumber(year)) throw new TypeError('Year invalid')
   const batches = await provider.getList(constants.R_BATCHES, {
     sort: { field: 'id', order: 'ASC' },
     pagination: { page: 1, perPage: 1000 },
