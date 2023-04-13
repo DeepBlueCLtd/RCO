@@ -18,7 +18,7 @@ export default function SourceInput<T extends Record<string, any>>(
 
   return (
     <ReferenceInput {...rest}>
-      <SelectInput optionText={optionText} />
+      <SelectInput sx={{ width: '100%' }} optionText={optionText} />
     </ReferenceInput>
   )
 }

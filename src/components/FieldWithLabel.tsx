@@ -1,18 +1,30 @@
-import { Typography } from '@mui/material'
+import { type SxProps, Typography } from '@mui/material'
 import React, { type FC, useMemo } from 'react'
 import { TextField } from 'react-admin'
 import SourceField from './SourceField'
 
-interface Props {
+export interface FieldWithLabelProps {
   label: string
   reference?: string
   source: string
   component?: FC<any>
+  separator?: string
+  labelPosition?: 'left' | 'top'
+  labelStyles?: SxProps
   [key: string]: any
 }
 
-const FieldWithLabel = (props: Props): React.ReactElement => {
-  const { label, source, reference, component, ...rest } = props
+const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
+  const {
+    label,
+    source,
+    reference,
+    component,
+    separator = ':',
+    labelPosition = 'left',
+    labelStyles,
+    ...rest
+  } = props
 
   const render = useMemo(() => {
     if (typeof component !== 'undefined') {
@@ -24,9 +36,18 @@ const FieldWithLabel = (props: Props): React.ReactElement => {
     return <TextField source={source} />
   }, [])
 
+  const labelWithSeparator: string = `${label}${separator}`
+
   return (
     <Typography fontWeight='bold'>
-      {label}: {render}
+      {labelPosition === 'top' ? (
+        <Typography fontWeight='bold' sx={labelStyles}>
+          {labelWithSeparator}
+        </Typography>
+      ) : (
+        labelWithSeparator
+      )}{' '}
+      {render}
     </Typography>
   )
 }
