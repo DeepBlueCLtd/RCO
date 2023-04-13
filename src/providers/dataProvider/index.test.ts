@@ -10,7 +10,6 @@ const batches: Record<string, BatchType> = {
   [constants.R_BATCHES]: { data: [] }
 }
 const year = '2025'
-let id: number = 0
 
 const mockProvider = {
   async getList(resource: string, filter: any) {
@@ -27,6 +26,10 @@ const mockProvider = {
 
   async clear(resource: string) {
     batches[resource].data = []
+  },
+
+  async delete(resource: string, toDelete: { id: number }) {
+    batches[resource].data.splice(0, toDelete.id)
   }
 }
 
@@ -40,12 +43,17 @@ jest.mock('.', () => {
   }
 })
 
-const generateBatch = async (provider: DataProvider, year: string) => {
+const generateBatch = async (
+  id: number,
+  provider: DataProvider,
+  year: string,
+  batchNumber?: string
+) => {
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
     name: `batch-${year}`,
-    batchNumber: `V${id}/${year}`,
+    batchNumber: `V${batchNumber ?? id}/${year}`,
     vault: id,
     yearOfReceipt: year,
     department: id,
@@ -63,35 +71,38 @@ const generateBatch = async (provider: DataProvider, year: string) => {
 
 describe('generateBatchId', () => {
   let provider: DataProvider
+  let id: number
 
   beforeAll(async () => {
     provider = await getDataProvider()
   })
 
+  beforeEach(() => {
+    id = 1
+    provider.clear(constants.R_BATCHES)
+  })
+
   describe('when there are no batches in the specified year', () => {
     it('should return 00', async () => {
-      provider.clear(constants.R_BATCHES)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe(`0${id}`)
+      expect(result).toBe('00')
     })
   })
 
   describe('when there is one batch in the specified year', () => {
     it('should return 01', async () => {
-      provider.clear(constants.R_BATCHES)
-      await generateBatch(provider, year)
+      await generateBatch(id, provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe(`0${id}`)
+      expect(result).toBe('01')
     })
   })
 
   describe('when there are multiple batches in the specified year', () => {
     it('should return 02', async () => {
-      provider.clear(constants.R_BATCHES)
-      await generateBatch(provider, year)
-      await generateBatch(provider, year)
+      await generateBatch(id, provider, year)
+      await generateBatch(id, provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe(`0${id}`)
+      expect(result).toBe('02')
     })
   })
 
@@ -101,6 +112,72 @@ describe('generateBatchId', () => {
       await expect(
         async () => await generateBatchId(provider, year)
       ).rejects.toThrow(TypeError)
+    })
+  })
+})
+
+describe('generateBatchId for values greater than 9', () => {
+  let provider: DataProvider
+
+  beforeAll(async () => {
+    provider = await getDataProvider()
+    for (let i = 0; i < 20; i++) {
+      await generateBatch(
+        i,
+        provider,
+        year,
+        await generateBatchId(provider, year)
+      )
+    }
+  })
+
+  describe('validate batch numbers', () => {
+    it('should validate first 20 batchNumber and delete first 10 entries', async () => {
+      const batchData = await provider.getList(constants.R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: { yearOfReceipt: year }
+      })
+      for (let i = 0; i < batchData.data.length; i++) {
+        expect(batchData.data[i].batchNumber).toBe(
+          `V${i.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+          })}/${year}`
+        )
+      }
+
+      // deleting first 10 entries
+      await provider.delete(constants.R_BATCHES, { id: 10 })
+    })
+  })
+
+  describe('new entries and validate batchNumber', () => {
+    it('should insert 10 new entries and validate last 10 batchNumbers', async () => {
+      // inserting new 10 entries
+      for (let i = 0; i < 10; i++) {
+        await generateBatch(
+          i,
+          provider,
+          year,
+          await generateBatchId(provider, year)
+        )
+      }
+
+      const batchData = await provider.getList(constants.R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: { yearOfReceipt: year }
+      })
+
+      for (let i = 20; i < batchData.data.length; i++) {
+        expect(batchData.data[i].batchNumber).toBe(
+          `V${i.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+          })}/${year}`
+        )
+      }
     })
   })
 })
