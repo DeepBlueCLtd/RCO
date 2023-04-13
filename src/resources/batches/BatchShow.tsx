@@ -13,7 +13,6 @@ import {
   FilterButton,
   SelectColumnsButton
 } from 'react-admin'
-import SourceField from '../../components/SourceField'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import ItemList from '../items/ItemList'
@@ -23,6 +22,9 @@ import FlexBox from '../../components/FlexBox'
 import { Download } from '@mui/icons-material'
 import BatchReport from './BatchReport'
 import Printable from '../../components/Printable'
+import FieldWithLabel, {
+  type FieldWithLabelProps
+} from '../../components/FieldWithLabel'
 
 const ShowActions = () => {
   const [open, setOpen] = useState(false)
@@ -127,28 +129,70 @@ const ItemActions = () => {
   )
 }
 
+function StyledFieldWithLabel(props: FieldWithLabelProps) {
+  return (
+    <FieldWithLabel
+      labelPosition='top'
+      separator=''
+      labelStyles={{ minWidth: '300px' }}
+      {...props}
+    />
+  )
+}
+
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   return (
     <Show actions={<ShowActions />}>
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label='Details'>
-          <TextField source='id' />
-          <TextField source='batchNumber' />
-          <TextField source='yearOfReceipt' />
-          <SourceField source='project' reference={constants.R_PROJECTS} />
-          <SourceField source='platform' reference={constants.R_PLATFORMS} />
-          <SourceField source='organisation' reference='organisation' />
-          <SourceField source='department' reference='department' />
-          <SourceField
-            source='protectiveMarkingAuthority'
-            reference='protectiveMarkingAuthority'
-          />
-          <SourceField
-            source='maximumProtectiveMarking'
-            reference='protectiveMarking'
-          />
-          <TextField source='remarks' />
+          <FlexBox>
+            <StyledFieldWithLabel label='Id' source='id' />
+            <StyledFieldWithLabel label='Batch Number' source='batchNumber' />
+          </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel
+              label='Year of Receipt'
+              source='yearOfReceipt'
+            />
+            <StyledFieldWithLabel
+              label='Project'
+              source='project'
+              reference={constants.R_PROJECTS}
+            />
+          </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel
+              source='platform'
+              label='Platform'
+              reference={constants.R_PLATFORMS}
+            />
+            <StyledFieldWithLabel
+              source='organisation'
+              label='Organisation'
+              reference='organisation'
+            />
+          </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel
+              label='Department'
+              source='department'
+              reference='department'
+            />
+            <StyledFieldWithLabel
+              label='Protective Marking Authority'
+              source='protectiveMarkingAuthority'
+              reference='protectiveMarkingAuthority'
+            />
+          </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel
+              label='Maximum Protective Marking'
+              source='maximumProtectiveMarking'
+              reference='protectiveMarking'
+            />
+            <StyledFieldWithLabel label='Remarks' source='remarks' />
+          </FlexBox>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items'>
           <ItemList

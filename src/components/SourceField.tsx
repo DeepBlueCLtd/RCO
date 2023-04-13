@@ -2,7 +2,7 @@ import { ReferenceField, TextField, type TextFieldProps } from 'react-admin'
 
 interface SourceFieldProps {
   source: string
-  label?: string
+  label?: string | false
   reference?: string
   sourceField?: string
   textProps?: TextFieldProps
