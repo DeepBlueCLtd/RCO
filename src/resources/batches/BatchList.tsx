@@ -5,14 +5,20 @@ import {
   DatagridConfigurable,
   TopToolbar,
   SelectColumnsButton,
-  CreateButton
+  CreateButton,
+  DateInput,
+  SearchInput,
+  FilterButton
 } from 'react-admin'
+import DatePicker from '../../components/DatePicker'
 import SourceField from '../../components/SourceField'
+import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 
 const ListActions = () => (
   <TopToolbar>
     <CreateButton label='ADD NEW BATCH' />
+    <FilterButton />
     <SelectColumnsButton />
   </TopToolbar>
 )
@@ -24,9 +30,42 @@ const omitColumns: string[] = [
   'id'
 ]
 
+const sort = (field = 'name') => ({ field, order: 'ASC' })
+
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <DatePicker
+    label='Year of receipt'
+    source='yearOfReceipt'
+    variant='outlined'
+    format='YYYY'
+    key='yearOfReceipt'
+    dataPickerProps={{ views: ['year'] }}
+  />,
+  <SourceInput
+    source={constants.R_VAULT_LOCATION}
+    key='vaultLocation'
+    sort={sort()}
+    reference='vaultLocation'
+  />,
+  <SourceInput
+    source={constants.R_PLATFORMS}
+    key='platforms'
+    sort={sort()}
+    reference='platforms'
+  />,
+  <SourceInput
+    variant='outlined'
+    source={constants.R_ORGANISATION}
+    reference='organisation'
+    key='organisation'
+  />,
+  <DateInput key='createdAt' source='createdAt' label='Created At' />
+]
+
 export default function BatchList(): React.ReactElement {
   return (
-    <List perPage={25} actions={<ListActions />}>
+    <List perPage={25} actions={<ListActions />} filters={filters}>
       <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
         <TextField label='Reference' source='batchNumber' />
