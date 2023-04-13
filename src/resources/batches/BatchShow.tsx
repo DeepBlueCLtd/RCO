@@ -100,7 +100,7 @@ const BulkActions = () => {
   return (
     <>
       <FlexBox>
-        <BulkDeleteButton />
+        <BulkDeleteButton mutationMode='pessimistic' />
         <Button size='small' variant='outlined' onClick={handleOpen}>
           Change Location
         </Button>
