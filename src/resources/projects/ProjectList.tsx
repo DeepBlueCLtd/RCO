@@ -11,7 +11,7 @@ import {
   TopToolbar
 } from 'react-admin'
 
-const filters = [<SearchInput source='name' key='name' alwaysOn />]
+const filters = [<SearchInput source='q' key='q' alwaysOn />]
 
 export default function ProjectList(): React.ReactElement {
   const ListActions = () => (
