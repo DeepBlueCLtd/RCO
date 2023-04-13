@@ -152,11 +152,7 @@ describe('generateBatchId for values greater than 9', () => {
       // deleting first 10 entries
       for (let i = 0; i < 10; i++) ids.push(i)
       await provider.deleteMany(constants.R_BATCHES, { ids })
-    })
-  })
 
-  describe('new entries and validate batchNumber', () => {
-    it('should insert 10 new entries and validate last 10 batchNumbers', async () => {
       // inserting new 10 entries
       for (let i = 0; i < 10; i++) {
         await generateBatch(
@@ -167,14 +163,14 @@ describe('generateBatchId for values greater than 9', () => {
         )
       }
 
-      const batchData = await provider.getList(constants.R_BATCHES, {
+      const batchData1 = await provider.getList(constants.R_BATCHES, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: { yearOfReceipt: year }
       })
 
-      for (let i = 20; i < batchData.data.length; i++) {
-        expect(batchData.data[i].batchNumber).toBe(
+      for (let i = 20; i < batchData1.data.length; i++) {
+        expect(batchData1.data[i].batchNumber).toBe(
           `V${i.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
