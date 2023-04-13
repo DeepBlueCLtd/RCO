@@ -143,18 +143,20 @@ interface Elements {
   list?: React.FunctionComponent<ElementsProps>
 }
 
-const createRoutes = (name: string, elements?: Elements) => {
+const defaultElements = {
+  create: ReferenceDataCreate,
+  edit: ReferenceDataEdit,
+  list: ReferenceDataList
+}
+
+const createRoutes = (name: string, elements: Elements = defaultElements) => {
   const cName: string = name
 
   const {
     create = ReferenceDataCreate,
     edit = ReferenceDataEdit,
     list = ReferenceDataList
-  } = (elements != null) || {
-    create: ReferenceDataCreate,
-    edit: ReferenceDataEdit,
-    list: ReferenceDataList
-  }
+  } = elements
 
   return [
     <Route
