@@ -4,29 +4,37 @@ import {
   BulkDeleteButton,
   CreateButton,
   Datagrid,
-  DeleteButton,
-  EditButton,
+  type Identifier,
   List,
   TextField,
   TopToolbar
 } from 'react-admin'
 
-export default function PlatformList(): React.ReactElement {
+interface Props {
+  name: string
+}
+
+export default function PlatformList(props: Props): React.ReactElement {
+  const { name } = props
+  const cName: string = name
+  const basePath: string = `/reference-data/${cName}`
+
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
-      <CreateButton />
+      <CreateButton to={`${basePath}/create`} />
     </TopToolbar>
   )
 
   return (
     <List actions={<ListActions />} perPage={25}>
       <Datagrid
-        rowClick='show'
+        rowClick={(id: Identifier) => {
+          const cID: string = id.toString()
+          return `${basePath}/${cID}`
+        }}
         bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
         <BooleanField source='active' label='Active Platform' />
-        <EditButton />
-        <DeleteButton mutationMode='pessimistic' />
       </Datagrid>
     </List>
   )

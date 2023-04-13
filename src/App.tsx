@@ -29,6 +29,7 @@ import ReferenceDataCreate, {
 } from './resources/reference-data'
 import items from './resources/items'
 import * as constants from './constants'
+import platforms from './resources/platforms'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -108,6 +109,9 @@ function App(): React.ReactElement {
                       <Route path='mediaType'>
                         {...createRoutes('mediaType')}
                       </Route>
+                      <Route path='platforms'>
+                        {...createRoutes('platforms', platforms)}
+                      </Route>
                     </Route>
                   </CustomRoutes>
                 ]
@@ -129,23 +133,46 @@ function App(): React.ReactElement {
   )
 }
 
-const createRoutes = (name: string) => {
+interface ElementsProps {
+  name: string
+}
+
+interface Elements {
+  create?: React.FunctionComponent<ElementsProps>
+  edit?: React.FunctionComponent<ElementsProps>
+  list?: React.FunctionComponent<ElementsProps>
+}
+
+const defaultElements = {
+  create: ReferenceDataCreate,
+  edit: ReferenceDataEdit,
+  list: ReferenceDataList
+}
+
+const createRoutes = (name: string, elements: Elements = defaultElements) => {
   const cName: string = name
+
+  const {
+    create = ReferenceDataCreate,
+    edit = ReferenceDataEdit,
+    list = ReferenceDataList
+  } = elements
+
   return [
     <Route
       key={`${cName}list`}
       index
-      element={<ReferenceDataList name={name} />}
+      element={React.createElement(list, { name })}
     />,
     <Route
       key={`${cName}edit`}
       path=':id'
-      element={<ReferenceDataEdit name={name} />}
+      element={React.createElement(edit, { name })}
     />,
     <Route
       key={`${cName}create`}
       path='create'
-      element={<ReferenceDataCreate name={name} />}
+      element={React.createElement(create, { name })}
     />
   ]
 }
