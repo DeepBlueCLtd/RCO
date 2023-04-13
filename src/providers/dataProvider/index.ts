@@ -4,9 +4,7 @@ import {
   type DeleteResult,
   type CreateResult,
   type UpdateResult,
-  type DataProvider,
-  type GetListParams,
-  type GetListResult
+  type DataProvider
 } from 'react-admin'
 import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
@@ -123,25 +121,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
 
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
-
-  type ModifiedResultType = Omit<GetListResult, 'data'> & {
-    data: Batch[]
-  }
-
-  providerWithCustomMethods.getList = async (
-    resource: string,
-    params: GetListParams
-  ): Promise<GetListResult<any>> => {
-    const result = await provider.getList(resource, params)
-    if (resource === constants.R_PROJECTS && params.filter.q !== undefined) {
-      const modifiedResult: ModifiedResultType = {
-        ...result,
-        data: result.data.filter((r: Batch) => r.name.includes(params.filter.q))
-      }
-      return modifiedResult
-    }
-    return result
-  }
 
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
