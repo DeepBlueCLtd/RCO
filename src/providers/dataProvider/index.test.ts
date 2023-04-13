@@ -28,8 +28,10 @@ const mockProvider = {
     batches[resource].data = []
   },
 
-  async delete(resource: string, toDelete: { id: number }) {
-    batches[resource].data.splice(0, toDelete.id)
+  async deleteMany(resource: string, toDelete: { ids: number[] }) {
+    batches[resource].data = batches[resource].data.filter(
+      (b) => !toDelete.ids.includes(b.id)
+    )
   }
 }
 
@@ -90,19 +92,19 @@ describe('generateBatchId', () => {
   })
 
   describe('when there is one batch in the specified year', () => {
-    it('should return 01', async () => {
+    it('should return 02', async () => {
       await generateBatch(id, provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('01')
+      expect(result).toBe('02')
     })
   })
 
   describe('when there are multiple batches in the specified year', () => {
-    it('should return 02', async () => {
-      await generateBatch(id, provider, year)
+    it('should return 03', async () => {
+      await generateBatch(id++, provider, year)
       await generateBatch(id, provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('02')
+      expect(result).toBe('03')
     })
   })
 
@@ -146,9 +148,10 @@ describe('generateBatchId for values greater than 9', () => {
           })}/${year}`
         )
       }
-
+      const ids = []
       // deleting first 10 entries
-      await provider.delete(constants.R_BATCHES, { id: 10 })
+      for (let i = 0; i < 10; i++) ids.push(i)
+      await provider.deleteMany(constants.R_BATCHES, { ids })
     })
   })
 

@@ -49,11 +49,8 @@ export const generateBatchId = async (
     filter: { yearOfReceipt: year }
   })
 
-  if (batches.data.length === 1 || batches.data.length === 0) {
-    return batches.data.length.toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
-      useGrouping: false
-    })
+  if (batches.data.length === 0) {
+    return '00'
   }
 
   const greatestBatch = batches.data.reduce((prev, current) =>
