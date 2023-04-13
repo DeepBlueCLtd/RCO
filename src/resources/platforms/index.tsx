@@ -1,21 +1,17 @@
 import React from 'react'
-import {
-  SimpleForm,
-  TextInput,
-  BooleanInput,
-  Create,
-  Edit,
-  Show
-} from 'react-admin'
+import { SimpleForm, TextInput, BooleanInput, Create, Edit } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import PlatformList from './PlatformList'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: yup.string().max(8).min(4),
-  adminRights: yup.boolean()
+  active: yup.boolean()
 })
+
+interface PropType {
+  name: string
+}
 
 const PlatformForm = (): React.ReactElement => {
   const defaultValues = {
@@ -30,35 +26,36 @@ const PlatformForm = (): React.ReactElement => {
   )
 }
 
-const PlatformCreate = (): React.ReactElement => {
+const PlatformCreate = ({ name }: PropType): React.ReactElement => {
+  const cName: string = name
   return (
-    <Create>
+    <Create redirect={`/reference-data/${cName}`}>
       <PlatformForm />
     </Create>
   )
 }
 
-const PlatformEdit = (): React.ReactElement => {
+const PlatformEdit = ({ name }: PropType): React.ReactElement => {
+  const cName: string = name
   return (
-    <Edit>
+    <Edit redirect={`/reference-data/${cName}`}>
       <PlatformForm />
     </Edit>
   )
 }
 
-const PlatformShow = (): React.ReactElement => {
-  return (
-    <Show>
-      <PlatformForm />
-    </Show>
-  )
-}
+// const PlatformShow = (): React.ReactElement => {
+//   return (
+//     <Show>
+//       <PlatformForm />
+//     </Show>
+//   )
+// }
 
 const platforms = {
   create: PlatformCreate,
   edit: PlatformEdit,
-  list: PlatformList,
-  show: PlatformShow
+  list: PlatformList
 }
 
 export default platforms
