@@ -148,9 +148,10 @@ describe('generateBatchId for values greater than 9', () => {
           })}/${year}`
         )
       }
-      const ids = []
       // deleting first 10 entries
-      for (let i = 0; i < 10; i++) ids.push(i)
+      const ids = Array(10)
+        .fill(null)
+        .map((_, i) => i)
       await provider.deleteMany(constants.R_BATCHES, { ids })
 
       // inserting new 10 entries
