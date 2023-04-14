@@ -46,23 +46,21 @@ const loadDefaultData = async () => {
 
   const items: Item[] = []
   const numItems = 10
-  for (let i = 0; i < batches.length; i++) {
-    const project = projects.find(
-      (project) => project.id === batches[i].project
-    )
+  batches.forEach((batch: Batch, index: number) => {
+    const project = projects.find((project) => project.id === batch.project)
     if (project !== undefined) {
       items.push(
         ...generateItems(
           numItems,
-          numItems * i,
-          batches[i],
+          numItems * index,
+          batches[index],
           vaultLocation.length,
           protectiveMarking.length,
           project
         )
       )
     }
-  }
+  })
 
   const defaultData: RCOStore = {
     users: encryptedUsers,
