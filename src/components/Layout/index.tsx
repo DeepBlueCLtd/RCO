@@ -1,12 +1,11 @@
 import React from 'react'
-import { Login } from '@mui/icons-material'
-import { Box, Icon } from '@mui/material'
+import { Login, Loop } from '@mui/icons-material'
+import { Box, Icon, Typography , Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import {
   AppBar,
   type AppBarProps,
-  Button,
   Layout,
   type LayoutProps,
   Logout,
@@ -18,6 +17,7 @@ import {
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
+import loadDefaultData from '../../utils/init-data'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
     height: '36px',
     padding: '6px 16px',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     '& span': {
       height: 'auto',
@@ -35,7 +35,10 @@ const useStyles = makeStyles(() => ({
   },
   startIcon: {
     margin: 0,
-    minWidth: '40px'
+    minWidth: '36px'
+  },
+  '& .RaButton-label': {
+    textTranform: 'capitalize'
   }
 }))
 
@@ -48,6 +51,12 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     redirect('/login')
   }
 
+  const handleLoadData = (): void => {
+    loadDefaultData().catch((error) => {
+      console.log({ error })
+    })
+  }
+
   return (
     <UserMenu {...props}>
       {authenticated === null && (
@@ -56,13 +65,23 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           classes={{ root: styles.root, startIcon: styles.startIcon }}
           startIcon={
             <Icon>
-              <Login />
+              <Login sx={{ width: '20px', height: '20px' }} />
             </Icon>
-          }
-          label='Login'
-        />
+          }>
+          <Typography sx={{ textTransform: 'none' }}> Login</Typography>
+        </Button>
       )}
       <Logout />
+      <Button
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        onClick={handleLoadData}
+        startIcon={
+          <Icon>
+            <Loop sx={{ width: '20px', height: '20px' }} />
+          </Icon>
+        }>
+        <Typography sx={{ textTransform: 'none' }}>Load data</Typography>
+      </Button>
     </UserMenu>
   )
 }
