@@ -59,6 +59,7 @@ const generateBatch = async (
     yearOfReceipt: year,
     department: id,
     project: id,
+    vault: 'delete me',
     platform: id,
     organisation: id,
     protectiveMarkingAuthority: id,
