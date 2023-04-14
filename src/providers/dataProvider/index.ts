@@ -11,6 +11,8 @@ import { AuditType, trackEvent } from '../../utils/audit'
 import { DateTime } from 'luxon'
 import '../../types.d'
 import { isNumber } from '../../utils/number'
+import localForage from 'localforage'
+import loadDefaultData from '../../utils/init-data'
 
 export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
@@ -62,6 +64,11 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const provider = await localForageDataProvider({
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY
   })
+
+  const localForageData = await localForage.keys()
+  if (localForageData.length === 0) {
+    await loadDefaultData()
+  }
 
   const providerWithCustomMethods = { ...provider }
   const audit = trackEvent(providerWithCustomMethods)
