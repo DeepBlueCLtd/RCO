@@ -56,7 +56,6 @@ const generateBatch = async (
     createdAt: Date.now().toString(),
     name: `batch-${year}`,
     batchNumber: `V${batchNumber ?? id}/${year}`,
-    vault: id,
     yearOfReceipt: year,
     department: id,
     project: id,

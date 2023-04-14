@@ -107,7 +107,6 @@ export const generateBatch = (
       createdAt: nowDate(),
       name: `batch-${i}`,
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
-      vault: generateRandomNumber(0, length),
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
       project: generateRandomNumber(1, projects - 1),

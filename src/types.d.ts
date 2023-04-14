@@ -32,7 +32,6 @@ interface Batch {
   readonly id: number
   name: string
   batchNumber: string
-  vault: number
   yearOfReceipt: string
   department: ReferenceItem['id']
   project: Project['id']
