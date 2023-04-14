@@ -1,30 +1,34 @@
 import React from 'react'
-import { Card, CardContent } from '@mui/material'
-import { DateField, Show } from 'react-admin'
-import FieldWithLabel from '../../components/FieldWithLabel'
+import { Form, Show, TabbedShowLayout } from 'react-admin'
+import { Album, GroupWork, MenuBook } from '@mui/icons-material'
+import CoreForm from './ItemForm/CoreForm'
+import MediaForm from './ItemForm/MediaForm'
 
 export default function ItemShow(): React.ReactElement {
   return (
     <Show>
-      <Card>
-        <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <FieldWithLabel label='Id' source='id' />
-          <FieldWithLabel label='Reference' source='item_number' />
-          <FieldWithLabel
-            label='Vault location'
-            source='vaultLocation'
-            reference='vaultLocation'
-          />
-          <FieldWithLabel
-            label='Protective marking'
-            source='protectiveMarking'
-            reference='protectiveMarking'
-          />
-          <FieldWithLabel label='Start' source='start' component={DateField} />
-          <FieldWithLabel label='End' source='end' component={DateField} />
-          <FieldWithLabel label='Remarks' source='remarks' />
-        </CardContent>
-      </Card>
+      <Form>
+        <TabbedShowLayout>
+          <TabbedShowLayout.Tab label='Core'>
+            <CoreForm disabled />
+          </TabbedShowLayout.Tab>
+          <TabbedShowLayout.Tab
+            label='Mag tape'
+            icon={<GroupWork />}
+            iconPosition='end'>
+            <MediaForm disabled type='Tape' source='magTape' />
+          </TabbedShowLayout.Tab>
+          <TabbedShowLayout.Tab label='DVD' icon={<Album />} iconPosition='end'>
+            <MediaForm disabled type='DVD' source='dvd' />
+          </TabbedShowLayout.Tab>
+          <TabbedShowLayout.Tab
+            label='Paper'
+            icon={<MenuBook />}
+            iconPosition='end'>
+            <MediaForm disabled type='Paper' source='paper' />
+          </TabbedShowLayout.Tab>
+        </TabbedShowLayout>
+      </Form>
     </Show>
   )
 }
