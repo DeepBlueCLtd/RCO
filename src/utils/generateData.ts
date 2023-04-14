@@ -141,8 +141,16 @@ export const generateItems = (
         new Date(project.endDate)
       )
     )
+
+    const minStartDate = DateTime.fromJSDate(new Date(endDate)).minus({
+      minutes: 15
+    })
+
     const startDate = setMinuteToStep(
-      generateRandomDateInRange(new Date(project.startDate), new Date(endDate))
+      generateRandomDateInRange(
+        new Date(project.startDate),
+        new Date(minStartDate.toString())
+      )
     )
 
     const batchNumber: string = batch.batchNumber
