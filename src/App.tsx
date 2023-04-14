@@ -50,6 +50,7 @@ function App(): React.ReactElement {
   return (
     <Suspense fallback={LoadingPage}>
       <Admin
+        dashboard={Welcome}
         dataProvider={dataProvider}
         loginPage={Login}
         authProvider={autProvider(dataProvider)}
@@ -121,11 +122,7 @@ function App(): React.ReactElement {
               icon={SettingsSuggest}
               name={constants.R_PROJECTS}
               {...projects}
-            />,
-
-            <CustomRoutes key='routes'>
-              <Route path='/' element={<Welcome />} />
-            </CustomRoutes>
+            />
           ]
         }}
       </Admin>
