@@ -3,8 +3,7 @@ import {
   Resource,
   CustomRoutes,
   Loading,
-  type DataProvider,
-  Login
+  type DataProvider
 } from 'react-admin'
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
@@ -15,6 +14,7 @@ import autProvider from './providers/authProvider'
 
 // pages
 import Welcome from './pages/Welcome'
+import Login from './pages/Login'
 
 // resources
 import users from './resources/users'
