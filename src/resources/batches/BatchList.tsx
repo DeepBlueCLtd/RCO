@@ -6,10 +6,10 @@ import {
   TopToolbar,
   SelectColumnsButton,
   CreateButton,
-  DateInput,
   SearchInput,
   FilterButton
 } from 'react-admin'
+import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import DatePicker from '../../components/DatePicker'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -60,12 +60,13 @@ const filters = [
     reference='organisation'
     key='organisation'
   />,
-  <DateInput key='createdAt' source='createdAt' label='Created At' />
+  <DateFilter key='createdAt' source='createdAt' label='Created At' />
 ]
 
 export default function BatchList(): React.ReactElement {
   return (
     <List perPage={25} actions={<ListActions />} filters={filters}>
+      <ResetDateFilter source='createdAt' />
       <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
         <TextField label='Reference' source='batchNumber' />
