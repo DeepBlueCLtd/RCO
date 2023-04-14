@@ -43,21 +43,21 @@ const filters = [
     dataPickerProps={{ views: ['year'] }}
   />,
   <SourceInput
-    source={constants.R_VAULT_LOCATION}
+    reference={constants.R_VAULT_LOCATION}
     key='vaultLocation'
     sort={sort()}
-    reference='vaultLocation'
+    source='vaultLocation'
   />,
   <SourceInput
-    source={constants.R_PLATFORMS}
+    source='platform'
     key='platforms'
     sort={sort()}
-    reference='platforms'
+    reference={constants.R_PLATFORMS}
   />,
   <SourceInput
     variant='outlined'
-    source={constants.R_ORGANISATION}
-    reference='organisation'
+    reference={constants.R_ORGANISATION}
+    source='organisation'
     key='organisation'
   />,
   <DateFilter key='createdAt' source='createdAt' label='Created At' />

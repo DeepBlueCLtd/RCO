@@ -1,10 +1,4 @@
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup
-} from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import { type ReactElement, useEffect, useState } from 'react'
 import { useListContext } from 'react-admin'
 import { DateTime } from 'luxon'
@@ -24,7 +18,10 @@ interface Props {
   format?: string
 }
 
-interface Filter { key: string; value?: string }
+interface Filter {
+  key: string
+  value?: string
+}
 
 const getFilter = (value: Values, source: string, format: string): Filter[] => {
   const minusFromNow = (unit: 'week' | 'month' | 'year') => {
@@ -97,26 +94,34 @@ export default function DateFilter(props: Props): ReactElement {
 
   const { setFilters, filterValues, displayedFilters } = useListContext()
 
-  const onChange = (_: any, value: string) => {
-    if (value !== '') {
-      const filters = getFilter(value as Values, source, format)
+  const onChange = (event: any) => {
+    const value = event.target.value as Values
+    if (typeof value !== 'undefined') {
+      const filters = getFilter(value, source, format)
       filters.forEach((filter) => {
         const { key, value } = filter
         filterValues[key] = value
       })
       setFilters(filterValues, displayedFilters)
     }
-    setValue(value as Values)
+    setValue(value)
   }
 
   return (
-    <FormControl sx={{ marginLeft: '10px' }}>
-      <FormLabel>{label}</FormLabel>
-      <RadioGroup row value={value} onChange={onChange} name={source}>
+    <FormControl sx={{ width: '164px' }}>
+      <InputLabel id={source}>{label}</InputLabel>
+      <Select
+        value={value}
+        onChange={onChange}
+        name={source}
+        labelId={source}
+        label={label}>
         {items.map((item) => (
-          <FormControlLabel key={item.value} control={<Radio />} {...item} />
+          <MenuItem key={item.value} value={item.value}>
+            {item.label}
+          </MenuItem>
         ))}
-      </RadioGroup>
+      </Select>
     </FormControl>
   )
 }
