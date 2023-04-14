@@ -1,12 +1,11 @@
 import React from 'react'
 import { Login, Loop } from '@mui/icons-material'
-import { Box, Icon } from '@mui/material'
+import { Box, Icon, Typography , Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import {
   AppBar,
   type AppBarProps,
-  Button,
   Layout,
   type LayoutProps,
   Logout,
@@ -26,7 +25,7 @@ const useStyles = makeStyles(() => ({
     height: '36px',
     padding: '6px 16px',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     '& span': {
       height: 'auto',
@@ -36,7 +35,10 @@ const useStyles = makeStyles(() => ({
   },
   startIcon: {
     margin: 0,
-    minWidth: '40px'
+    minWidth: '36px'
+  },
+  '& .RaButton-label': {
+    textTranform: 'capitalize'
   }
 }))
 
@@ -50,7 +52,9 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   }
 
   const handleLoadData = (): void => {
-    loadDefaultData().catch((error) => { console.log({ error }) })
+    loadDefaultData().catch((error) => {
+      console.log({ error })
+    })
   }
 
   return (
@@ -61,11 +65,11 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           classes={{ root: styles.root, startIcon: styles.startIcon }}
           startIcon={
             <Icon>
-              <Login />
+              <Login sx={{ width: '20px', height: '20px' }} />
             </Icon>
-          }
-          label='Login'
-        />
+          }>
+          <Typography sx={{ textTransform: 'none' }}> Login</Typography>
+        </Button>
       )}
       <Logout />
       <Button
@@ -73,11 +77,11 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         onClick={handleLoadData}
         startIcon={
           <Icon>
-            <Loop />
+            <Loop sx={{ width: '20px', height: '20px' }} />
           </Icon>
-        }
-        label='Load Data'
-      />
+        }>
+        <Typography sx={{ textTransform: 'none' }}>Load data</Typography>
+      </Button>
     </UserMenu>
   )
 }
