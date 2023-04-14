@@ -1,5 +1,5 @@
 import React from 'react'
-import { Login } from '@mui/icons-material'
+import { Login, Loop } from '@mui/icons-material'
 import { Box, Icon } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
@@ -18,6 +18,7 @@ import {
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
+import loadDefaultData from '../../utils/init-data'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -48,6 +49,10 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     redirect('/login')
   }
 
+  const handleLoadData = (): void => {
+    loadDefaultData().catch((error) => { console.log({ error }) })
+  }
+
   return (
     <UserMenu {...props}>
       {authenticated === null && (
@@ -63,6 +68,16 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         />
       )}
       <Logout />
+      <Button
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        onClick={handleLoadData}
+        startIcon={
+          <Icon>
+            <Loop />
+          </Icon>
+        }
+        label='Load Data'
+      />
     </UserMenu>
   )
 }
