@@ -7,7 +7,6 @@ import {
   Show,
   TabbedShowLayout,
   TopToolbar,
-  TextField,
   useListContext,
   useRefresh,
   FilterButton,
@@ -16,7 +15,7 @@ import {
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import ItemList from '../items/ItemList'
-import { Button, Modal, type Theme } from '@mui/material'
+import { Button, Modal } from '@mui/material'
 import ChangeLocation from '../items/ItemForm/ChangeLocation'
 import FlexBox from '../../components/FlexBox'
 import { Download } from '@mui/icons-material'
@@ -25,6 +24,7 @@ import Printable from '../../components/Printable'
 import FieldWithLabel, {
   type FieldWithLabelProps
 } from '../../components/FieldWithLabel'
+import BatchNumber from '../../components/BatchNumber'
 
 const ShowActions = () => {
   const [open, setOpen] = useState(false)
@@ -43,25 +43,7 @@ const ShowActions = () => {
   return (
     <>
       <TopToolbar>
-        <Show
-          sx={{ marginRight: 'auto' }}
-          actions={false}
-          resource={constants.R_BATCHES}>
-          <TextField
-            source='batchNumber'
-            sx={(theme: Theme) => ({
-              width: '150px',
-              fontWeight: 'bold',
-              height: '35px',
-              display: 'flex',
-              alignItems: 'center',
-              padding: '16px',
-              background: theme.palette.primary.main,
-              justifyContent: 'center',
-              color: theme.palette.common.white
-            })}
-          />
-        </Show>
+        <BatchNumber />
         <Button
           startIcon={<Download />}
           sx={{ lineHeight: '1.5' }}

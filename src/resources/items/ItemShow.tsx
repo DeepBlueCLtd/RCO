@@ -1,12 +1,18 @@
 import React from 'react'
-import { Form, Show, TabbedShowLayout } from 'react-admin'
+import { Form, Show, TabbedShowLayout, TopToolbar } from 'react-admin'
 import { Album, GroupWork, MenuBook } from '@mui/icons-material'
 import CoreForm from './ItemForm/CoreForm'
 import MediaForm from './ItemForm/MediaForm'
+import BatchNumber from '../../components/BatchNumber'
 
 export default function ItemShow(): React.ReactElement {
   return (
-    <Show>
+    <Show
+      actions={
+        <TopToolbar>
+          <BatchNumber />
+        </TopToolbar>
+      }>
       <Form>
         <TabbedShowLayout>
           <TabbedShowLayout.Tab label='Core'>
