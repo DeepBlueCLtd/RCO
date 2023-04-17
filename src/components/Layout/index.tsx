@@ -1,6 +1,6 @@
 import React from 'react'
 import { Login, Loop } from '@mui/icons-material'
-import { Box, Icon, Typography , Button } from '@mui/material'
+import { Box, Icon, Typography, Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import {
@@ -86,32 +86,37 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   )
 }
 
-const MyAppBar = (props: AppBarProps): React.ReactElement => (
-  <AppBar {...props} userMenu={<MyUserMenu />}>
-    <span
-      style={{
-        backgroundColor: 'white',
-        borderRadius: '50px',
-        width: '35px',
-        height: '35px',
-        display: 'flex',
-        justifyContent: 'center'
-      }}>
-      <img
-        src={AppIcon}
+const MyAppBar = (props: AppBarProps): React.ReactElement => {
+  const redirect = useRedirect()
+  return (
+    <AppBar {...props} userMenu={<MyUserMenu />}>
+      <span
         style={{
-          width: '28px',
-          height: '28px',
-          padding: '3px',
-          marginTop: '5px'
-        }}
-      />
-    </span>
-    <Box flex={1} />
-    [RCO]
-    <Box flex={1} />
-  </AppBar>
-)
+          backgroundColor: 'white',
+          borderRadius: '50px',
+          width: '35px',
+          height: '35px',
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
+        <img
+          src={AppIcon}
+          style={{
+            width: '28px',
+            height: '28px',
+            padding: '3px',
+            marginTop: '5px',
+            cursor: 'pointer'
+          }}
+          onClick={() => { redirect('/') }}
+        />
+      </span>
+      <Box flex={1} />
+      [RCO]
+      <Box flex={1} />
+    </AppBar>
+  )
+}
 
 const MyLayout = (props: LayoutProps): React.ReactElement => (
   <Layout {...props} appBar={MyAppBar} menu={SideMenus}>
