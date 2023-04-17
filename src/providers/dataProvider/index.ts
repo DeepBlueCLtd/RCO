@@ -127,22 +127,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     {
       resource: constants.R_BATCHES,
       beforeUpdate: async (record: UpdateParams<Batch>) => {
-        if (
+        await audit(
+          AuditType.EDIT_BATCH,
+          `Batch updated (${String(record.data.id)})`,
           record.previousData.maximumProtectiveMarking !==
-          record.data.maximumProtectiveMarking
-        ) {
-          await audit(
-            AuditType.EDIT_BATCH,
-            `Batch updated (${String(record.data.id)})`,
-            record.previousData.maximumProtectiveMarking !==
-              record.data.maximumProtectiveMarking
-          )
-        } else {
-          await audit(
-            AuditType.EDIT_BATCH,
-            `Batch updated (${String(record.data.id)})`
-          )
-        }
+            record.data.maximumProtectiveMarking
+        )
         return record
       },
       afterCreate: async (
@@ -181,22 +171,12 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     {
       resource: constants.R_ITEMS,
       beforeUpdate: async (record: UpdateParams<Item>) => {
-        if (
+        await audit(
+          AuditType.EDIT_ITEM,
+          `Item updated (${String(record.data.id)})`,
           record.previousData.protectiveMarking !==
-          record.data.protectiveMarking
-        ) {
-          await audit(
-            AuditType.EDIT_ITEM,
-            `Item updated (${String(record.data.id)})`,
-            record.previousData.protectiveMarking !==
-              record.data.protectiveMarking
-          )
-        } else {
-          await audit(
-            AuditType.EDIT_ITEM,
-            `Item updated (${String(record.data.id)})`
-          )
-        }
+            record.data.protectiveMarking
+        )
         return record
       },
       afterCreate: async (
