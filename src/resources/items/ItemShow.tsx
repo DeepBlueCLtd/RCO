@@ -1,16 +1,25 @@
 import React from 'react'
-import { Form, Show, TabbedShowLayout, TopToolbar } from 'react-admin'
+import {
+  EditButton,
+  Form,
+  Show,
+  TabbedShowLayout,
+  TopToolbar
+} from 'react-admin'
 import { Album, GroupWork, MenuBook } from '@mui/icons-material'
 import CoreForm from './ItemForm/CoreForm'
 import MediaForm from './ItemForm/MediaForm'
 import BatchNumber from '../../components/BatchNumber'
+import * as constants from '../../constants'
 
 export default function ItemShow(): React.ReactElement {
   return (
     <Show
+      resource={constants.R_ITEMS}
       actions={
         <TopToolbar>
           <BatchNumber />
+          <EditButton />
         </TopToolbar>
       }>
       <Form>

@@ -15,11 +15,11 @@ export const rcoTheme = {
       styleOverrides: {
         root: {
           '& .Mui-disabled': {
-            background: '#fff',
+            background: '#fff !important',
             color: 'rgba(0, 0, 0, 0.6)'
           },
           '& .MuiInputBase-input': {
-            '-webkit-text-fill-color': 'rgba(0, 0, 0)'
+            WebkitTextFillColor: 'rgba(0, 0, 0)'
           }
         }
       }
