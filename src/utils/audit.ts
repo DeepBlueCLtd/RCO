@@ -39,7 +39,8 @@ export const trackEvent =
             activityType: type,
             dateTime: new Date().toISOString(),
             activityDetail,
-            securityRelated
+            securityRelated:
+              securityRelated !== undefined ? securityRelated : false
           }
         })
       }
