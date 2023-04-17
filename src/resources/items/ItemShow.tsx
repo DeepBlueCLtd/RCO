@@ -18,7 +18,10 @@ export default function ItemShow(): React.ReactElement {
       resource={constants.R_ITEMS}
       actions={
         <TopToolbar>
-          <BatchNumber />
+          <BatchNumber
+            resource={constants.R_ITEMS}
+            reference={constants.R_BATCHES}
+          />
           <EditButton />
         </TopToolbar>
       }>
