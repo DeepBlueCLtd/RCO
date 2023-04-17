@@ -21,6 +21,7 @@ export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
   return (
     <Menu className={styles.root}>
+      <Menu.DashboardItem />
       <Menu.ResourceItem name={constants.R_USERS} />
       <Menu.ResourceItem name={constants.R_AUDIT} />
       <Menu.ResourceItem name={constants.R_PLATFORMS} />
