@@ -1,8 +1,8 @@
 import React from 'react'
 import { type Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { Menu } from 'react-admin'
-import { AddLink } from '@mui/icons-material'
+import { Menu, MenuItemLink } from 'react-admin'
+import { AddLink, Dashboard } from '@mui/icons-material'
 import * as constants from '../../constants'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -21,7 +21,7 @@ export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
   return (
     <Menu className={styles.root}>
-      <Menu.DashboardItem />
+      <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Dashboard />} />
       <Menu.ResourceItem name={constants.R_USERS} />
       <Menu.ResourceItem name={constants.R_AUDIT} />
       <Menu.ResourceItem name={constants.R_PLATFORMS} />
