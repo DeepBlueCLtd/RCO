@@ -25,7 +25,11 @@ export enum AuditType {
 
 export const trackEvent =
   (dataProvider: DataProvider) =>
-  async (type: AuditType, activityDetail?: string) => {
+  async (
+    type: AuditType,
+    activityDetail?: string,
+    securityRelated?: boolean
+  ) => {
     try {
       const user = getUser()
       if (user !== undefined) {
@@ -34,7 +38,8 @@ export const trackEvent =
             user_id: user.id,
             activityType: type,
             dateTime: new Date().toISOString(),
-            activityDetail
+            activityDetail,
+            securityRelated
           }
         })
       }
