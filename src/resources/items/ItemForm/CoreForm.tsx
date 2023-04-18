@@ -13,12 +13,13 @@ const sx = { width: '100%' }
 
 interface Props {
   batchId?: number
+  disabled?: boolean
 }
 
 const optionsText = (item: ReferenceItem) => item.name
 
 const CoreForm = (props: Props): React.ReactElement => {
-  const { batchId } = props
+  const { batchId, disabled } = props
   const formContext = useFormContext()
 
   useEffect(() => {
@@ -27,27 +28,39 @@ const CoreForm = (props: Props): React.ReactElement => {
 
   return (
     <>
-      <SelectInput source='mediaType' choices={mediaTypeOptions} sx={sx} />
+      <SelectInput
+        disabled={disabled}
+        source='mediaType'
+        choices={mediaTypeOptions}
+        sx={sx}
+      />
       <FlexBox>
         <DateTimeInput
           sx={sx}
+          disabled={disabled}
           source='start'
           label='Start'
           variant='outlined'
         />
-        <DateTimeInput sx={sx} source='end' variant='outlined' label='End' />
+        <DateTimeInput
+          sx={sx}
+          disabled={disabled}
+          source='end'
+          variant='outlined'
+          label='End'
+        />
       </FlexBox>
       <FlexBox>
         <ReferenceInput source='vaultLocation' reference='vaultLocation'>
-          <SelectInput optionText={optionsText} sx={sx} />
+          <SelectInput disabled={disabled} optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <ReferenceInput
           source='protectiveMarking'
           reference='protectiveMarking'>
-          <SelectInput optionText={optionsText} sx={sx} />
+          <SelectInput disabled={disabled} optionText={optionsText} sx={sx} />
         </ReferenceInput>
       </FlexBox>
-      <TextInput multiline source='remarks' sx={sx} />
+      <TextInput multiline disabled={disabled} source='remarks' sx={sx} />
     </>
   )
 }
