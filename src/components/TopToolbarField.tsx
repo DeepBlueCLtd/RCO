@@ -11,7 +11,7 @@ const sx = (theme: Theme) => ({
   padding: '16px',
   background: theme.palette.primary.main,
   justifyContent: 'center',
-  color: `${theme.palette.common.white} !important`
+  color: `${theme.palette.common.white} !important` 
 })
 
 type Props = Omit<ShowProps, 'children'> & {
