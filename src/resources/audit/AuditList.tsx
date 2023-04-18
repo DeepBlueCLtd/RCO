@@ -10,8 +10,13 @@ import {
 import * as constants from '../../constants'
 
 const filters = [
-  <DateTimeInput key='start' source='dateTime_gte' label='Start date' />,
-  <DateTimeInput key='end' source='dateTime_lte' label='End date' />
+  <DateTimeInput
+    key='start'
+    source='dateTime_gte'
+    label='After'
+    alwaysOn={true}
+  />,
+  <DateTimeInput key='end' source='dateTime_lte' label='Before' />
 ]
 
 export default function AuditList(): React.ReactElement {
