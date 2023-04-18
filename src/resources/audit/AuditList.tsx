@@ -21,6 +21,7 @@ export default function AuditList(): React.ReactElement {
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='activityType' label='Activity Type' />
         <TextField source='activityDetail' label='Activity Details' />
+        <TextField source='securityRelated' label='Security Related' />
       </Datagrid>
     </List>
   )

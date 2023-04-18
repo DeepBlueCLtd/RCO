@@ -10,6 +10,7 @@ interface Audit {
   activityType: string
   dateTime: string
   activityDetail?: string
+  securityRelated?: boolean
 }
 
 interface Platform {

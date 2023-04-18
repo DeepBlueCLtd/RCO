@@ -4,7 +4,8 @@ import {
   type DeleteResult,
   type CreateResult,
   type UpdateResult,
-  type DataProvider
+  type DataProvider,
+  type UpdateParams
 } from 'react-admin'
 import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
@@ -125,6 +126,15 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     },
     {
       resource: constants.R_BATCHES,
+      beforeUpdate: async (record: UpdateParams<Batch>) => {
+        await audit(
+          AuditType.EDIT_BATCH,
+          `Batch updated (${String(record.data.id)})`,
+          record.previousData.maximumProtectiveMarking !==
+            record.data.maximumProtectiveMarking
+        )
+        return record
+      },
       afterCreate: async (
         record: CreateResult<Batch>,
         dataProvider: DataProvider
@@ -150,13 +160,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           return record
         }
       },
-      afterUpdate: async (record: UpdateResult<Batch>) => {
-        await audit(
-          AuditType.EDIT_BATCH,
-          `Batch updated (${String(record.data.id)})`
-        )
-        return record
-      },
       afterDelete: async (record: DeleteResult<Batch>) => {
         await audit(
           AuditType.DELETE_BATCH,
@@ -167,6 +170,15 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     },
     {
       resource: constants.R_ITEMS,
+      beforeUpdate: async (record: UpdateParams<Item>) => {
+        await audit(
+          AuditType.EDIT_ITEM,
+          `Item updated (${String(record.data.id)})`,
+          record.previousData.protectiveMarking !==
+            record.data.protectiveMarking
+        )
+        return record
+      },
       afterCreate: async (
         record: CreateResult<Item>,
         dataProvider: DataProvider
@@ -202,13 +214,6 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
           console.log({ error })
           return record
         }
-      },
-      afterUpdate: async (record: UpdateResult<Item>) => {
-        await audit(
-          AuditType.EDIT_ITEM,
-          `Item updated (${String(record.data.id)})`
-        )
-        return record
       },
       afterDelete: async (record: DeleteResult<Item>) => {
         await audit(
