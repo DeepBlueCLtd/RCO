@@ -4,6 +4,7 @@ import { NumberInput, TextInput } from 'react-admin'
 
 interface FormProps {
   source: string
+  disabled?: boolean
 }
 
 interface Props {
@@ -39,34 +40,51 @@ export default function MediaForm(
 }
 
 function DVDForm(props: FormProps): React.ReactElement {
-  const { source } = props
+  const { source, disabled } = props
   return (
     <>
-      <NumberInput min={1} label='Size' sx={sx} source={`${source}.size`} />
+      <NumberInput
+        disabled={disabled}
+        min={1}
+        label='Size'
+        sx={sx}
+        source={`${source}.size`}
+      />
     </>
   )
 }
 
 function TapeForm(props: FormProps): React.ReactElement {
-  const { source } = props
+  const { source, disabled } = props
   return (
     <>
       <NumberInput
+        disabled={disabled}
         label='Minutes'
         min={1}
         sx={sx}
         source={`${source}.minutes`}
       />
-      <TextInput label='Brand' sx={sx} source={`${source}.brand`} />
+      <TextInput
+        disabled={disabled}
+        label='Brand'
+        sx={sx}
+        source={`${source}.brand`}
+      />
     </>
   )
 }
 
 function PaperForm(props: FormProps): React.ReactElement {
-  const { source } = props
+  const { source, disabled } = props
   return (
     <>
-      <TextInput label='Pending' sx={sx} source={`${source}.pending`} />
+      <TextInput
+        disabled={disabled}
+        label='Pending'
+        sx={sx}
+        source={`${source}.pending`}
+      />
     </>
   )
 }
