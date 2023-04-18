@@ -9,8 +9,8 @@ import {
 import { Album, GroupWork, MenuBook } from '@mui/icons-material'
 import CoreForm from './ItemForm/CoreForm'
 import MediaForm from './ItemForm/MediaForm'
-import BatchNumber from '../../components/BatchNumber'
 import * as constants from '../../constants'
+import ItemNumber from '../../components/ItemNumber'
 
 export default function ItemShow(): React.ReactElement {
   return (
@@ -18,10 +18,7 @@ export default function ItemShow(): React.ReactElement {
       resource={constants.R_ITEMS}
       actions={
         <TopToolbar>
-          <BatchNumber
-            resource={constants.R_ITEMS}
-            reference={constants.R_BATCHES}
-          />
+          <ItemNumber />
           <EditButton />
         </TopToolbar>
       }>

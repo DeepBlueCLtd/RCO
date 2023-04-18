@@ -1,20 +1,14 @@
 import React from 'react'
 import { Create, Edit, ShowButton, TopToolbar } from 'react-admin'
-import BatchNumber from '../../components/BatchNumber'
 import ItemForm from './ItemForm'
-import * as constants from '../../constants'
+import ItemNumber from '../../components/ItemNumber'
 
 const ItemList = React.lazy(async () => await import('./ItemList'))
 const ItemShow = React.lazy(async () => await import('./ItemShow'))
 
 const ItemCreate = (): React.ReactElement => {
   return (
-    <Create
-      actions={
-        <TopToolbar>
-          <BatchNumber queryParams='batch' />
-        </TopToolbar>
-      }>
+    <Create>
       <ItemForm />
     </Create>
   )
@@ -25,10 +19,7 @@ const ItemEdit = (): React.ReactElement => {
     <Edit
       actions={
         <TopToolbar>
-          <BatchNumber
-            resource={constants.R_ITEMS}
-            reference={constants.R_BATCHES}
-          />
+          <ItemNumber />
           <ShowButton />
         </TopToolbar>
       }>
