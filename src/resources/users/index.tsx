@@ -4,7 +4,6 @@ import UserForm from './UserForm'
 import { encryptData, generateSalt } from '../../utils/encryption'
 
 const UserList = React.lazy(async () => await import('./UserList'))
-const UserShow = React.lazy(async () => await import('./UserShow'))
 
 const transform = (data: any) => {
   const salt: string = generateSalt()
@@ -56,8 +55,7 @@ const UserEdit = (): React.ReactElement => {
 const users = {
   create: UserCreate,
   edit: UserEdit,
-  list: UserList,
-  show: UserShow
+  list: UserList
 }
 
 export default users
