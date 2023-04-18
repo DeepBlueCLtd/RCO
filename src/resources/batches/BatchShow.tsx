@@ -24,7 +24,7 @@ import Printable from '../../components/Printable'
 import FieldWithLabel, {
   type FieldWithLabelProps
 } from '../../components/FieldWithLabel'
-import BatchNumber from '../../components/BatchNumber'
+import TopToolbarField from '../../components/TopToolbarField'
 
 const ShowActions = () => {
   const [open, setOpen] = useState(false)
@@ -43,7 +43,7 @@ const ShowActions = () => {
   return (
     <>
       <TopToolbar>
-        <BatchNumber />
+        <TopToolbarField source='batchNumber' />
         <Button
           startIcon={<Download />}
           sx={{ lineHeight: '1.5' }}

@@ -10,7 +10,7 @@ import { Album, GroupWork, MenuBook } from '@mui/icons-material'
 import CoreForm from './ItemForm/CoreForm'
 import MediaForm from './ItemForm/MediaForm'
 import * as constants from '../../constants'
-import ItemNumber from '../../components/ItemNumber'
+import TopToolbarField from '../../components/TopToolbarField'
 
 export default function ItemShow(): React.ReactElement {
   return (
@@ -18,7 +18,7 @@ export default function ItemShow(): React.ReactElement {
       resource={constants.R_ITEMS}
       actions={
         <TopToolbar>
-          <ItemNumber />
+          <TopToolbarField source='item_number' />
           <EditButton />
         </TopToolbar>
       }>

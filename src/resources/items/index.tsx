@@ -1,7 +1,7 @@
 import React from 'react'
 import { Create, Edit, ShowButton, TopToolbar } from 'react-admin'
 import ItemForm from './ItemForm'
-import ItemNumber from '../../components/ItemNumber'
+import TopToolbarField from '../../components/TopToolbarField'
 
 const ItemList = React.lazy(async () => await import('./ItemList'))
 const ItemShow = React.lazy(async () => await import('./ItemShow'))
@@ -19,7 +19,7 @@ const ItemEdit = (): React.ReactElement => {
     <Edit
       actions={
         <TopToolbar>
-          <ItemNumber />
+          <TopToolbarField source='item_number' />
           <ShowButton />
         </TopToolbar>
       }>
