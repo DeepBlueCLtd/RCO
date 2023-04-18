@@ -108,7 +108,9 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => {
             marginTop: '5px',
             cursor: 'pointer'
           }}
-          onClick={() => { redirect('/') }}
+          onClick={() => {
+            redirect('/')
+          }}
         />
       </span>
       <Box flex={1} />
@@ -121,7 +123,9 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => {
 const MyLayout = (props: LayoutProps): React.ReactElement => (
   <Layout {...props} appBar={MyAppBar} menu={SideMenus}>
     {props.children}
-    <Footer />
+    <div style={{ marginTop: '30px' }}>
+      <Footer />
+    </div>
   </Layout>
 )
 
