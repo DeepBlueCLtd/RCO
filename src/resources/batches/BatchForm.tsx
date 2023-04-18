@@ -1,11 +1,18 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React from 'react'
-import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
+import {
+  ReferenceInput,
+  SelectInput,
+  SimpleForm,
+  TextInput,
+  FunctionField
+} from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
+import { Toolbar, type Theme } from '@mui/material'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -30,61 +37,81 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const sx = { width: '100%' }
 
   return (
-    <SimpleForm
-      toolbar={<EditToolBar isEdit={props.isEdit} />}
-      defaultValues={defaultValues}
-      resolver={yupResolver(schema)}>
-      <ReferenceInput
-        variant='outlined'
-        source='platform'
-        reference={constants.R_PLATFORMS}>
-        <SelectInput optionText={optionsText} sx={sx} />
-      </ReferenceInput>
-      <FlexBox>
-        <DatePicker
-          label='Year of receipt'
-          source='yearOfReceipt'
-          variant='outlined'
-          format='YYYY'
-          dataPickerProps={{ views: ['year'] }}
+    <>
+      <Toolbar>
+        <FunctionField
+          sx={(theme: Theme) => ({
+            width: '150px',
+            fontWeight: 'bold',
+            margin: '5px',
+            height: '35px',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '16px',
+            background: theme.palette.primary.main,
+            justifyContent: 'center',
+            color: theme.palette.common.white,
+            borderRadius: '4px'
+          })}
+          render={(record: Batch) => record?.batchNumber}
         />
+      </Toolbar>
+      <SimpleForm
+        toolbar={<EditToolBar isEdit={props.isEdit} />}
+        defaultValues={defaultValues}
+        resolver={yupResolver(schema)}>
         <ReferenceInput
           variant='outlined'
-          source='project'
-          reference={constants.R_PROJECTS}>
+          source='platform'
+          reference={constants.R_PLATFORMS}>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
-      </FlexBox>
-      <FlexBox>
-        <ReferenceInput
-          variant='outlined'
-          source='organisation'
-          reference='organisation'>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
-        <ReferenceInput
-          variant='outlined'
-          source='department'
-          reference='department'>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
-      </FlexBox>
-      <FlexBox>
-        <ReferenceInput
-          variant='outlined'
-          source='protectiveMarkingAuthority'
-          reference='protectiveMarkingAuthority'>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
-        <ReferenceInput
-          variant='outlined'
-          source='maximumProtectiveMarking'
-          reference='protectiveMarking'>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
-      </FlexBox>
-      <TextInput multiline source='remarks' variant='outlined' sx={sx} />
-    </SimpleForm>
+        <FlexBox>
+          <DatePicker
+            label='Year of receipt'
+            source='yearOfReceipt'
+            variant='outlined'
+            format='YYYY'
+            dataPickerProps={{ views: ['year'] }}
+          />
+          <ReferenceInput
+            variant='outlined'
+            source='project'
+            reference={constants.R_PROJECTS}>
+            <SelectInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+        </FlexBox>
+        <FlexBox>
+          <ReferenceInput
+            variant='outlined'
+            source='organisation'
+            reference='organisation'>
+            <SelectInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+          <ReferenceInput
+            variant='outlined'
+            source='department'
+            reference='department'>
+            <SelectInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+        </FlexBox>
+        <FlexBox>
+          <ReferenceInput
+            variant='outlined'
+            source='protectiveMarkingAuthority'
+            reference='protectiveMarkingAuthority'>
+            <SelectInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+          <ReferenceInput
+            variant='outlined'
+            source='maximumProtectiveMarking'
+            reference='protectiveMarking'>
+            <SelectInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+        </FlexBox>
+        <TextInput multiline source='remarks' variant='outlined' sx={sx} />
+      </SimpleForm>
+    </>
   )
 }
 
