@@ -16,10 +16,10 @@ export const rcoTheme = {
         root: {
           '& .Mui-disabled': {
             background: '#fff !important',
-            color: 'rgba(0, 0, 0, 0.6)'
+            color: 'rgba(0, 0, 0, 0.6) !important'
           },
           '& .MuiInputBase-input': {
-            WebkitTextFillColor: 'rgba(0, 0, 0)'
+            WebkitTextFillColor: 'rgba(0, 0, 0) !important'
           }
         }
       }
