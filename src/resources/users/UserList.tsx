@@ -32,7 +32,8 @@ export default function UserList(props: Props): React.ReactElement {
 
   const CustomEditButton = () => {
     const record = useRecordContext(props)
-    return <EditButton to={`${basePath}/${record.id}`} />
+    const id = record.id.toString()
+    return <EditButton to={`${basePath}/${id}`} />
   }
 
   return (
