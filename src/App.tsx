@@ -8,7 +8,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Category, Layers, Person, SettingsSuggest } from '@mui/icons-material'
+import { Category, Layers, SettingsSuggest } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -63,19 +63,6 @@ function App(): React.ReactElement {
             ...(permissions === 'admin'
               ? [
                   <Resource
-                    key={constants.R_USERS}
-                    icon={Person}
-                    name={constants.R_USERS}
-                    recordRepresentation='name'
-                    {...users}
-                  />,
-                  <Resource
-                    key={constants.R_AUDIT}
-                    options={{ label: 'Audit Log' }}
-                    name={constants.R_AUDIT}
-                    {...audit}
-                  />,
-                  <Resource
                     key={constants.R_BATCHES}
                     icon={Layers}
                     name={constants.R_BATCHES}
@@ -112,6 +99,12 @@ function App(): React.ReactElement {
                       </Route>
                       <Route path='platforms'>
                         {...createRoutes('platforms', platforms)}
+                      </Route>
+                      <Route path='users'>
+                        {...createRoutes('users', users)}
+                      </Route>
+                      <Route path='audit'>
+                        {...createRoutes('audit', audit)}
                       </Route>
                     </Route>
                   </CustomRoutes>

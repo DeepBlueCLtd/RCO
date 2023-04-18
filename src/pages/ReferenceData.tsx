@@ -81,7 +81,9 @@ const routes = [
   { path: '/department', title: 'Department' },
   { path: '/vaultLocation', title: 'Vault Location' },
   { path: '/platformOriginator', title: 'Platform Originator' },
-  { path: '/platforms', title: 'Platforms' }
+  { path: '/platforms', title: 'Platforms' },
+  { path: '/users', title: 'Users' },
+  { path: '/audit', title: 'Audit Log' }
 ]
 
 export default function ReferenceData(): React.ReactElement {
