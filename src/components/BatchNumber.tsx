@@ -28,7 +28,7 @@ export default function BatchNumber(props: Props): ReactElement {
   const queryParams: string | undefined = props.queryParams
   const searchParams: URLSearchParams = new URLSearchParams(location.search)
   const batch: number | undefined =
-    typeof queryParams === 'undefined'
+    typeof queryParams !== 'undefined'
       ? Number(searchParams.get(queryParams))
       : undefined
 
