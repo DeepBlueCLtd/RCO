@@ -4,6 +4,7 @@ import { type ReactElement } from 'react'
 
 const sx = (theme: Theme) => {
   const color: string = `${theme.palette.common.white} !important`
+  
   return {
     width: '150px',
     fontWeight: 'bold',
