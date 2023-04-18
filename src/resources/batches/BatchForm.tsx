@@ -1,18 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React from 'react'
-import {
-  ReferenceInput,
-  SelectInput,
-  SimpleForm,
-  TextInput,
-  FunctionField
-} from 'react-admin'
+import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
-import { Toolbar, type Theme } from '@mui/material'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -38,24 +31,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
 
   return (
     <>
-      <Toolbar>
-        <FunctionField
-          sx={(theme: Theme) => ({
-            width: '150px',
-            fontWeight: 'bold',
-            margin: '5px',
-            height: '35px',
-            display: 'flex',
-            alignItems: 'center',
-            padding: '16px',
-            background: theme.palette.primary.main,
-            justifyContent: 'center',
-            color: theme.palette.common.white,
-            borderRadius: '4px'
-          })}
-          render={(record: Batch) => record?.batchNumber}
-        />
-      </Toolbar>
       <SimpleForm
         toolbar={<EditToolBar isEdit={props.isEdit} />}
         defaultValues={defaultValues}
