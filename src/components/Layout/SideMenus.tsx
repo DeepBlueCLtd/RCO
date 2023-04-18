@@ -22,8 +22,6 @@ export const SideMenus = (): React.ReactElement => {
   return (
     <Menu className={styles.root}>
       <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Dashboard />} />
-      <Menu.ResourceItem name={constants.R_USERS} />
-      <Menu.ResourceItem name={constants.R_AUDIT} />
       <Menu.ResourceItem name={constants.R_PLATFORMS} />
       <Menu.ResourceItem name={constants.R_PROJECTS} />
       <Menu.ResourceItem name={constants.R_BATCHES} />
