@@ -1,6 +1,14 @@
 import React from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
-import { DateField, Show, TextField } from 'react-admin'
+import {
+  CreateButton,
+  DateField,
+  EditButton,
+  Show,
+  TextField,
+  TopToolbar
+} from 'react-admin'
+import { useParams } from 'react-router-dom'
 
 const ValueField = ({
   label,
@@ -16,9 +24,24 @@ const ValueField = ({
   )
 }
 
+const Actions = () => {
+  const { id = '' } = useParams()
+  const projectId: string = id
+
+  return (
+    <TopToolbar>
+      <EditButton />
+      <CreateButton
+        label='Add new batch'
+        to={`/batches/create?project=${projectId}`}
+      />
+    </TopToolbar>
+  )
+}
+
 export default function ProjectShow(): React.ReactElement {
   return (
-    <Show>
+    <Show actions={<Actions />}>
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <ValueField label='Id'>
