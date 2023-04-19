@@ -26,8 +26,10 @@ const ListActions = () => (
 const omitColumns: string[] = [
   'protectiveMarkingAuthority',
   'maximumProtectiveMarking',
+  'department',
   'remarks',
-  'id'
+  'id',
+  'receiptNotes'
 ]
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
@@ -85,7 +87,7 @@ export default function BatchList(): React.ReactElement {
         <SourceField
           source='protectiveMarkingAuthority'
           reference='protectiveMarkingAuthority'
-          label='Protective marking authorityg'
+          label='Protective marking authority'
         />
         <SourceField
           source='maximumProtectiveMarking'
