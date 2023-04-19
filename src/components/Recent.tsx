@@ -4,7 +4,6 @@ import { useDataProvider } from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import FlexBox from './FlexBox'
 import { Link } from 'react-router-dom'
-import SearchIcon from '@mui/icons-material/Search'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 
@@ -20,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 interface Props<T> {
-  resource: string
+  resource?: string
   itemsCount?: number
   label?: string
   fields: Array<keyof T>
@@ -47,14 +46,18 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
   const [data, setData] = useState<Array<Data<T>>>(defaultData)
 
   const getData = () => {
-    dataProvider
-      .getList<Data<T>>(resource, {
-        sort: { field: 'id', order: 'DESC' },
-        pagination: { page: 1, perPage: itemsCount },
-        filter: {}
-      })
-      .then(({ data }) => { setData(data) })
-      .catch(console.log)
+    if (typeof resource !== 'undefined') {
+      dataProvider
+        .getList<Data<T>>(resource, {
+          sort: { field: 'id', order: 'DESC' },
+          pagination: { page: 1, perPage: itemsCount },
+          filter: {}
+        })
+        .then(({ data }) => {
+          setData(data)
+        })
+        .catch(console.log)
+    }
   }
 
   useEffect(() => {
@@ -65,13 +68,12 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
 
   return (
     <Box>
-      <Card sx={{ minWidth: 300 }} variant='outlined'>
+      <Card sx={{ minWidth: 300, minHeight: 206 }} variant='outlined'>
         <CardContent>
           <Typography variant='h6'>
             {typeof label !== 'undefined' && (
-              <Link to={resource} className={classes.label}>
+              <Link to={resource ?? ''} className={classes.label}>
                 {label}
-                <SearchIcon />
               </Link>
             )}
           </Typography>
@@ -96,15 +98,10 @@ function Row<T>(props: RowProps<T>): React.ReactElement {
 
   return (
     <FlexBox>
-      {fields.map((field, index) => {
+      {fields.map((field) => {
         const value = data[field] as string | number
 
-        return (
-          <Typography key={value}>
-            {index === 0 && <SearchIcon />}
-            {value}
-          </Typography>
-        )
+        return <Typography key={value}>{value}</Typography>
       })}
     </FlexBox>
   )
