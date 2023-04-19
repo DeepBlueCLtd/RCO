@@ -41,6 +41,7 @@ interface Batch {
   protectiveMarkingAuthority: ReferenceItem['id']
   maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
+  receiptNotes: string
   createdAt: string
 }
 
