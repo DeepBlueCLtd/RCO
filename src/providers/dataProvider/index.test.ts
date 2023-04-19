@@ -63,7 +63,8 @@ const generateBatch = async (
     organisation: id,
     protectiveMarkingAuthority: id,
     maximumProtectiveMarking: id,
-    remarks: `remarks-batch-${year}`
+    remarks: `remarks-batch-${year}`,
+    receiptNotes: `Reference-${id}`
   }
 
   await provider.create(constants.R_BATCHES, { data: { ...obj } })

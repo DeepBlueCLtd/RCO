@@ -1,11 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
+import { useLocation } from 'react-router-dom'
+import { isNumber } from '../../utils/number'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -19,11 +21,22 @@ const schema = yup.object({
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
+  const [projectId, setProjectId] = useState<number>()
+  const location = useLocation()
+
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
     yearOfReceipt: '',
     remarks: ''
   }
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const projectId = searchParams.get('project')
+    if (projectId !== null && isNumber(projectId)) {
+      setProjectId(Number(projectId))
+    }
+  }, [])
 
   const optionsText = (value: Batch) => value.name
 
@@ -53,7 +66,11 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             variant='outlined'
             source='project'
             reference={constants.R_PROJECTS}>
-            <SelectInput optionText={optionsText} sx={sx} />
+            <SelectInput
+              optionText={optionsText}
+              sx={sx}
+              defaultValue={projectId !== undefined ? projectId : null}
+            />
           </ReferenceInput>
         </FlexBox>
         <FlexBox>
@@ -85,6 +102,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           </ReferenceInput>
         </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
+        <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>
     </>
   )

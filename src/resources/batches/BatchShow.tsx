@@ -175,6 +175,9 @@ export default function BatchShow(): React.ReactElement {
             />
             <StyledFieldWithLabel label='Remarks' source='remarks' />
           </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel label='Receipt notes' source='receiptNotes' />
+          </FlexBox>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items'>
           <ItemList
