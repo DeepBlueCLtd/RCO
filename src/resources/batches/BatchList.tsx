@@ -62,6 +62,12 @@ const filters = [
     source='organisation'
     key='organisation'
   />,
+  <SourceInput
+    variant='outlined'
+    reference={constants.R_PROJECTS}
+    source='project'
+    key='projects'
+  />,
   <DateFilter key='createdAt' source='createdAt' label='Created At' />
 ]
 
