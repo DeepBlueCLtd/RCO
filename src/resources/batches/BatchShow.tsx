@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   BulkDeleteButton,
   CreateButton,
-  DeleteWithConfirmButton,
   EditButton,
   Show,
   TabbedShowLayout,
@@ -10,7 +9,8 @@ import {
   useListContext,
   useRefresh,
   FilterButton,
-  SelectColumnsButton
+  SelectColumnsButton,
+  DeleteButton
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -52,7 +52,7 @@ const ShowActions = () => {
           Muster list
         </Button>
         <EditButton />
-        <DeleteWithConfirmButton />
+        <DeleteButton mutationMode='pessimistic' />
       </TopToolbar>
       <Printable open={open} onClose={handleClose}>
         <BatchReport batchId={batchId} />

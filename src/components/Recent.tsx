@@ -1,6 +1,6 @@
 import { Box, type Theme, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { useDataProvider } from 'react-admin'
+import { useCreatePath, useDataProvider } from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import FlexBox from './FlexBox'
 import { Link } from 'react-router-dom'
@@ -15,6 +15,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     textAlign: 'center',
     fontWeight: 'bold',
     color: theme.palette.common.black
+  },
+  linkItem: {
+    textDecoration: 'none',
+    color: theme.palette.common.black,
+    '&:hover': {
+      textDecoration: 'underline'
+    }
   }
 }))
 
@@ -68,7 +75,7 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
 
   return (
     <Box>
-      <Card sx={{ minWidth: 300, minHeight: 206 }} variant='outlined'>
+      <Card sx={{ minWidth: 300, minHeight: 210 }} variant='outlined'>
         <CardContent>
           <Typography variant='h6'>
             {typeof label !== 'undefined' && (
@@ -77,9 +84,14 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
               </Link>
             )}
           </Typography>
-          <Box sx={{ mb: 1.5 }}>
+          <Box sx={{ mt: 2 }}>
             {data.map((item) => (
-              <Row data={item} fields={fields} key={item.id} />
+              <Row
+                data={item}
+                resource={resource ?? ''}
+                fields={fields}
+                key={item.id}
+              />
             ))}
           </Box>
         </CardContent>
@@ -89,18 +101,28 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
 }
 
 interface RowProps<T> {
-  fields: Array<keyof T>
-  data: T
+  fields: Array<keyof Data<T>>
+  data: Data<T>
+  resource: string
 }
 
 function Row<T>(props: RowProps<T>): React.ReactElement {
-  const { fields, data } = props
+  const classes = useStyles()
+  const { fields, data, resource } = props
+  const createPath = useCreatePath()
+  const to = createPath({ resource, type: 'show', id: data.id })
 
   return (
-    <FlexBox>
-      {fields.map((field) => {
+    <FlexBox justifyContent='space-between'>
+      {fields.map((field, index) => {
         const value = data[field] as string | number
-
+        if (index === 0) {
+          return (
+            <Link key={value} className={classes.linkItem} to={to}>
+              <Typography>{value}</Typography>
+            </Link>
+          )
+        }
         return <Typography key={value}>{value}</Typography>
       })}
     </FlexBox>
