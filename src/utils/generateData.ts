@@ -117,7 +117,8 @@ export const generateBatch = (
         protectiveMarkingAuthority - 1
       ),
       maximumProtectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      remarks: `remarks-batch-${i}`
+      remarks: `remarks-batch-${i}`,
+      receiptNotes: `Reference-${i}`
     }
     batches.push(obj)
   }

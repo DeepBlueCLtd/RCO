@@ -85,6 +85,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           </ReferenceInput>
         </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
+        <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>
     </>
   )
