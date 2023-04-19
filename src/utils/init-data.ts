@@ -40,7 +40,6 @@ const loadDefaultData = async () => {
     department.length,
     projects.length,
     organisation.length,
-    protectiveMarkingAuthority.length,
     protectiveMarking.length
   )
 

@@ -162,20 +162,13 @@ export default function BatchShow(): React.ReactElement {
               reference='department'
             />
             <StyledFieldWithLabel
-              label='Protective Marking Authority'
-              source='protectiveMarkingAuthority'
-              reference='protectiveMarkingAuthority'
-            />
-          </FlexBox>
-          <FlexBox>
-            <StyledFieldWithLabel
               label='Maximum Protective Marking'
               source='maximumProtectiveMarking'
               reference='protectiveMarking'
             />
-            <StyledFieldWithLabel label='Remarks' source='remarks' />
           </FlexBox>
           <FlexBox>
+            <StyledFieldWithLabel label='Remarks' source='remarks' />
             <StyledFieldWithLabel label='Receipt notes' source='receiptNotes' />
           </FlexBox>
         </TabbedShowLayout.Tab>
