@@ -85,11 +85,6 @@ export default function BatchList(): React.ReactElement {
         />
         <SourceField source='organisation' label='Organisation' />
         <SourceField
-          source='protectiveMarkingAuthority'
-          reference='protectiveMarkingAuthority'
-          label='Protective marking authority'
-        />
-        <SourceField
           source='maximumProtectiveMarking'
           reference='protectiveMarking'
           label='Maximum protective marking'

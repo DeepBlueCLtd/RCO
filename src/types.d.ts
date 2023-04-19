@@ -38,7 +38,8 @@ interface Batch {
   project: Project['id']
   platform: Platform['id']
   organisation: ReferenceItem['id']
-  protectiveMarkingAuthority: ReferenceItem['id']
+  // deprecated
+  // protectiveMarkingAuthority: ReferenceItem['id']
   maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
   receiptNotes: string
