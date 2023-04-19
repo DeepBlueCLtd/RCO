@@ -93,6 +93,7 @@ export default function BatchList(): React.ReactElement {
           label='Maximum protective marking'
         />
         <TextField source='remarks' />
+        <TextField source='receiptNotes' />
       </DatagridConfigurable>
     </List>
   )
