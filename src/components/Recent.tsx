@@ -1,11 +1,18 @@
 import { Box, type Theme, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import { useCreatePath, useDataProvider } from 'react-admin'
+import React from 'react'
+import { Datagrid, List, ResourceContext, TextField } from 'react-admin'
 import { makeStyles } from '@mui/styles'
-import FlexBox from './FlexBox'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import {
+  Table,
+  TableCell,
+  TableBody,
+  TableContainer,
+  TableRow
+} from '@mui/material'
+import SourceField from './SourceField'
 
 const useStyles = makeStyles((theme: Theme) => ({
   label: {
@@ -16,20 +23,34 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 'bold',
     color: theme.palette.common.black
   },
-  linkItem: {
-    textDecoration: 'none',
-    color: theme.palette.common.black,
-    '&:hover': {
-      textDecoration: 'underline'
+  cardContent: {
+    padding: '10px 0 0',
+    minWidth: '294px',
+    minHeight: '260px',
+    '&:last-child': {
+      paddingBottom: 0
+    }
+  },
+  list: {
+    '& .MuiPaper-root': {
+      boxShadow: 'unset !important'
+    },
+    '& tr:last-child td': {
+      borderBottom: 0
     }
   }
 }))
+
+interface Field<T> {
+  source: keyof T
+  reference?: string
+}
 
 interface Props<T> {
   resource?: string
   itemsCount?: number
   label?: string
-  fields: Array<keyof T>
+  fields: Array<Field<T>>
   defaultData?: Array<Data<T>>
 }
 
@@ -37,6 +58,20 @@ type Data<T> = {
   [key in keyof T]: any
 } & {
   id: number
+}
+
+function Column<T>(props: Field<T>) {
+  const { source, reference } = props
+  if (typeof reference !== 'undefined') {
+    return (
+      <SourceField
+        link={false}
+        source={source as string}
+        reference={reference}
+      />
+    )
+  }
+  return <TextField source={source as string} />
 }
 
 export default function Recent<T>(props: Props<T>): React.ReactElement {
@@ -49,34 +84,12 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
     defaultData = []
   } = props
 
-  const dataProvider = useDataProvider()
-  const [data, setData] = useState<Array<Data<T>>>(defaultData)
-
-  const getData = () => {
-    if (typeof resource !== 'undefined') {
-      dataProvider
-        .getList<Data<T>>(resource, {
-          sort: { field: 'id', order: 'DESC' },
-          pagination: { page: 1, perPage: itemsCount },
-          filter: {}
-        })
-        .then(({ data }) => {
-          setData(data)
-        })
-        .catch(console.log)
-    }
-  }
-
-  useEffect(() => {
-    if (data.length === 0) {
-      getData()
-    }
-  }, [])
+  const data: Array<Data<T>> = defaultData
 
   return (
     <Box>
-      <Card sx={{ minWidth: 300, minHeight: 210 }} variant='outlined'>
-        <CardContent>
+      <Card variant='outlined'>
+        <CardContent className={classes.cardContent}>
           <Typography variant='h6'>
             {typeof label !== 'undefined' && (
               <Link to={resource ?? ''} className={classes.label}>
@@ -85,14 +98,28 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
             )}
           </Typography>
           <Box sx={{ mt: 2 }}>
-            {data.map((item) => (
-              <Row
-                data={item}
-                resource={resource ?? ''}
-                fields={fields}
-                key={item.id}
-              />
-            ))}
+            {typeof resource !== 'undefined' ? (
+              <ResourceContext.Provider value={resource}>
+                <List
+                  hasCreate={false}
+                  actions={false}
+                  perPage={itemsCount}
+                  pagination={false}
+                  className={classes.list}
+                  sort={{ field: 'id', order: 'DESC' }}>
+                  <Datagrid
+                    header={() => null}
+                    bulkActionButtons={false}
+                    rowClick='show'>
+                    {fields.map((column, index) => (
+                      <Column key={index} {...column} />
+                    ))}
+                  </Datagrid>
+                </List>
+              </ResourceContext.Provider>
+            ) : (
+              <PlaceholderTable data={data} fields={fields} />
+            )}
           </Box>
         </CardContent>
       </Card>
@@ -100,31 +127,32 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
   )
 }
 
-interface RowProps<T> {
-  fields: Array<keyof Data<T>>
-  data: Data<T>
-  resource: string
+interface PlaceholderTableProps<T> {
+  data: Array<Data<T>>
+  fields: Array<Field<T>>
 }
 
-function Row<T>(props: RowProps<T>): React.ReactElement {
+function PlaceholderTable<T>(props: PlaceholderTableProps<T>) {
+  const { data, fields } = props
   const classes = useStyles()
-  const { fields, data, resource } = props
-  const createPath = useCreatePath()
-  const to = createPath({ resource, type: 'show', id: data.id })
-
   return (
-    <FlexBox justifyContent='space-between'>
-      {fields.map((field, index) => {
-        const value = data[field] as string | number
-        if (index === 0) {
-          return (
-            <Link key={value} className={classes.linkItem} to={to}>
-              <Typography>{value}</Typography>
-            </Link>
-          )
-        }
-        return <Typography key={value}>{value}</Typography>
-      })}
-    </FlexBox>
+    <TableContainer>
+      <Table className={classes.list}>
+        <TableBody>
+          {data.map((item) => (
+            <TableRow hover key={item.id}>
+              {fields.map((column) => {
+                const value = item[column.source]
+                return (
+                  <TableCell key={value} sx={{ padding: '6px 16px' }}>
+                    {value}
+                  </TableCell>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }

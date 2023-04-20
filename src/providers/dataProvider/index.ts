@@ -63,6 +63,7 @@ export const generateBatchId = async (
 
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const provider = await localForageDataProvider({
+    loggingEnabled: true,
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY
   })
 

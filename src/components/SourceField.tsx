@@ -1,4 +1,9 @@
-import { ReferenceField, TextField, type TextFieldProps } from 'react-admin'
+import {
+  ReferenceField,
+  TextField,
+  type TextFieldProps,
+  type LinkToType
+} from 'react-admin'
 
 interface SourceFieldProps {
   source: string
@@ -6,6 +11,7 @@ interface SourceFieldProps {
   reference?: string
   sourceField?: string
   textProps?: TextFieldProps
+  link?: LinkToType
 }
 
 const SourceField = (props: SourceFieldProps): React.ReactElement => {
@@ -14,10 +20,12 @@ const SourceField = (props: SourceFieldProps): React.ReactElement => {
     label,
     reference,
     sourceField = 'name',
+    link,
     textProps = {}
   } = props
   return (
     <ReferenceField
+      link={link}
       source={source}
       reference={reference !== undefined ? reference : source}
       label={label}>
