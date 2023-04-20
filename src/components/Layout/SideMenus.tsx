@@ -2,7 +2,7 @@ import React from 'react'
 import { type Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Menu, MenuItemLink } from 'react-admin'
-import { AddLink, Dashboard } from '@mui/icons-material'
+import { LibraryBooks, Home } from '@mui/icons-material'
 import * as constants from '../../constants'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -21,7 +21,7 @@ export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
   return (
     <Menu className={styles.root}>
-      <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Dashboard />} />
+      <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Home />} />
       <Menu.ResourceItem name={constants.R_PLATFORMS} />
       <Menu.ResourceItem name={constants.R_PROJECTS} />
       <Menu.ResourceItem name={constants.R_BATCHES} />
@@ -29,7 +29,7 @@ export const SideMenus = (): React.ReactElement => {
       <Menu.Item
         to='/reference-data'
         primaryText='Reference Data'
-        leftIcon={<AddLink />}
+        leftIcon={<LibraryBooks />}
       />
     </Menu>
   )
