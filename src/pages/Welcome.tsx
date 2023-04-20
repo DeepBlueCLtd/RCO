@@ -43,9 +43,16 @@ export default function Welcome(): React.ReactElement {
           <CreateButton
             color='primary'
             variant='contained'
+            resource={constants.R_PROJECTS}
+            label='New Project'
+            sx={{ width: '150px', height: '50px' }}
+          />
+          <CreateButton
+            color='primary'
+            variant='contained'
             resource={constants.R_BATCHES}
-            label='Add New Batch'
-            sx={{ width: '250px', height: '50px' }}
+            label='New Batch'
+            sx={{ width: '150px', height: '50px' }}
           />
         </FlexBox>
       </FlexBox>
