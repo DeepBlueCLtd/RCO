@@ -54,6 +54,10 @@ interface ReferenceItem {
   name: string
 }
 
+interface ActiveReferenceItem extends ReferenceItem {
+  active: boolean
+}
+
 interface CoreMedia {
   readonly mediaType: MediaType
 }

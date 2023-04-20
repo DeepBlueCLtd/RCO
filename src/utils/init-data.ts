@@ -1,4 +1,7 @@
-import { getReferenceData } from '../providers/dataProvider/reference-data'
+import {
+  getActiveReferenceData,
+  getReferenceData
+} from '../providers/dataProvider/reference-data'
 import users from '../providers/dataProvider/users'
 import { generateSalt, encryptData } from './encryption'
 import {
@@ -14,7 +17,7 @@ const loadDefaultData = async () => {
   const platforms = generatePlatform(10)
   const projects = generateProject(10)
   const organisation = getReferenceData('Organisation')
-  const department = getReferenceData('Department')
+  const department = getActiveReferenceData('Department', 5)
   const vaultLocation = getReferenceData('Vault Location')
   const mediaType = getReferenceData('Media')
   const protectiveMarking = getReferenceData('Protective Marking')

@@ -11,3 +11,18 @@ export const getReferenceData = (
       })
     )
 }
+
+export const getActiveReferenceData = (
+  nameVal: string,
+  length = 5
+): ActiveReferenceItem[] => {
+  return Array(length)
+    .fill('')
+    .map((_, index): ActiveReferenceItem => {
+      return {
+        id: index + 1,
+        name: nameVal + ':' + String(index + 1),
+        ...(index + 1 === 1 ? { active: true } : { active: false })
+      }
+    })
+}
