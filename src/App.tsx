@@ -8,7 +8,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Category, Layers, SettingsSuggest } from '@mui/icons-material'
+import { Save, Layers, AccountTree } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -70,7 +70,7 @@ function App(): React.ReactElement {
                   />,
                   <Resource
                     key={constants.R_ITEMS}
-                    icon={Category}
+                    icon={Save}
                     name={constants.R_ITEMS}
                     {...items}
                   />,
@@ -112,7 +112,7 @@ function App(): React.ReactElement {
               : []),
             <Resource
               key={constants.R_PROJECTS}
-              icon={SettingsSuggest}
+              icon={AccountTree}
               name={constants.R_PROJECTS}
               {...projects}
             />
