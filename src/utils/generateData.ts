@@ -95,7 +95,6 @@ export const generateBatch = (
   departments: number,
   projects: number,
   organisations: number,
-  protectiveMarkingAuthority: number,
   protectiveMarking: number
 ): Batch[] => {
   const batches: Batch[] = []
@@ -112,10 +111,6 @@ export const generateBatch = (
       project: generateRandomNumber(1, projects - 1),
       platform: generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
-      protectiveMarkingAuthority: generateRandomNumber(
-        1,
-        protectiveMarkingAuthority - 1
-      ),
       maximumProtectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`

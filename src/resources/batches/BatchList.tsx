@@ -62,6 +62,12 @@ const filters = [
     source='organisation'
     key='organisation'
   />,
+  <SourceInput
+    variant='outlined'
+    reference={constants.R_PROJECTS}
+    source='project'
+    key='projects'
+  />,
   <DateFilter key='createdAt' source='createdAt' label='Created At' />
 ]
 
@@ -84,11 +90,6 @@ export default function BatchList(): React.ReactElement {
           label='Platform'
         />
         <SourceField source='organisation' label='Organisation' />
-        <SourceField
-          source='protectiveMarkingAuthority'
-          reference='protectiveMarkingAuthority'
-          label='Protective marking authority'
-        />
         <SourceField
           source='maximumProtectiveMarking'
           reference='protectiveMarking'

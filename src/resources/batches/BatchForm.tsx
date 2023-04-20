@@ -90,12 +90,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
         <FlexBox>
           <ReferenceInput
             variant='outlined'
-            source='protectiveMarkingAuthority'
-            reference='protectiveMarkingAuthority'>
-            <SelectInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
             source='maximumProtectiveMarking'
             reference='protectiveMarking'>
             <SelectInput optionText={optionsText} sx={sx} />
