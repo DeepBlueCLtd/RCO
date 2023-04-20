@@ -94,6 +94,7 @@ interface FormProps {
    * since we may display a `Delete` button when in edit mode
    */
   isEdit?: boolean
+  name?: string
 }
 
 interface RCOStore {

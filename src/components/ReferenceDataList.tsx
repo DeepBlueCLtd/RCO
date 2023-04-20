@@ -34,11 +34,7 @@ export default function ReferenceDataList({
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        {name === 'department' ? (
-          <BooleanField label='Active Departments' source='active' />
-        ) : (
-          ''
-        )}
+        {name === 'department' ? <BooleanField source='active' /> : ''}
       </Datagrid>
     </List>
   )
