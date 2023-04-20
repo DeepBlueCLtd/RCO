@@ -5,13 +5,7 @@ import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import {
-  Table,
-  TableCell,
-  TableBody,
-  TableContainer,
-  TableRow
-} from '@mui/material'
+
 import SourceField from './SourceField'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -31,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       paddingBottom: 0
     }
   },
-  list: {
+  container: {
     '& .MuiPaper-root': {
       boxShadow: 'unset !important'
     },
@@ -47,17 +41,10 @@ interface Field<T> {
 }
 
 interface Props<T> {
-  resource?: string
+  resource: string
   itemsCount?: number
   label?: string
   fields: Array<Field<T>>
-  defaultData?: Array<Data<T>>
-}
-
-type Data<T> = {
-  [key in keyof T]: any
-} & {
-  id: number
 }
 
 function Column<T>(props: Field<T>) {
@@ -74,85 +61,56 @@ function Column<T>(props: Field<T>) {
   return <TextField source={source as string} />
 }
 
-export default function Recent<T>(props: Props<T>): React.ReactElement {
+interface RecentCardProps {
+  children: React.ReactElement
+  label?: string
+  resource?: string
+}
+
+export function RecentCard(props: RecentCardProps) {
+  const { label, resource = '', children } = props
   const classes = useStyles()
-  const {
-    resource,
-    itemsCount = 5,
-    label,
-    fields = [],
-    defaultData = []
-  } = props
-
-  const data: Array<Data<T>> = defaultData
-
   return (
     <Box>
       <Card variant='outlined'>
         <CardContent className={classes.cardContent}>
           <Typography variant='h6'>
             {typeof label !== 'undefined' && (
-              <Link to={resource ?? ''} className={classes.label}>
+              <Link to={resource} className={classes.label}>
                 {label}
               </Link>
             )}
           </Typography>
-          <Box sx={{ mt: 2 }}>
-            {typeof resource !== 'undefined' ? (
-              <ResourceContext.Provider value={resource}>
-                <List
-                  hasCreate={false}
-                  actions={false}
-                  perPage={itemsCount}
-                  pagination={false}
-                  className={classes.list}
-                  sort={{ field: 'id', order: 'DESC' }}>
-                  <Datagrid
-                    header={() => null}
-                    bulkActionButtons={false}
-                    rowClick='show'>
-                    {fields.map((column, index) => (
-                      <Column key={index} {...column} />
-                    ))}
-                  </Datagrid>
-                </List>
-              </ResourceContext.Provider>
-            ) : (
-              <PlaceholderTable data={data} fields={fields} />
-            )}
+          <Box sx={{ mt: 2 }} className={classes.container}>
+            {children}
           </Box>
         </CardContent>
       </Card>
     </Box>
   )
 }
+export default function Recent<T>(props: Props<T>): React.ReactElement {
+  const { resource, itemsCount = 5, label, fields = [] } = props
 
-interface PlaceholderTableProps<T> {
-  data: Array<Data<T>>
-  fields: Array<Field<T>>
-}
-
-function PlaceholderTable<T>(props: PlaceholderTableProps<T>) {
-  const { data, fields } = props
-  const classes = useStyles()
   return (
-    <TableContainer>
-      <Table className={classes.list}>
-        <TableBody>
-          {data.map((item) => (
-            <TableRow hover key={item.id}>
-              {fields.map((column) => {
-                const value = item[column.source]
-                return (
-                  <TableCell key={value} sx={{ padding: '6px 16px' }}>
-                    {value}
-                  </TableCell>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <RecentCard label={label} resource={resource}>
+      <ResourceContext.Provider value={resource}>
+        <List
+          hasCreate={false}
+          actions={false}
+          perPage={itemsCount}
+          pagination={false}
+          sort={{ field: 'id', order: 'DESC' }}>
+          <Datagrid
+            header={() => null}
+            bulkActionButtons={false}
+            rowClick='show'>
+            {fields.map((column, index) => (
+              <Column key={index} {...column} />
+            ))}
+          </Datagrid>
+        </List>
+      </ResourceContext.Provider>
+    </RecentCard>
   )
 }

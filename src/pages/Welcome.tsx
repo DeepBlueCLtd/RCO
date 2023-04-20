@@ -6,6 +6,7 @@ import FlexBox from '../components/FlexBox'
 import { CreateButton } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
+import RecentMock from '../components/RecentMock'
 
 const useStyles = makeStyles({
   root: {
@@ -29,6 +30,24 @@ const useStyles = makeStyles({
     justifyContent: 'center'
   }
 })
+
+const mockData = {
+  loans: [
+    { id: 1, name: 'TAPE01', loanNumber: 'MAYO' },
+    { id: 2, name: 'TAPE01', loanNumber: 'DISC/23/32 ' },
+    { id: 3, name: 'SMITH', loanNumber: 'REPORT/2/23' }
+  ],
+  hasteners: [
+    { id: 1, name: '2023/02/11', hastenersNumber: 'RAC' },
+    { id: 2, name: '2023/02/15', hastenersNumber: 'AA' },
+    { id: 3, name: '2023/02/19', hastenersNumber: 'GREEN FLG' }
+  ],
+  notes: [
+    { id: 1, name: '2023/02/12', receiptsNumber: 'RAC' },
+    { id: 2, name: '2023/02/11', receiptsNumber: 'AA' },
+    { id: 3, name: '2023/02/07', receiptsNumber: 'GREEN FLG' }
+  ]
+}
 
 export default function Welcome(): React.ReactElement {
   const styles = useStyles()
@@ -66,34 +85,22 @@ export default function Welcome(): React.ReactElement {
             { source: 'project', reference: constants.R_PROJECTS }
           ]}
         />
-        <Recent
+        <RecentMock
           label='Recent Loans'
-          defaultData={[
-            { id: 1, name: 'TAPE01', loanNumber: 'MAYO' },
-            { id: 2, name: 'TAPE01', loanNumber: 'DISC/23/32 ' },
-            { id: 3, name: 'SMITH', loanNumber: 'REPORT/2/23' }
-          ]}
-          fields={[{ source: 'name' }, { source: 'loanNumber' }]}
+          data={mockData.loans}
+          fields={['name', 'loanNumber']}
         />
       </FlexBox>
       <FlexBox className={styles.row}>
-        <Recent
+        <RecentMock
           label='Pending Receipt Notes'
-          defaultData={[
-            { id: 1, name: '2023/02/12', receiptsNumber: 'RAC' },
-            { id: 2, name: '2023/02/11', receiptsNumber: 'AA' },
-            { id: 3, name: '2023/02/07', receiptsNumber: 'GREEN FLG' }
-          ]}
-          fields={[{ source: 'name' }, { source: 'receiptsNumber' }]}
+          data={mockData.notes}
+          fields={['name', 'receiptsNumber']}
         />
-        <Recent
+        <RecentMock
           label='Hasteners Required'
-          defaultData={[
-            { id: 1, name: '2023/02/11', hastenersNumber: 'RAC' },
-            { id: 2, name: '2023/02/15', hastenersNumber: 'AA' },
-            { id: 3, name: '2023/02/19', hastenersNumber: 'GREEN FLG' }
-          ]}
-          fields={[{ source: 'name' }, { source: 'hastenersNumber' }]}
+          data={mockData.hasteners}
+          fields={['name', 'hastenersNumber']}
         />
       </FlexBox>
     </div>
