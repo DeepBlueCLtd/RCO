@@ -56,7 +56,7 @@ export default function Welcome(): React.ReactElement {
     <div className={styles.root}>
       <FlexBox className={styles.header}>
         <FlexBox className={styles.headerColumn}>
-          <img src={AppIcon} height='50px' />
+          <img src={AppIcon} height='100px' />
         </FlexBox>
         <FlexBox className={styles.headerColumn}>
           <CreateButton
