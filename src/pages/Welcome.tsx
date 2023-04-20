@@ -1,26 +1,108 @@
 import React from 'react'
-import { Box, Typography } from '@mui/material'
+import * as constants from '../constants'
+
+import Recent from '../components/Recent'
+import FlexBox from '../components/FlexBox'
+import { CreateButton } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
+import { makeStyles } from '@mui/styles'
+import RecentMock from '../components/RecentMock'
+
+const useStyles = makeStyles({
+  root: {
+    maxWidth: '720px',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '30px',
+    margin: '0 auto'
+  },
+  row: {
+    marginTop: '40px',
+    justifyContent: 'space-between'
+  },
+  header: {
+    justifyContent: 'space-evenly',
+    columnGap: '68px'
+  },
+  headerColumn: {
+    flex: 1,
+    justifyContent: 'center'
+  }
+})
+
+const mockData = {
+  loans: [
+    { id: 1, name: 'TAPE01', loanNumber: 'MAYO' },
+    { id: 2, name: 'TAPE01', loanNumber: 'DISC/23/32 ' },
+    { id: 3, name: 'SMITH', loanNumber: 'REPORT/2/23' }
+  ],
+  hasteners: [
+    { id: 1, name: '2023/02/11', hastenersNumber: 'RAC' },
+    { id: 2, name: '2023/02/15', hastenersNumber: 'AA' },
+    { id: 3, name: '2023/02/19', hastenersNumber: 'GREEN FLG' }
+  ],
+  notes: [
+    { id: 1, name: '2023/02/12', receiptsNumber: 'RAC' },
+    { id: 2, name: '2023/02/11', receiptsNumber: 'AA' },
+    { id: 3, name: '2023/02/07', receiptsNumber: 'GREEN FLG' }
+  ]
+}
 
 export default function Welcome(): React.ReactElement {
+  const styles = useStyles()
+
   return (
-    <>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh'
-        }}>
-        <img
-          src={AppIcon}
-          style={{
-            width: '228px',
-            height: '228px'
-          }}
+    <div className={styles.root}>
+      <FlexBox className={styles.header}>
+        <FlexBox className={styles.headerColumn}>
+          <img src={AppIcon} height='100px' />
+        </FlexBox>
+        <FlexBox className={styles.headerColumn}>
+          <CreateButton
+            color='primary'
+            variant='contained'
+            resource={constants.R_PROJECTS}
+            label='New Project'
+            sx={{ width: '150px', height: '50px' }}
+          />
+          <CreateButton
+            color='primary'
+            variant='contained'
+            resource={constants.R_BATCHES}
+            label='New Batch'
+            sx={{ width: '150px', height: '50px' }}
+          />
+        </FlexBox>
+      </FlexBox>
+      <FlexBox className={styles.row}>
+        <Recent<Batch>
+          label='Recent Batches'
+          resource={constants.R_BATCHES}
+          fields={[
+            { source: 'batchNumber' },
+            { source: 'platform', reference: constants.R_PLATFORMS },
+            { source: 'project', reference: constants.R_PROJECTS }
+          ]}
         />
-        <Typography variant='h1'>&nbsp;Welcome to RCO</Typography>
-      </Box>
-    </>
+        <RecentMock
+          label='Recent Loans'
+          data={mockData.loans}
+          fields={['name', 'loanNumber']}
+        />
+      </FlexBox>
+      <FlexBox className={styles.row}>
+        <RecentMock
+          label='Pending Receipt Notes'
+          data={mockData.notes}
+          fields={['name', 'receiptsNumber']}
+        />
+        <RecentMock
+          label='Hasteners Required'
+          data={mockData.hasteners}
+          fields={['name', 'hastenersNumber']}
+        />
+      </FlexBox>
+    </div>
   )
 }
