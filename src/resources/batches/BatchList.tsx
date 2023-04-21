@@ -36,6 +36,11 @@ const sort = (field = 'name') => ({ field, order: 'ASC' })
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <SourceInput
+    key='createdBy'
+    source='createdBy'
+    reference={constants.R_USERS}
+  />,
   <DatePicker
     label='Year of receipt'
     source='yearOfReceipt'

@@ -10,8 +10,17 @@ import {
   TextField,
   TopToolbar
 } from 'react-admin'
+import SourceInput from '../../components/SourceInput'
+import * as constants from '../../constants'
 
-const filters = [<SearchInput source='q' key='q' alwaysOn />]
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <SourceInput
+    key='createdBy'
+    source='createdBy'
+    reference={constants.R_USERS}
+  />
+]
 
 export default function ProjectList(): React.ReactElement {
   const ListActions = () => (
