@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import MediaForm from './MediaForm'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField } from '@mui/material'
+import CreatedByInput from '../../../components/CreatedByInput'
 
 const schema = yup.object({
   mediaType: yup
@@ -116,6 +117,7 @@ export default function ItemForm() {
         resolver={yupResolver(schema)}
         defaultValues={defaultValues}
         toolbar={<ItemFormToolbar />}>
+        <CreatedByInput source='createdBy' />
         <TabbedForm.Tab label='Core'>
           <CoreForm batchId={batch?.id} />
         </TabbedForm.Tab>

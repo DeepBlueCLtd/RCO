@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import dayjs from 'dayjs'
 import { Box } from '@mui/material'
 import EditToolBar from '../../components/EditToolBar'
+import CreatedByInput from '../../components/CreatedByInput'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
@@ -32,11 +33,13 @@ export default function ProjectForm(props: FormProps): React.ReactElement {
     projectCode: '',
     remarks: ''
   }
+
   return (
     <SimpleForm
       toolbar={<EditToolBar isEdit={props.isEdit} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
+      <CreatedByInput source='createdBy' />
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <Box display='flex' width='100%' columnGap='20px'>
         <DateInput source='startDate' variant='outlined' sx={{ flex: 1 }} />

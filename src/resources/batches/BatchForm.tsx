@@ -8,6 +8,7 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
+import CreatedByInput from '../../components/CreatedByInput'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -45,9 +46,11 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   return (
     <>
       <SimpleForm
+        onSubmit={console.log}
         toolbar={<EditToolBar isEdit={props.isEdit} />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
+        <CreatedByInput source='createdBy' />
         <ReferenceInput
           variant='outlined'
           source='platform'
