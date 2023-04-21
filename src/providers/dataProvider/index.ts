@@ -42,6 +42,10 @@ export const generateBatchId = async (
     filter: { yearOfReceipt: year }
   })
 
+  if (batches.data.length === 0) {
+    return '00'
+  }
+
   if (batches.data.length === 1) {
     return '01'
   }
