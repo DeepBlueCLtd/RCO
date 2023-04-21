@@ -5,7 +5,8 @@ import {
   FunctionField,
   type Identifier,
   List,
-  TopToolbar
+  TopToolbar,
+  BooleanField
 } from 'react-admin'
 
 interface PropType {
@@ -33,6 +34,7 @@ export default function ReferenceDataList({
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
+        {name === 'department' ? <BooleanField source='active' /> : ''}
       </Datagrid>
     </List>
   )

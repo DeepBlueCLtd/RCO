@@ -19,7 +19,7 @@ export const ReferenceDataEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
     <Edit redirect={`/reference-data/${cName}`}>
-      <ReferenceDataForm isEdit />
+      <ReferenceDataForm isEdit name={cName} />
     </Edit>
   )
 }
