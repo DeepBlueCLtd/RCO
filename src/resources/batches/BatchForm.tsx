@@ -15,7 +15,6 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  protectiveMarkingAuthority: yup.number().required(),
   maximumProtectiveMarking: yup.number().required(),
   remarks: yup.string().required()
 })
