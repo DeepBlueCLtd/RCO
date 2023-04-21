@@ -38,7 +38,6 @@ const schema = yup.object({
   batchId: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required(),
-  remarks: yup.string().required(),
   magTape: yup.object({
     brand: yup.string(),
     minutes: yup.number().typeError('Invalid value')
