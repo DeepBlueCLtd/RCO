@@ -42,8 +42,8 @@ export const generateBatchId = async (
     filter: { yearOfReceipt: year }
   })
 
-  if (batches.data.length <= 1) {
-    return '00'
+  if (batches.data.length === 1) {
+    return '01'
   }
 
   const greatestBatch = batches.data.reduce((prev, current) =>
