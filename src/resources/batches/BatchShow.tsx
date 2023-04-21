@@ -174,6 +174,7 @@ export default function BatchShow(): React.ReactElement {
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items'>
           <ItemList
+            empty={false}
             filter={{ batchId: id }}
             bulkActionButtons={<BulkActions />}
             actions={<ItemActions />}
