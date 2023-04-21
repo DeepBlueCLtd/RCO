@@ -46,6 +46,10 @@ export const generateBatchId = async (
     return '00'
   }
 
+  if (batches.data.length === 1) {
+    return '01'
+  }
+
   const greatestBatch = batches.data.reduce((prev, current) =>
     compareVersions(prev.batchNumber, current.batchNumber) === -1
       ? current
