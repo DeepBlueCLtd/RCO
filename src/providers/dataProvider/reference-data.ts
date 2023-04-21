@@ -22,7 +22,7 @@ export const getActiveReferenceData = (
       return {
         id: index + 1,
         name: nameVal + ':' + String(index + 1),
-        ...(index + 1 === 1 ? { active: true } : { active: false })
+        active: index === 0
       }
     })
 }
