@@ -91,10 +91,10 @@ describe('generateBatchId', () => {
   })
 
   describe('when there is one batch in the specified year', () => {
-    it('should return 02', async () => {
+    it('should return 01', async () => {
       await generateBatch(id, provider, year)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('02')
+      expect(result).toBe('01')
     })
   })
 

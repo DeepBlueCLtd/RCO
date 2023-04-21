@@ -96,6 +96,7 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
     <RecentCard label={label} resource={resource}>
       <ResourceContext.Provider value={resource}>
         <List
+          storeKey={`recent-${resource}`}
           hasCreate={false}
           actions={false}
           perPage={itemsCount}

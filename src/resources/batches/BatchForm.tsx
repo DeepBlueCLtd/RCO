@@ -16,14 +16,13 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  protectiveMarkingAuthority: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required(),
-  remarks: yup.string().required()
+  maximumProtectiveMarking: yup.number().required()
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
+  const { isEdit } = props
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -46,8 +45,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   return (
     <>
       <SimpleForm
+        // TODO: remove `onSubmit` handler
         onSubmit={console.log}
-        toolbar={<EditToolBar isEdit={props.isEdit} />}
+        toolbar={<EditToolBar isEdit={isEdit} />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <CreatedByInput source='createdBy' />
@@ -86,6 +86,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           <ReferenceInput
             variant='outlined'
             source='department'
+            {...(isEdit === undefined ? {} : { filter: { active: true } })}
             reference='department'>
             <SelectInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
