@@ -1,3 +1,12 @@
 .MuiDrawer-docked.RaSidebar-docked {
   background-color: #fff;
 }
+
+/** allow some components to be hidden when printed, such
+ *  as the print/cancel buttons
+ */
+@media print {
+  .noprint {
+    visibility: hidden;
+  }
+}
