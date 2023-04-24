@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .MuiPaper-root': {
       boxShadow: 'unset !important'
     },
+    '& tr td': {
+      whiteSpace: 'nowrap'
+    },
     '& tr:last-child td': {
       borderBottom: 0
     }
