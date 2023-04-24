@@ -17,9 +17,10 @@ export default function CreatedByMeFilter(props: Props) {
   const { data, isLoading } = useGetIdentity()
   const { setFilters, displayedFilters, filterValues } = useListContext()
   const notify = useNotify()
+  const loading: boolean = isLoading
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!loading) {
       const createdBy: Identifier | undefined = data?.id
       if (createdBy === undefined) {
         notify('User not found!', { type: 'error' })
@@ -27,9 +28,9 @@ export default function CreatedByMeFilter(props: Props) {
       }
       setFilters({ ...filterValues, [source]: createdBy }, displayedFilters)
     }
-  }, [isLoading])
+  }, [loading])
 
-  if (isLoading) return null
+  if (loading) return null
 
   return (
     <TextField
