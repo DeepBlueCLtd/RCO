@@ -68,8 +68,8 @@ export const generateBatchId = async (
 
 const withCreatedBy = (record: CreateResult<Item | Batch | Project>) => {
   const user = getUser()
-  if (user != null) {
-    record.data.createdBy = user?.id
+  if (user !== undefined) {
+    record.data.createdBy = user.id
   }
   return record
 }
