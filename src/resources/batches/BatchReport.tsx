@@ -1,15 +1,9 @@
 import { Box, Typography } from '@mui/material'
 import React from 'react'
-import {
-  Datagrid,
-  List,
-  TextField,
-  Show,
-  SimpleShowLayout,
-  DateField
-} from 'react-admin'
+import { TextField, Show, SimpleShowLayout, DateField } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
+import ItemsReport from '../items/ItemsReport'
 
 interface Props {
   batchId: string
@@ -36,22 +30,7 @@ export default function BatchReport(props: Props): React.ReactElement {
         </SimpleShowLayout>
       </Show>
 
-      <List
-        resource={constants.R_ITEMS}
-        pagination={false}
-        filter={{ batchId }}
-        actions={false}
-        sx={{ margin: '20px 0' }}>
-        <Typography variant='h6' margin='16px'>
-          Items:
-        </Typography>
-
-        <Datagrid bulkActionButtons={false}>
-          <TextField source='item_number' label='Item Number' />
-          <TextField source='mediaType' label='Media type' />
-          <SourceField source='vaultLocation' reference='vaultLocation' />
-        </Datagrid>
-      </List>
+      <ItemsReport storeKey='batch-report-items' filter={{ batchId }} />
     </Box>
   )
 }
