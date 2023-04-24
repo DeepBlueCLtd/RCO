@@ -130,6 +130,11 @@ export default function BatchShow(): React.ReactElement {
         <TabbedShowLayout.Tab label='Details'>
           <FlexBox>
             <StyledFieldWithLabel label='Id' source='id' />
+            <StyledFieldWithLabel
+              label='User name'
+              source='createdBy'
+              reference={constants.R_USERS}
+            />
             <StyledFieldWithLabel label='Batch Number' source='batchNumber' />
           </FlexBox>
           <FlexBox>

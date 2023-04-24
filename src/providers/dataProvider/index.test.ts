@@ -49,7 +49,8 @@ const generateBatch = async (
   id: number,
   provider: DataProvider,
   year: string,
-  batchNumber?: string
+  batchNumber: string | undefined,
+  user: number
 ) => {
   const obj: Batch = {
     id,
@@ -63,7 +64,8 @@ const generateBatch = async (
     organisation: id,
     maximumProtectiveMarking: id,
     remarks: `remarks-batch-${year}`,
-    receiptNotes: `Reference-${id}`
+    receiptNotes: `Reference-${id}`,
+    createdBy: user
   }
 
   await provider.create(constants.R_BATCHES, { data: { ...obj } })
@@ -92,7 +94,7 @@ describe('generateBatchId', () => {
 
   describe('when there is one batch in the specified year', () => {
     it('should return 01', async () => {
-      await generateBatch(id, provider, year)
+      await generateBatch(id, provider, year, undefined, 1)
       const result = await generateBatchId(provider, year)
       expect(result).toBe('01')
     })
@@ -100,8 +102,8 @@ describe('generateBatchId', () => {
 
   describe('when there are multiple batches in the specified year', () => {
     it('should return 03', async () => {
-      await generateBatch(id++, provider, year)
-      await generateBatch(id, provider, year)
+      await generateBatch(id++, provider, year, undefined, 1)
+      await generateBatch(id, provider, year, undefined, 1)
       const result = await generateBatchId(provider, year)
       expect(result).toBe('03')
     })
@@ -127,7 +129,8 @@ describe('generateBatchId for values greater than 9', () => {
         i,
         provider,
         year,
-        await generateBatchId(provider, year)
+        await generateBatchId(provider, year),
+        1
       )
     }
   })
@@ -159,7 +162,8 @@ describe('generateBatchId for values greater than 9', () => {
           i,
           provider,
           year,
-          await generateBatchId(provider, year)
+          await generateBatchId(provider, year),
+          1
         )
       }
 

@@ -1,4 +1,4 @@
-import { type AuthProvider, type DataProvider } from 'react-admin'
+import { type UserIdentity, type AuthProvider, type DataProvider } from 'react-admin'
 import * as constants from '../../constants'
 import { AuditType, trackEvent } from '../../utils/audit'
 import {
@@ -83,7 +83,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     getIdentity: async () => {
       const user = getUser()
       if (user !== undefined) {
-        return user
+        const userIdentity: UserIdentity = { ...user, fullName: user.name }
+        return userIdentity
       } else return await Promise.reject(new Error('user not found'))
     },
 
