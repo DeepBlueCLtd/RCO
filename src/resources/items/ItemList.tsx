@@ -17,10 +17,16 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
 import * as constants from '../../constants'
+import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <CreatedByMeFilter
+    key='createdByMe'
+    source='createdBy_eq'
+    label='Created By Me'
+  />,
   <SourceInput
     key='createdBy'
     source='createdBy'

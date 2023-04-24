@@ -10,11 +10,17 @@ import {
   TextField,
   TopToolbar
 } from 'react-admin'
+import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <CreatedByMeFilter
+    key='createdByMe'
+    source='createdBy_eq'
+    label='Created By Me'
+  />,
   <SourceInput
     key='createdBy'
     source='createdBy'

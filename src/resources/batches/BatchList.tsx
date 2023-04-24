@@ -9,6 +9,7 @@ import {
   SearchInput,
   FilterButton
 } from 'react-admin'
+import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import DatePicker from '../../components/DatePicker'
 import SourceField from '../../components/SourceField'
@@ -36,6 +37,11 @@ const sort = (field = 'name') => ({ field, order: 'ASC' })
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <CreatedByMeFilter
+    key='createdByMe'
+    source='createdBy_eq'
+    label='Created By Me'
+  />,
   <SourceInput
     key='createdBy'
     source='createdBy'
