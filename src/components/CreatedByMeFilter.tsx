@@ -5,7 +5,7 @@ import {
   useNotify
 } from 'react-admin'
 import { useEffect } from 'react'
-import { TextField } from '@mui/material'
+import { Chip } from '@mui/material'
 
 interface Props {
   label?: string
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function CreatedByMeFilter(props: Props) {
-  const { source, label } = props
+  const { source } = props
   const { data, isLoading } = useGetIdentity()
   const { setFilters, displayedFilters, filterValues } = useListContext()
   const notify = useNotify()
@@ -32,12 +32,5 @@ export default function CreatedByMeFilter(props: Props) {
 
   if (loading) return null
 
-  return (
-    <TextField
-      value={data?.fullName}
-      variant='outlined'
-      label={label}
-      name={source}
-    />
-  )
+  return <Chip sx={{ marginBottom: '9px' }} label={data?.fullName} />
 }
