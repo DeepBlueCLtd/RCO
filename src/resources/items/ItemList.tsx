@@ -17,20 +17,23 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
 import * as constants from '../../constants'
-
+import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <CreatedByMeFilter
+    key='createdByMe'
+    source='createdBy_eq'
+    label='Created By Me'
+  />,
+  <SourceInput
+    key='createdBy'
+    source='createdBy'
+    reference={constants.R_USERS}
+  />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
   <SelectInput source='mediaType' key='mediaType' choices={mediaTypeOptions} />,
-  // <SourceNestedFilterInput
-  //   key='batch.project'
-  //   source='batch.project'
-  //   reference= {constants.R_PROJECTS}
-  //   label='Project'
-  //   child={{ source: 'project', reference: constants.R_PROJECTS }}
-  // />,
   <DateTimeInput source='start' key='start' />,
   <DateTimeInput source='end' key='end' />,
   <SourceInput

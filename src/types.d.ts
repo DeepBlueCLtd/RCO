@@ -27,6 +27,7 @@ interface Project {
   projectCode: string
   remarks: string
   createdAt: string
+  createdBy: User['id']
 }
 
 interface Batch {
@@ -44,6 +45,7 @@ interface Batch {
   remarks: string
   receiptNotes: string
   createdAt: string
+  createdBy: User['id']
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
@@ -84,6 +86,7 @@ interface Item {
   dvd: DVD
   paper: Paper
   createdAt: string
+  createdBy: User['id']
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'

@@ -14,6 +14,7 @@ import '../../types.d'
 import { isNumber } from '../../utils/number'
 import localForage from 'localforage'
 import loadDefaultData from '../../utils/init-data'
+import { getUser } from '../authProvider'
 
 export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
@@ -65,6 +66,14 @@ export const generateBatchId = async (
   )
 }
 
+const withCreatedBy = (record: CreateResult<Item | Batch | Project>) => {
+  const user = getUser()
+  if (user !== undefined) {
+    record.data.createdBy = user.id
+  }
+  return record
+}
+
 export const getDataProvider = async (): Promise<DataProvider<string>> => {
   const localForageData = await localForage.keys()
   if (localForageData.length === 0) {
@@ -96,6 +105,9 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     },
     {
       resource: constants.R_PROJECTS,
+      beforeCreate: async (record: CreateResult<Project>) => {
+        return withCreatedBy(record)
+      },
       afterDelete: async (record: DeleteResult<Project>) => {
         await audit(
           AuditType.DELETE_PROJECT,
@@ -139,6 +151,9 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
         )
         return record
       },
+      beforeCreate: async (record: CreateResult<Batch>) => {
+        return withCreatedBy(record)
+      },
       afterCreate: async (
         record: CreateResult<Batch>,
         dataProvider: DataProvider
@@ -174,6 +189,9 @@ export const getDataProvider = async (): Promise<DataProvider<string>> => {
     },
     {
       resource: constants.R_ITEMS,
+      beforeCreate: async (record: CreateResult<Item>) => {
+        return withCreatedBy(record)
+      },
       beforeUpdate: async (record: UpdateParams<Item>) => {
         await audit(
           AuditType.EDIT_ITEM,

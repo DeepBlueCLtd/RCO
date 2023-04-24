@@ -11,6 +11,7 @@ import CoreForm from './ItemForm/CoreForm'
 import MediaForm from './ItemForm/MediaForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
+import SourceInput from '../../components/SourceInput'
 
 export default function ItemShow(): React.ReactElement {
   return (
@@ -25,6 +26,12 @@ export default function ItemShow(): React.ReactElement {
       <Form>
         <TabbedShowLayout>
           <TabbedShowLayout.Tab label='Core'>
+            <SourceInput
+              label=''
+              source='createdBy'
+              inputProps={{ disabled: true, label: 'User name' }}
+              reference={constants.R_USERS}
+            />
             <CoreForm disabled />
           </TabbedShowLayout.Tab>
           <TabbedShowLayout.Tab

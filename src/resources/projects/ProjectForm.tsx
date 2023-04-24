@@ -32,6 +32,7 @@ export default function ProjectForm(props: FormProps): React.ReactElement {
     projectCode: '',
     remarks: ''
   }
+
   return (
     <SimpleForm
       toolbar={<EditToolBar isEdit={props.isEdit} />}

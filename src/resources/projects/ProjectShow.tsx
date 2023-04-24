@@ -9,6 +9,8 @@ import {
   TopToolbar
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
+import SourceField from '../../components/SourceField'
+import * as constants from '../../constants'
 
 const ValueField = ({
   label,
@@ -46,6 +48,9 @@ export default function ProjectShow(): React.ReactElement {
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <ValueField label='Id'>
             <TextField variant='h6' source='id' />
+          </ValueField>
+          <ValueField label='User name'>
+            <SourceField source='createdBy' reference={constants.R_USERS} />
           </ValueField>
           <ValueField label='Name'>
             <TextField variant='h6' source='name' />

@@ -71,7 +71,7 @@ export const generatePlatform = (length: number): Platform[] => {
   return platforms
 }
 
-export const generateProject = (length: number): Project[] => {
+export const generateProject = (length: number, user: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
     const [startDate, endDate] = generateRandomDate()
@@ -82,7 +82,8 @@ export const generateProject = (length: number): Project[] => {
       startDate: startDate.toString(),
       endDate: endDate.toString(),
       projectCode: String(generateRandomNumber(1, 1000)),
-      remarks: `project-remarks-${i}`
+      remarks: `project-remarks-${i}`,
+      createdBy: user
     }
     projects.push(obj)
   }
@@ -95,7 +96,8 @@ export const generateBatch = (
   departments: number,
   projects: number,
   organisations: number,
-  protectiveMarking: number
+  protectiveMarking: number,
+  user: number
 ): Batch[] => {
   const batches: Batch[] = []
 
@@ -113,7 +115,8 @@ export const generateBatch = (
       organisation: generateRandomNumber(1, organisations - 1),
       maximumProtectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
-      receiptNotes: `Reference-${i}`
+      receiptNotes: `Reference-${i}`,
+      createdBy: user
     }
     batches.push(obj)
   }
@@ -126,7 +129,8 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
-  project: Project
+  project: Project,
+  user: number
 ): Item[] => {
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
@@ -170,7 +174,8 @@ export const generateItems = (
         mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
         size: i
       },
-      paper: `paper-${i}`
+      paper: `paper-${i}`,
+      createdBy: user
     }
     items.push(obj)
   }
