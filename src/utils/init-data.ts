@@ -13,9 +13,11 @@ import {
 import * as constants from '../constants'
 import localForage from 'localforage'
 
-const loadDefaultData = async () => {
+const loadDefaultData = async (userId?: number) => {
+  const user = typeof userId === 'undefined' ? users[0].id : userId
+
   const platforms = generatePlatform(10)
-  const projects = generateProject(10)
+  const projects = generateProject(10, user)
   const organisation = getReferenceData('Organisation')
   const department = getActiveReferenceData('Department', 5)
   const vaultLocation = getReferenceData('Vault Location')
@@ -43,7 +45,8 @@ const loadDefaultData = async () => {
     department.length,
     projects.length,
     organisation.length,
-    protectiveMarking.length
+    protectiveMarking.length,
+    user
   )
 
   const items: Item[] = []
@@ -58,7 +61,8 @@ const loadDefaultData = async () => {
           batches[index],
           vaultLocation.length,
           protectiveMarking.length,
-          project
+          project,
+          user
         )
       )
     }
