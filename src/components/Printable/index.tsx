@@ -36,7 +36,10 @@ export default function Printable(
           <Close />
         </IconButton>
         <Box>{children}</Box>
-        <FlexBox marginBottom='20px' justifyContent='center'>
+        <FlexBox
+          className='noprint'
+          marginBottom='20px'
+          justifyContent='center'>
           <Button variant='contained' onClick={handlePrint}>
             Print
           </Button>
