@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   cardContent: {
     padding: '10px 0 0',
-    minWidth: '294px',
+    minWidth: '342px',
     minHeight: '260px',
     '&:last-child': {
       paddingBottom: 0
@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   container: {
     '& .MuiPaper-root': {
       boxShadow: 'unset !important'
+    },
+    '& tr td': {
+      whiteSpace: 'nowrap'
     },
     '& tr:last-child td': {
       borderBottom: 0
