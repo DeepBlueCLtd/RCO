@@ -20,6 +20,8 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
+const omitColumns: string[] = ['createdAt']
+
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
   <CreatedByMeFilter
@@ -75,7 +77,7 @@ export default function ItemList(
       resource='items'
       filters={filters}
       {...props}>
-      <DatagridConfigurable rowClick='show'>
+      <DatagridConfigurable rowClick='show' omit={omitColumns}>
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
         <TextField source='item_number' label='Reference' />

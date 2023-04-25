@@ -67,6 +67,9 @@ export default function ProjectShow(): React.ReactElement {
           <ValueField label='Remarks'>
             <TextField source='remarks' />
           </ValueField>
+          <ValueField label='Created'>
+            <TextField source='createdAt' />
+          </ValueField>
         </CardContent>
       </Card>
     </Show>
