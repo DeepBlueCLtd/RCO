@@ -1,13 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
-  BulkDeleteButton,
   CreateButton,
   EditButton,
   Show,
   TabbedShowLayout,
   TopToolbar,
-  useListContext,
-  useRefresh,
   FilterButton,
   SelectColumnsButton,
   DeleteButton
@@ -15,8 +12,6 @@ import {
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import ItemList from '../items/ItemList'
-import { Button, Modal } from '@mui/material'
-import ChangeLocation from '../items/ItemForm/ChangeLocation'
 import FlexBox from '../../components/FlexBox'
 import FieldWithLabel, {
   type FieldWithLabelProps
@@ -31,43 +26,6 @@ const ShowActions = () => {
         <EditButton />
         <DeleteButton mutationMode='pessimistic' />
       </TopToolbar>
-    </>
-  )
-}
-
-const BulkActions = () => {
-  const { selectedIds } = useListContext()
-  const [open, setOpen] = useState(false)
-  const refresh = useRefresh()
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
-  const handleSuccess = () => {
-    handleClose()
-    refresh()
-  }
-
-  return (
-    <>
-      <FlexBox>
-        <BulkDeleteButton mutationMode='pessimistic' />
-        <Button size='small' variant='outlined' onClick={handleOpen}>
-          Change Location
-        </Button>
-      </FlexBox>
-      <Modal open={open} onClose={handleClose}>
-        <ChangeLocation
-          successCallback={handleSuccess}
-          onCancel={handleClose}
-          ids={selectedIds}
-        />
-      </Modal>
     </>
   )
 }
@@ -158,7 +116,6 @@ export default function BatchShow(): React.ReactElement {
           <ItemList
             empty={false}
             filter={{ batchId: id }}
-            bulkActionButtons={<BulkActions />}
             actions={<ItemActions />}
           />
         </TabbedShowLayout.Tab>
