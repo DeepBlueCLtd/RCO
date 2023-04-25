@@ -25,6 +25,7 @@ import FieldWithLabel, {
   type FieldWithLabelProps
 } from '../../components/FieldWithLabel'
 import TopToolbarField from '../../components/TopToolbarField'
+import { ItemAssetReport } from '../items/ItemsReport'
 
 const ShowActions = () => {
   const [open, setOpen] = useState(false)
@@ -105,6 +106,7 @@ const ItemActions = () => {
   return (
     <TopToolbar>
       <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
+      <ItemAssetReport />
       <FilterButton />
       <SelectColumnsButton />
     </TopToolbar>

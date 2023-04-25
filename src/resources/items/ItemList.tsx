@@ -18,6 +18,7 @@ import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
+import { ItemAssetReport } from './ItemsReport'
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
 const filters = [
@@ -58,12 +59,15 @@ const filters = [
   <TextInput key='remarks' source='remarks' />
 ]
 
-const ItemActions = () => (
-  <TopToolbar>
-    <FilterButton />
-    <SelectColumnsButton />
-  </TopToolbar>
-)
+const ItemActions = () => {
+  return (
+    <TopToolbar>
+      <ItemAssetReport />
+      <FilterButton />
+      <SelectColumnsButton />
+    </TopToolbar>
+  )
+}
 
 export default function ItemList(
   props?: Omit<ListProps, 'children'>
