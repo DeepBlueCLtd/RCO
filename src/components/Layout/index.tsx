@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Login, Loop } from '@mui/icons-material'
-import { Box, Icon, Typography, Button } from '@mui/material'
+import { Box, Icon, Typography, Button, Switch } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import {
@@ -18,6 +18,7 @@ import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
 import loadDefaultData from '../../utils/init-data'
+import * as constants from '../../constants'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -47,6 +48,10 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const { authenticated } = useAuthState()
   const redirect = useRedirect()
 
+  const [loggingPref, setLoggingPref] = useState<boolean>(
+    localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
+  )
+
   const handleLogin = (): void => {
     redirect('/login')
   }
@@ -55,6 +60,21 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     loadDefaultData().catch((error) => {
       console.log({ error })
     })
+  }
+
+  const handleLoggingPrefChange = (
+    _: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setLoggingPref(checked)
+    localStorage.setItem(constants.LOGGING_ENABLED, checked.toString())
+
+    const storageEvent = new StorageEvent('storage', {
+      key: constants.LOGGING_ENABLED,
+      newValue: checked.toString()
+    })
+
+    window.dispatchEvent(storageEvent)
   }
 
   return (
@@ -82,6 +102,12 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         }>
         <Typography sx={{ textTransform: 'none' }}>Load data</Typography>
       </Button>
+      <div style={{ display: 'flex' }}>
+        <Switch checked={loggingPref} onChange={handleLoggingPrefChange} />
+        <Button>
+          <Typography sx={{ textTransform: 'none' }}>Logging</Typography>
+        </Button>
+      </div>
     </UserMenu>
   )
 }
