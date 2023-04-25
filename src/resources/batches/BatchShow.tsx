@@ -18,45 +18,19 @@ import ItemList from '../items/ItemList'
 import { Button, Modal } from '@mui/material'
 import ChangeLocation from '../items/ItemForm/ChangeLocation'
 import FlexBox from '../../components/FlexBox'
-import { Download } from '@mui/icons-material'
-import BatchReport from './BatchReport'
-import Printable from '../../components/Printable'
 import FieldWithLabel, {
   type FieldWithLabelProps
 } from '../../components/FieldWithLabel'
 import TopToolbarField from '../../components/TopToolbarField'
 
 const ShowActions = () => {
-  const [open, setOpen] = useState(false)
-
-  const { id = '' } = useParams()
-  const batchId: string = id
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
   return (
     <>
       <TopToolbar>
         <TopToolbarField source='batchNumber' />
-        <Button
-          startIcon={<Download />}
-          sx={{ lineHeight: '1.5' }}
-          size='small'
-          onClick={handleOpen}>
-          Muster list
-        </Button>
         <EditButton />
         <DeleteButton mutationMode='pessimistic' />
       </TopToolbar>
-      <Printable open={open} onClose={handleClose}>
-        <BatchReport batchId={batchId} />
-      </Printable>
     </>
   )
 }
