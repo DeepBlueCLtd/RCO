@@ -2,12 +2,14 @@ import {
   DateTimeInput,
   ReferenceInput,
   SelectInput,
+  TextField,
   TextInput
 } from 'react-admin'
 import { mediaTypeOptions } from '../../../utils/media'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'
+import { Typography } from '@mui/material'
 
 const sx = { width: '100%' }
 
@@ -25,6 +27,20 @@ const CoreForm = (props: Props): React.ReactElement => {
   useEffect(() => {
     formContext?.setValue('batchId', batchId)
   }, [batchId])
+
+  const ValueField = ({
+    label,
+    children
+  }: {
+    label: string
+    children: any
+  }): React.ReactElement => {
+    return (
+      <Typography fontWeight='bold'>
+        {label}: {children}
+      </Typography>
+    )
+  }
 
   return (
     <>
@@ -61,6 +77,11 @@ const CoreForm = (props: Props): React.ReactElement => {
         </ReferenceInput>
       </FlexBox>
       <TextInput multiline disabled={disabled} source='remarks' sx={sx} />
+      {(disabled ?? false) && (
+        <ValueField label='Created'>
+          <TextField source='createdAt' />
+        </ValueField>
+      )}
     </>
   )
 }
