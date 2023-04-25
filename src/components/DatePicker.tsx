@@ -39,9 +39,14 @@ export default function DatePicker(props: Props) {
 
   const value: Date = useMemo(() => {
     if (field.value instanceof Date) return field.value
-
-    if (typeof field.value === 'string' && field.value === '') return new Date()
-
+    if (
+      typeof field.value === 'string' &&
+      field.value === '' &&
+      typeof format !== 'undefined'
+    ) {
+      field.onChange(dayjs(new Date()).format(format))
+      return new Date()
+    }
     if (typeof format === 'undefined') {
       return new Date(field.value)
     }
