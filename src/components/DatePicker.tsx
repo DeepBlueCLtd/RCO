@@ -37,10 +37,10 @@ export default function DatePicker(props: Props) {
   const { field, fieldState } = useInput(rest)
   const styles = useStyles()
 
-  const value: Date | null = useMemo(() => {
+  const value: Date = useMemo(() => {
     if (field.value instanceof Date) return field.value
 
-    if (typeof field.value === 'string' && field.value === '') return null
+    if (typeof field.value === 'string' && field.value === '') return new Date()
 
     if (typeof format === 'undefined') {
       return new Date(field.value)
