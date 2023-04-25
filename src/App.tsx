@@ -37,25 +37,23 @@ function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
   )
-  const [loggingPref, setLoggingPref] = useState<null | string>(null)
+  const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const handleGetProvider = (): any => {
     if (loggingPref !== null)
-      getDataProvider(loggingPref === 'true')
-        .then(setDataProvider)
-        .catch(console.log)
+      getDataProvider(loggingPref).then(setDataProvider).catch(console.log)
   }
 
   useEffect(() => {
     const storedValue = localStorage.getItem(constants.LOGGING_ENABLED)
     if (storedValue !== null) {
-      setLoggingPref(storedValue)
+      setLoggingPref(storedValue === 'true')
     } else {
-      setLoggingPref('true')
+      setLoggingPref(false)
     }
 
     const onStorageChange = (event: any) => {
       if (event.key === constants.LOGGING_ENABLED) {
-        setLoggingPref(event.newValue)
+        setLoggingPref(event.newValue === 'true')
       }
     }
 

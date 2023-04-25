@@ -47,11 +47,9 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const styles = useStyles()
   const { authenticated } = useAuthState()
   const redirect = useRedirect()
+
   const [loggingPref, setLoggingPref] = useState<boolean>(
-    !!(
-      localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ||
-      localStorage.getItem(constants.LOGGING_ENABLED) === null
-    )
+    localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
   )
 
   const handleLogin = (): void => {
