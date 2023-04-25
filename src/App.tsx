@@ -37,14 +37,33 @@ function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
   )
-
+  const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const handleGetProvider = (): any => {
-    if (dataProvider !== undefined) return
-    getDataProvider().then(setDataProvider).catch(console.log)
+    if (loggingPref !== null)
+      getDataProvider(loggingPref).then(setDataProvider).catch(console.log)
   }
 
-  useEffect(handleGetProvider, [dataProvider])
+  useEffect(() => {
+    const storedValue = localStorage.getItem(constants.LOGGING_ENABLED)
+    if (storedValue !== null) {
+      setLoggingPref(storedValue === 'true')
+    } else {
+      setLoggingPref(false)
+    }
 
+    const onStorageChange = (event: any) => {
+      if (event.key === constants.LOGGING_ENABLED) {
+        setLoggingPref(event.newValue === 'true')
+      }
+    }
+
+    window.addEventListener('storage', onStorageChange)
+    return () => {
+      window.removeEventListener('storage', onStorageChange)
+    }
+  }, [])
+
+  useEffect(handleGetProvider, [loggingPref])
   if (dataProvider === undefined) return LoadingPage
 
   return (
