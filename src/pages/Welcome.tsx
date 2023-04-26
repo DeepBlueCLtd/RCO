@@ -64,7 +64,7 @@ export default function Welcome(): React.ReactElement {
             to={'/reference-data/vaultLocation'}
             variant='contained'
             resource={constants.R_VAULT_LOCATION}
-            label='View Vault Locations'
+            label='Vault Locations'
             sx={{ width: '150px', height: '50px' }}
           />
           <CreateButton
