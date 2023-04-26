@@ -50,6 +50,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
         <ReferenceInput
           variant='outlined'
           source='platform'
+          filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PLATFORMS}>
           <SelectInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
