@@ -89,10 +89,10 @@ const filters = [
     dataPickerProps={{ views: ['year'] }}
   />,
   <SourceInput
-    reference={constants.R_VAULT_LOCATION}
-    key='vaultLocation'
+    reference={constants.R_PLATFORMS}
+    key='platform'
     sort={sort()}
-    source='vaultLocation'
+    source='platform'
   />,
   <PlatformFilter
     reference={constants.R_PLATFORMS}
