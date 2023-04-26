@@ -21,10 +21,12 @@ import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
+import { ItemAssetReport } from './ItemsReport'
 import { Button, Modal } from '@mui/material'
 import { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
+
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
 const omitColumns: string[] = ['createdAt']
@@ -67,12 +69,15 @@ const filters = [
   <TextInput key='remarks' source='remarks' />
 ]
 
-const ItemActions = () => (
-  <TopToolbar>
-    <FilterButton />
-    <SelectColumnsButton />
-  </TopToolbar>
-)
+const ItemActions = () => {
+  return (
+    <TopToolbar>
+      <ItemAssetReport storeKey='items-asset-report' />
+      <FilterButton />
+      <SelectColumnsButton />
+    </TopToolbar>
+  )
+}
 
 export const BulkActions = () => {
   const { selectedIds } = useListContext()

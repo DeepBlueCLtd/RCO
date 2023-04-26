@@ -3,7 +3,7 @@ import * as constants from '../constants'
 
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton } from 'react-admin'
+import { CreateButton, ListButton } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import RecentMock from '../components/RecentMock'
@@ -59,6 +59,14 @@ export default function Welcome(): React.ReactElement {
           <img src={AppIcon} height='100px' />
         </FlexBox>
         <FlexBox className={styles.headerColumn}>
+          <ListButton
+            color='primary'
+            to={'/reference-data/vaultLocation'}
+            variant='contained'
+            resource={constants.R_VAULT_LOCATION}
+            label='Vault Locations'
+            sx={{ width: '150px', height: '50px' }}
+          />
           <CreateButton
             color='primary'
             variant='contained'

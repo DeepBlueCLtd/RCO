@@ -17,6 +17,7 @@ import FieldWithLabel, {
   type FieldWithLabelProps
 } from '../../components/FieldWithLabel'
 import TopToolbarField from '../../components/TopToolbarField'
+import { ItemAssetReport } from '../items/ItemsReport'
 
 const ShowActions = () => {
   return (
@@ -37,6 +38,10 @@ const ItemActions = () => {
   return (
     <TopToolbar>
       <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
+      <ItemAssetReport
+        storeKey='batch-items-report'
+        filterDefaultValues={{ batchId }}
+      />
       <FilterButton />
       <SelectColumnsButton />
     </TopToolbar>
@@ -117,6 +122,8 @@ export default function BatchShow(): React.ReactElement {
             empty={false}
             filter={{ batchId: id }}
             actions={<ItemActions />}
+            storeKey='batch-items-list'
+            disableSyncWithLocation
           />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
