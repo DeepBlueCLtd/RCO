@@ -1,11 +1,11 @@
 import { Box, Button, Card, CardContent, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import {
   Datagrid,
   List,
-  Show,
-  SimpleShowLayout,
   TextField,
+  useDataProvider,
+  useGetIdentity,
   useListContext,
   type ListProps
 } from 'react-admin'
@@ -14,9 +14,7 @@ import * as constants from '../../constants'
 import { DateTime } from 'luxon'
 import { Download } from '@mui/icons-material'
 import Printable from '../../components/Printable'
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+import FlexBox from '../../components/FlexBox'
 
 type Props = PartialBy<ListProps, 'children'>
 
@@ -34,6 +32,57 @@ type RefFieldType = Field & {
   resource: string
 }
 
+interface FieldWithReferenceProps {
+  field: RefFieldType
+  value: string | number
+}
+
+interface FieldValueProps {
+  field: FieldType
+  value: string | number
+}
+
+const FieldValue = (props: FieldValueProps): React.ReactElement => {
+  const {
+    field: { label, type },
+    value
+  } = props
+
+  return (
+    <FlexBox columnGap={'5px'}>
+      <Typography fontWeight={700}>{label}:</Typography>
+      <Typography>
+        {type === 'date'
+          ? DateTime.fromISO(value as string).toFormat('dd/MM/yyyy, hh:mm:ss')
+          : value}
+      </Typography>
+    </FlexBox>
+  )
+}
+
+const FieldWithReference = (
+  props: FieldWithReferenceProps
+): React.ReactElement => {
+  const {
+    field: { source, label, resource, name }
+  } = props
+
+  const dataProvider = useDataProvider()
+  const [value, setValue] = useState('')
+
+  const id: string | number = props.value
+  useEffect(() => {
+    dataProvider
+      .getOne(resource, { id })
+      .then(({ data }) => {
+        setValue(data[source])
+      })
+      .catch(console.log)
+  }, [id])
+
+  return <FieldValue field={{ type: 'text', label, name }} value={value} />
+}
+
 export default function ItemsReport(props: Props): React.ReactElement {
   return (
     <List
@@ -41,6 +90,8 @@ export default function ItemsReport(props: Props): React.ReactElement {
       pagination={false}
       actions={false}
       sx={{ margin: '20px 0' }}
+      perPage={1000}
+      disableSyncWithLocation
       {...props}>
       <Typography variant='h6' margin='16px'>
         Items:
@@ -122,85 +173,44 @@ const fields: FieldType[] = [
   }
 ]
 
-export function ItemAssetReport() {
+export function ItemAssetReport(props: Props) {
   const { filterValues } = useListContext()
   const [open, setOpen] = useState(false)
 
   const filters: Record<keyof Item, any> = filterValues
 
-  const time = DateTime.now().toFormat('yyyy-LL-dd hh:mm')
+  const { data } = useGetIdentity()
 
-  const handleOpen = (open: boolean) => () => { setOpen(open) }
-
-  const getFieldValue = (
-    field: FieldType,
-    value: string | number
-  ): React.ReactElement => {
-    const { label, type } = field
-
-    return (
-      <>
-        <Typography margin='10px' sx={{ display: 'inline-flex' }}>
-          {label}:
-        </Typography>
-        <Typography sx={{ display: 'inline-flex' }}>
-          {type === 'date'
-            ? DateTime.fromISO(value as string).toFormat('dd/MM/yyyy, hh:mm:ss')
-            : value}
-        </Typography>
-      </>
-    )
+  const handleOpen = (open: boolean) => () => {
+    setOpen(open)
   }
 
-  const getFieldWithReference = (
-    field: RefFieldType,
-    value: string | number
-  ): React.ReactElement => {
-    const { source, label, resource } = field
-    return (
-      <>
-        <Typography margin='10px' sx={{ display: 'inline-flex' }}>
-          {label}:
-        </Typography>
-        <Show
-          actions={false}
-          resource={resource}
-          id={value}
-          sx={{
-            width: 'fit-content',
-            display: 'inline-flex',
-            '& .RaShow-card': {
-              boxShadow: 'none'
-            }
-          }}>
-          <SimpleShowLayout>
-            <TextField
-              label={false}
-              source={source}
-              sx={{ fontSize: '1rem', fontWeight: 400 }}
+  const appliedFilters: React.ReactElement[] = useMemo(() => {
+    return Object.entries(filters).map(
+      (entry: [string, any]): React.ReactElement => {
+        const [key, value] = entry
+
+        const referenceField = referenceFields.find(
+          (field: RefFieldType) => field.name === key
+        )
+        if (referenceField !== undefined)
+          return (
+            <FieldWithReference
+              key={key}
+              field={referenceField}
+              value={value}
             />
-          </SimpleShowLayout>
-        </Show>
-      </>
+          )
+
+        const fieldValue = fields.find((field: FieldType) => field.name === key)
+
+        if (fieldValue !== undefined)
+          return <FieldValue key={key} field={fieldValue} value={value} />
+
+        return <Fragment key={key}></Fragment>
+      }
     )
-  }
-
-  const appliedFilters: React.ReactElement[] = Object.entries(filters).map(
-    (entry: [string, any]) => {
-      const [key, value] = entry
-
-      const referenceField = referenceFields.find(
-        (field: RefFieldType) => field.name === key
-      )
-
-      if (referenceField != null) return getFieldWithReference(referenceField, value)
-
-      const fieldValue = fields.find((field: FieldType) => field.name === key)
-      if (fieldValue != null) return getFieldValue(fieldValue, value)
-
-      return <></>
-    }
-  )
+  }, [filters])
 
   return (
     <>
@@ -218,19 +228,25 @@ export function ItemAssetReport() {
           </Typography>
           <Card>
             <CardContent>
+              <FieldValue
+                field={{ label: 'User', type: 'text', name: '' }}
+                value={data?.fullName ?? ''}
+              />
               {Object.keys(filters).length !== 0 && (
-                <Box>
-                  <Typography sx={{ display: 'inline-flex' }}>
-                    Filters:{' '}
+                <>
+                  <Typography sx={{ display: 'block', fontWeight: 700 }}>
+                    Filters
                   </Typography>
-                  {appliedFilters}
-                </Box>
+                  <Box marginLeft={2.5}>{appliedFilters}</Box>
+                </>
               )}
-              <Typography>Time: {time}</Typography>
-              {/* <Typography>User: </Typography> */}
+              <FieldValue
+                field={{ label: 'Time', name: '', type: 'date' }}
+                value={new Date().toISOString()}
+              />
             </CardContent>
           </Card>
-          <ItemsReport>
+          <ItemsReport filter={filters} {...props}>
             <TextField source='item_number' label='Item Number' />
             <TextField source='mediaType' label='Media type' />
             <TextField source='remarks' label='Remark' />

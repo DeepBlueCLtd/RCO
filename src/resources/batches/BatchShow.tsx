@@ -106,7 +106,7 @@ const ItemActions = () => {
   return (
     <TopToolbar>
       <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
-      <ItemAssetReport />
+      <ItemAssetReport storeKey='batch-items-report' />
       <FilterButton />
       <SelectColumnsButton />
     </TopToolbar>
@@ -185,6 +185,8 @@ export default function BatchShow(): React.ReactElement {
             filter={{ batchId: id }}
             bulkActionButtons={<BulkActions />}
             actions={<ItemActions />}
+            storeKey='batch-items-list'
+            disableSyncWithLocation
           />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>

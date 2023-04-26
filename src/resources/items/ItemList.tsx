@@ -62,7 +62,7 @@ const filters = [
 const ItemActions = () => {
   return (
     <TopToolbar>
-      <ItemAssetReport />
+      <ItemAssetReport storeKey='items-asset-report' />
       <FilterButton />
       <SelectColumnsButton />
     </TopToolbar>
