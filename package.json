@@ -15,7 +15,8 @@
     "format": "prettier . --write",
     "prepare": "husky install",
     "deploy": "gh-pages -d build",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "cd ./e2e && yarn install && yarn playwright test && npx playwright show-report"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
