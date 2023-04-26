@@ -44,17 +44,16 @@ interface PlatformFilterType {
   label: string
   reference: string
   source: string
-  filter?: string
 }
 
 const PlatformFilter = (props: PlatformFilterType) => {
   const { data: batches } = useGetList('batches')
   const platformIds = batches?.map((batch) => batch.platform) ?? []
-  const { label, reference, filter = 'active' } = props
+  const { label, reference } = props
   const { setFilters, displayedFilters } = useListContext()
   const { data } = useGetMany(reference, { ids: platformIds })
   useEffect(() => {
-    if ((data != null) && filter === 'active') {
+    if (data != null) {
       const filteredData = data.filter((d) => d.active === true)
       setFilters(
         {
