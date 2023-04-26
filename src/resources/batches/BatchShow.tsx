@@ -1,13 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
-  BulkDeleteButton,
   CreateButton,
   EditButton,
   Show,
   TabbedShowLayout,
   TopToolbar,
-  useListContext,
-  useRefresh,
   FilterButton,
   SelectColumnsButton,
   DeleteButton
@@ -15,12 +12,7 @@ import {
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import ItemList from '../items/ItemList'
-import { Button, Modal } from '@mui/material'
-import ChangeLocation from '../items/ItemForm/ChangeLocation'
 import FlexBox from '../../components/FlexBox'
-import { Download } from '@mui/icons-material'
-import BatchReport from './BatchReport'
-import Printable from '../../components/Printable'
 import FieldWithLabel, {
   type FieldWithLabelProps
 } from '../../components/FieldWithLabel'
@@ -28,73 +20,13 @@ import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
 
 const ShowActions = () => {
-  const [open, setOpen] = useState(false)
-
-  const { id = '' } = useParams()
-  const batchId: string = id
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
   return (
     <>
       <TopToolbar>
         <TopToolbarField source='batchNumber' />
-        <Button
-          startIcon={<Download />}
-          sx={{ lineHeight: '1.5' }}
-          size='small'
-          onClick={handleOpen}>
-          Muster list
-        </Button>
         <EditButton />
         <DeleteButton mutationMode='pessimistic' />
       </TopToolbar>
-      <Printable open={open} onClose={handleClose}>
-        <BatchReport batchId={batchId} />
-      </Printable>
-    </>
-  )
-}
-
-const BulkActions = () => {
-  const { selectedIds } = useListContext()
-  const [open, setOpen] = useState(false)
-  const refresh = useRefresh()
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
-  const handleSuccess = () => {
-    handleClose()
-    refresh()
-  }
-
-  return (
-    <>
-      <FlexBox>
-        <BulkDeleteButton mutationMode='pessimistic' />
-        <Button size='small' variant='outlined' onClick={handleOpen}>
-          Change Location
-        </Button>
-      </FlexBox>
-      <Modal open={open} onClose={handleClose}>
-        <ChangeLocation
-          successCallback={handleSuccess}
-          onCancel={handleClose}
-          ids={selectedIds}
-        />
-      </Modal>
     </>
   )
 }
@@ -178,12 +110,14 @@ export default function BatchShow(): React.ReactElement {
             <StyledFieldWithLabel label='Remarks' source='remarks' />
             <StyledFieldWithLabel label='Receipt notes' source='receiptNotes' />
           </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel label='Created' source='createdAt' />
+          </FlexBox>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items'>
           <ItemList
             empty={false}
             filter={{ batchId: id }}
-            bulkActionButtons={<BulkActions />}
             actions={<ItemActions />}
             storeKey='batch-items-list'
             disableSyncWithLocation

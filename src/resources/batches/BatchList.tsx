@@ -30,7 +30,8 @@ const omitColumns: string[] = [
   'department',
   'remarks',
   'id',
-  'receiptNotes'
+  'receiptNotes',
+  'createdAt'
 ]
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
@@ -108,6 +109,7 @@ export default function BatchList(): React.ReactElement {
         />
         <TextField source='remarks' />
         <TextField source='receiptNotes' />
+        <TextField source='createdAt' label='Created' />
       </DatagridConfigurable>
     </List>
   )

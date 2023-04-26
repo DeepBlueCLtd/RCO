@@ -74,14 +74,17 @@ const withCreatedBy = (record: CreateResult<Item | Batch | Project>) => {
   return record
 }
 
-export const getDataProvider = async (): Promise<DataProvider<string>> => {
+export const getDataProvider = async (
+  loggingEnabled: boolean
+): Promise<DataProvider<string>> => {
   const localForageData = await localForage.keys()
   if (localForageData.length === 0) {
     await loadDefaultData()
   }
 
   const provider = await localForageDataProvider({
-    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY
+    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+    loggingEnabled
   })
 
   const providerWithCustomMethods = { ...provider }
