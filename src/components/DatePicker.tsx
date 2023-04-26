@@ -60,7 +60,7 @@ export default function DatePicker(props: Props) {
     error: { validationError: null | string }
   ) => {
     if (value === null) {
-      setError('Year is a required field')
+      field.onChange(null)
       return
     }
     if (typeof format !== 'undefined') {
