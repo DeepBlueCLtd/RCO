@@ -1,12 +1,19 @@
 import { Download } from '@mui/icons-material'
 import { Box, Button, Typography } from '@mui/material'
 import { type ReactElement, useEffect, useState } from 'react'
-import { type ListProps, TextField, useDataProvider , useListContext } from 'react-admin'
+import {
+  type ListProps,
+  TextField,
+  useDataProvider,
+  useListContext,
+  Count
+} from 'react-admin'
 import ItemsReport from '../resources/items/ItemsReport'
 import Printable from './Printable'
 import * as constants from '../constants'
 import SourceField from './SourceField'
 import { DateTime } from 'luxon'
+import ReportSignature from './ReportSignature'
 
 type Props = PartialBy<ListProps, 'children'>
 
@@ -34,8 +41,6 @@ export default function VaultLocationReport(props: Props): ReactElement {
       .catch(console.log)
   }, [selectedIds.length])
 
-  console.log({ selectedIds })
-
   const handleOpen = (open: boolean) => () => {
     setOpen(open)
   }
@@ -62,7 +67,15 @@ export default function VaultLocationReport(props: Props): ReactElement {
                   {DateTime.fromISO(new Date().toISOString()).toFormat(
                     'dd/MMM/yyyy hh:mm'
                   )}{' '}
-                  (17 items)
+                  (
+                  {
+                    <Count
+                      resource={constants.R_ITEMS}
+                      sx={{ fontSize: '1.5rem' }}
+                      filter={{ vaultLocation: id }}
+                    />
+                  }{' '}
+                  items)
                 </Typography>
                 <ItemsReport filter={{ vaultLocation: id }} {...props}>
                   <TextField source='item_number' label='Item Number' />
@@ -72,6 +85,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     reference='protectiveMarking'
                   />
                 </ItemsReport>
+                <ReportSignature id={id} />
               </Box>
             )
           })}
