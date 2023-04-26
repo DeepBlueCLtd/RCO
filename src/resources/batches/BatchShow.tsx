@@ -38,7 +38,10 @@ const ItemActions = () => {
   return (
     <TopToolbar>
       <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
-      <ItemAssetReport storeKey='batch-items-report' />
+      <ItemAssetReport
+        storeKey='batch-items-report'
+        filterDefaultValues={{ batchId }}
+      />
       <FilterButton />
       <SelectColumnsButton />
     </TopToolbar>

@@ -177,7 +177,10 @@ export function ItemAssetReport(props: Props) {
   const { filterValues } = useListContext()
   const [open, setOpen] = useState(false)
 
-  const filters: Record<keyof Item, any> = filterValues
+  const filters: Record<keyof Item, any> = {
+    ...filterValues,
+    ...props.filterDefaultValues
+  }
 
   const { data } = useGetIdentity()
 
