@@ -116,3 +116,20 @@ interface RCOStore {
   protectiveMarkingAuthority: ReferenceItem[]
   platformOriginator: ReferenceItem[]
 }
+
+interface Loan {
+  id: integer
+  createdAt: string
+  holder: User['id']
+  remarks: string
+}
+
+interface LoanItem {
+  id: integer
+  createdAt: string
+  item: Item['id']
+  loan: Loan['id']
+  receivedBy: User['id']
+  returnedDate: string
+  remarks: string
+}
