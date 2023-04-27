@@ -22,7 +22,7 @@ jobs:
       - run: yarn
 
       - name: Install playwright dependencies
-        run: npx playwright Install
+        run: npx playwright install
       
       - name: Execute playwright tests
         run: yarn e2e
