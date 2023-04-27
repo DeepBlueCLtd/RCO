@@ -37,7 +37,7 @@ export default function DatePicker(props: Props) {
   const { field, fieldState } = useInput(rest)
   const styles = useStyles()
 
-  const value: Date = useMemo(() => {
+  const value: Date | null = useMemo(() => {
     if (field.value instanceof Date) return field.value
     if (
       typeof field.value === 'string' &&
@@ -59,6 +59,10 @@ export default function DatePicker(props: Props) {
     value: Date | null,
     error: { validationError: null | string }
   ) => {
+    if (value === null) {
+      field.onChange(null)
+      return
+    }
     if (typeof format !== 'undefined') {
       field.onChange(dayjs(value).format(format))
     } else {
@@ -72,7 +76,6 @@ export default function DatePicker(props: Props) {
   }
 
   const rootStyle: string = styles.root
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box display='flex' flexDirection='column' width='100%'>
