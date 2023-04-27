@@ -1,4 +1,4 @@
-import { Download } from '@mui/icons-material'
+import { Article } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -125,11 +125,11 @@ export default function VaultLocationReport(props: Props): ReactElement {
   return (
     <>
       <Button
-        startIcon={<Download />}
+        startIcon={<Article />}
         sx={{ lineHeight: '1.5' }}
         size='small'
         onClick={handleOpen(true)}>
-        Asset Report
+        Location Muster List
       </Button>
       <Printable open={open} onClose={handleOpen(false)}>
         <>
@@ -143,7 +143,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                   <Typography variant='h5' textAlign='center' margin='10px'>
                     100% Muster List for {locations?.[id]?.name}, printed{' '}
                     {DateTime.fromISO(new Date().toISOString()).toFormat(
-                      'dd/MMM/yyyy hh:mm'
+                      'dd/MMM/yyyy HH:mm'
                     )}{' '}
                     (
                     {
