@@ -10,7 +10,7 @@ export default defineConfig({
     baseURL: 'https://deepbluecltd.github.io/',
 
     trace: 'on',
-    headless: false
+    headless: true
   },
 
   /* Configure projects for major browsers */
