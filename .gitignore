@@ -25,7 +25,7 @@ dist
 .env
 node_modules/
 /test-results/
-/e2e/playwright-report/
+playwright-report/
 /e2e/playwright/.cache/
 /e2e/test-results/
 /e2e/playwright-report/
