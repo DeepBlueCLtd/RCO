@@ -25,9 +25,9 @@ export default function Login() {
     const formData = new FormData(event.currentTarget)
     const username = formData.get('username') as string
     const password = formData.get('password') as string
-    login({ username, password }).catch(() =>
-      { notify('Invalid email or password', { type: 'error' }) }
-    )
+    login({ username, password }).catch(() => {
+      notify('Invalid email or password', { type: 'error' })
+    })
   }
 
   return (
