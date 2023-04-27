@@ -7,7 +7,7 @@ export default defineConfig({
   workers: process.env.CI != null ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'https://deepbluecltd.github.io/',
+    baseURL: 'https://deepbluecltd.github.io/RCO/',
 
     trace: 'on',
     headless: true

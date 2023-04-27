@@ -2,9 +2,10 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Login successful test', () => {
   test('Verify user is able to login with admin credentials', async ({
-    page
+    page,
+    baseURL
   }) => {
-    await page.goto('/RCO')
+    await page.goto(baseURL as string)
 
     await page.locator('#username').type('ian')
     await page.locator('#password').type('admin')
@@ -17,9 +18,10 @@ test.describe('Login successful test', () => {
   })
 
   test('Verify user is able to login with user credentials', async ({
-    page
+    page,
+    baseURL
   }) => {
-    await page.goto('/RCO')
+    await page.goto(baseURL as string)
 
     await page.locator('#username').type('jason')
     await page.locator('#password').type('user')
@@ -34,9 +36,10 @@ test.describe('Login successful test', () => {
 
 test.describe('Login failed test', () => {
   test('Verify "Invalid username and password" message is visible when admin login with invalid password', async ({
-    page
+    page,
+    baseURL
   }) => {
-    await page.goto('/RCO')
+    await page.goto(baseURL as string)
 
     await page.locator('#username').type('ian')
     await page.locator('#password').type('password')
@@ -54,9 +57,10 @@ test.describe('Login failed test', () => {
   })
 
   test('Verify "Invalid username and password" message is visible when user login with invalid password', async ({
-    page
+    page,
+    baseURL
   }) => {
-    await page.goto('/RCO')
+    await page.goto(baseURL as string)
 
     await page.locator('#username').type('jason')
     await page.locator('#password').type('password')
@@ -74,9 +78,10 @@ test.describe('Login failed test', () => {
   })
 
   test('Verify "Invalid username and password" message is visible when admin login with invalid username and password', async ({
-    page
+    page,
+    baseURL
   }) => {
-    await page.goto('/RCO')
+    await page.goto(baseURL as string)
 
     await page.locator('#username').type('invaliduser')
     await page.locator('#password').type('password')
