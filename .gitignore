@@ -23,3 +23,10 @@ dist
 *.sln
 *.sw?
 .env
+node_modules/
+/test-results/
+/e2e/playwright-report/
+/e2e/playwright/.cache/
+/e2e/test-results/
+/e2e/playwright-report/
+/e2e/playwright/.cache/
