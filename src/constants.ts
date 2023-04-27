@@ -18,6 +18,6 @@ export const R_ORGANISATION = 'organisation'
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 
 // icons
-export const BATCH_ICON = Layers
-export const ITEM_ICON = Save
-export const PROJECT_ICON = AccountTree
+export const ICON_BATCH = Layers
+export const ICON_ITEM = Save
+export const ICON_PROJECT = AccountTree

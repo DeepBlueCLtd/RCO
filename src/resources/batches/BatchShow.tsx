@@ -11,7 +11,7 @@ import {
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
-import { ITEM_ICON } from '../../constants'
+import { ICON_ITEM } from '../../constants'
 import ItemList from '../items/ItemList'
 import FlexBox from '../../components/FlexBox'
 import FieldWithLabel, {
@@ -118,7 +118,7 @@ export default function BatchShow(): React.ReactElement {
             <StyledFieldWithLabel label='Created' source='createdAt' />
           </FlexBox>
         </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label='Items' icon={<ITEM_ICON />}>
+        <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>
           <ItemList
             empty={false}
             filter={{ batchId: id }}
