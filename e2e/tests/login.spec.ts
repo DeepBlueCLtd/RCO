@@ -6,19 +6,14 @@ test.describe('Login successful test', () => {
   }) => {
     await page.goto('/RCO')
 
-    const usernameInputField = page.locator('#username')
-    const passwordInputField = page.locator('#password')
-    const loginButton = page.locator('button[type="submit"]')
-    const invalidUserOrPasswordMessage = page.locator(
-      '//div[contains(@class, "MuiSnackbarContent-message")]'
-    )
+    await page.locator('#username').type('ian')
+    await page.locator('#password').type('admin')
 
-    await usernameInputField.type('ian')
-    await passwordInputField.type('admin')
-
-    await loginButton.click()
+    await page.locator('button[type="submit"]').click()
     await page.waitForLoadState()
-    await expect(invalidUserOrPasswordMessage).not.toBeVisible()
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).not.toBeVisible()
   })
 
   test('Verify user is able to login with user credentials', async ({
@@ -26,19 +21,14 @@ test.describe('Login successful test', () => {
   }) => {
     await page.goto('/RCO')
 
-    const usernameInputField = page.locator('#username')
-    const passwordInputField = page.locator('#password')
-    const loginButton = page.locator('button[type="submit"]')
-    const invalidUserOrPasswordMessage = page.locator(
-      '//div[contains(@class, "MuiSnackbarContent-message")]'
-    )
+    await page.locator('#username').type('jason')
+    await page.locator('#password').type('user')
 
-    await usernameInputField.type('jason')
-    await passwordInputField.type('user')
-
-    await loginButton.click()
+    await page.locator('button[type="submit"]').click()
     await page.waitForLoadState()
-    await expect(invalidUserOrPasswordMessage).not.toBeVisible()
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).not.toBeVisible()
   })
 })
 
@@ -48,22 +38,19 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto('/RCO')
 
-    const usernameInputField = page.locator('#username')
-    const passwordInputField = page.locator('#password')
-    const loginButton = page.locator('button[type="submit"]')
-    const invalidUserOrPasswordMessage = page.locator(
-      '//div[contains(@class, "MuiSnackbarContent-message")]'
-    )
+    await page.locator('#username').type('ian')
+    await page.locator('#password').type('password')
 
-    await usernameInputField.type('ian')
-    await passwordInputField.type('password')
-
-    await loginButton.click()
+    await page.locator('button[type="submit"]').click()
     await page.waitForLoadState()
-    await expect(invalidUserOrPasswordMessage).toBeVisible()
-    await expect(invalidUserOrPasswordMessage).toHaveText(
-      'Invalid email or password'
-    )
+
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).toBeVisible()
+
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).toHaveText('Invalid email or password')
   })
 
   test('Verify "Invalid username and password" message is visible when user login with invalid password', async ({
@@ -71,22 +58,19 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto('/RCO')
 
-    const usernameInputField = page.locator('#username')
-    const passwordInputField = page.locator('#password')
-    const loginButton = page.locator('button[type="submit"]')
-    const invalidUserOrPasswordMessage = page.locator(
-      '//div[contains(@class, "MuiSnackbarContent-message")]'
-    )
+    await page.locator('#username').type('jason')
+    await page.locator('#password').type('password')
 
-    await usernameInputField.type('jason')
-    await passwordInputField.type('password')
-
-    await loginButton.click()
+    await page.locator('button[type="submit"]').click()
     await page.waitForLoadState()
-    await expect(invalidUserOrPasswordMessage).toBeVisible()
-    await expect(invalidUserOrPasswordMessage).toHaveText(
-      'Invalid email or password'
-    )
+
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).toBeVisible()
+
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).toHaveText('Invalid email or password')
   })
 
   test('Verify "Invalid username and password" message is visible when admin login with invalid username and password', async ({
@@ -94,21 +78,18 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto('/RCO')
 
-    const usernameInputField = page.locator('#username')
-    const passwordInputField = page.locator('#password')
-    const loginButton = page.locator('button[type="submit"]')
-    const invalidUserOrPasswordMessage = page.locator(
-      '//div[contains(@class, "MuiSnackbarContent-message")]'
-    )
+    await page.locator('#username').type('invaliduser')
+    await page.locator('#password').type('password')
 
-    await usernameInputField.type('invaliduser')
-    await passwordInputField.type('password')
-
-    await loginButton.click()
+    await page.locator('button[type="submit"]').click()
     await page.waitForLoadState()
-    await expect(invalidUserOrPasswordMessage).toBeVisible()
-    await expect(invalidUserOrPasswordMessage).toHaveText(
-      'Invalid email or password'
-    )
+
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).toBeVisible()
+
+    await expect(
+      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
+    ).toHaveText('Invalid email or password')
   })
 })
