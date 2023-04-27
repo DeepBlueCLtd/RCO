@@ -79,7 +79,6 @@ const routes = [
     title: 'Protective Marking Authority'
   },
   { path: '/department', title: 'Department' },
-  { path: '/vaultLocation', title: 'Vault Location' },
   { path: '/platformOriginator', title: 'Platform Originator' },
   { path: '/platforms', title: 'Platforms' },
   { path: '/users', title: 'Users' },

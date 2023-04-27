@@ -30,6 +30,7 @@ import ReferenceDataCreate, {
 import items from './resources/items'
 import * as constants from './constants'
 import platforms from './resources/platforms'
+import vaultlocations from './resources/vault-locations'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -93,6 +94,12 @@ function App(): React.ReactElement {
                     name={constants.R_ITEMS}
                     {...items}
                   />,
+                  <Resource
+                    key={constants.R_VAULT_LOCATION}
+                    name={constants.R_VAULT_LOCATION}
+                    options={{ label: 'Vault Locations' }}
+                    {...vaultlocations}
+                  />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>
                       <Route path='protectiveMarking'>
@@ -103,9 +110,6 @@ function App(): React.ReactElement {
                       </Route>
                       <Route path='department'>
                         {...createRoutes('department')}
-                      </Route>
-                      <Route path='vaultLocation'>
-                        {...createRoutes('vaultLocation')}
                       </Route>
                       <Route path='platformOriginator'>
                         {...createRoutes('platformOriginator')}

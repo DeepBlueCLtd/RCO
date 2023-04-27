@@ -61,7 +61,6 @@ export default function Welcome(): React.ReactElement {
         <FlexBox className={styles.headerColumn}>
           <ListButton
             color='primary'
-            to={'/reference-data/vaultLocation'}
             variant='contained'
             resource={constants.R_VAULT_LOCATION}
             label='Vault Locations'
