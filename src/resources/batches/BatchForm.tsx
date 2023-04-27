@@ -15,7 +15,9 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required()
+  maximumProtectiveMarking: yup.number().required(),
+  remarks: yup.string().required(),
+  receiptNotes: yup.string().required()
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
