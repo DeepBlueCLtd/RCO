@@ -5,7 +5,7 @@ import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-
+import { ICON_BATCH, R_BATCHES } from '../constants'
 import SourceField from './SourceField'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -77,13 +77,22 @@ export function RecentCard(props: RecentCardProps) {
     <Box>
       <Card variant='outlined'>
         <CardContent className={classes.cardContent}>
-          <Typography variant='h6'>
-            {typeof label !== 'undefined' && (
-              <Link to={resource} className={classes.label}>
-                {label}
-              </Link>
-            )}
-          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '15px',
+              justifyContent: 'center'
+            }}>
+            {resource === R_BATCHES ? <ICON_BATCH /> : ''}
+            <Typography variant='h6'>
+              {typeof label !== 'undefined' && (
+                <Link to={resource} className={classes.label}>
+                  {label}
+                </Link>
+              )}
+            </Typography>
+          </div>
           <Box sx={{ mt: 2 }} className={classes.container}>
             {children}
           </Box>
