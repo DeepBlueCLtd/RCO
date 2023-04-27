@@ -5,8 +5,19 @@
 /** allow some components to be hidden when printed, such
  *  as the print/cancel buttons
  */
+
 @media print {
+  #root {
+    display: none;
+  }
   .noprint {
     visibility: hidden;
+  }
+  .printable {
+    position: static !important;
+  }
+  .pagebreak {
+    page-break-inside: avoid;
+    page-break-after: always;
   }
 }

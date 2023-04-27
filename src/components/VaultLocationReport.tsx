@@ -25,7 +25,10 @@ import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 
 type ReferenceItemById = Record<number, ReferenceItem>
-interface Result { name: string; count: number }
+interface Result {
+  name: string
+  count: number
+}
 
 function ProtectiveMarking() {
   const { data = [] } = useListContext<Item>()
@@ -130,7 +133,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
       </Button>
       <Printable open={open} onClose={handleOpen(false)}>
         <>
-          {selectedIds.map((id) => {
+          {selectedIds.map((id, index) => {
             return (
               <>
                 <Box padding={'20px'} key={id}>
@@ -165,6 +168,9 @@ export default function VaultLocationReport(props: Props): ReactElement {
                   </ItemsReport>
                   <ReportSignature id={id} />
                 </Box>
+                {selectedIds.length !== index + 1 && (
+                  <div className='pagebreak' />
+                )}
               </>
             )
           })}

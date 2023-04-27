@@ -2,6 +2,7 @@ import { type ListProps, Count } from 'react-admin'
 import { type ReactElement } from 'react'
 import { Box, Typography } from '@mui/material'
 import * as constants from '../constants'
+import FlexBox from './FlexBox'
 
 type Props = PartialBy<ListProps, 'children'> & { id: number }
 
@@ -17,18 +18,20 @@ export function SignatureDetails() {
     </>
   )
 }
+const sx = {
+  flex: 1,
+  border: '2px solid rgba(224, 224, 224, 1)',
+  padding: '10px',
+  minHeight: '168px',
+  height: 'inherit'
+}
 
 export default function ReportSignature(props: Props): ReactElement {
   const { id } = props
+
   return (
-    <>
-      <Box
-        sx={{
-          display: 'inline-block',
-          width: 'calc(50% - 24px)',
-          border: '2px solid rgba(224, 224, 224, 1)',
-          padding: '10px'
-        }}>
+    <FlexBox columnGap={0} alignItems='start'>
+      <Box sx={sx}>
         <Typography>
           The{' '}
           {
@@ -43,17 +46,14 @@ export default function ReportSignature(props: Props): ReactElement {
         <Typography>Mustered by:</Typography>
         <SignatureDetails />
       </Box>
-      <Box
+      <FlexBox
+        alignItems='end'
         sx={{
-          display: 'inline-block',
-          border: '2px solid rgba(224, 224, 224, 1)',
-          padding: '10px',
-          borderLeft: 'none',
-          width: 'calc(50% - 24px)',
-          paddingTop: '58px'
+          ...sx,
+          borderLeft: 'none'
         }}>
         <SignatureDetails />
-      </Box>
-    </>
+      </FlexBox>
+    </FlexBox>
   )
 }

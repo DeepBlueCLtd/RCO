@@ -94,6 +94,7 @@ export default function ItemsReport(props: Props): React.ReactElement {
       actions={false}
       sx={{ margin: '20px 0' }}
       perPage={1000}
+      hasCreate={false}
       disableSyncWithLocation
       {...rest}>
       <Typography variant='h6' margin='16px'>
