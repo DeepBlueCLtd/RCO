@@ -8,7 +8,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Save, Layers, AccountTree } from '@mui/icons-material'
+import { Save, Layers, AccountTree, AllInbox } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -97,6 +97,7 @@ function App(): React.ReactElement {
                   <Resource
                     key={constants.R_VAULT_LOCATION}
                     name={constants.R_VAULT_LOCATION}
+                    icon={AllInbox}
                     options={{ label: 'Vault Locations' }}
                     {...vaultlocations}
                   />,
