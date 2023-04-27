@@ -1,3 +1,5 @@
+import { Save, Layers, AccountTree } from '@mui/icons-material'
+
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
 export const DATE_FORMAT = 'DD-MM-YYYY'
 export const DATETIME_FORMAT = 'DD-MM-YYYY HH =mm =ss'
@@ -14,3 +16,8 @@ export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
+
+// icons
+export const BATCH_ICON = Layers
+export const ITEM_ICON = Save
+export const PROJECT_ICON = AccountTree

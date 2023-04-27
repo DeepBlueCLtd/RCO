@@ -8,7 +8,6 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Save, Layers, AccountTree } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import autProvider from './providers/authProvider'
 
@@ -83,13 +82,13 @@ function App(): React.ReactElement {
               ? [
                   <Resource
                     key={constants.R_BATCHES}
-                    icon={Layers}
+                    icon={constants.BATCH_ICON}
                     name={constants.R_BATCHES}
                     {...batches}
                   />,
                   <Resource
                     key={constants.R_ITEMS}
-                    icon={Save}
+                    icon={constants.ITEM_ICON}
                     name={constants.R_ITEMS}
                     {...items}
                   />,
@@ -131,7 +130,7 @@ function App(): React.ReactElement {
               : []),
             <Resource
               key={constants.R_PROJECTS}
-              icon={AccountTree}
+              icon={constants.PROJECT_ICON}
               name={constants.R_PROJECTS}
               {...projects}
             />
