@@ -11,7 +11,7 @@ import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
 import { Save, Layers, AccountTree } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import autProvider from './providers/authProvider'
+import rcoAuthProvider from './providers/authProvider'
 
 // pages
 import Welcome from './pages/Welcome'
@@ -47,7 +47,7 @@ function App(): React.ReactElement {
       getDataProvider(loggingPref)
         .then((provider) => {
           setDataProvider(provider)
-          const authenticationProvider = autProvider(provider)
+          const authenticationProvider = rcoAuthProvider(provider)
           setAuthProvider(authenticationProvider)
           if (provider !== undefined && dataProvider === undefined) {
             const queryParams = new URLSearchParams(window.location.search)
@@ -56,7 +56,7 @@ function App(): React.ReactElement {
             if (username !== null && password !== null) {
               authenticationProvider
                 .login({ username, password })
-                .then((_) => {
+                .then((_: any) => {
                   window.history.replaceState({}, '', window.location.pathname)
                 })
                 .catch(console.log)
