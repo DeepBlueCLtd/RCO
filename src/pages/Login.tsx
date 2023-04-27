@@ -15,6 +15,7 @@ import {
   TableRow
 } from '@mui/material'
 import AppIcon from '../assets/rco_transparent.png'
+import { useEffect } from 'react'
 
 export default function Login() {
   const login = useLogin()
@@ -25,10 +26,25 @@ export default function Login() {
     const formData = new FormData(event.currentTarget)
     const username = formData.get('username') as string
     const password = formData.get('password') as string
-    login({ username, password }).catch(() =>
-      { notify('Invalid email or password', { type: 'error' }) }
-    )
+    login({ username, password }).catch(() => {
+      notify('Invalid email or password', { type: 'error' })
+    })
   }
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search)
+    const username = queryParams.get('username')
+    const password = queryParams.get('password')
+    if (username !== null && password !== null) {
+      login({ username, password })
+        .then((_) => {
+          window.history.replaceState({}, '', window.location.pathname)
+        })
+        .catch(() => {
+          notify('Invalid email or password', { type: 'error' })
+        })
+    }
+  }, [])
 
   return (
     <>
