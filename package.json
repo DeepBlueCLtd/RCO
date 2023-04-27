@@ -16,7 +16,7 @@
     "prepare": "husky install",
     "deploy": "gh-pages -d build",
     "test": "jest",
-    "e2e": "cd ./e2e && yarn install && yarn playwright test && npx playwright show-report"
+    "e2e": "yarn playwright test"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -48,6 +48,7 @@
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.4",
     "@eslint/create-config": "^0.4.2",
+    "@playwright/test": "^1.33.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
