@@ -1,14 +1,6 @@
 import { type ListProps, Count } from 'react-admin'
 import { type ReactElement } from 'react'
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography
-} from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import * as constants from '../constants'
 
 type Props = PartialBy<ListProps, 'children'> & { id: number }
@@ -26,34 +18,10 @@ export function SignatureDetails() {
   )
 }
 
-export function ProtectiveMarking() {
-  return (
-    <>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>PM</TableCell>
-            <TableCell>Count</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow>
-            <TableCell>P1</TableCell>
-            <TableCell>2</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </>
-  )
-}
-
 export default function ReportSignature(props: Props): ReactElement {
   const { id } = props
   return (
     <>
-      <Box>
-        <ProtectiveMarking />
-      </Box>
       <Box
         sx={{
           display: 'inline-block',

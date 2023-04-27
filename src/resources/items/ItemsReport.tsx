@@ -16,7 +16,9 @@ import { Download } from '@mui/icons-material'
 import Printable from '../../components/Printable'
 import FlexBox from '../../components/FlexBox'
 
-type Props = PartialBy<ListProps, 'children'>
+type Props = PartialBy<ListProps, 'children'> & {
+  footer?: React.FunctionComponent
+}
 
 interface Field {
   name: string
@@ -84,6 +86,7 @@ const FieldWithReference = (
 }
 
 export default function ItemsReport(props: Props): React.ReactElement {
+  const { footer, children, ...rest } = props
   return (
     <List
       resource={constants.R_ITEMS}
@@ -92,14 +95,14 @@ export default function ItemsReport(props: Props): React.ReactElement {
       sx={{ margin: '20px 0' }}
       perPage={1000}
       disableSyncWithLocation
-      {...props}>
+      {...rest}>
       <Typography variant='h6' margin='16px'>
         Items:
       </Typography>
 
       <Datagrid bulkActionButtons={false}>
-        {props.children !== undefined ? (
-          props.children
+        {children !== undefined ? (
+          children
         ) : (
           <>
             <TextField source='item_number' label='Item Number' />
@@ -108,6 +111,7 @@ export default function ItemsReport(props: Props): React.ReactElement {
           </>
         )}
       </Datagrid>
+      {footer !== undefined && React.createElement(footer)}
     </List>
   )
 }
