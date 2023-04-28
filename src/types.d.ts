@@ -118,14 +118,14 @@ interface RCOStore {
 }
 
 interface Loan {
-  id: integer
+  readonly id: number
   createdAt: string
   holder: User['id']
   remarks: string
 }
 
 interface LoanItem {
-  id: integer
+  readonly id: number
   createdAt: string
   item: Item['id']
   loan: Loan['id']
