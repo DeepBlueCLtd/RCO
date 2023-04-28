@@ -90,6 +90,9 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less)$": "identity-obj-proxy"
-    }
+    },
+    "testPathIgnorePatterns": [
+      "e2e"
+    ]
   }
 }
