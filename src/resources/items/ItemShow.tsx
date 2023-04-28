@@ -29,7 +29,7 @@ export default function ItemShow(): React.ReactElement {
             <SourceInput
               label=''
               source='createdBy'
-              inputProps={{ disabled: true, label: 'User name' }}
+              inputProps={{ disabled: true, label: 'Added by' }}
               reference={constants.R_USERS}
             />
             <CoreForm disabled />

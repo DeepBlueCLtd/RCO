@@ -1,6 +1,6 @@
 import React from 'react'
 import * as constants from '../constants'
-
+import { ICON_PROJECT, ICON_BATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
 import { CreateButton, ListButton } from 'react-admin'
@@ -70,6 +70,7 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_PROJECTS}
+            icon={<ICON_PROJECT />}
             label='New Project'
             sx={{ width: '150px', height: '50px' }}
           />
@@ -77,6 +78,7 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_BATCHES}
+            icon={<ICON_BATCH />}
             label='New Batch'
             sx={{ width: '150px', height: '50px' }}
           />
