@@ -6,10 +6,10 @@ import {
   TextField,
   ReferenceField,
   DateField,
-  SelectInput,
   DateTimeInput,
   NumberInput,
-  useListContext
+  useListContext,
+  AutocompleteInput
 } from 'react-admin'
 import * as constants from '../../constants'
 import { AuditType } from '../../utils/audit'
@@ -38,7 +38,11 @@ const filters = [
     alwaysOn={true}
   />,
   <DateTimeInput key='end' source='dateTime_lte' label='Before' />,
-  <SelectInput source='activityType' choices={choices} key='activityType' />,
+  <AutocompleteInput
+    source='activityType'
+    choices={choices}
+    key='activityType'
+  />,
   <NumberInput source='user_id' key='user' label='User' min={1} max={2} />,
   <SecurityRelatedFilter
     source='securityRelated'

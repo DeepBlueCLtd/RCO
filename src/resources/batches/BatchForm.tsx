@@ -1,6 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useState } from 'react'
-import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
+import {
+  AutocompleteInput,
+  ReferenceInput,
+  SimpleForm,
+  TextInput
+} from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
@@ -52,7 +57,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           source='platform'
           filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PLATFORMS}>
-          <SelectInput optionText={optionsText} sx={sx} />
+          <AutocompleteInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <FlexBox>
           <DatePicker
@@ -66,7 +71,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             variant='outlined'
             source='project'
             reference={constants.R_PROJECTS}>
-            <SelectInput
+            <AutocompleteInput
               optionText={optionsText}
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
@@ -78,14 +83,14 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             variant='outlined'
             source='organisation'
             reference='organisation'>
-            <SelectInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
           <ReferenceInput
             variant='outlined'
             source='department'
             {...(isEdit === undefined ? {} : { filter: { active: true } })}
             reference='department'>
-            <SelectInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
         <FlexBox>
@@ -93,7 +98,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             variant='outlined'
             source='maximumProtectiveMarking'
             reference='protectiveMarking'>
-            <SelectInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
