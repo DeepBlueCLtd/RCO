@@ -146,11 +146,16 @@ export default function ItemList(
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <SourceField
+          link={(record, reference) => {
+            const batchId: number = record.batchId
+            const cReference: string = reference
+            return `/${cReference}/${batchId}/show`
+          }}
           source='batchId'
           sourceField='batchNumber'
           reference={constants.R_BATCHES}
         />
-        , <TextField source='remarks' />
+        <TextField source='remarks' />
       </DatagridConfigurable>
     </List>
   )
