@@ -3,14 +3,14 @@ import {
   Resource,
   CustomRoutes,
   Loading,
-  type DataProvider
+  type DataProvider,
+  type AuthProvider
 } from 'react-admin'
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Save, Layers, AccountTree } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import autProvider from './providers/authProvider'
+import rcoAuthProvider from './providers/authProvider'
 
 // pages
 import Welcome from './pages/Welcome'
@@ -37,10 +37,33 @@ function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
   )
+  const [authProvider, setAuthProvider] = useState<AuthProvider | undefined>(
+    undefined
+  )
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const handleGetProvider = (): any => {
-    if (loggingPref !== null)
-      getDataProvider(loggingPref).then(setDataProvider).catch(console.log)
+    if (loggingPref !== null) {
+      getDataProvider(loggingPref)
+        .then((provider) => {
+          setDataProvider(provider)
+          const authenticationProvider = rcoAuthProvider(provider)
+          setAuthProvider(authenticationProvider)
+          if (provider !== undefined && dataProvider === undefined) {
+            const queryParams = new URLSearchParams(window.location.search)
+            const username = queryParams.get('username')
+            const password = queryParams.get('password')
+            if (username !== null && password !== null) {
+              authenticationProvider
+                .login({ username, password })
+                .then((_: any) => {
+                  window.history.replaceState({}, '', window.location.pathname)
+                })
+                .catch(console.log)
+            }
+          }
+        })
+        .catch(console.log)
+    }
   }
 
   useEffect(() => {
@@ -65,6 +88,7 @@ function App(): React.ReactElement {
 
   useEffect(handleGetProvider, [loggingPref])
   if (dataProvider === undefined) return LoadingPage
+  if (authProvider === undefined) return LoadingPage
 
   return (
     <Suspense fallback={LoadingPage}>
@@ -72,7 +96,7 @@ function App(): React.ReactElement {
         dashboard={Welcome}
         dataProvider={dataProvider}
         loginPage={Login}
-        authProvider={autProvider(dataProvider)}
+        authProvider={authProvider}
         layout={MyLayout}
         theme={rcoTheme}
         disableTelemetry
@@ -83,13 +107,13 @@ function App(): React.ReactElement {
               ? [
                   <Resource
                     key={constants.R_BATCHES}
-                    icon={Layers}
+                    icon={constants.ICON_BATCH}
                     name={constants.R_BATCHES}
                     {...batches}
                   />,
                   <Resource
                     key={constants.R_ITEMS}
-                    icon={Save}
+                    icon={constants.ICON_ITEM}
                     name={constants.R_ITEMS}
                     {...items}
                   />,
@@ -131,7 +155,7 @@ function App(): React.ReactElement {
               : []),
             <Resource
               key={constants.R_PROJECTS}
-              icon={AccountTree}
+              icon={constants.ICON_PROJECT}
               name={constants.R_PROJECTS}
               {...projects}
             />

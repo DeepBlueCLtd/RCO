@@ -2,7 +2,6 @@ import {
   DatagridConfigurable,
   DateField,
   DateTimeInput,
-  EditButton,
   FilterButton,
   List,
   type ListProps,
@@ -29,10 +28,17 @@ import ChangeLocation from './ItemForm/ChangeLocation'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
-const omitColumns: string[] = ['createdAt']
+const omitColumns: string[] = [
+  'id',
+  'createdAt',
+  'remarks',
+  'start',
+  'end',
+  'vaultLocation'
+]
 
 const filters = [
-  <SearchInput source='q' key='q' alwaysOn />,
+  <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
   <CreatedByMeFilter
     key='createdByMe'
     source='createdBy_eq'
@@ -128,16 +134,15 @@ export default function ItemList(
       filters={filters}
       {...props}>
       <DatagridConfigurable rowClick='show' omit={omitColumns}>
+        <TextField source='item_number' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
-        <TextField source='item_number' label='Reference' />
         <TextField source='mediaType' label='Media type' />
         <DateField showTime source='start' />
         <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <TextField source='remarks' />
-        <EditButton />
       </DatagridConfigurable>
     </List>
   )
