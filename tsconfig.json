@@ -19,5 +19,6 @@
     "noUnusedParameters": true
   },
   "include": ["src", "jest-setup.ts"],
+  "exclude": ["playwright.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
