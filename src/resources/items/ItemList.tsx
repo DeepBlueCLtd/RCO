@@ -25,6 +25,7 @@ import { Button, Modal } from '@mui/material'
 import { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
+import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
@@ -72,7 +73,8 @@ const filters = [
     reference={constants.R_BATCHES}
     optionField='batchNumber'
   />,
-  <TextInput key='remarks' source='remarks' />
+  <TextInput key='remarks' source='remarks' />,
+  <DateFilter source='createdAt' label='Created At' key='createdAt' />
 ]
 
 const ItemActions = () => {
@@ -133,6 +135,7 @@ export default function ItemList(
       resource='items'
       filters={filters}
       {...props}>
+      <ResetDateFilter source='createdAt' />
       <DatagridConfigurable rowClick='show' omit={omitColumns}>
         <TextField source='item_number' label='Reference' />
         <TextField source='id' />
