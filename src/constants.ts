@@ -1,4 +1,4 @@
-import { Save, Layers, AccountTree } from '@mui/icons-material'
+import { Save, Layers, AccountTree, Notes } from '@mui/icons-material'
 
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
 export const DATE_FORMAT = 'DD-MM-YYYY'
@@ -21,3 +21,5 @@ export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 export const ICON_BATCH = Layers
 export const ICON_ITEM = Save
 export const ICON_PROJECT = AccountTree
+
+export const ICON_DETAILS = Notes
