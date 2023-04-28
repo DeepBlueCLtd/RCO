@@ -92,7 +92,7 @@ const filters = [
     reference={constants.R_PLATFORMS}
     key='platform'
     sort={sort()}
-    source='platform'
+    source='platform_eq'
   />,
   <PlatformFilter
     reference={constants.R_PLATFORMS}
