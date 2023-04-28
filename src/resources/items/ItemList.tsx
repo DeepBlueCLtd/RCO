@@ -145,7 +145,12 @@ export default function ItemList(
         <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
-        <TextField source='remarks' />
+        <SourceField
+          source='batchId'
+          sourceField='batchNumber'
+          reference={constants.R_BATCHES}
+        />
+        , <TextField source='remarks' />
       </DatagridConfigurable>
     </List>
   )
