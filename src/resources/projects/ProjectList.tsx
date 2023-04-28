@@ -12,6 +12,7 @@ import {
   TopToolbar
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
+import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 
@@ -28,7 +29,8 @@ const filters = [
     key='createdBy'
     source='createdBy'
     reference={constants.R_USERS}
-  />
+  />,
+  <DateFilter key='createdAt' source='createdAt' label='Created At' />
 ]
 
 export default function ProjectList(): React.ReactElement {
@@ -42,6 +44,7 @@ export default function ProjectList(): React.ReactElement {
 
   return (
     <List actions={<ListActions />} perPage={25} filters={filters}>
+      <ResetDateFilter source='createdAt' />
       <DatagridConfigurable
         omit={omitColumns}
         rowClick='show'

@@ -21,6 +21,7 @@ interface CardWithNavigationProps {
   path: CreatePathParams['resource']
   type?: CreatePathParams['type']
   active?: boolean
+  isRarelyUsed?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -36,6 +37,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {
     height: '150px',
     width: '150px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center'
+  },
+  common: {
+    height: '50px',
+    width: 'auto',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -62,7 +71,10 @@ const CardWithNavigation = (
         active !== undefined && active ? 'active' : ''
       }`}>
       <CardActionArea>
-        <CardContent className={styles.content}>
+        <CardContent
+          className={
+            props.isRarelyUsed === true ? styles.common : styles.content
+          }>
           <Typography>{title}</Typography>
         </CardContent>
       </CardActionArea>
@@ -70,7 +82,14 @@ const CardWithNavigation = (
   )
 }
 
-const routes = [
+const mainReferenceRoutes = [
+  { path: '/platforms', title: 'Platforms' },
+  { path: '/users', title: 'Users' },
+  { path: '/audit', title: 'Audit Log' }
+]
+
+const rarelyUsedRoutes = [
+  { path: '/platformOriginator', title: 'Platform Originator' },
   { path: '/organisation', title: 'Organisation' },
   { path: '/protectiveMarking', title: 'Protective Marking' },
   { path: '/mediaType', title: 'Media Type' },
@@ -78,11 +97,7 @@ const routes = [
     path: '/protectiveMarkingAuthority',
     title: 'Protective Marking Authority'
   },
-  { path: '/department', title: 'Department' },
-  { path: '/platformOriginator', title: 'Platform Originator' },
-  { path: '/platforms', title: 'Platforms' },
-  { path: '/users', title: 'Users' },
-  { path: '/audit', title: 'Audit Log' }
+  { path: '/department', title: 'Department' }
 ]
 
 export default function ReferenceData(): React.ReactElement {
@@ -91,15 +106,29 @@ export default function ReferenceData(): React.ReactElement {
   const { resource, title } = useMemo(() => {
     const items = location.pathname.split('/')
     const resource: string = items.length > 2 ? items[2] : ''
-    const title = routes.find((route) => route.path === `/${resource}`)?.title
+    const title = mainReferenceRoutes.find(
+      (route) => route.path === `/${resource}`
+    )?.title
     return { resource, title }
   }, [location])
 
   return (
     <div>
+      <h1></h1>
       <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
-        {routes.map((route) => (
+        {mainReferenceRoutes.map((route) => (
           <CardWithNavigation
+            key={route.title}
+            {...route}
+            active={title === route.title}
+          />
+        ))}
+      </Box>
+
+      <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
+        {rarelyUsedRoutes.map((route) => (
+          <CardWithNavigation
+            isRarelyUsed
             key={route.title}
             {...route}
             active={title === route.title}
