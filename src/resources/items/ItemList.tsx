@@ -7,13 +7,13 @@ import {
   type ListProps,
   SearchInput,
   SelectColumnsButton,
-  SelectInput,
   TextField,
   TextInput,
   TopToolbar,
   BulkDeleteButton,
   useListContext,
-  useRefresh
+  useRefresh,
+  AutocompleteInput
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -50,7 +50,11 @@ const filters = [
     reference={constants.R_USERS}
   />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
-  <SelectInput source='mediaType' key='mediaType' choices={mediaTypeOptions} />,
+  <AutocompleteInput
+    source='mediaType'
+    key='mediaType'
+    choices={mediaTypeOptions}
+  />,
   <DateTimeInput source='start' key='start' />,
   <DateTimeInput source='end' key='end' />,
   <SourceInput
