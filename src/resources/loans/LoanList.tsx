@@ -1,0 +1,38 @@
+import {
+  List,
+  Datagrid,
+  DateField,
+  TextField,
+  EditButton,
+  DateInput,
+  SearchInput
+} from 'react-admin'
+import CreatedByMeFilter from '../../components/CreatedByMeFilter'
+import SourceField from '../../components/SourceField'
+import SourceInput from '../../components/SourceInput'
+import * as constants from '../../constants'
+
+const filters = [
+  <SearchInput key='q' source='q' alwaysOn />,
+  <CreatedByMeFilter
+    key='createdBy'
+    label='Created By Me'
+    source='createdBy'
+  />,
+  <SourceInput key='holder' source='holder' reference={constants.R_USERS} />,
+  <DateInput key='createdAt' source='createdAt' label='Crated At' />
+]
+
+export default function LoanList() {
+  return (
+    <List perPage={25} filters={filters}>
+      <Datagrid rowClick='show'>
+        <SourceField source='createdBy' reference={constants.R_USERS} />
+        <SourceField source='holder' reference={constants.R_USERS} />
+        <DateField source='createdAt' label='Crated At' />
+        <TextField source='remarks' />
+        <EditButton />
+      </Datagrid>
+    </List>
+  )
+}

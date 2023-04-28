@@ -247,6 +247,33 @@ export const getDataProvider = async (
         )
         return record
       }
+    },
+    {
+      resource: constants.R_LOANS,
+      beforeCreate: async (record: CreateResult<Project>) => {
+        return withCreatedBy(record)
+      },
+      afterDelete: async (record: DeleteResult<Loan>) => {
+        await audit(
+          AuditType.DELETE_LOAN,
+          `Loan deleted (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterUpdate: async (record: UpdateResult<Loan>) => {
+        await audit(
+          AuditType.EDIT_LOAN,
+          `Loan updated (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterCreate: async (record: CreateResult<Loan>) => {
+        await audit(
+          AuditType.CREATE_LOAN,
+          `Loan created (${String(record.data.id)})`
+        )
+        return record
+      }
     }
   ])
 }

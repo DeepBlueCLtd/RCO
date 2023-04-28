@@ -20,7 +20,11 @@ export enum AuditType {
 
   CREATE_ITEM = 'create_item',
   DELETE_ITEM = 'delete_item',
-  EDIT_ITEM = 'edit_item'
+  EDIT_ITEM = 'edit_item',
+
+  CREATE_LOAN = 'create_loan',
+  DELETE_LOAN = 'delete_loan',
+  EDIT_LOAN = 'edit_loan'
 }
 
 export const trackEvent =
@@ -44,7 +48,5 @@ export const trackEvent =
           }
         })
       }
-    } catch (error) {
-      console.log(error)
-    }
+    } catch (error) {}
   }

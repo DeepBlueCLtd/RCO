@@ -1,7 +1,7 @@
-import { Save, Layers, AccountTree } from '@mui/icons-material'
+import { Save, Layers, AccountTree, CreditScore } from '@mui/icons-material'
 
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
-export const DATE_FORMAT = 'DD-MM-YYYY'
+export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'DD-MM-YYYY HH =mm =ss'
 export const TOKEN_KEY = 'rco-user'
 export const SALT = 'salt'
@@ -14,6 +14,8 @@ export const R_ITEMS = 'items'
 export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
+export const R_LOANS = 'loans'
+
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 
@@ -21,3 +23,4 @@ export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 export const ICON_BATCH = Layers
 export const ICON_ITEM = Save
 export const ICON_PROJECT = AccountTree
+export const ICON_LOAN = CreditScore
