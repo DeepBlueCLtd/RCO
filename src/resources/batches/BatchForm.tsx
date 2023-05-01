@@ -58,8 +58,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
 
   const ConditionalReferenceInput = <T extends ReferenceItem>(props: Props) => {
     const { source, reference, inputProps = {}, active } = props
-    const filter =
-      active !== undefined && active ? { active: true } : {}
+    const filter = active !== undefined && active ? { active: true } : {}
     const { data, isLoading } = useGetList<T>(reference, {
       filter
     })
