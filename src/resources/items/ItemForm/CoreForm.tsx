@@ -83,17 +83,20 @@ const CoreForm = (props: Props): React.ReactElement => {
         {(disabled ?? false) && (
           <>
             <ValueField label='Created'>
-              <TextField source='createdAt' sx={sx} />
+              <TextField source='createdAt' />
             </ValueField>
-            <SourceField
-              source='batchId'
-              reference={R_BATCHES}
-              textProps={{
-                style: { color: 'blue' },
-                sx: { sx },
-                variant: 'subtitle1'
-              }}
-            />
+            <div>
+              {'Batch: '}
+              <SourceField
+                source='batchId'
+                reference={R_BATCHES}
+                sourceField='batchNumber'
+                textProps={{
+                  style: { color: 'blue' },
+                  variant: 'subtitle1'
+                }}
+              />
+            </div>
           </>
         )}
       </FlexBox>
