@@ -23,6 +23,11 @@ export default function ReferenceDataList({
     </TopToolbar>
   )
 
+  const showActive = (name: string) =>
+    name === 'department' ||
+    name === 'organisation' ||
+    name === 'protectiveMarkingAuthority'
+
   return (
     <List actions={<ListActions />}>
       <Datagrid
@@ -35,7 +40,7 @@ export default function ReferenceDataList({
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        {name === 'department' ? <BooleanField source='active' /> : ''}
+        {showActive(name) ? <BooleanField source='active' /> : ''}
       </Datagrid>
     </List>
   )
