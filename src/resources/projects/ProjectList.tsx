@@ -3,7 +3,6 @@ import {
   BulkDeleteButton,
   CreateButton,
   DatagridConfigurable,
-  DateField,
   FilterButton,
   List,
   SearchInput,
@@ -50,9 +49,6 @@ export default function ProjectList(): React.ReactElement {
         rowClick='show'
         bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
-        <DateField source='startDate' />
-        <DateField source='endDate' />
-        <TextField source='projectCode' />
         <TextField source='remarks' />
         <TextField source='createdAt' label='Created' />
       </DatagridConfigurable>

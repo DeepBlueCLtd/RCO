@@ -74,14 +74,10 @@ export const generatePlatform = (length: number): Platform[] => {
 export const generateProject = (length: number, user: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
-    const [startDate, endDate] = generateRandomDate()
     const obj: Project = {
       id: i,
       createdAt: nowDate(),
       name: `project-${i}`,
-      startDate: startDate.toString(),
-      endDate: endDate.toString(),
-      projectCode: String(generateRandomNumber(1, 1000)),
       remarks: `project-remarks-${i}`,
       createdBy: user
     }
@@ -103,10 +99,14 @@ export const generateBatch = (
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
+    const [startDate, endDate] = generateRandomDate()
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
       name: `batch-${i}`,
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
+      projectCode: String(generateRandomNumber(1, 1000)),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
@@ -129,15 +129,14 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
-  project: Project,
   user: number
 ): Item[] => {
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
     const endDate = setMinuteToStep(
       generateRandomDateInRange(
-        new Date(project.startDate),
-        new Date(project.endDate)
+        new Date(batch.startDate),
+        new Date(batch.endDate)
       )
     )
 
@@ -147,7 +146,7 @@ export const generateItems = (
 
     const startDate = setMinuteToStep(
       generateRandomDateInRange(
-        new Date(project.startDate),
+        new Date(batch.startDate),
         new Date(minStartDate.toString())
       )
     )
