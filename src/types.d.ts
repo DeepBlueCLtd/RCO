@@ -37,10 +37,10 @@ interface Batch {
   name: string
   batchNumber: string
   yearOfReceipt: string
-  department: ReferenceItem['id']
+  department: ActiveReferenceItem['id']
   project: Project['id']
   platform: Platform['id']
-  organisation: ReferenceItem['id']
+  organisation: ActiveReferenceItem['id']
   // deprecated
   // protectiveMarkingAuthority: ReferenceItem['id']
   maximumProtectiveMarking: ReferenceItem['id']
@@ -108,11 +108,11 @@ interface RCOStore {
   items: Item[]
   platforms: Platform[]
   projects: Project[]
-  organisation: ReferenceItem[]
-  department: ReferenceItem[]
+  organisation: ActiveReferenceItem[]
+  department: ActiveReferenceItem[]
   vaultLocation: ReferenceItem[]
   mediaType: ReferenceItem[]
   protectiveMarking: ReferenceItem[]
-  protectiveMarkingAuthority: ReferenceItem[]
+  protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ReferenceItem[]
 }

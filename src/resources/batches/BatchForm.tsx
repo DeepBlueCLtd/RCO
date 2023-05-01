@@ -77,12 +77,14 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           <ReferenceInput
             variant='outlined'
             source='organisation'
-            reference='organisation'>
+            reference='organisation'
+            filter={{ active: true }}>
             <SelectInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
           <ReferenceInput
             variant='outlined'
             source='department'
+            filter={{ active: true }}
             {...(isEdit === undefined ? {} : { filter: { active: true } })}
             reference='department'>
             <SelectInput optionText={optionsText} sx={sx} />
