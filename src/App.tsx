@@ -31,6 +31,7 @@ import items from './resources/items'
 import * as constants from './constants'
 import platforms from './resources/platforms'
 import loans from './resources/loans'
+import loanItems from './resources/loan-items'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -123,6 +124,11 @@ function App(): React.ReactElement {
                     icon={constants.ICON_LOAN}
                     name={constants.R_LOANS}
                     {...loans}
+                  />,
+                  <Resource
+                    key={constants.R_LOAN_ITEMS}
+                    name={constants.R_LOAN_ITEMS}
+                    {...loanItems}
                   />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>

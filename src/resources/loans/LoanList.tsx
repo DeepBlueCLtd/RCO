@@ -20,6 +20,11 @@ const filters = [
     source='createdBy'
   />,
   <SourceInput key='holder' source='holder' reference={constants.R_USERS} />,
+  <SourceInput
+    key='loanedBy'
+    source='loanedBy'
+    reference={constants.R_USERS}
+  />,
   <DateInput key='createdAt' source='createdAt' label='Crated At' />
 ]
 
@@ -29,7 +34,8 @@ export default function LoanList() {
       <Datagrid rowClick='show'>
         <SourceField source='createdBy' reference={constants.R_USERS} />
         <SourceField source='holder' reference={constants.R_USERS} />
-        <DateField source='createdAt' label='Crated At' />
+        <SourceField source='loanedBy' reference={constants.R_USERS} />
+        <DateField source='createdAt' label='Created At' />
         <TextField source='remarks' />
         <EditButton />
       </Datagrid>

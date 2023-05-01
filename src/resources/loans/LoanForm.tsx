@@ -8,10 +8,13 @@ import * as constants from '../../constants'
 const schema = yup.object({
   createdAt: yup.string().required(),
   holder: yup.number().required(),
+  loanedBy: yup.number().required(),
   remarks: yup.string().optional().nullable()
 })
 
-interface Props { show?: boolean }
+interface Props {
+  show?: boolean
+}
 
 export default function LoanForm(props: Props) {
   const { show } = props
@@ -31,8 +34,13 @@ export default function LoanForm(props: Props) {
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <SourceInput
-        disabled={show}
+        inputProps={{ disabled: show }}
         source='holder'
+        reference={constants.R_USERS}
+      />
+      <SourceInput
+        inputProps={{ disabled: show }}
+        source='loanedBy'
         reference={constants.R_USERS}
       />
       <TextInput sx={sx} disabled={show} multiline source='remarks' />

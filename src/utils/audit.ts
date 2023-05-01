@@ -24,7 +24,11 @@ export enum AuditType {
 
   CREATE_LOAN = 'create_loan',
   DELETE_LOAN = 'delete_loan',
-  EDIT_LOAN = 'edit_loan'
+  EDIT_LOAN = 'edit_loan',
+
+  CREATE_LOAN_ITEM = 'create_loan_item',
+  DELETE_LOAN_ITEM = 'delete_loan_item',
+  EDIT_LOAN_ITEM = 'edit_loan_item'
 }
 
 export const trackEvent =

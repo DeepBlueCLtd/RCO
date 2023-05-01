@@ -121,6 +121,7 @@ interface Loan {
   readonly id: number
   createdAt: string
   holder: User['id']
+  loanedBy: User['id']
   remarks: string
 }
 

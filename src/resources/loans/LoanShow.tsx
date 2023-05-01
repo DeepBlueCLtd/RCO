@@ -1,4 +1,5 @@
 import { Show, TabbedShowLayout } from 'react-admin'
+import LoanItemsList from '../loan-items/LoanItemsList'
 import LoanForm from './LoanForm'
 
 export default function LoanShow() {
@@ -8,7 +9,9 @@ export default function LoanShow() {
         <TabbedShowLayout.Tab label='Details'>
           <LoanForm show />
         </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label='Items'>Loan Items</TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label='Items'>
+          <LoanItemsList />
+        </TabbedShowLayout.Tab>
       </TabbedShowLayout>
     </Show>
   )
