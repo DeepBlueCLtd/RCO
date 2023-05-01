@@ -88,6 +88,7 @@ const CoreForm = (props: Props): React.ReactElement => {
             <div>
               {'Batch: '}
               <SourceField
+                link='show'
                 source='batchId'
                 reference={R_BATCHES}
                 sourceField='batchNumber'
