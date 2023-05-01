@@ -15,13 +15,19 @@ export default function ReferenceDataForm(
   const defaultValues = {
     name: ''
   }
+
+  const isActive = (name: string) =>
+    name === 'department' ||
+    name === 'organisation' ||
+    name === 'protectiveMarkingAuthority'
+
   return (
     <SimpleForm
       toolbar={<EditToolBar isEdit={isEdit} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      {isEdit !== undefined && name === 'department' ? (
+      {isEdit !== undefined && name !== undefined && isActive(name) ? (
         <BooleanInput source='active' />
       ) : (
         ''

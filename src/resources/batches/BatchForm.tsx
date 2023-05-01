@@ -1,11 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useState } from 'react'
 import {
-  DateInput,
-  ReferenceInput,
   SelectInput,
+  type SelectInputProps,
   SimpleForm,
-  TextInput
+  TextInput,
+  useGetList,
+  type TextInputProps,
+  ReferenceInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -14,7 +16,6 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
-import dayjs from 'dayjs'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -22,20 +23,7 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required(),
-  startDate: yup.date().required().typeError('Invalid Date'),
-  endDate: yup
-    .date()
-    .typeError('Invalid Date')
-    .required()
-    .test(
-      'endDate',
-      'End date must be greater than start date',
-      function (value) {
-        return dayjs(value).diff(this.parent.startDate) > 0
-      }
-    ),
-  projectCode: yup.string().required('Project code is a required field')
+  maximumProtectiveMarking: yup.number().required()
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
@@ -44,9 +32,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const { isEdit } = props
 
   const defaultValues: Partial<Batch> = {
-    startDate: '',
-    endDate: '',
-    projectCode: '',
     batchNumber: '',
     yearOfReceipt: '',
     remarks: ''
@@ -64,6 +49,38 @@ const BatchForm = (props: FormProps): React.ReactElement => {
 
   const sx = { width: '100%' }
 
+  interface Props {
+    reference: string
+    source: string
+    inputProps?: SelectInputProps | TextInputProps
+    active?: boolean
+  }
+
+  const ConditionalReferenceInput = <T extends ReferenceItem>(props: Props) => {
+    const { source, reference, inputProps = {}, active } = props
+    const filter = active !== undefined && active ? { active: true } : {}
+    const { data, isLoading } = useGetList<T>(reference, {
+      filter
+    })
+
+    if (isLoading === true) return null
+    if (data === undefined) return null
+    const choices = data.map((d) => ({ name: d.name, id: d.id }))
+
+    return data?.length === 1 ? (
+      <SelectInput
+        source={source}
+        disabled
+        sx={sx}
+        defaultValue={data[0].id}
+        optionText={optionsText}
+        choices={choices}
+        {...inputProps}
+      />
+    ) : (
+      <SelectInput source={source} {...inputProps} choices={choices} sx={sx} />
+    )
+  }
   return (
     <>
       <SimpleForm
@@ -97,23 +114,34 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           </ReferenceInput>
         </FlexBox>
         <FlexBox>
-          <ReferenceInput
-            variant='outlined'
-            source='organisation'
-            reference='organisation'>
-            <SelectInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
-            source='department'
-            {...(isEdit === undefined ? {} : { filter: { active: true } })}
-            reference='department'>
-            <SelectInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-        </FlexBox>
-        <FlexBox display='flex' width='100%' columnGap='20px'>
-          <DateInput source='startDate' variant='outlined' sx={{ flex: 1 }} />
-          <DateInput source='endDate' variant='outlined' sx={{ flex: 1 }} />
+          {isEdit === undefined || !isEdit ? (
+            <>
+              <ConditionalReferenceInput
+                source='organisation'
+                reference='organisation'
+              />
+              <ConditionalReferenceInput
+                source='department'
+                reference='department'
+                active
+              />
+            </>
+          ) : (
+            <>
+              <ReferenceInput
+                variant='outlined'
+                source='organisation'
+                reference='organisation'>
+                <SelectInput optionText={optionsText} sx={sx} />
+              </ReferenceInput>
+              <ReferenceInput
+                variant='outlined'
+                source='department'
+                reference='department'>
+                <SelectInput optionText={optionsText} sx={sx} />
+              </ReferenceInput>
+            </>
+          )}
         </FlexBox>
         <FlexBox>
           <ReferenceInput
@@ -123,11 +151,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             <SelectInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
-        <TextInput
-          source='projectCode'
-          variant='outlined'
-          sx={{ width: '100%' }}
-        />
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>
