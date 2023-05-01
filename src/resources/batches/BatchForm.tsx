@@ -1,10 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useState } from 'react'
 import {
-  AutocompleteInput,
-  ReferenceInput,
+  SelectInput,
+  type SelectInputProps,
   SimpleForm,
-  TextInput
+  TextInput,
+  useGetList,
+  type TextInputProps,
+  ReferenceInput,
+  AutocompleteInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -46,6 +50,38 @@ const BatchForm = (props: FormProps): React.ReactElement => {
 
   const sx = { width: '100%' }
 
+  interface Props {
+    reference: string
+    source: string
+    inputProps?: SelectInputProps | TextInputProps
+    active?: boolean
+  }
+
+  const ConditionalReferenceInput = <T extends ReferenceItem>(props: Props) => {
+    const { source, reference, inputProps = {}, active } = props
+    const filter = active !== undefined && active ? { active: true } : {}
+    const { data, isLoading } = useGetList<T>(reference, {
+      filter
+    })
+
+    if (isLoading) return null
+    if (data === undefined) return null
+    const choices = data.map((d) => ({ name: d.name, id: d.id }))
+
+    return data?.length === 1 ? (
+      <SelectInput
+        source={source}
+        disabled
+        sx={sx}
+        defaultValue={data[0].id}
+        optionText={optionsText}
+        choices={choices}
+        {...inputProps}
+      />
+    ) : (
+      <AutocompleteInput source={source} choices={choices} sx={sx} />
+    )
+  }
   return (
     <>
       <SimpleForm
@@ -79,19 +115,34 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           </ReferenceInput>
         </FlexBox>
         <FlexBox>
-          <ReferenceInput
-            variant='outlined'
-            source='organisation'
-            reference='organisation'>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
-            source='department'
-            {...(isEdit === undefined ? {} : { filter: { active: true } })}
-            reference='department'>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
+          {isEdit === undefined || !isEdit ? (
+            <>
+              <ConditionalReferenceInput
+                source='organisation'
+                reference='organisation'
+              />
+              <ConditionalReferenceInput
+                source='department'
+                reference='department'
+                active
+              />
+            </>
+          ) : (
+            <>
+              <ReferenceInput
+                variant='outlined'
+                source='organisation'
+                reference='organisation'>
+                <AutocompleteInput optionText={optionsText} sx={sx} />
+              </ReferenceInput>
+              <ReferenceInput
+                variant='outlined'
+                source='department'
+                reference='department'>
+                <AutocompleteInput optionText={optionsText} sx={sx} />
+              </ReferenceInput>
+            </>
+          )}
         </FlexBox>
         <FlexBox>
           <ReferenceInput

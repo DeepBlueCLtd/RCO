@@ -2,7 +2,6 @@ import React from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import {
   CreateButton,
-  DateField,
   EditButton,
   Show,
   TextField,
@@ -54,15 +53,6 @@ export default function ProjectShow(): React.ReactElement {
           </ValueField>
           <ValueField label='Name'>
             <TextField variant='h6' source='name' />
-          </ValueField>
-          <ValueField label='Start Date'>
-            <DateField source='startDate' />
-          </ValueField>
-          <ValueField label='End Date'>
-            <DateField source='endDate' />
-          </ValueField>
-          <ValueField label='Project code'>
-            <TextField source='projectCode' />
           </ValueField>
           <ValueField label='Remarks'>
             <TextField source='remarks' />

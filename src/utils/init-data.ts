@@ -61,7 +61,6 @@ const loadDefaultData = async (userId?: number) => {
           batches[index],
           vaultLocation.length,
           protectiveMarking.length,
-          project,
           user
         )
       )
