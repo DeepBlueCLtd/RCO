@@ -12,7 +12,7 @@ function generateRandomNumber(min: number, max: number): number {
   return randomInteger
 }
 
-function generateRandomDate(): [DateTime, DateTime] {
+export function generateRandomDate(): [DateTime, DateTime] {
   const startYear = 2020
   const endYear = 2023
   const randomStartYear = generateRandomNumber(startYear, endYear)
