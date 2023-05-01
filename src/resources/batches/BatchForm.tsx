@@ -1,6 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useState } from 'react'
-import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
+import {
+  DateInput,
+  ReferenceInput,
+  SelectInput,
+  SimpleForm,
+  TextInput
+} from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
@@ -8,6 +14,7 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
+import dayjs from 'dayjs'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -15,7 +22,20 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required()
+  maximumProtectiveMarking: yup.number().required(),
+  startDate: yup.date().required().typeError('Invalid Date'),
+  endDate: yup
+    .date()
+    .typeError('Invalid Date')
+    .required()
+    .test(
+      'endDate',
+      'End date must be greater than start date',
+      function (value) {
+        return dayjs(value).diff(this.parent.startDate) > 0
+      }
+    ),
+  projectCode: yup.string().required('Project code is a required field')
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
@@ -24,6 +44,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const { isEdit } = props
 
   const defaultValues: Partial<Batch> = {
+    startDate: '',
+    endDate: '',
+    projectCode: '',
     batchNumber: '',
     yearOfReceipt: '',
     remarks: ''
@@ -90,6 +113,10 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             <SelectInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
+        <FlexBox display='flex' width='100%' columnGap='20px'>
+          <DateInput source='startDate' variant='outlined' sx={{ flex: 1 }} />
+          <DateInput source='endDate' variant='outlined' sx={{ flex: 1 }} />
+        </FlexBox>
         <FlexBox>
           <ReferenceInput
             variant='outlined'
@@ -98,6 +125,11 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             <SelectInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
+        <TextInput
+          source='projectCode'
+          variant='outlined'
+          sx={{ width: '100%' }}
+        />
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>

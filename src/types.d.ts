@@ -24,9 +24,6 @@ interface Platform {
 interface Project {
   readonly id: number
   name: string
-  startDate: string
-  endDate: string
-  projectCode: string
   remarks: string
   createdAt: string
   createdBy: User['id']
@@ -35,6 +32,9 @@ interface Project {
 interface Batch {
   readonly id: number
   name: string
+  startDate: string
+  endDate: string
+  projectCode: string
   batchNumber: string
   yearOfReceipt: string
   department: ActiveReferenceItem['id']

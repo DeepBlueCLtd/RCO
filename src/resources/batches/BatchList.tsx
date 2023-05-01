@@ -11,7 +11,8 @@ import {
   FilterButton,
   useListContext,
   useGetList,
-  useGetMany
+  useGetMany,
+  DateField
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -121,6 +122,9 @@ export default function BatchList(): React.ReactElement {
       <ResetDateFilter source='createdAt' />
       <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
+        <DateField source='startDate' />
+        <DateField source='endDate' />
+        <TextField source='projectCode' />
         <TextField label='Reference' source='batchNumber' />
         <SourceField source='department' label='Department' />
         <SourceField
