@@ -80,7 +80,7 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
   const notify = useNotify()
   const refresh = useRefresh()
 
-  const label = `Loan ${items.length} items to`
+  const label: string = `Loan ${items.length} items to`
 
   useEffect(() => {
     setValue(users[0]?.id)
@@ -147,7 +147,10 @@ function LoanItemsReturn(props: LoanItemsModalProps) {
       const user = usersById[receivedBy]
       return user.name
     })
-    return `Return ${items.length} items from: ${userNames.join(', ')}`
+
+    const names: string = [...new Set(userNames)].join(', ')
+
+    return `Return ${items.length} items from: ${names}` 
   }, [items, loanItems])
 
   const handleLoanReturn = async () => {
@@ -199,7 +202,9 @@ export default function LoanItemsListBulkActionButtons() {
   const { selectedIds } = useListContext()
 
   const handleClick = (buttonType: ButtonType) => {
-    return () => { setButtonType(buttonType) }
+    return () => {
+      setButtonType(buttonType)
+    }
   }
 
   return (
