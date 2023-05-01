@@ -7,7 +7,8 @@ import {
   TextInput,
   useGetList,
   type TextInputProps,
-  ReferenceInput
+  ReferenceInput,
+  AutocompleteInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -78,7 +79,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
         {...inputProps}
       />
     ) : (
-      <SelectInput source={source} {...inputProps} choices={choices} sx={sx} />
+      <AutocompleteInput source={source} choices={choices} sx={sx} />
     )
   }
   return (
@@ -92,7 +93,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           source='platform'
           filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PLATFORMS}>
-          <SelectInput optionText={optionsText} sx={sx} />
+          <AutocompleteInput optionText={optionsText} sx={sx} />
         </ReferenceInput>
         <FlexBox>
           <DatePicker
@@ -106,7 +107,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             variant='outlined'
             source='project'
             reference={constants.R_PROJECTS}>
-            <SelectInput
+            <AutocompleteInput
               optionText={optionsText}
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
@@ -132,13 +133,13 @@ const BatchForm = (props: FormProps): React.ReactElement => {
                 variant='outlined'
                 source='organisation'
                 reference='organisation'>
-                <SelectInput optionText={optionsText} sx={sx} />
+                <AutocompleteInput optionText={optionsText} sx={sx} />
               </ReferenceInput>
               <ReferenceInput
                 variant='outlined'
                 source='department'
                 reference='department'>
-                <SelectInput optionText={optionsText} sx={sx} />
+                <AutocompleteInput optionText={optionsText} sx={sx} />
               </ReferenceInput>
             </>
           )}
@@ -148,7 +149,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             variant='outlined'
             source='maximumProtectiveMarking'
             reference='protectiveMarking'>
-            <SelectInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
