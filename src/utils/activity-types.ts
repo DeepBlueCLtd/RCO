@@ -19,19 +19,16 @@ export enum AuditType {
   EDIT_ITEM = 'edit_item'
 }
 
-const ActivityTypes = Object.values(AuditType).reduce<ActivityType[]>((acc, val) => {
+const ActivityTypes = Object.values(AuditType).map((val) => {
   const replacedVal: string = val.replace('_', ' ')
   const capitalizedFirstLetter: string = replacedVal.charAt(0).toUpperCase()
   const remainingLetters: string = replacedVal.substring(1).toLowerCase()
   const convertedVal = `${capitalizedFirstLetter}${remainingLetters}`
-  acc.push({
+  return {
     name: val,
     label: convertedVal
-  })
-  return acc
-}, [])
-
-console.log({ ActivityTypes })
+  }
+})
 
 export const getActivityTypeLabel = (type: string) => {
   const foundType = ActivityTypes.find((t) => t.name === type)
