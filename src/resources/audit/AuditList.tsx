@@ -12,7 +12,7 @@ import {
   AutocompleteInput
 } from 'react-admin'
 import * as constants from '../../constants'
-import { AuditType } from '../../utils/audit'
+import { AuditType } from '../../utils/activity-types'
 
 interface Props {
   label: string
@@ -63,7 +63,7 @@ export default function AuditList(): React.ReactElement {
       <Datagrid bulkActionButtons={false}>
         <ReferenceField source='user_id' reference={constants.R_USERS} />
         <DateField source='dateTime' label='Date Time' showTime />;
-        <TextField source='activityType' label='Activity Type' />
+        <TextField source='label' label='Activity Type' />
         <TextField source='activityDetail' label='Activity Details' />
         <TextField source='securityRelated' label='Security Related' />
       </Datagrid>

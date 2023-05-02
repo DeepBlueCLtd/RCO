@@ -11,6 +11,7 @@ interface Audit {
   readonly id: number
   activityType: string
   dateTime: string
+  label: string
   activityDetail?: string
   securityRelated?: boolean
 }
@@ -115,4 +116,9 @@ interface RCOStore {
   protectiveMarking: ReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ReferenceItem[]
+}
+
+interface ActivityType {
+  name: string
+  label: string
 }
