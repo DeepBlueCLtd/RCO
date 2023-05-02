@@ -21,6 +21,7 @@ interface Audit {
   readonly id: number
   activityType: string
   dateTime: string
+  label: string
   activityDetail?: string
   securityRelated?: boolean
 }
@@ -143,4 +144,9 @@ interface LoanItem {
   receivedBy: User['id']
   returnedDate: string
   remarks: string
+}
+
+interface ActivityType {
+  name: string
+  label: string
 }
