@@ -20,7 +20,7 @@ interface Props {
 export default function UserList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
-  const basePath: string = `/reference-data/${cName}`
+  const basePath: string = `/${cName}`
 
   const ListActions = () => {
     return (
@@ -37,7 +37,7 @@ export default function UserList(props: Props): React.ReactElement {
   }
 
   return (
-    <List actions={<ListActions />} perPage={25}>
+    <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()

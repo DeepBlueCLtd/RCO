@@ -56,6 +56,7 @@ export default function AuditList(): React.ReactElement {
   return (
     <List
       perPage={25}
+      resource='audit'
       sort={{
         field: 'dateTime',
         order: 'DESC'
