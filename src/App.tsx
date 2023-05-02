@@ -127,35 +127,34 @@ function App(): React.ReactElement {
                     {...vaultlocations}
                   />,
                   <CustomRoutes key='routes'>
-                    <Route path='/reference-data' element={<ReferenceData />}>
-                      <Route path='protectiveMarking'>
-                        {...createRoutes('protectiveMarking')}
-                      </Route>
-                      <Route path='protectiveMarkingAuthority'>
-                        {...createRoutes('protectiveMarkingAuthority')}
-                      </Route>
-                      <Route path='department'>
-                        {...createRoutes('department')}
-                      </Route>
-                      <Route path='platformOriginator'>
-                        {...createRoutes('platformOriginator')}
-                      </Route>
-                      <Route path='organisation'>
-                        {...createRoutes('organisation')}
-                      </Route>
-                      <Route path='mediaType'>
-                        {...createRoutes('mediaType')}
-                      </Route>
-                      <Route path='platforms'>
-                        {...createRoutes('platforms', platforms)}
-                      </Route>
-                      <Route path='users'>
-                        {...createRoutes('users', users)}
-                      </Route>
-                      <Route path='audit'>
-                        {...createRoutes('audit', audit)}
-                      </Route>
+                    <Route path='/protectiveMarking'>
+                      {...createRoutes('protectiveMarking')}
                     </Route>
+                    <Route path='/protectiveMarkingAuthority'>
+                      {...createRoutes('protectiveMarkingAuthority')}
+                    </Route>
+                    <Route path='/department'>
+                      {...createRoutes('department')}
+                    </Route>
+                    <Route path='/platformOriginator'>
+                      {...createRoutes('platformOriginator')}
+                    </Route>
+                    <Route path='/organisation'>
+                      {...createRoutes('organisation')}
+                    </Route>
+                    <Route path='/mediaType'>
+                      {...createRoutes('mediaType')}
+                    </Route>
+                    <Route path='/platforms'>
+                      {...createRoutes('platforms', platforms)}
+                    </Route>
+                    <Route path='/users'>
+                      {...createRoutes('users', users)}
+                    </Route>
+                    <Route path='/audit'>
+                      {...createRoutes('audit', audit)}
+                    </Route>
+                    <Route path='/reference-data' element={<ReferenceData />} />
                   </CustomRoutes>
                 ]
               : []),
@@ -205,7 +204,7 @@ const createRoutes = (name: string, elements: Elements = defaultElements) => {
     />,
     <Route
       key={`${cName}edit`}
-      path=':id'
+      path={`/${cName}:id`}
       element={React.createElement(edit, { name })}
     />,
     <Route

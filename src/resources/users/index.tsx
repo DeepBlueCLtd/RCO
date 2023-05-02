@@ -17,7 +17,7 @@ const transform = (data: any) => {
 }
 
 const UserCreate = (): React.ReactElement => {
-  const path: string = '/reference-data/users'
+  const path: string = '/users'
   const redirect = useRedirect()
   const onSuccess = () => {
     redirect(path)
@@ -25,6 +25,7 @@ const UserCreate = (): React.ReactElement => {
 
   return (
     <Create
+      resource='users'
       transform={transform}
       mutationOptions={{
         onSuccess
@@ -35,7 +36,7 @@ const UserCreate = (): React.ReactElement => {
 }
 
 const UserEdit = (): React.ReactElement => {
-  const path: string = '/reference-data/users'
+  const path: string = '/users'
   const redirect = useRedirect()
   const onSuccess = () => {
     redirect(path)
@@ -43,6 +44,7 @@ const UserEdit = (): React.ReactElement => {
 
   return (
     <Edit
+      resource='users'
       transform={transform}
       mutationOptions={{
         onSuccess

@@ -29,7 +29,7 @@ const PlatformForm = (): React.ReactElement => {
 const PlatformCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Create redirect={`/reference-data/${cName}`}>
+    <Create redirect={`/${cName}`} resource='platforms'>
       <PlatformForm />
     </Create>
   )
@@ -38,7 +38,7 @@ const PlatformCreate = ({ name }: PropType): React.ReactElement => {
 const PlatformEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Edit redirect={`/reference-data/${cName}`}>
+    <Edit redirect={`/${cName}`} resource='platforms'>
       <PlatformForm />
     </Edit>
   )

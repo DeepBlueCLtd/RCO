@@ -19,7 +19,7 @@ export default function ReferenceDataList({
   const cName: string = name
   const ListActions = () => (
     <TopToolbar>
-      <CreateButton to={`/reference-data/${cName}/create`} />
+      <CreateButton to={'create'} />
     </TopToolbar>
   )
 
@@ -29,11 +29,11 @@ export default function ReferenceDataList({
     name === 'protectiveMarkingAuthority'
 
   return (
-    <List actions={<ListActions />}>
+    <List actions={<ListActions />} resource={cName}>
       <Datagrid
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
-          return `/reference-data/${cName}/${cID}`
+          return `/${cName}/${cID}`
         }}>
         <FunctionField
           style={{ cursor: 'pointer' }}
