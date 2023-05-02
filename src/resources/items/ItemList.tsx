@@ -7,13 +7,13 @@ import {
   type ListProps,
   SearchInput,
   SelectColumnsButton,
-  SelectInput,
   TextField,
   TextInput,
   TopToolbar,
   BulkDeleteButton,
   useListContext,
-  useRefresh
+  useRefresh,
+  AutocompleteInput
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -25,6 +25,7 @@ import { Button, Modal } from '@mui/material'
 import { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
+import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
@@ -50,7 +51,11 @@ const filters = [
     reference={constants.R_USERS}
   />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
-  <SelectInput source='mediaType' key='mediaType' choices={mediaTypeOptions} />,
+  <AutocompleteInput
+    source='mediaType'
+    key='mediaType'
+    choices={mediaTypeOptions}
+  />,
   <DateTimeInput source='start' key='start' />,
   <DateTimeInput source='end' key='end' />,
   <SourceInput
@@ -72,7 +77,8 @@ const filters = [
     reference={constants.R_BATCHES}
     optionField='batchNumber'
   />,
-  <TextInput key='remarks' source='remarks' />
+  <TextInput key='remarks' source='remarks' />,
+  <DateFilter source='createdAt' label='Created At' key='createdAt' />
 ]
 
 const ItemActions = () => {
@@ -133,6 +139,7 @@ export default function ItemList(
       resource='items'
       filters={filters}
       {...props}>
+      <ResetDateFilter source='createdAt' />
       <DatagridConfigurable rowClick='show' omit={omitColumns}>
         <TextField source='item_number' label='Reference' />
         <TextField source='id' />
@@ -142,6 +149,12 @@ export default function ItemList(
         <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
+        <SourceField
+          link='show'
+          source='batchId'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
         <TextField source='remarks' />
       </DatagridConfigurable>
     </List>

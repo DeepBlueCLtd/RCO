@@ -2,13 +2,13 @@ import { type ReactElement } from 'react'
 import {
   ReferenceInput,
   type ReferenceInputProps,
-  SelectInput,
-  type SelectInputProps
+  AutocompleteInput,
+  type AutocompleteInputProps
 } from 'react-admin'
 
 interface Props<T> {
   optionField?: keyof T
-  inputProps?: SelectInputProps
+  inputProps?: AutocompleteInputProps
 }
 
 export default function SourceInput<T extends Record<string, any>>(
@@ -20,7 +20,7 @@ export default function SourceInput<T extends Record<string, any>>(
 
   return (
     <ReferenceInput {...rest}>
-      <SelectInput
+      <AutocompleteInput
         sx={{ width: '100%' }}
         optionText={optionText}
         {...inputProps}

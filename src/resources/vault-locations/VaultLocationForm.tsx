@@ -5,28 +5,23 @@ import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
-  name: yup.string().required('Name is a required field'),
-  remarks: yup.string()
+  name: yup.string().required()
 })
 
-export default function ProjectForm(props: FormProps): React.ReactElement {
+export default function VaultLocationForm(
+  props: FormProps
+): React.ReactElement {
+  const { isEdit } = props
   const defaultValues = {
-    name: '',
-    remarks: ''
+    name: ''
   }
 
   return (
     <SimpleForm
-      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      toolbar={<EditToolBar isEdit={isEdit} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <TextInput
-        source='remarks'
-        multiline
-        variant='outlined'
-        sx={{ width: '100%' }}
-      />
     </SimpleForm>
   )
 }

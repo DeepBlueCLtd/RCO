@@ -9,6 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
+import { AllInbox } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 
@@ -32,6 +33,7 @@ import * as constants from './constants'
 import platforms from './resources/platforms'
 import loans from './resources/loans'
 import loanItems from './resources/loan-items'
+import vaultlocations from './resources/vault-locations'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -130,6 +132,13 @@ function App(): React.ReactElement {
                     name={constants.R_LOAN_ITEMS}
                     {...loanItems}
                   />,
+                  <Resource
+                    key={constants.R_VAULT_LOCATION}
+                    name={constants.R_VAULT_LOCATION}
+                    icon={AllInbox}
+                    options={{ label: 'Vault Locations' }}
+                    {...vaultlocations}
+                  />,
                   <CustomRoutes key='routes'>
                     <Route path='/reference-data' element={<ReferenceData />}>
                       <Route path='protectiveMarking'>
@@ -140,9 +149,6 @@ function App(): React.ReactElement {
                       </Route>
                       <Route path='department'>
                         {...createRoutes('department')}
-                      </Route>
-                      <Route path='vaultLocation'>
-                        {...createRoutes('vaultLocation')}
                       </Route>
                       <Route path='platformOriginator'>
                         {...createRoutes('platformOriginator')}

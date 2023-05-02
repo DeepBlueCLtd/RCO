@@ -18,12 +18,12 @@ const loadDefaultData = async (userId?: number) => {
 
   const platforms = generatePlatform(10)
   const projects = generateProject(10, user)
-  const organisation = getReferenceData('Organisation')
+  const organisation = getActiveReferenceData('Organisation')
   const department = getActiveReferenceData('Department', 5)
   const vaultLocation = getReferenceData('Vault Location')
   const mediaType = getReferenceData('Media')
   const protectiveMarking = getReferenceData('Protective Marking')
-  const protectiveMarkingAuthority = getReferenceData(
+  const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
   )
   const platformOriginator = getReferenceData('Platform Originator')
@@ -61,7 +61,6 @@ const loadDefaultData = async (userId?: number) => {
           batches[index],
           vaultLocation.length,
           protectiveMarking.length,
-          project,
           user
         )
       )

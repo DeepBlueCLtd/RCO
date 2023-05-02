@@ -1,4 +1,5 @@
-import React from 'react'
+import { Chip } from '@mui/material'
+import React, { useEffect } from 'react'
 import {
   List,
   TextField,
@@ -7,7 +8,11 @@ import {
   SelectColumnsButton,
   CreateButton,
   SearchInput,
-  FilterButton
+  FilterButton,
+  useListContext,
+  useGetList,
+  useGetMany,
+  DateField
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -36,6 +41,34 @@ const omitColumns: string[] = [
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
+interface PlatformFilterType {
+  label: string
+  reference: string
+  source: string
+}
+
+const PlatformFilter = (props: PlatformFilterType) => {
+  const { data: batches } = useGetList('batches')
+  const platformIds = batches?.map((batch) => batch.platform) ?? []
+  const { label, reference } = props
+  const { setFilters, displayedFilters } = useListContext()
+  const { data } = useGetMany(reference, { ids: platformIds })
+  useEffect(() => {
+    if (data != null) {
+      const filteredData = data.filter((d) => d.active === true)
+      setFilters(
+        {
+          ...displayedFilters,
+          platform: filteredData.map((d) => d.id)
+        },
+        displayedFilters
+      )
+    }
+  }, [data])
+
+  return <Chip sx={{ marginBottom: '9px' }} label={label} />
+}
+
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
   <CreatedByMeFilter
@@ -57,16 +90,16 @@ const filters = [
     dataPickerProps={{ views: ['year'] }}
   />,
   <SourceInput
-    reference={constants.R_VAULT_LOCATION}
-    key='vaultLocation'
-    sort={sort()}
-    source='vaultLocation'
-  />,
-  <SourceInput
-    source='platform'
-    key='platforms'
-    sort={sort()}
     reference={constants.R_PLATFORMS}
+    key='platform'
+    sort={sort()}
+    source='platform_eq'
+  />,
+  <PlatformFilter
+    reference={constants.R_PLATFORMS}
+    label='Active Platforms'
+    key='activePlatforms'
+    source='platform'
   />,
   <SourceInput
     variant='outlined'
@@ -89,6 +122,9 @@ export default function BatchList(): React.ReactElement {
       <ResetDateFilter source='createdAt' />
       <DatagridConfigurable omit={omitColumns} rowClick='show'>
         <TextField source='id' />
+        <DateField source='startDate' />
+        <DateField source='endDate' />
+        <TextField source='projectCode' />
         <TextField label='Reference' source='batchNumber' />
         <SourceField source='department' label='Department' />
         <SourceField

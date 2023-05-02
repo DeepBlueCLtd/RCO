@@ -7,11 +7,12 @@ import {
   TopToolbar,
   FilterButton,
   SelectColumnsButton,
-  DeleteButton
+  DeleteButton,
+  DateField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
-import { ICON_ITEM } from '../../constants'
+import { ICON_ITEM, ICON_DETAILS } from '../../constants'
 import ItemList from '../items/ItemList'
 import FlexBox from '../../components/FlexBox'
 import FieldWithLabel, {
@@ -65,7 +66,7 @@ export default function BatchShow(): React.ReactElement {
   return (
     <Show actions={<ShowActions />}>
       <TabbedShowLayout>
-        <TabbedShowLayout.Tab label='Details'>
+        <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
           <FlexBox>
             <StyledFieldWithLabel label='Id' source='id' />
             <StyledFieldWithLabel
@@ -115,6 +116,19 @@ export default function BatchShow(): React.ReactElement {
             <StyledFieldWithLabel label='Receipt notes' source='receiptNotes' />
           </FlexBox>
           <FlexBox>
+            <StyledFieldWithLabel
+              component={DateField}
+              label='Start Date'
+              source='startDate'
+            />
+            <StyledFieldWithLabel
+              component={DateField}
+              label='End Date'
+              source='endDate'
+            />
+          </FlexBox>
+          <FlexBox>
+            <StyledFieldWithLabel label='Project Code' source='projectCode' />
             <StyledFieldWithLabel label='Created' source='createdAt' />
           </FlexBox>
         </TabbedShowLayout.Tab>
