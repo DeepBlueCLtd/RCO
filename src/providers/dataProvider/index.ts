@@ -79,8 +79,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
     loanItems: async (
       items: Array<Item['id']>,
       recipient: User['id'],
-      loan: Loan['id'],
-      by?: User['id']
+      loan: Loan['id']
     ) => {
       const promisees = items.map(async (item) => {
         const data: Partial<LoanItem> = {
@@ -95,7 +94,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       })
       await Promise.all(promisees)
     },
-    returnItems: async (items: Array<Item['id']>, by?: User['id']) => {
+    returnItems: async (items: Array<Item['id']>) => {
       const data: Partial<LoanItem> = {
         returnedDate: DateTime.now().toFormat(constants.DATE_FORMAT)
       }
