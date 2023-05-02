@@ -7,13 +7,13 @@ import {
   type ListProps,
   SearchInput,
   SelectColumnsButton,
-  SelectInput,
   TextField,
   TextInput,
   TopToolbar,
   BulkDeleteButton,
   useListContext,
-  useRefresh
+  useRefresh,
+  AutocompleteInput
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -51,7 +51,11 @@ const filters = [
     reference={constants.R_USERS}
   />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
-  <SelectInput source='mediaType' key='mediaType' choices={mediaTypeOptions} />,
+  <AutocompleteInput
+    source='mediaType'
+    key='mediaType'
+    choices={mediaTypeOptions}
+  />,
   <DateTimeInput source='start' key='start' />,
   <DateTimeInput source='end' key='end' />,
   <SourceInput
@@ -146,14 +150,10 @@ export default function ItemList(
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <SourceField
-          link={(record, reference) => {
-            const batchId: number = record.batchId
-            const cReference: string = reference
-            return `/${cReference}/${batchId}/show`
-          }}
+          link='show'
           source='batchId'
-          sourceField='batchNumber'
           reference={constants.R_BATCHES}
+          sourceField='batchNumber'
         />
         <TextField source='remarks' />
       </DatagridConfigurable>

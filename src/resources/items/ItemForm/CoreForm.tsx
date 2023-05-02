@@ -1,7 +1,7 @@
 import {
+  AutocompleteInput,
   DateTimeInput,
   ReferenceInput,
-  SelectInput,
   TextField,
   TextInput
 } from 'react-admin'
@@ -46,7 +46,7 @@ const CoreForm = (props: Props): React.ReactElement => {
 
   return (
     <>
-      <SelectInput
+      <AutocompleteInput
         disabled={disabled}
         source='mediaType'
         choices={mediaTypeOptions}
@@ -70,12 +70,20 @@ const CoreForm = (props: Props): React.ReactElement => {
       </FlexBox>
       <FlexBox>
         <ReferenceInput source='vaultLocation' reference='vaultLocation'>
-          <SelectInput disabled={disabled} optionText={optionsText} sx={sx} />
+          <AutocompleteInput
+            disabled={disabled}
+            optionText={optionsText}
+            sx={sx}
+          />
         </ReferenceInput>
         <ReferenceInput
           source='protectiveMarking'
           reference='protectiveMarking'>
-          <SelectInput disabled={disabled} optionText={optionsText} sx={sx} />
+          <AutocompleteInput
+            disabled={disabled}
+            optionText={optionsText}
+            sx={sx}
+          />
         </ReferenceInput>
       </FlexBox>
       <TextInput multiline disabled={disabled} source='remarks' />
