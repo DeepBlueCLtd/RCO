@@ -10,6 +10,8 @@ import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'
 import { Typography } from '@mui/material'
+import SourceField from '../../../components/SourceField'
+import { R_BATCHES } from '../../../constants'
 
 const sx = { width: '100%' }
 
@@ -84,12 +86,29 @@ const CoreForm = (props: Props): React.ReactElement => {
           />
         </ReferenceInput>
       </FlexBox>
-      <TextInput multiline disabled={disabled} source='remarks' sx={sx} />
-      {(disabled ?? false) && (
-        <ValueField label='Created'>
-          <TextField source='createdAt' />
-        </ValueField>
-      )}
+      <TextInput multiline disabled={disabled} source='remarks' />
+      <FlexBox style={{ justifyContent: 'space-between' }}>
+        {(disabled ?? false) && (
+          <>
+            <ValueField label='Created'>
+              <TextField source='createdAt' />
+            </ValueField>
+            <div>
+              {'Batch: '}
+              <SourceField
+                link='show'
+                source='batchId'
+                reference={R_BATCHES}
+                sourceField='batchNumber'
+                textProps={{
+                  style: { color: 'blue' },
+                  variant: 'subtitle1'
+                }}
+              />
+            </div>
+          </>
+        )}
+      </FlexBox>
     </>
   )
 }
