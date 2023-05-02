@@ -29,9 +29,11 @@ jobs:
         continue-on-error: true
         run: yarn e2e
             
-      - name: Show warning if tests failed
+      - name: Set status
         if: ${{ failure() }}
-        run: echo "Warning, Some tests failed"
+        uses: badgrco/github-actions-set-status@v1.0.0
+        with:
+          warning_if_fail: true
 
       - uses: actions/upload-artifact@v3
         if: always()
