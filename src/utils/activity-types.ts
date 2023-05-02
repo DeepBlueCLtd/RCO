@@ -9,51 +9,51 @@ const ActivityTypes: ActivityType[] = [
   },
   {
     name: 'create_user',
-    label: 'user create'
+    label: 'User created'
   },
   {
     name: 'delete_user',
-    label: 'user delete'
+    label: 'User deleted'
   },
   {
     name: 'edit_user',
-    label: 'user edit'
+    label: 'User edited'
   },
   {
     name: 'create_project',
-    label: 'project create'
+    label: 'Project created'
   },
   {
     name: 'delete_project',
-    label: 'project delete'
+    label: 'Project deleted'
   },
   {
     name: 'edit_project',
-    label: 'project edit'
+    label: 'Project edited'
   },
   {
     name: 'create_batch',
-    label: 'batch create'
+    label: 'Batch created'
   },
   {
     name: 'delete_batch',
-    label: 'batch delete'
+    label: 'Batch deleted'
   },
   {
     name: 'edit_batch',
-    label: 'batch edit'
+    label: 'Batch edited'
   },
   {
     name: 'create_item',
-    label: 'eitem create'
+    label: 'Item created'
   },
   {
     name: 'delete_item',
-    label: 'item delete'
+    label: 'Item deleted'
   },
   {
     name: 'edit_item',
-    label: 'item edit'
+    label: 'Item edited'
   }
 ]
 
