@@ -1,7 +1,29 @@
 import { type DataProvider } from 'react-admin'
 import { getUser } from '../providers/authProvider'
 import * as constants from '../constants'
-import { getActivityTypeLabel , type AuditType } from './activity-types'
+import { getActivityTypeLabel } from './activity-types'
+
+export enum AuditType {
+  LOGIN = 'login',
+  LOGOUT = 'logout',
+
+  CREATE_USER = 'create_user',
+  DELETE_USER = 'delete_user',
+  EDIT_USER = 'edit_user',
+
+  CREATE_PROJECT = 'create_project',
+  DELETE_PROJECT = 'delete_project',
+  EDIT_PROJECT = 'edit_project',
+
+  CREATE_BATCH = 'create_batch',
+  DELETE_BATCH = 'delete_batch',
+  EDIT_BATCH = 'edit_batch',
+
+  CREATE_ITEM = 'create_item',
+  DELETE_ITEM = 'delete_item',
+  EDIT_ITEM = 'edit_item'
+}
+
 export const trackEvent =
   (dataProvider: DataProvider) =>
   async (

@@ -12,7 +12,7 @@ import {
   AutocompleteInput
 } from 'react-admin'
 import * as constants from '../../constants'
-import { AuditType } from '../../utils/activity-types'
+import ActivityTypes from '../../utils/activity-types'
 
 interface Props {
   label: string
@@ -29,7 +29,7 @@ const SecurityRelatedFilter = ({ label, source }: Props) => {
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
 
-const choices = Object.values(AuditType).map((f) => ({ name: f, id: f }))
+const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
 const filters = [
   <DateTimeInput
     key='start'
@@ -39,9 +39,10 @@ const filters = [
   />,
   <DateTimeInput key='end' source='dateTime_lte' label='Before' />,
   <AutocompleteInput
-    source='activityType'
+    source='label'
     choices={choices}
-    key='activityType'
+    key='Activity Type'
+    label='Activity Type'
   />,
   <NumberInput source='user_id' key='user' label='User' min={1} max={2} />,
   <SecurityRelatedFilter

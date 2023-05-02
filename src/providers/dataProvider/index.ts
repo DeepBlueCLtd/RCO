@@ -8,8 +8,7 @@ import {
   type UpdateParams
 } from 'react-admin'
 import * as constants from '../../constants'
-import { trackEvent } from '../../utils/audit'
-import { AuditType } from '../../utils/activity-types'
+import { trackEvent, AuditType } from '../../utils/audit'
 import { DateTime } from 'luxon'
 import '../../types.d'
 import { isNumber } from '../../utils/number'
