@@ -1,6 +1,11 @@
-import { type UserIdentity, type AuthProvider, type DataProvider } from 'react-admin'
+import {
+  type UserIdentity,
+  type AuthProvider,
+  type DataProvider
+} from 'react-admin'
 import * as constants from '../../constants'
-import { AuditType, trackEvent } from '../../utils/audit'
+import { trackEvent } from '../../utils/audit'
+import { AuditType } from '../../utils/activity-types'
 import {
   decryptData,
   decryptPassword,
