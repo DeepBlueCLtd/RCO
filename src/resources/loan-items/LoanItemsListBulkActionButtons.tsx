@@ -110,7 +110,7 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
         mutationOptions={{ onSuccess }}
         loanFormProps={{
           defaultValues: { holder: Number(value) },
-          hideFields: ['holder']
+          hideFields: ['holder', 'loanedBy']
         }}
       />
     )
@@ -168,7 +168,7 @@ function LoanItemsReturn(props: LoanItemsModalProps) {
 
     const names: string = [...new Set(userNames)].join(', ')
 
-    return `Return ${items.length} items from: ${names}` 
+    return `Return ${items.length} items from: ${names}`
   }, [items, loanItems])
 
   const handleLoanReturn = async () => {

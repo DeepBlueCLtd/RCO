@@ -1,7 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DateTime } from 'luxon'
 import { useEffect, useMemo, useState } from 'react'
-import { DateInput, SimpleForm, TextInput, useDataProvider } from 'react-admin'
+import {
+  DateInput,
+  SimpleForm,
+  TextInput,
+  useDataProvider,
+  useGetIdentity
+} from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as yup from 'yup'
 import SourceInput from '../../components/SourceInput'
@@ -26,16 +32,18 @@ export default function LoanForm(props: LoanFormProps) {
   const [loanItems, setLoanItems] = useState<LoanItem[]>([])
   const dataProvider = useDataProvider()
   const { id } = useParams()
+  const { data } = useGetIdentity()
 
-  const defaultValues = {
+  const defaultValues: Partial<Loan> = {
     createdAt: DateTime.now().toFormat(constants.DATE_FORMAT),
+    loanedBy: data?.id as number,
     ...defaultFormValues
   }
 
   const state = useMemo(() => {
     if (loanItems.length === 0) return 'Returned'
 
-    return `Outstanding (${loanItems.length} items remaining)` 
+    return `Outstanding (${loanItems.length} items remaining)`
   }, [loanItems])
 
   const sx = { width: '100%' }
@@ -47,7 +55,9 @@ export default function LoanForm(props: LoanFormProps) {
         sort: { field: 'id', order: 'ASC' },
         pagination: { perPage: 1000, page: 1 }
       })
-      .then(({ data }) => { setLoanItems(data) })
+      .then(({ data }) => {
+        setLoanItems(data)
+      })
       .catch(console.log)
   }, [])
 
@@ -63,11 +73,13 @@ export default function LoanForm(props: LoanFormProps) {
           reference={constants.R_USERS}
         />
       )}
-      <SourceInput
-        inputProps={{ disabled: show }}
-        source='loanedBy'
-        reference={constants.R_USERS}
-      />
+      {!hideFields.includes('loanedBy') && (
+        <SourceInput
+          inputProps={{ disabled: show }}
+          source='loanedBy'
+          reference={constants.R_USERS}
+        />
+      )}
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
       {show !== undefined && (
         <>

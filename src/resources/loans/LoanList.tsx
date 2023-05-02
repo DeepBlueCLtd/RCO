@@ -30,7 +30,7 @@ const filters = [
 
 export default function LoanList() {
   return (
-    <List perPage={25} filters={filters}>
+    <List perPage={25} filters={filters} hasCreate={false}>
       <Datagrid rowClick='show'>
         <SourceField source='createdBy' reference={constants.R_USERS} />
         <SourceField source='holder' reference={constants.R_USERS} />

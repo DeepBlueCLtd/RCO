@@ -56,11 +56,6 @@ export default function LoanItemsList(props: Omit<ListProps, 'children'>) {
           sourceField='id'
           reference={constants.R_LOANS}
         />
-        <SourceField
-          source='receivedBy'
-          label='Received By'
-          reference={constants.R_USERS}
-        />
         <TextField source='remarks' />
       </Datagrid>
     </List>
