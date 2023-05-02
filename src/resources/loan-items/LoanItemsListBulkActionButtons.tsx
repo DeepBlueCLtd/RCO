@@ -136,7 +136,9 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
           <Button
             variant='contained'
             color='primary'
-            onClick={() => { setShowForm(true) }}>
+            onClick={() => {
+              setShowForm(true)
+            }}>
             Loan
           </Button>
           <Button variant='outlined' onClick={onClose}>
