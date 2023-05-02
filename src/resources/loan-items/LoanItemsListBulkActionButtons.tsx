@@ -9,10 +9,9 @@ import {
   MenuItem,
   type SelectChangeEvent
 } from '@mui/material'
-import { DateTime } from 'luxon'
 import { useEffect, useMemo, useState } from 'react'
 import {
-  BulkDeleteButton,
+  type DataProvider,
   useDataProvider,
   useListContext,
   useNotify,
@@ -20,6 +19,7 @@ import {
 } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
+import { LoanCreate } from '../loans'
 
 type ButtonType = '' | 'loan' | 'loanReturn'
 
@@ -28,7 +28,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 800,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -74,8 +74,9 @@ const useUser = () => {
 function LoanItemsToUser(props: LoanItemsModalProps) {
   const { items, onClose } = props
 
-  const dataProvider = useDataProvider()
+  const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const { users } = useUser()
+  const [showForm, setShowForm] = useState(false)
   const [value, setValue] = useState<number | string>('')
   const notify = useNotify()
   const refresh = useRefresh()
@@ -90,45 +91,60 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
     setValue(event.target.value)
   }
 
-  const handleLoan = async () => {
+  const onSuccess = async (response: LoanItem) => {
     try {
-      const data: Partial<LoanItem> = { receivedBy: Number(value) }
-      await dataProvider.updateMany<LoanItem>(constants.R_LOAN_ITEMS, {
-        ids: items,
-        data
-      })
+      if (items.length !== 0) {
+        await dataProvider.loanItems(items, Number(value), response.id)
+      }
       refresh()
-      notify(label, { type: 'success' })
+      notify('Loan created')
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })
     }
   }
 
+  if (showForm) {
+    return (
+      <LoanCreate
+        mutationOptions={{ onSuccess }}
+        loanFormProps={{
+          defaultValues: { holder: Number(value) },
+          hideFields: ['holder']
+        }}
+      />
+    )
+  }
+
   return (
-    <Box>
-      <Typography variant='h6'>{label}:</Typography>
-      <FlexBox marginTop={3}>
-        <InputLabel>Name:</InputLabel>
-        <FormControl sx={{ flex: 1 }} margin='none'>
-          <Select value={String(value)} label='Name' onChange={handleChange}>
-            {users.map((user: User) => (
-              <MenuItem key={user.id} value={user.id}>
-                {user.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </FlexBox>
-      <FlexBox marginTop={4}>
-        <Button variant='contained' color='primary' onClick={handleLoan as any}>
-          Loan
-        </Button>
-        <Button variant='outlined' onClick={onClose}>
-          Cancel
-        </Button>
-      </FlexBox>
-    </Box>
+    <>
+      <Box>
+        <Typography variant='h6'>{label}:</Typography>
+        <FlexBox marginTop={3}>
+          <InputLabel>Name:</InputLabel>
+          <FormControl sx={{ flex: 1 }} margin='none'>
+            <Select value={String(value)} label='Name' onChange={handleChange}>
+              {users.map((user: User) => (
+                <MenuItem key={user.id} value={user.id}>
+                  {user.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </FlexBox>
+        <FlexBox marginTop={4}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => { setShowForm(true) }}>
+            Loan
+          </Button>
+          <Button variant='outlined' onClick={onClose}>
+            Cancel
+          </Button>
+        </FlexBox>
+      </Box>
+    </>
   )
 }
 
@@ -136,7 +152,7 @@ function LoanItemsReturn(props: LoanItemsModalProps) {
   const { items, onClose } = props
 
   const { usersById } = useUser()
-  const dataProvider = useDataProvider()
+  const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const notify = useNotify()
   const refresh = useRefresh()
   const [loanItems, setLoanItems] = useState<LoanItem[]>([])
@@ -155,13 +171,8 @@ function LoanItemsReturn(props: LoanItemsModalProps) {
 
   const handleLoanReturn = async () => {
     try {
-      const data: Partial<LoanItem> = {
-        returnedDate: DateTime.now().toFormat(constants.DATE_FORMAT)
-      }
-      await dataProvider.updateMany<LoanItem>(constants.R_LOAN_ITEMS, {
-        ids: items,
-        data
-      })
+      await dataProvider.returnItems(items)
+
       refresh()
       notify(label, { type: 'success' })
       onClose()
@@ -197,7 +208,12 @@ function LoanItemsReturn(props: LoanItemsModalProps) {
   )
 }
 
-export default function LoanItemsListBulkActionButtons() {
+interface Props {
+  buttons?: Array<'loan' | 'loanReturn'>
+}
+
+export default function LoanItemsListBulkActionButtons(props: Props) {
+  const { buttons = ['loan', 'loanReturn'] } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
   const { selectedIds } = useListContext()
 
@@ -209,21 +225,24 @@ export default function LoanItemsListBulkActionButtons() {
 
   return (
     <FlexBox>
-      <Button
-        variant='outlined'
-        size='small'
-        color='primary'
-        onClick={handleClick('loan')}>
-        Loan
-      </Button>
-      <Button
-        variant='outlined'
-        size='small'
-        color='primary'
-        onClick={handleClick('loanReturn')}>
-        Loan return
-      </Button>
-      <BulkDeleteButton mutationMode='pessimistic' />
+      {buttons.includes('loan') && (
+        <Button
+          variant='outlined'
+          size='small'
+          color='primary'
+          onClick={handleClick('loan')}>
+          Loan
+        </Button>
+      )}
+      {buttons.includes('loanReturn') && (
+        <Button
+          variant='outlined'
+          size='small'
+          color='primary'
+          onClick={handleClick('loanReturn')}>
+          Loan return
+        </Button>
+      )}
       <Modal open={Boolean(buttonType)} onClose={handleClick('')}>
         <Box sx={style}>
           {buttonType === 'loan' && (

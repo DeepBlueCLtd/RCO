@@ -1,3 +1,13 @@
+interface CustomDataProvider {
+  loanItems: (
+    items: Array<Item['id']>,
+    recipient: User['id'],
+    loan: Loan['id'],
+    by?: User['id']
+  ) => Promise<any>
+  returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
+}
+
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 interface User {

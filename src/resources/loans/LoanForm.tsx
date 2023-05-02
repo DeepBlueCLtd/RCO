@@ -1,6 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DateTime } from 'luxon'
-import { DateInput, SimpleForm, TextInput } from 'react-admin'
+import { useEffect, useMemo, useState } from 'react'
+import { DateInput, SimpleForm, TextInput, useDataProvider } from 'react-admin'
+import { useParams } from 'react-router-dom'
 import * as yup from 'yup'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -12,32 +14,55 @@ const schema = yup.object({
   remarks: yup.string().optional().nullable()
 })
 
-interface Props {
+export interface LoanFormProps {
   show?: boolean
+  defaultValues?: Partial<Loan>
+  hideFields?: Array<keyof Loan>
 }
 
-export default function LoanForm(props: Props) {
-  const { show } = props
+export default function LoanForm(props: LoanFormProps) {
+  const { show, defaultValues: defaultFormValues, hideFields = [] } = props
+
+  const [loanItems, setLoanItems] = useState<LoanItem[]>([])
+  const dataProvider = useDataProvider()
+  const { id } = useParams()
 
   const defaultValues = {
-    createdAt: DateTime.now().toFormat(constants.DATE_FORMAT)
+    createdAt: DateTime.now().toFormat(constants.DATE_FORMAT),
+    ...defaultFormValues
   }
 
-  // to do
-  const state = 'Outstanding (4 items remaining)'
+  const state = useMemo(() => {
+    if (loanItems.length === 0) return 'Returned'
+
+    return `Outstanding (${loanItems.length} items remaining)` 
+  }, [loanItems])
 
   const sx = { width: '100%' }
+
+  useEffect(() => {
+    dataProvider
+      .getList<LoanItem>(constants.R_LOAN_ITEMS, {
+        filter: { loan: id, returnedDate: undefined },
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { perPage: 1000, page: 1 }
+      })
+      .then(({ data }) => { setLoanItems(data) })
+      .catch(console.log)
+  }, [])
 
   return (
     <SimpleForm
       toolbar={show !== undefined ? false : undefined}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
-      <SourceInput
-        inputProps={{ disabled: show }}
-        source='holder'
-        reference={constants.R_USERS}
-      />
+      {!hideFields.includes('holder') && (
+        <SourceInput
+          inputProps={{ disabled: show }}
+          source='holder'
+          reference={constants.R_USERS}
+        />
+      )}
       <SourceInput
         inputProps={{ disabled: show }}
         source='loanedBy'

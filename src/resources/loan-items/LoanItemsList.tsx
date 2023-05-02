@@ -5,7 +5,8 @@ import {
   TextField,
   SearchInput,
   DateInput,
-  TextInput
+  TextInput,
+  type ListProps
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -27,17 +28,20 @@ const filters = [
   <TextInput key='remarks' source='remarks' />
 ]
 
-export default function LoanItemsList() {
+export default function LoanItemsList(props: Omit<ListProps, 'children'>) {
   return (
     <List
       perPage={25}
       empty={false}
       filters={filters}
       resource={constants.R_LOAN_ITEMS}
-      actions={<LoanItemListActions />}>
+      actions={<LoanItemListActions />}
+      {...props}>
       <Datagrid
         rowClick='show'
-        bulkActionButtons={<LoanItemsListBulkActionButtons />}>
+        bulkActionButtons={
+          <LoanItemsListBulkActionButtons buttons={['loanReturn']} />
+        }>
         <DateField source='createdAt' label='Created At' />
         <DateField source='returnedDate' label='Returned Date' />
         <SourceField
@@ -46,7 +50,12 @@ export default function LoanItemsList() {
           sourceField='id'
           reference={constants.R_ITEMS}
         />
-        <SourceField source='id' label='Loan' reference={constants.R_LOANS} />
+        <SourceField
+          source='loan'
+          label='Loan'
+          sourceField='id'
+          reference={constants.R_LOANS}
+        />
         <SourceField
           source='receivedBy'
           label='Received By'

@@ -26,6 +26,7 @@ import { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
+import LoanItemsListBulkActionButtons from '../loan-items/LoanItemsListBulkActionButtons'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
@@ -117,6 +118,7 @@ export const BulkActions = () => {
           Change Location
         </Button>
       </FlexBox>
+      <LoanItemsListBulkActionButtons buttons={['loan']} />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}

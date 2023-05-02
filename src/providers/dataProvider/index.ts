@@ -74,6 +74,39 @@ const withCreatedBy = (record: CreateResult<Item | Batch | Project>) => {
   return record
 }
 
+const customMethods = (provider: DataProvider): CustomDataProvider => {
+  return {
+    loanItems: async (
+      items: Array<Item['id']>,
+      recipient: User['id'],
+      loan: Loan['id'],
+      by?: User['id']
+    ) => {
+      const promisees = items.map(async (item) => {
+        const data: Partial<LoanItem> = {
+          receivedBy: recipient,
+          loan,
+          item,
+          createdAt: nowDate()
+        }
+        await provider.create<LoanItem>(constants.R_LOAN_ITEMS, {
+          data
+        })
+      })
+      await Promise.all(promisees)
+    },
+    returnItems: async (items: Array<Item['id']>, by?: User['id']) => {
+      const data: Partial<LoanItem> = {
+        returnedDate: DateTime.now().toFormat(constants.DATE_FORMAT)
+      }
+      await provider.updateMany<LoanItem>(constants.R_LOAN_ITEMS, {
+        ids: items,
+        data
+      })
+    }
+  }
+}
+
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<DataProvider<string>> => {
@@ -87,7 +120,7 @@ export const getDataProvider = async (
     loggingEnabled
   })
 
-  const providerWithCustomMethods = { ...provider }
+  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
   const audit = trackEvent(providerWithCustomMethods)
 
   return withLifecycleCallbacks(providerWithCustomMethods, [

@@ -1,14 +1,16 @@
 import React from 'react'
-import { Create, Edit } from 'react-admin'
-import LoanForm from './LoanForm'
+import { Create, type CreateProps, Edit } from 'react-admin'
+import LoanForm, { type LoanFormProps } from './LoanForm'
+import * as constants from '../../constants'
 
 const LoanList = React.lazy(async () => await import('./LoanList'))
 const LoanShow = React.lazy(async () => await import('./LoanShow'))
 
-function LoanCreate(): React.ReactElement {
+type LoanCreateProps = CreateProps & { loanFormProps?: LoanFormProps }
+export function LoanCreate(props: LoanCreateProps): React.ReactElement {
   return (
-    <Create>
-      <LoanForm />
+    <Create resource={constants.R_LOANS} {...props}>
+      <LoanForm {...props.loanFormProps} />
     </Create>
   )
 }
