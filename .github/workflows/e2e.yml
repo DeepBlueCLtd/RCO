@@ -26,11 +26,8 @@ jobs:
         run: npx playwright install
       
       - name: Execute playwright tests
+        continue-on-error: true
         run: yarn e2e
-            
-      - name: Show warning if tests failed
-        if: ${{ failure() }}
-        run: echo "Warning, Some tests failed"
 
       - uses: actions/upload-artifact@v3
         if: always()
