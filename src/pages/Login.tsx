@@ -16,11 +16,11 @@ import {
 } from '@mui/material'
 import AppIcon from '../assets/rco_transparent.png'
 
-export default function Login() {
+export default function Login(): React.ReactElement {
   const login = useLogin()
   const notify = useNotify()
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const username = formData.get('username') as string

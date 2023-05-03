@@ -28,7 +28,7 @@ export interface LoanFormProps {
   hideFields?: Array<keyof Loan>
 }
 
-export default function LoanForm(props: LoanFormProps) {
+export default function LoanForm(props: LoanFormProps): React.ReactElement {
   const { show, defaultValues: defaultFormValues, hideFields = [] } = props
 
   const [loanItems, setLoanItems] = useState<LoanItem[]>([])
@@ -63,7 +63,7 @@ export default function LoanForm(props: LoanFormProps) {
       .catch(console.log)
   }, [])
 
-  const ToolBar = () => (
+  const ToolBar = (): React.ReactElement => (
     <Toolbar>
       <SaveButton label='Loan' />
     </Toolbar>

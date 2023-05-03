@@ -65,7 +65,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const handleLoggingPrefChange = (
     _: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
-  ) => {
+  ): void => {
     setLoggingPref(checked)
     localStorage.setItem(constants.LOGGING_ENABLED, checked.toString())
 

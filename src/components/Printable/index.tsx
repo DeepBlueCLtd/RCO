@@ -21,11 +21,11 @@ export default function Printable(
 ): React.ReactElement {
   const { children, ...rest } = props
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     rest?.onClose?.({}, 'escapeKeyDown')
   }
 
-  const handlePrint = () => {
+  const handlePrint = (): void => {
     window.print()
   }
 

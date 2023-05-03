@@ -47,7 +47,7 @@ const schema = yup.object({
   })
 })
 
-export default function ItemForm() {
+export default function ItemForm(): React.ReactElement {
   const [batch, setBatch] = useState<Batch>()
   const location = useLocation()
   const redirect = useRedirect()

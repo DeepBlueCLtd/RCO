@@ -52,7 +52,7 @@ const generateBatch = async (
   year: string,
   batchNumber: string | undefined,
   user: number
-) => {
+): Promise<void> => {
   const [startDate, endDate] = generateRandomDate()
   const obj: Batch = {
     id,

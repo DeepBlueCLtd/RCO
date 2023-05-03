@@ -4,7 +4,7 @@ import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 
 export default function VaultLocationList(): React.ReactElement {
-  const BulkActions = () => {
+  const BulkActions = (): React.ReactElement => {
     return (
       <>
         <FlexBox>

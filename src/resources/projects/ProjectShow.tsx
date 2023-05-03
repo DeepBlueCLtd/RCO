@@ -25,7 +25,7 @@ const ValueField = ({
   )
 }
 
-const Actions = () => {
+const Actions = (): React.ReactElement => {
   const { id = '' } = useParams()
   const projectId: string = id
 

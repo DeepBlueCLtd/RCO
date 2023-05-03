@@ -27,7 +27,7 @@ const filters = [
   <DateInput key='createdAt' source='createdAt' label='Crated At' />
 ]
 
-export default function LoanList() {
+export default function LoanList(): React.ReactElement {
   return (
     <List perPage={25} filters={filters} hasCreate={false}>
       <Datagrid rowClick='show'>

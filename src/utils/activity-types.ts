@@ -38,7 +38,7 @@ const ActivityTypes = Object.values(AuditType).map((val) => {
   }
 })
 
-export const getActivityTypeLabel = (type: string) => {
+export const getActivityTypeLabel = (type: string): string => {
   const foundType = ActivityTypes.find((t) => t.name === type)
   return foundType !== undefined ? foundType.label : type
 }

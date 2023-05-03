@@ -22,7 +22,7 @@ export default function UserList(props: Props): React.ReactElement {
   const cName: string = name
   const basePath: string = `/${cName}`
 
-  const ListActions = () => {
+  const ListActions = (): React.ReactElement => {
     return (
       <TopToolbar>
         <CreateButton to={`${basePath}/create`} />
@@ -30,7 +30,7 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
 
-  const CustomEditButton = () => {
+  const CustomEditButton = (): React.ReactElement => {
     const record = useRecordContext(props)
     const id: string = record.id.toString()
     return <EditButton to={`${basePath}/${id}`} />

@@ -178,7 +178,7 @@ const fields: FieldType[] = [
   }
 ]
 
-export function ItemAssetReport(props: Props) {
+export function ItemAssetReport(props: Props): React.ReactElement {
   const { filterValues } = useListContext()
   const [open, setOpen] = useState(false)
 

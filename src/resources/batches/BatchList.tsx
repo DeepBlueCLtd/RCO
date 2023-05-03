@@ -12,7 +12,8 @@ import {
   useListContext,
   useGetList,
   useGetMany,
-  DateField
+  DateField,
+  type SortPayload
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -21,7 +22,7 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 
-const ListActions = () => (
+const ListActions = (): React.ReactElement => (
   <TopToolbar>
     <CreateButton label='ADD NEW BATCH' />
     <FilterButton />
@@ -39,7 +40,7 @@ const omitColumns: string[] = [
   'createdAt'
 ]
 
-const sort = (field = 'name') => ({ field, order: 'ASC' })
+const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
 interface PlatformFilterType {
   label: string
@@ -47,7 +48,7 @@ interface PlatformFilterType {
   source: string
 }
 
-const PlatformFilter = (props: PlatformFilterType) => {
+const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
   const { data: batches } = useGetList('batches')
   const platformIds = batches?.map((batch) => batch.platform) ?? []
   const { label, reference } = props

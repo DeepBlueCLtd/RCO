@@ -6,6 +6,7 @@ import {
   TableRow
 } from '@mui/material'
 import { RecentCard } from './Recent'
+import React from 'react'
 
 type Data<T> = {
   [key in keyof T]: any
@@ -19,7 +20,7 @@ interface Props<T> {
   fields: Array<keyof Data<T>>
 }
 
-function RecentMock<T>(props: Props<T>) {
+function RecentMock<T>(props: Props<T>): React.ReactElement {
   const { data, fields, label } = props
 
   return (

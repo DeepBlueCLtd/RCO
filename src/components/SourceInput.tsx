@@ -16,7 +16,7 @@ export default function SourceInput<T extends Record<string, any>>(
 ): ReactElement {
   const { optionField = 'name', inputProps = {}, ...rest } = props
 
-  const optionText = (item: T) => item[optionField] as string
+  const optionText = (item: T): string => item[optionField] as string
 
   return (
     <ReferenceInput {...rest}>

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import ItemsReport from '../items/ItemsReport'
 import * as constants from '../../constants'
 
-export default function VaultReport() {
+export default function VaultReport(): React.ReactElement {
   const { id = '' } = useParams()
   const vaultLocation: string = id
 

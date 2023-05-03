@@ -19,11 +19,11 @@ export const VaultLocationEdit = (): React.ReactElement => {
   const EditActions = (): React.ReactElement => {
     const [open, setOpen] = useState(false)
 
-    const handleClose = () => {
+    const handleClose = (): void => {
       setOpen(false)
     }
 
-    const handleOpen = () => {
+    const handleOpen = (): void => {
       setOpen(true)
     }
 

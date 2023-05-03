@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import LoanItemsList from '../loan-items/LoanItemsList'
 import LoanForm from './LoanForm'
 
-export default function LoanShow() {
+export default function LoanShow(): React.ReactElement {
   const { id } = useParams()
 
   const loan: string | undefined = id

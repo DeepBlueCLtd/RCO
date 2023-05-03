@@ -30,7 +30,7 @@ function LoanItemsCreate(): React.ReactElement {
     type: 'list'
   })
 
-  const getLoan = async () => {
+  const getLoan = async (): Promise<void> => {
     try {
       const isValidNumber = isNumber(loan)
       if (isValidNumber) {

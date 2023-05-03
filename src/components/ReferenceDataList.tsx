@@ -17,13 +17,13 @@ export default function ReferenceDataList({
   name
 }: PropType): React.ReactElement {
   const cName: string = name
-  const ListActions = () => (
+  const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <CreateButton to={'create'} />
     </TopToolbar>
   )
 
-  const showActive = (name: string) =>
+  const showActive = (name: string): boolean =>
     name === 'department' ||
     name === 'organisation' ||
     name === 'protectiveMarkingAuthority'

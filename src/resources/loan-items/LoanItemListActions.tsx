@@ -1,6 +1,6 @@
 import { FilterButton, TopToolbar } from 'react-admin'
 
-const LoanItemListActions = () => {
+const LoanItemListActions = (): React.ReactElement => {
   return (
     <TopToolbar>
       <FilterButton />

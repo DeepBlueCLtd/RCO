@@ -30,7 +30,10 @@ interface LoanItemsModalProps {
   onClose: () => void
 }
 
-const useUser = () => {
+const useUser = (): {
+  users: User[]
+  usersById: Record<number, User>
+} => {
   const dataProvider = useDataProvider()
   const [users, setUser] = useState<User[]>([])
 
@@ -42,7 +45,7 @@ const useUser = () => {
     return result
   }, [users])
 
-  const getUser = async () => {
+  const getUser = async (): Promise<void> => {
     try {
       const { data } = await dataProvider.getList<User>(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
@@ -61,7 +64,7 @@ const useUser = () => {
   return { users, usersById }
 }
 
-function LoanItemsToUser(props: LoanItemsModalProps) {
+function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
 
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
@@ -70,7 +73,7 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
 
   const label: string = `Loan ${items.length} items to`
 
-  const onSuccess = async (response: Loan) => {
+  const onSuccess = async (response: Loan): Promise<void> => {
     try {
       if (items.length !== 0) {
         await dataProvider.loanItems(items, response.loanedBy, response.id)
@@ -96,7 +99,7 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
   )
 }
 
-function LoanItemsReturn(props: LoanItemsModalProps) {
+function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
 
   const { usersById } = useUser()
@@ -117,7 +120,7 @@ function LoanItemsReturn(props: LoanItemsModalProps) {
     return `Return ${items.length} items from: ${names}`
   }, [items, loanItems])
 
-  const handleLoanReturn = async () => {
+  const handleLoanReturn = async (): Promise<void> => {
     try {
       await dataProvider.returnItems(items)
 
@@ -160,7 +163,9 @@ interface Props {
   buttons?: Array<'loan' | 'loanReturn'>
 }
 
-export default function LoanItemsListBulkActionButtons(props: Props) {
+export default function LoanItemsListBulkActionButtons(
+  props: Props
+): React.ReactElement {
   const { buttons = ['loan', 'loanReturn'] } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
   const { selectedIds } = useListContext()

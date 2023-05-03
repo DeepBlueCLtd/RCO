@@ -79,7 +79,7 @@ function App(): React.ReactElement {
       setLoggingPref(false)
     }
 
-    const onStorageChange = (event: any) => {
+    const onStorageChange = (event: any): void => {
       if (event.key === constants.LOGGING_ENABLED) {
         setLoggingPref(event.newValue === 'true')
       }
@@ -243,7 +243,10 @@ const defaultElements = {
   list: ReferenceDataList
 }
 
-const createRoutes = (name: string, elements: Elements = defaultElements) => {
+const createRoutes = (
+  name: string,
+  elements: Elements = defaultElements
+): React.ReactNode[] => {
   const cName: string = name
 
   const {

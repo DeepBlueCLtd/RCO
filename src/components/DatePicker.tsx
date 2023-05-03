@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => {
   }
 })
 
-export default function DatePicker(props: Props) {
+export default function DatePicker(props: Props): React.ReactElement {
   const { label, dataPickerProps, format, ...rest } = props
   const [error, setError] = useState<string | null>('')
   const { field, fieldState } = useInput(rest)
@@ -58,7 +58,7 @@ export default function DatePicker(props: Props) {
   const handleOnchange = (
     value: Date | null,
     error: { validationError: null | string }
-  ) => {
+  ): void => {
     if (value === null) {
       field.onChange(null)
       return
@@ -71,7 +71,7 @@ export default function DatePicker(props: Props) {
     setError(error.validationError)
   }
 
-  const onError = (error: any) => {
+  const onError = (error: any): void => {
     setError(error)
   }
 
