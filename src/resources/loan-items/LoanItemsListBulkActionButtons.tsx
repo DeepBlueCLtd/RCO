@@ -76,7 +76,7 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
 
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const { users } = useUser()
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState<boolean>(false)
   const [value, setValue] = useState<number | string>('')
   const notify = useNotify()
   const refresh = useRefresh()
