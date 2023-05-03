@@ -17,6 +17,7 @@
   "plugins": ["react"],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "react/react-in-jsx-scope": "off",
     "quotes": [2, "single"],
     "comma-dangle": ["error", "never"],
