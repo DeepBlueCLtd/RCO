@@ -9,7 +9,7 @@ interface PropType {
 const RerferenceDataCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Create redirect={`/reference-data/${cName}`}>
+    <Create redirect={`/${cName}`} resource={cName}>
       <ReferenceDataForm />
     </Create>
   )
@@ -19,7 +19,7 @@ export const ReferenceDataEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
 
   return (
-    <Edit redirect={`/reference-data/${cName}`}>
+    <Edit redirect={`/${cName}`} resource={cName}>
       <ReferenceDataForm isEdit name={cName} />
     </Edit>
   )
