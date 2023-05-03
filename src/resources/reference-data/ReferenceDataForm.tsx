@@ -16,7 +16,7 @@ export default function ReferenceDataForm(
     name: ''
   }
 
-  const isActive = (name: string) =>
+  const isActive = (name: string): boolean =>
     name === 'department' ||
     name === 'organisation' ||
     name === 'protectiveMarkingAuthority'
