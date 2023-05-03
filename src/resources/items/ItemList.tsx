@@ -13,7 +13,8 @@ import {
   BulkDeleteButton,
   useListContext,
   useRefresh,
-  AutocompleteInput
+  AutocompleteInput,
+  type SortPayload
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -28,7 +29,7 @@ import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from '../loan-items/LoanItemsListBulkActionButtons'
 
-const sort = (field = 'name') => ({ field, order: 'ASC' })
+const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
 const omitColumns: string[] = [
   'id',
@@ -82,7 +83,7 @@ const filters = [
   <DateFilter source='createdAt' label='Created At' key='createdAt' />
 ]
 
-const ItemActions = () => {
+const ItemActions = (): React.ReactElement => {
   return (
     <TopToolbar>
       <ItemAssetReport storeKey='items-asset-report' />
@@ -97,15 +98,15 @@ export const BulkActions = (): React.ReactElement => {
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setOpen(false)
   }
 
-  const handleOpen = () => {
+  const handleOpen = (): void => {
     setOpen(true)
   }
 
-  const handleSuccess = () => {
+  const handleSuccess = (): void => {
     handleClose()
     refresh()
   }

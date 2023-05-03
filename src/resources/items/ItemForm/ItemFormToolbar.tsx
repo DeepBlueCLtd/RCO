@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 
-const ItemFormToolbar = () => {
+const ItemFormToolbar = (): React.ReactElement => {
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()

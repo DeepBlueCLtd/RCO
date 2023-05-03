@@ -1,12 +1,12 @@
 import { type ListProps, Count } from 'react-admin'
-import { type ReactElement } from 'react'
+import React, { type ReactElement } from 'react'
 import { Box, Typography } from '@mui/material'
 import * as constants from '../constants'
 import FlexBox from './FlexBox'
 
 type Props = PartialBy<ListProps, 'children'> & { id: number }
 
-export function SignatureDetails() {
+export function SignatureDetails(): React.ReactElement {
   return (
     <>
       <Box>

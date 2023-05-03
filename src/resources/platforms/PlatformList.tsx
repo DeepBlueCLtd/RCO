@@ -33,7 +33,10 @@ export default function PlatformList(props: Props): React.ReactElement {
     source: string
   }
 
-  const ActiveFilter = ({ label, source }: ActiveFilterType) => {
+  const ActiveFilter = ({
+    label,
+    source
+  }: ActiveFilterType): React.ReactElement => {
     const { setFilters, displayedFilters, filterValues } = useListContext()
     useEffect(() => {
       setFilters({ ...filterValues, [source]: true }, displayedFilters)

@@ -33,7 +33,7 @@ const filters = [
 ]
 
 export default function ProjectList(): React.ReactElement {
-  const ListActions = () => (
+  const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <FilterButton />
       <CreateButton />

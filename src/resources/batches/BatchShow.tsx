@@ -21,7 +21,7 @@ import FieldWithLabel, {
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
 
-const ShowActions = () => {
+const ShowActions = (): React.ReactElement => {
   return (
     <>
       <TopToolbar>
@@ -33,7 +33,7 @@ const ShowActions = () => {
   )
 }
 
-const ItemActions = () => {
+const ItemActions = (): React.ReactElement => {
   const { id = '' } = useParams()
   const batchId: string = id
 
@@ -50,7 +50,7 @@ const ItemActions = () => {
   )
 }
 
-function StyledFieldWithLabel(props: FieldWithLabelProps) {
+function StyledFieldWithLabel(props: FieldWithLabelProps): React.ReactElement {
   return (
     <FieldWithLabel
       labelPosition='top'

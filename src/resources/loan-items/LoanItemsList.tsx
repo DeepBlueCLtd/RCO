@@ -28,7 +28,9 @@ const filters = [
   <TextInput key='remarks' source='remarks' />
 ]
 
-export default function LoanItemsList(props: Omit<ListProps, 'children'>) {
+export default function LoanItemsList(
+  props: Omit<ListProps, 'children'>
+): React.ReactElement {
   return (
     <List
       perPage={25}

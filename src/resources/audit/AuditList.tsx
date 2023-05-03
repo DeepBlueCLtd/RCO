@@ -19,7 +19,10 @@ interface Props {
   source: string
 }
 
-const SecurityRelatedFilter = ({ label, source }: Props) => {
+const SecurityRelatedFilter = ({
+  label,
+  source
+}: Props): React.ReactElement => {
   const { setFilters, displayedFilters, filterValues } = useListContext()
 
   useEffect(() => {

@@ -46,7 +46,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     }
   }, [])
 
-  const optionsText = (value: Batch) => value.name
+  const optionsText = (value: Batch): string => value.name
 
   const sx = { width: '100%' }
 
@@ -57,7 +57,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     active?: boolean
   }
 
-  const ConditionalReferenceInput = <T extends ReferenceItem>(props: Props) => {
+  const ConditionalReferenceInput = <T extends ReferenceItem>(
+    props: Props
+  ): React.ReactElement | null => {
     const { source, reference, inputProps = {}, active } = props
     const filter = active !== undefined && active ? { active: true } : {}
     const { data, isLoading } = useGetList<T>(reference, {

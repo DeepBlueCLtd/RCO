@@ -24,7 +24,7 @@ interface Filter {
 }
 
 const getFilter = (value: Values, source: string, format: string): Filter[] => {
-  const minusFromNow = (unit: 'week' | 'month' | 'year') => {
+  const minusFromNow = (unit: 'week' | 'month' | 'year'): string => {
     const now = DateTime.now()
     return now.minus({ [unit]: 1 }).toFormat(format)
   }
@@ -74,7 +74,7 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
   }
 }
 
-const useResetFilter = (source: string) => {
+const useResetFilter = (source: string): void => {
   const { setFilters, displayedFilters } = useListContext()
   useEffect(() => {
     if (displayedFilters?.[source] === false) {
@@ -94,7 +94,7 @@ export default function DateFilter(props: Props): ReactElement {
 
   const { setFilters, filterValues, displayedFilters } = useListContext()
 
-  const onChange = (event: any) => {
+  const onChange = (event: any): void => {
     const value = event.target.value as Values
     if (typeof value !== 'undefined') {
       const filters = getFilter(value, source, format)

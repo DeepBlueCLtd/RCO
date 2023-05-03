@@ -35,7 +35,9 @@ interface FormState {
   vaultLocation: number
 }
 
-export default function ChangeLocation(props: ChangeLocationProps) {
+export default function ChangeLocation(
+  props: ChangeLocationProps
+): React.ReactElement {
   const { ids, onCancel, successCallback, errorCallback } = props
   const notify = useNotify()
 
@@ -51,7 +53,7 @@ export default function ChangeLocation(props: ChangeLocationProps) {
   const [vaultLocation, setVaultLocation] = useState<ReferenceItem[]>([])
   const dataProvider = useDataProvider()
 
-  async function onSubmit(values: FormState) {
+  async function onSubmit(values: FormState): Promise<void> {
     try {
       const { data } = await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids,

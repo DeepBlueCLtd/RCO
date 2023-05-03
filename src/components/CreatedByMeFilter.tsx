@@ -12,7 +12,9 @@ interface Props {
   source: string
 }
 
-export default function CreatedByMeFilter(props: Props) {
+export default function CreatedByMeFilter(
+  props: Props
+): React.ReactElement | null {
   const { source } = props
   const { data, isLoading } = useGetIdentity()
   const { setFilters, displayedFilters, filterValues } = useListContext()

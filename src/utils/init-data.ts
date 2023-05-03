@@ -13,7 +13,7 @@ import {
 import * as constants from '../constants'
 import localForage from 'localforage'
 
-const loadDefaultData = async (userId?: number) => {
+const loadDefaultData = async (userId?: number): Promise<void> => {
   const user = typeof userId === 'undefined' ? users[0].id : userId
 
   const platforms = generatePlatform(10)

@@ -50,7 +50,7 @@ interface Props<T> {
   fields: Array<Field<T>>
 }
 
-function Column<T>(props: Field<T>) {
+function Column<T>(props: Field<T>): React.ReactElement {
   const { source, reference } = props
   if (typeof reference !== 'undefined') {
     return (
@@ -70,7 +70,7 @@ interface RecentCardProps {
   resource?: string
 }
 
-export function RecentCard(props: RecentCardProps) {
+export function RecentCard(props: RecentCardProps): React.ReactElement {
   const { label, resource = '', children } = props
   const classes = useStyles()
   return (

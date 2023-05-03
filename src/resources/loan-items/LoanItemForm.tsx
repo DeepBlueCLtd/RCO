@@ -19,7 +19,7 @@ interface Props {
   loan?: number
 }
 
-export default function LoanItemForm(props: Props) {
+export default function LoanItemForm(props: Props): React.ReactElement {
   const { show, loan } = props
 
   const defaultValues = {

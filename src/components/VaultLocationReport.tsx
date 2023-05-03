@@ -30,12 +30,12 @@ interface Result {
   count: number
 }
 
-function ProtectiveMarking() {
+function ProtectiveMarking(): React.ReactElement {
   const { data = [] } = useListContext<Item>()
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
 
-  const getTableData = async () => {
+  const getTableData = async (): Promise<Result[]> => {
     const items: Record<number, number> = {}
     data.forEach((item) => {
       const count = items[item.protectiveMarking]
