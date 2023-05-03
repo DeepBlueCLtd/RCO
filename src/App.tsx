@@ -34,6 +34,7 @@ import platforms from './resources/platforms'
 import loans from './resources/loans'
 import loanItems from './resources/loan-items'
 import vaultlocations from './resources/vault-locations'
+import loadDefaultData from './utils/init-data'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -87,6 +88,48 @@ function App(): React.ReactElement {
     window.addEventListener('storage', onStorageChange)
     return () => {
       window.removeEventListener('storage', onStorageChange)
+    }
+  }, [])
+
+  useEffect(() => {
+    const UI_VERSION = localStorage.getItem(constants.APP_VERSION)
+    if (UI_VERSION !== null) {
+      if (process.env.VITE_APP_VERSION !== UI_VERSION) {
+        Object.keys(localStorage).forEach((k) => {
+          if (k !== 'rco-user' && k !== 'salt') {
+            localStorage.removeItem(k)
+          }
+        })
+        if ('caches' in window) {
+          caches
+            .keys()
+            .then((values) => {
+              values.forEach((v) => {
+                caches.delete(v).catch(console.log)
+              })
+            })
+            .catch(console.log)
+        }
+      }
+    } else {
+      localStorage.setItem(
+        constants.APP_VERSION,
+        process.env.VITE_APP_VERSION ?? '1.0.0'
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    const DATA_VERSION = localStorage.getItem(constants.DATA_VERSION)
+    if (DATA_VERSION !== null) {
+      if (process.env.VITE_DATA_VERSION !== DATA_VERSION) {
+        loadDefaultData().catch(console.log)
+      }
+    } else {
+      localStorage.setItem(
+        constants.DATA_VERSION,
+        process.env.VITE_DATA_VERSION ?? '1.0.0'
+      )
     }
   }, [])
 
