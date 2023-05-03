@@ -88,6 +88,7 @@ interface Item {
   magTape: Tape
   dvd: DVD
   paper: Paper
+  musterRemarks: string
   createdAt: string
   createdBy: User['id']
 }
