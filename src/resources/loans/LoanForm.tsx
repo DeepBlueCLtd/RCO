@@ -6,7 +6,9 @@ import {
   SimpleForm,
   TextInput,
   useDataProvider,
-  useGetIdentity
+  useGetIdentity,
+  Toolbar,
+  SaveButton
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as yup from 'yup'
@@ -61,9 +63,15 @@ export default function LoanForm(props: LoanFormProps) {
       .catch(console.log)
   }, [])
 
+  const ToolBar = () => (
+    <Toolbar>
+      <SaveButton label='Loan' />
+    </Toolbar>
+  )
+
   return (
     <SimpleForm
-      toolbar={show !== undefined ? false : undefined}
+      toolbar={show !== undefined ? false : <ToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       {!hideFields.includes('holder') && (
