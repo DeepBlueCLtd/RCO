@@ -46,6 +46,18 @@ export default function LoanItemsList(props: Omit<ListProps, 'children'>) {
         <DateField source='returnedDate' label='Returned Date' />
         <SourceField
           source='item'
+          label='Media Type'
+          sourceField='mediaType'
+          reference={constants.R_ITEMS}
+        />
+        <SourceField
+          source='item'
+          label='Item Number'
+          sourceField='item_number'
+          reference={constants.R_ITEMS}
+        />
+        <SourceField
+          source='item'
           label='Item'
           sourceField='id'
           reference={constants.R_ITEMS}
