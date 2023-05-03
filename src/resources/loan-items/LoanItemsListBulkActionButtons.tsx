@@ -103,8 +103,8 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
       notify(error.message, { type: 'error' })
     }
   }
-
-  if (showForm !== undefined && showForm) {
+  const boolShowForm: boolean = showForm
+  if (boolShowForm) {
     return (
       <LoanCreate
         mutationOptions={{ onSuccess }}
