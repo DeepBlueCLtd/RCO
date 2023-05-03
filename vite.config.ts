@@ -13,5 +13,5 @@ export default {
       VITE_DATA_VERSION: null
     })
   ],
-  base: '/RCO/'
+  base: '/'
 }
