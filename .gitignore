@@ -22,7 +22,6 @@ dist
 *.njsproj
 *.sln
 *.sw?
-.env
 node_modules/
 /test-results/
 playwright-report/
