@@ -64,7 +64,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       filter
     })
 
-    if (isLoading) return null
+    if (isLoading !== undefined && isLoading) return null
     if (data === undefined) return null
     const choices = data.map((d) => ({ name: d.name, id: d.id }))
 

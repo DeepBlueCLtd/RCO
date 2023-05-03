@@ -104,7 +104,7 @@ function LoanItemsToUser(props: LoanItemsModalProps) {
     }
   }
 
-  if (showForm) {
+  if (showForm !== undefined && showForm) {
     return (
       <LoanCreate
         mutationOptions={{ onSuccess }}
