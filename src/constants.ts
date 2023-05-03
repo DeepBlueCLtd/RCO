@@ -33,3 +33,6 @@ export const ICON_PROJECT = AccountTree
 export const ICON_LOAN = CreditScore
 
 export const ICON_DETAILS = Notes
+
+export const APP_VERSION = 'APP_VERSION'
+export const DATA_VERSION = 'DATA_VERSION'
