@@ -3,7 +3,6 @@ import {
   Datagrid,
   DateField,
   TextField,
-  EditButton,
   DateInput,
   SearchInput
 } from 'react-admin'
@@ -37,7 +36,6 @@ export default function LoanList() {
         <SourceField source='loanedBy' reference={constants.R_USERS} />
         <DateField source='createdAt' label='Created At' />
         <TextField source='remarks' />
-        <EditButton />
       </Datagrid>
     </List>
   )
