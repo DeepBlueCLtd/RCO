@@ -1,3 +1,13 @@
+interface CustomDataProvider {
+  loanItems: (
+    items: Array<Item['id']>,
+    recipient: User['id'],
+    loan: Loan['id'],
+    by?: User['id']
+  ) => Promise<any>
+  returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
+}
+
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 interface User {
@@ -118,6 +128,24 @@ interface RCOStore {
   protectiveMarking: ReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ReferenceItem[]
+}
+
+interface Loan {
+  readonly id: number
+  createdAt: string
+  holder: User['id']
+  loanedBy: User['id']
+  remarks: string
+}
+
+interface LoanItem {
+  readonly id: number
+  createdAt: string
+  item: Item['id']
+  loan: Loan['id']
+  receivedBy: User['id']
+  returnedDate: string
+  remarks: string
 }
 
 interface ActivityType {

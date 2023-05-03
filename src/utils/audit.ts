@@ -1,7 +1,7 @@
 import { type DataProvider } from 'react-admin'
 import { getUser } from '../providers/authProvider'
 import * as constants from '../constants'
-import { getActivityTypeLabel , type AuditType } from './activity-types'
+import { getActivityTypeLabel, type AuditType } from './activity-types'
 export const trackEvent =
   (dataProvider: DataProvider) =>
   async (
@@ -24,7 +24,5 @@ export const trackEvent =
           }
         })
       }
-    } catch (error) {
-      console.log(error)
-    }
+    } catch (error) {}
   }

@@ -1,4 +1,4 @@
-export const isNumber = (number: string | number): boolean => {
+export const isNumber = (number: any): boolean => {
   if (typeof number === 'string') {
     if (number === '') {
       return false

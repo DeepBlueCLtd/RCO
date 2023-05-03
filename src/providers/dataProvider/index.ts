@@ -75,6 +75,38 @@ const withCreatedBy = (record: CreateResult<Item | Batch | Project>) => {
   return record
 }
 
+const customMethods = (provider: DataProvider): CustomDataProvider => {
+  return {
+    loanItems: async (
+      items: Array<Item['id']>,
+      recipient: User['id'],
+      loan: Loan['id']
+    ) => {
+      const promisees = items.map(async (item) => {
+        const data: Partial<LoanItem> = {
+          receivedBy: recipient,
+          loan,
+          item,
+          createdAt: nowDate()
+        }
+        await provider.create<LoanItem>(constants.R_LOAN_ITEMS, {
+          data
+        })
+      })
+      await Promise.all(promisees)
+    },
+    returnItems: async (items: Array<Item['id']>) => {
+      const data: Partial<LoanItem> = {
+        returnedDate: DateTime.now().toFormat(constants.DATE_FORMAT)
+      }
+      await provider.updateMany<LoanItem>(constants.R_LOAN_ITEMS, {
+        ids: items,
+        data
+      })
+    }
+  }
+}
+
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<DataProvider<string>> => {
@@ -88,7 +120,7 @@ export const getDataProvider = async (
     loggingEnabled
   })
 
-  const providerWithCustomMethods = { ...provider }
+  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
   const audit = trackEvent(providerWithCustomMethods)
 
   return withLifecycleCallbacks(providerWithCustomMethods, [
@@ -245,6 +277,57 @@ export const getDataProvider = async (
         await audit(
           AuditType.DELETE_ITEM,
           `Item deleted (${String(record.data.id)})`
+        )
+        return record
+      }
+    },
+    {
+      resource: constants.R_LOANS,
+      beforeCreate: async (record: CreateResult<Project>) => {
+        return withCreatedBy(record)
+      },
+      afterDelete: async (record: DeleteResult<Loan>) => {
+        await audit(
+          AuditType.DELETE_LOAN,
+          `Loan deleted (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterUpdate: async (record: UpdateResult<Loan>) => {
+        await audit(
+          AuditType.EDIT_LOAN,
+          `Loan updated (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterCreate: async (record: CreateResult<Loan>) => {
+        await audit(
+          AuditType.CREATE_LOAN,
+          `Loan created (${String(record.data.id)})`
+        )
+        return record
+      }
+    },
+    {
+      resource: constants.R_LOAN_ITEMS,
+      afterDelete: async (record: DeleteResult<LoanItem>) => {
+        await audit(
+          AuditType.DELETE_LOAN_ITEM,
+          `Loan Item deleted (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterUpdate: async (record: UpdateResult<LoanItem>) => {
+        await audit(
+          AuditType.EDIT_LOAN_ITEM,
+          `Loan Item updated (${String(record.data.id)})`
+        )
+        return record
+      },
+      afterCreate: async (record: CreateResult<LoanItem>) => {
+        await audit(
+          AuditType.CREATE_LOAN_ITEM,
+          `Loan Item created (${String(record.data.id)})`
         )
         return record
       }

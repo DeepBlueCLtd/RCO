@@ -63,8 +63,8 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     const { data, isLoading } = useGetList<T>(reference, {
       filter
     })
-
-    if (isLoading === true) return null
+    const boolIsLoading: boolean = isLoading
+    if (boolIsLoading) return null
     if (data === undefined) return null
     const choices = data.map((d) => ({ name: d.name, id: d.id }))
 

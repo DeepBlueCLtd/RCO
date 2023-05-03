@@ -22,10 +22,11 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
 import { Button, Modal } from '@mui/material'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
+import LoanItemsListBulkActionButtons from '../loan-items/LoanItemsListBulkActionButtons'
 
 const sort = (field = 'name') => ({ field, order: 'ASC' })
 
@@ -92,7 +93,7 @@ const ItemActions = () => {
   )
 }
 
-export const BulkActions = () => {
+export const BulkActions = (): React.ReactElement => {
   const { selectedIds } = useListContext()
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
@@ -118,6 +119,7 @@ export const BulkActions = () => {
           Change Location
         </Button>
       </FlexBox>
+      <LoanItemsListBulkActionButtons buttons={['loan']} />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}
@@ -134,14 +136,16 @@ export default function ItemList(
 ): React.ReactElement {
   return (
     <List
-      bulkActionButtons={<BulkActions />}
       hasCreate={false}
       actions={<ItemActions />}
-      resource='items'
+      resource={constants.R_ITEMS}
       filters={filters}
       {...props}>
       <ResetDateFilter source='createdAt' />
-      <DatagridConfigurable rowClick='show' omit={omitColumns}>
+      <DatagridConfigurable
+        rowClick='show'
+        bulkActionButtons={<BulkActions />}
+        omit={omitColumns}>
         <TextField source='item_number' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
