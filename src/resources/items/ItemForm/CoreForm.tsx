@@ -86,7 +86,15 @@ const CoreForm = (props: Props): React.ReactElement => {
           />
         </ReferenceInput>
       </FlexBox>
-      <TextInput multiline disabled={disabled} source='remarks' />
+      <FlexBox>
+        <TextInput multiline disabled={disabled} source='remarks' sx={sx} />
+        <TextInput
+          multiline
+          disabled={disabled}
+          source='musterRemarks'
+          sx={sx}
+        />
+      </FlexBox>
       <FlexBox style={{ justifyContent: 'space-between' }}>
         {(disabled ?? false) && (
           <>
