@@ -37,7 +37,8 @@ const omitColumns: string[] = [
   'remarks',
   'start',
   'end',
-  'vaultLocation'
+  'vaultLocation',
+  'musterRemarks'
 ]
 
 const filters = [
@@ -161,6 +162,7 @@ export default function ItemList(
           sourceField='batchNumber'
         />
         <TextField source='remarks' />
+        <TextField source='musterRemarks' />
       </DatagridConfigurable>
     </List>
   )

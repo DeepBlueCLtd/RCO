@@ -161,6 +161,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     footer={ProtectiveMarking}>
                     <TextField source='item_number' label='Item Number' />
                     <TextField source='mediaType' label='Media type' />
+                    <TextField source='musterRemarks' label='Muster remarks' />
                     <SourceField
                       source='protectiveMarking'
                       reference='protectiveMarking'

@@ -163,6 +163,7 @@ export const generateItems = (
       end: endDate,
       vaultLocation: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
+      musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       magTape: {
         minutes: i,

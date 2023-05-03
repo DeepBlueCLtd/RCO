@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  Modal,
-  Typography,
-  Select,
-  InputLabel,
-  FormControl,
-  MenuItem,
-  type SelectChangeEvent
-} from '@mui/material'
+import { Box, Button, Modal, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import {
   type DataProvider,
@@ -78,26 +68,15 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
 
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
-  const { users } = useUser()
-  const [showForm, setShowForm] = useState<boolean>(false)
-  const [value, setValue] = useState<number | string>('')
   const notify = useNotify()
   const refresh = useRefresh()
 
   const label: string = `Loan ${items.length} items to`
 
-  useEffect(() => {
-    setValue(users[0]?.id)
-  }, [users])
-
-  const handleChange = (event: SelectChangeEvent): void => {
-    setValue(event.target.value)
-  }
-
-  const onSuccess = async (response: LoanItem): Promise<void> => {
+  const onSuccess = async (response: Loan): Promise<void> => {
     try {
       if (items.length !== 0) {
-        await dataProvider.loanItems(items, Number(value), response.id)
+        await dataProvider.loanItems(items, response.loanedBy, response.id)
       }
       refresh()
       notify('Loan created')
@@ -106,50 +85,17 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
       notify(error.message, { type: 'error' })
     }
   }
-  const boolShowForm: boolean = showForm
-  if (boolShowForm) {
-    return (
+
+  return (
+    <Box>
+      <Typography variant='h6'>{label}:</Typography>
       <LoanCreate
         mutationOptions={{ onSuccess }}
         loanFormProps={{
-          defaultValues: { holder: Number(value) },
-          hideFields: ['holder', 'loanedBy']
+          hideFields: ['loanedBy']
         }}
       />
-    )
-  }
-
-  return (
-    <>
-      <Box>
-        <Typography variant='h6'>{label}:</Typography>
-        <FlexBox marginTop={3}>
-          <InputLabel>Name:</InputLabel>
-          <FormControl sx={{ flex: 1 }} margin='none'>
-            <Select value={String(value)} label='Name' onChange={handleChange}>
-              {users.map((user: User) => (
-                <MenuItem key={user.id} value={user.id}>
-                  {user.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </FlexBox>
-        <FlexBox marginTop={4}>
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={() => {
-              setShowForm(true)
-            }}>
-            Loan
-          </Button>
-          <Button variant='outlined' onClick={onClose}>
-            Cancel
-          </Button>
-        </FlexBox>
-      </Box>
-    </>
+    </Box>
   )
 }
 
