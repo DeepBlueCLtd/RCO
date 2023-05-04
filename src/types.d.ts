@@ -19,6 +19,9 @@ interface User {
 
 interface Audit {
   readonly id: number
+  user: User['id']
+  resource: string | null
+  item: number | null
   activityType: string
   dateTime: string
   label: string

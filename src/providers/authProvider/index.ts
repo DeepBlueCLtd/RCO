@@ -55,7 +55,12 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           const salt: string = generateSalt()
           const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
           setToken(token, salt)
-          await audit(AuditType.LOGIN, 'Logged in')
+          await audit({
+            type: AuditType.LOGIN,
+            activityDetail: 'Logged in',
+            resource: constants.R_USERS,
+            item: null
+          })
           return await Promise.resolve(data)
         } else {
           throw new Error('Wrong password')
@@ -65,7 +70,12 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       }
     },
     logout: async (): Promise<void> => {
-      await audit(AuditType.LOGOUT, 'Logged out')
+      await audit({
+        type: AuditType.LOGOUT,
+        activityDetail: 'Logged out',
+        resource: constants.R_USERS,
+        item: null
+      })
       removeToken()
       await Promise.resolve()
     },
