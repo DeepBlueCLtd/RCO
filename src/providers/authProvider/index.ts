@@ -58,7 +58,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           await audit({
             type: AuditType.LOGIN,
             activityDetail: 'Logged in',
-            resource: constants.R_USERS,
+            resource: null,
             item: null
           })
           return await Promise.resolve(data)
@@ -73,7 +73,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await audit({
         type: AuditType.LOGOUT,
         activityDetail: 'Logged out',
-        resource: constants.R_USERS,
+        resource: null,
         item: null
       })
       removeToken()
