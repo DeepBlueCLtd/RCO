@@ -51,10 +51,13 @@ const generateDummyProjectForTesting = (name?: string): Omit<Project, 'id'> => {
   }
 }
 
-const generateDummyUserForTesting = (name?: string): Omit<User, 'id'> => {
+const generateDummyUserForTesting = (
+  name?: string,
+  password?: string
+): Omit<User, 'id'> => {
   return {
     name: name ?? 'USER-1',
-    password: '1234',
+    password: password ?? '1234',
     adminRights: true
   }
 }
@@ -92,6 +95,7 @@ describe('CRUD operations on each resource', () => {
   let provider: DataProvider
   beforeAll(async () => {
     provider = await getDataProvider(false)
+    process.env.password = 'admin'
   })
   describe('CRUD Operation on Batch', () => {
     let id: number
@@ -240,7 +244,7 @@ describe('CRUD operations on each resource', () => {
     let user: User
 
     it('should create a user', async () => {
-      const data = generateDummyUserForTesting()
+      const data = generateDummyUserForTesting(undefined, process.env.password)
       const result = await provider.create<User>(R_USERS, {
         data
       })
@@ -251,14 +255,17 @@ describe('CRUD operations on each resource', () => {
     })
 
     it('should get the user', async () => {
-      const data = generateDummyUserForTesting()
+      const data = generateDummyUserForTesting(undefined, process.env.password)
       const result = await provider.getOne<User>(R_USERS, { id })
       const { id: omittedId, ...expectedResult } = result.data
       expect(expectedResult).toEqual(data)
     })
 
     it('should update the user', async () => {
-      const updatedValue = generateDummyUserForTesting('user-1')
+      const updatedValue = generateDummyUserForTesting(
+        'user-1',
+        process.env.password
+      )
       const result = await provider.update<User>(R_USERS, {
         id,
         previousData: user,
@@ -385,7 +392,7 @@ describe('testing getUser function', () => {
     const { password, ...expectedResult } = user
     await authProvider(provider).login({
       username: user.name,
-      password: 'admin'
+      password: process.env.password ?? 'admin'
     })
     const localStorageUser = getUser()
     expect(localStorageUser).toEqual(expectedResult)
@@ -394,7 +401,7 @@ describe('testing getUser function', () => {
 
 describe('testing compareVersions', () => {
   const v1 = 'V01/2020'
-    const v2 = 'V02/2020'
+  const v2 = 'V02/2020'
   it('should return -1', () => {
     expect(compareVersions(v1, v2)).toBe(-1)
   })
