@@ -133,7 +133,7 @@ export const getDataProvider = async (
           type: AuditType.DELETE_USER,
           activityDetail: `User deleted (${record.data.id})`,
           resource: constants.R_USERS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -142,7 +142,7 @@ export const getDataProvider = async (
           type: AuditType.CREATE_USER,
           activityDetail: `User created (${record.data.id})`,
           resource: constants.R_USERS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -151,7 +151,7 @@ export const getDataProvider = async (
           type: AuditType.EDIT_USER,
           activityDetail: `User updated (${record.data.id})`,
           resource: constants.R_USERS,
-          item: null
+          id: record.data.id
         })
         return record
       }
@@ -166,7 +166,7 @@ export const getDataProvider = async (
           type: AuditType.DELETE_PROJECT,
           activityDetail: `Project deleted (${String(record.data.id)})`,
           resource: constants.R_PROJECTS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -180,7 +180,7 @@ export const getDataProvider = async (
           type: AuditType.CREATE_PROJECT,
           activityDetail: `Project created (${String(record.data.id)})`,
           resource: constants.R_PROJECTS,
-          item: null
+          id: record.data.id
         })
         await dataProvider.update<Project>(constants.R_PROJECTS, {
           id,
@@ -194,7 +194,7 @@ export const getDataProvider = async (
           type: AuditType.EDIT_PROJECT,
           activityDetail: `Project updated (${String(record.data.id)})`,
           resource: constants.R_PROJECTS,
-          item: null
+          id: record.data.id
         })
         return record
       }
@@ -209,7 +209,7 @@ export const getDataProvider = async (
             record.previousData.maximumProtectiveMarking !==
             record.data.maximumProtectiveMarking,
           resource: constants.R_BATCHES,
-          item: null
+          id: record.previousData.id
         })
         return record
       },
@@ -238,7 +238,7 @@ export const getDataProvider = async (
             type: AuditType.CREATE_BATCH,
             activityDetail: `Batch created (${String(id)})`,
             resource: constants.R_BATCHES,
-            item: null
+            id: record.data.id
           })
           return record
         } catch (error) {
@@ -251,7 +251,7 @@ export const getDataProvider = async (
           type: AuditType.DELETE_BATCH,
           activityDetail: `Batch deleted (${String(record.data.id)})`,
           resource: constants.R_BATCHES,
-          item: null
+          id: record.data.id
         })
         return record
       }
@@ -269,7 +269,7 @@ export const getDataProvider = async (
             record.previousData.protectiveMarking !==
             record.data.protectiveMarking,
           resource: constants.R_ITEMS,
-          item: record.previousData.id
+          id: record.previousData.id
         })
         return record
       },
@@ -306,7 +306,7 @@ export const getDataProvider = async (
             type: AuditType.CREATE_ITEM,
             activityDetail: `Item created (${String(id)})`,
             resource: constants.R_ITEMS,
-            item: id
+            id
           })
           return record
         } catch (error) {
@@ -319,7 +319,7 @@ export const getDataProvider = async (
           type: AuditType.DELETE_ITEM,
           activityDetail: `Item deleted (${String(record.data.id)})`,
           resource: constants.R_ITEMS,
-          item: record.data.id
+          id: record.data.id
         })
         return record
       }
@@ -334,7 +334,7 @@ export const getDataProvider = async (
           type: AuditType.DELETE_LOAN,
           activityDetail: `Loan deleted (${String(record.data.id)})`,
           resource: constants.R_LOANS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -343,7 +343,7 @@ export const getDataProvider = async (
           type: AuditType.EDIT_LOAN,
           activityDetail: `Loan updated (${String(record.data.id)})`,
           resource: constants.R_LOANS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -352,7 +352,7 @@ export const getDataProvider = async (
           type: AuditType.CREATE_LOAN,
           activityDetail: `Loan created (${String(record.data.id)})`,
           resource: constants.R_LOANS,
-          item: null
+          id: record.data.id
         })
         return record
       }
@@ -364,7 +364,7 @@ export const getDataProvider = async (
           type: AuditType.DELETE_LOAN_ITEM,
           activityDetail: `Loan Item deleted (${String(record.data.id)})`,
           resource: constants.R_LOAN_ITEMS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -373,7 +373,7 @@ export const getDataProvider = async (
           type: AuditType.EDIT_LOAN_ITEM,
           activityDetail: `Loan Item updated (${String(record.data.id)})`,
           resource: constants.R_LOAN_ITEMS,
-          item: null
+          id: record.data.id
         })
         return record
       },
@@ -382,7 +382,7 @@ export const getDataProvider = async (
           type: AuditType.CREATE_LOAN_ITEM,
           activityDetail: `Loan Item created (${String(record.data.id)})`,
           resource: constants.R_LOAN_ITEMS,
-          item: null
+          id: record.data.id
         })
         return record
       }

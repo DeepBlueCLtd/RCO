@@ -8,11 +8,11 @@ interface Props {
   activityDetail: string
   securityRelated?: boolean
   resource: string | null
-  item: number | null
+  id: number | null
 }
 export const trackEvent =
   (dataProvider: DataProvider) =>
-  async ({ type, activityDetail, securityRelated, resource, item }: Props) => {
+  async ({ type, activityDetail, securityRelated, resource, id }: Props) => {
     try {
       const user = getUser()
       if (user !== undefined) {
@@ -20,7 +20,7 @@ export const trackEvent =
           data: {
             user: user.id,
             resource,
-            item,
+            id,
             activityType: type,
             dateTime: new Date().toISOString(),
             activityDetail,
