@@ -19,7 +19,13 @@ interface User {
 
 interface Audit {
   readonly id: number
-  activityType: string
+  // the user making the change
+  user: User['id']
+  // the type of data being reported on (opt)
+  resource: string | null
+  // the id of the entity being reported on (opt)
+  id: number | null
+  activityType: AuditType
   dateTime: string
   label: string
   activityDetail?: string
