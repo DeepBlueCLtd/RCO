@@ -1,11 +1,11 @@
 import { type DataProvider } from 'react-admin'
 import { getDataProvider } from '.'
 import {
-  R_BATCHES
-  //   R_ITEMS,
-  //   R_PLATFORMS,
-  //   R_PROJECTS,
-  //   R_USERS
+  R_BATCHES,
+  R_ITEMS,
+  R_PLATFORMS,
+  R_PROJECTS,
+  R_USERS
 } from '../../constants'
 import { DateTime } from 'luxon'
 
@@ -31,55 +31,60 @@ const generateDummyBatchForTesting = (name?: string): Omit<Batch, 'id'> => {
   }
 }
 
-// const generateDummyPlatformForTesting = (): Omit<Platform, 'id'> => {
-//   return {
-//     name: 'Dummy-Platform-1',
-//     active: false
-//   }
-// }
+const generateDummyPlatformForTesting = (
+  name?: string
+): Omit<Platform, 'id'> => {
+  return {
+    name: name ?? 'Dummy-Platform-1',
+    active: false
+  }
+}
 
-// const generateDummyProjectForTesting = (): Omit<Project, 'id'> => {
-//   return {
-//     name: 'Dummy-Project-1',
-//     remarks: 'remarks-1',
-//     createdAt: DateTime.now().toFormat('yyyy-MM-dd'),
-//     createdBy: 1
-//   }
-// }
+const generateDummyProjectForTesting = (name?: string): Omit<Project, 'id'> => {
+  return {
+    name: name ?? 'Dummy-Project-1',
+    remarks: 'remarks-1',
+    createdAt: DateTime.now().toFormat('yyyy-MM-dd'),
+    createdBy: 1
+  }
+}
 
-// const generateDummyUserForTesting = (): Omit<User, 'id'> => {
-//   return {
-//     name: 'USER-1',
-//     password: '1234',
-//     adminRights: true
-//   }
-// }
+const generateDummyUserForTesting = (name?: string): Omit<User, 'id'> => {
+  return {
+    name: name ?? 'USER-1',
+    password: '1234',
+    adminRights: true
+  }
+}
 
-// const generateDummyItemForTesting = (): Omit<Item, 'id'> => {
-//   return {
-//     mediaType: 'DVD',
-//     start: DateTime.now().toFormat('yyyy-MM-dd'),
-//     batchId: 1,
-//     item_number: 'V01/V01/2023',
-//     end: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
-//     vaultLocation: 1,
-//     remarks: 'remarks-1',
-//     protectiveMarking: 1,
-//     magTape: {
-//       minutes: 1,
-//       brand: 'brand',
-//       mediaType: 'Paper'
-//     },
-//     dvd: {
-//       size: 1,
-//       mediaType: 'DVD'
-//     },
-//     paper: 'ABC',
-//     musterRemarks: 'hello',
-//     createdAt: DateTime.now().toFormat('yyyy-MM-dd'),
-//     createdBy: 1
-//   }
-// }
+const generateDummyItemForTesting = (
+  vaultLocation?: number,
+  protectiveMarking?: number
+): Omit<Item, 'id'> => {
+  return {
+    mediaType: 'DVD',
+    start: DateTime.now().toFormat('yyyy-MM-dd'),
+    batchId: 1,
+    end: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
+    vaultLocation: vaultLocation ?? 1,
+    remarks: 'remarks-1',
+    item_number: 'V01/2022',
+    protectiveMarking: protectiveMarking ?? 1,
+    magTape: {
+      minutes: 1,
+      brand: 'brand',
+      mediaType: 'Paper'
+    },
+    dvd: {
+      size: 1,
+      mediaType: 'DVD'
+    },
+    paper: 'Paper',
+    musterRemarks: 'remarks-1',
+    createdAt: DateTime.now().toFormat('yyyy-MM-dd'),
+    createdBy: 1
+  }
+}
 
 describe('CRUD operations on each resource', () => {
   let provider: DataProvider
@@ -118,7 +123,8 @@ describe('CRUD operations on each resource', () => {
           createdAt: DateTime.now().toFormat('yyyy-MM-dd')
         }
       })
-      expect(result.data).toEqual(expect.objectContaining(updatedValue))
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(updatedValue)
     })
 
     it('should delete the batch', async () => {
@@ -126,163 +132,209 @@ describe('CRUD operations on each resource', () => {
     })
 
     it('should try to get the deleted batch and fail', async () => {
-      await expect(async () =>
-        await provider.getOne<Batch>(R_BATCHES, { id })
+      await expect(
+        async () => await provider.getOne<Batch>(R_BATCHES, { id })
       ).rejects.toThrow()
     })
   })
 
-  //   describe('CRUD Operation on Platform', () => {
-  //     let id: number
-  //     let platform: Platform
+  describe('CRUD Operation on Platform', () => {
+    let id: number
+    let platform: Platform
 
-  //     it('should create a platform', async () => {
-  //       const data = generateDummyPlatformForTesting()
-  //       const result = await provider.create<Platform>(R_PLATFORMS, {
-  //         data
-  //       })
-  //       id = result.data.id
-  //       platform = result.data
-  //     })
+    it('should create a platform', async () => {
+      const data = generateDummyPlatformForTesting()
+      const result = await provider.create<Platform>(R_PLATFORMS, {
+        data
+      })
+      id = result.data.id
+      platform = result.data
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should get the platform and log in console', async () => {
-  //       const data = await provider.getOne<Platform>(R_PLATFORMS, { id })
-  //       console.log({ data })
-  //     })
+    it('should get the platform', async () => {
+      const data = generateDummyPlatformForTesting()
+      const result = await provider.getOne<Platform>(R_PLATFORMS, { id })
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should update the platform', async () => {
-  //       await provider.update<Platform>(R_PLATFORMS, {
-  //         id,
-  //         previousData: platform,
-  //         data: {
-  //           name: 'dummy-platform-1'
-  //         }
-  //       })
-  //     })
+    it('should update the platform', async () => {
+      const updatedValue = generateDummyPlatformForTesting('dummy-platform-1')
 
-  //     it('should log the updated value', async () => {
-  //       const result = await provider.getOne(R_PLATFORMS, { id })
-  //       console.log({ result })
-  //     })
+      const result = await provider.update<Platform>(R_PLATFORMS, {
+        id,
+        previousData: platform,
+        data: {
+          name: 'dummy-platform-1'
+        }
+      })
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(updatedValue)
+    })
 
-  //     it('should delete the platform', async () => {
-  //       await provider.delete<Platform>(R_PLATFORMS, { id })
-  //     })
-  //   })
+    it('should delete the platform', async () => {
+      await provider.delete<Platform>(R_PLATFORMS, { id })
+    })
 
-  //   describe('CRUD Operation on Project', () => {
-  //     let id: number
-  //     let project: Project
+    it('should try to get the deleted platform and fail', async () => {
+      await expect(
+        async () => await provider.getOne<Platform>(R_PLATFORMS, { id })
+      ).rejects.toThrow()
+    })
+  })
 
-  //     it('should create a project', async () => {
-  //       const data = generateDummyProjectForTesting()
-  //       const result = await provider.create<Project>(R_PROJECTS, {
-  //         data
-  //       })
-  //       id = result.data.id
-  //       project = result.data
-  //     })
+  describe('CRUD Operation on Project', () => {
+    let id: number
+    let project: Project
 
-  //     it('should get the project and log in console', async () => {
-  //       const data = await provider.getOne<Project>(R_PROJECTS, { id })
-  //       console.log({ data })
-  //     })
+    it('should create a project', async () => {
+      const data = generateDummyProjectForTesting()
+      const result = await provider.create<Project>(R_PROJECTS, {
+        data
+      })
+      id = result.data.id
+      project = result.data
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should update the project', async () => {
-  //       await provider.update<Project>(R_PROJECTS, {
-  //         id,
-  //         previousData: project,
-  //         data: {
-  //           name: 'dummy-project-1',
-  //           createdAt: DateTime.now().toFormat('yyyy-MM-dd')
-  //         }
-  //       })
-  //     })
+    it('should get the project', async () => {
+      const data = generateDummyProjectForTesting()
+      const result = await provider.getOne<Project>(R_PROJECTS, { id })
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should log the updated value', async () => {
-  //       const result = await provider.getOne<Project>(R_PROJECTS, { id })
-  //       console.log({ result })
-  //     })
+    it('should update the project', async () => {
+      const updatedValue = generateDummyProjectForTesting('dummy-project-1')
+      const result = await provider.update<Project>(R_PROJECTS, {
+        id,
+        previousData: project,
+        data: {
+          name: 'dummy-project-1',
+          createdAt: DateTime.now().toFormat('yyyy-MM-dd')
+        }
+      })
 
-  //     it('should delete the project', async () => {
-  //       await provider.delete<Project>(R_PROJECTS, { id })
-  //     })
-  //   })
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(updatedValue)
+    })
 
-  //   describe('CRUD Operation on User', () => {
-  //     let id: number
-  //     let user: User
+    it('should delete the project', async () => {
+      await provider.delete<Project>(R_PROJECTS, { id })
+    })
 
-  //     it('should create a user', async () => {
-  //       const data = generateDummyUserForTesting()
-  //       const result = await provider.create<User>(R_USERS, {
-  //         data
-  //       })
-  //       id = result.data.id
-  //       user = result.data
-  //     })
+    it('should try to get the deleted project and fail', async () => {
+      await expect(
+        async () => await provider.getOne<Project>(R_PROJECTS, { id })
+      ).rejects.toThrow()
+    })
+  })
 
-  //     it('should get the user and log in console', async () => {
-  //       const data = await provider.getOne<User>(R_USERS, { id })
-  //       console.log({ data })
-  //     })
+  describe('CRUD Operation on User', () => {
+    let id: number
+    let user: User
 
-  //     it('should update the user', async () => {
-  //       await provider.update<User>(R_USERS, {
-  //         id,
-  //         previousData: user,
-  //         data: {
-  //           name: 'user-1'
-  //         }
-  //       })
-  //     })
+    it('should create a user', async () => {
+      const data = generateDummyUserForTesting()
+      const result = await provider.create<User>(R_USERS, {
+        data
+      })
+      id = result.data.id
+      user = result.data
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should log the updated value', async () => {
-  //       const result = await provider.getOne<User>(R_USERS, { id })
-  //       console.log({ result })
-  //     })
+    it('should get the user', async () => {
+      const data = generateDummyUserForTesting()
+      const result = await provider.getOne<User>(R_USERS, { id })
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should delete the user', async () => {
-  //       await provider.delete<User>(R_USERS, { id })
-  //     })
-  //   })
+    it('should update the user', async () => {
+      const updatedValue = generateDummyUserForTesting('user-1')
+      const result = await provider.update<User>(R_USERS, {
+        id,
+        previousData: user,
+        data: {
+          name: 'user-1'
+        }
+      })
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(updatedValue)
+    })
 
-  //   describe('CRUD Operation on Item', () => {
-  //     let id: number
-  //     let item: Item
+    it('should delete the user', async () => {
+      await provider.delete<User>(R_USERS, { id })
+    })
 
-  //     it('should create a item', async () => {
-  //       const data = generateDummyItemForTesting()
-  //       const result = await provider.create<Item>(R_ITEMS, {
-  //         data
-  //       })
-  //       id = result.data.id
-  //       item = result.data
-  //     })
+    it('should try to get the deleted user and fail', async () => {
+      await expect(
+        async () => await provider.getOne<User>(R_USERS, { id })
+      ).rejects.toThrow()
+    })
+  })
 
-  //     it('should get the item and log in console', async () => {
-  //       const data = await provider.getOne<Item>(R_ITEMS, { id })
-  //       console.log({ data })
-  //     })
+  describe('CRUD Operation on Item', () => {
+    let id: number
+    let item: Item
 
-  //     it('should update the item', async () => {
-  //       await provider.update<Item>(R_ITEMS, {
-  //         id,
-  //         previousData: item,
-  //         data: {
-  //           name: 'dummy-platform-1',
-  //           createdAt: DateTime.now().toFormat('yyyy-MM-dd')
-  //         }
-  //       })
-  //     })
+    it('should create a item', async () => {
+      const data = generateDummyItemForTesting()
+      const result = await provider.create<Item>(R_ITEMS, {
+        data
+      })
+      id = result.data.id
+      item = result.data
+      const { id: omittedId, ...expectedResult } = result.data
+      expect(expectedResult).toEqual(data)
+    })
 
-  //     it('should log the updated value', async () => {
-  //       const result = await provider.getOne<Item>(R_ITEMS, { id })
-  //       console.log({ result })
-  //     })
+    it('should get the item', async () => {
+      const { item_number: omitted, ...data } = generateDummyItemForTesting()
+      const result = await provider.getOne<Item>(R_ITEMS, { id })
+      const {
+        id: omittedId,
+        item_number: omittedItemNumber,
+        ...expectedResult
+      } = result.data
 
-  //     it('should delete the item', async () => {
-  //       await provider.delete<Item>(R_ITEMS, { id })
-  //     })
-  //   })
+      expect(expectedResult).toEqual(data)
+    })
+
+    it('should update the item', async () => {
+      const { item_number: omitted, ...updatedValue } =
+        generateDummyItemForTesting(2, 3)
+      const result = await provider.update<Item>(R_ITEMS, {
+        id,
+        previousData: item,
+        data: {
+          vaultLocation: 2,
+          protectiveMarking: 3,
+          createdAt: DateTime.now().toFormat('yyyy-MM-dd')
+        }
+      })
+
+      const {
+        id: omittedId,
+        item_number: omittedItemNumber,
+        ...expectedResult
+      } = result.data
+      expect(expectedResult).toEqual(updatedValue)
+    })
+
+    it('should delete the item', async () => {
+      await provider.delete<Item>(R_ITEMS, { id })
+    })
+
+    it('should try to get the deleted item and fail', async () => {
+      await expect(
+        async () => await provider.getOne<Item>(R_ITEMS, { id })
+      ).rejects.toThrow()
+    })
+  })
 })
