@@ -21,9 +21,10 @@ export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
 }
 
-const compareVersions = (v1: string, v2: string): number => {
+export const compareVersions = (v1: string, v2: string): number => {
   const s1 = parseInt(v1.substring(1))
   const s2 = parseInt(v2.substring(1))
+  if (isNaN(s1) || isNaN(s2)) return NaN
   if (s1 < s2) {
     return -1
   } else if (s1 > s2) {
@@ -51,7 +52,6 @@ export const generateBatchId = async (
   if (batches.data.length === 1) {
     return '01'
   }
-
   const greatestBatch = batches.data.reduce((prev, current) =>
     compareVersions(prev.batchNumber, current.batchNumber) === -1
       ? current

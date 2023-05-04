@@ -1,5 +1,5 @@
 import { type DataProvider } from 'react-admin'
-import { getDataProvider } from '.'
+import { getDataProvider, compareVersions } from '.'
 import {
   R_BATCHES,
   R_ITEMS,
@@ -8,6 +8,8 @@ import {
   R_USERS
 } from '../../constants'
 import { DateTime } from 'luxon'
+import { isNumber } from '../../utils/number'
+import authProvider, { getUser } from '../authProvider'
 
 const year: number = 2023
 
@@ -336,5 +338,84 @@ describe('CRUD operations on each resource', () => {
         async () => await provider.getOne<Item>(R_ITEMS, { id })
       ).rejects.toThrow()
     })
+  })
+})
+
+describe('Test for isNumber function', () => {
+  it('should return true for a number', () => {
+    expect(isNumber(42)).toBe(true)
+  })
+
+  it('should return true for a numeric string', () => {
+    expect(isNumber('42')).toBe(true)
+  })
+
+  it('should return false for a non-numeric string', () => {
+    expect(isNumber('hello')).toBe(false)
+  })
+
+  it('should return false for an empty string', () => {
+    expect(isNumber('')).toBe(false)
+  })
+
+  it('should return false for null', () => {
+    expect(isNumber(null)).toBe(false)
+  })
+
+  it('should return false for undefined', () => {
+    expect(isNumber(undefined)).toBe(false)
+  })
+})
+
+describe('testing getUser function', () => {
+  let provider: DataProvider
+  beforeAll(async () => {
+    provider = await getDataProvider(false)
+  })
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('should return undefined if no user is stored', () => {
+    expect(getUser()).toBeUndefined()
+  })
+
+  it('should return the user if one is stored', async () => {
+    const user = (await provider.getOne<User>(R_USERS, { id: 1 })).data
+    const { password, ...expectedResult } = user
+    await authProvider(provider).login({
+      username: user.name,
+      password: 'admin'
+    })
+    const localStorageUser = getUser()
+    expect(localStorageUser).toEqual(expectedResult)
+  })
+})
+
+describe('testing compareVersions', () => {
+  const v1 = 'V01/2020'
+    const v2 = 'V02/2020'
+  it('should return -1', () => {
+    expect(compareVersions(v1, v2)).toBe(-1)
+  })
+
+  it('should return 1', () => {
+    expect(compareVersions(v2, v1)).toBe(1)
+  })
+
+  it('should return return 0', () => {
+    expect(compareVersions(v1, v1)).toBe(0)
+  })
+
+  it('should return NaN', () => {
+    expect(compareVersions('hello', v2)).toBe(NaN)
+  })
+
+  it('should return NaN', () => {
+    expect(compareVersions(v1, 'hello')).toBe(NaN)
+  })
+
+  it('should return NaN', () => {
+    expect(compareVersions('hello', 'hello2')).toBe(NaN)
   })
 })
