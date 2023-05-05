@@ -5,11 +5,12 @@ import {
   useDataProvider,
   useListContext,
   useNotify,
-  useRefresh
+  useRefresh,
+  Create
 } from 'react-admin'
-import FlexBox from '../../components/FlexBox'
-import * as constants from '../../constants'
-import { LoanCreate } from '../loans'
+import FlexBox from './FlexBox'
+import * as constants from '../constants'
+import LoanForm from './LoanForm'
 
 type ButtonType = '' | 'loan' | 'loanReturn'
 
@@ -26,7 +27,7 @@ const style = {
 }
 
 interface LoanItemsModalProps {
-  items: number[]
+  items: Item[]
   onClose: () => void
 }
 
@@ -73,13 +74,13 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
 
   const label: string = `Loan ${items.length} items to`
 
-  const onSuccess = async (response: Loan): Promise<void> => {
+  const handleSubmit = async (loan: Loan): Promise<void> => {
     try {
+      const items = props.items.map((item) => item.id)
       if (items.length !== 0) {
-        await dataProvider.loanItems(items, response.loanedBy, response.id)
+        await dataProvider.loanItems(items, loan)
       }
       refresh()
-      notify('Loan created')
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })
@@ -89,12 +90,9 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   return (
     <Box>
       <Typography variant='h6'>{label}:</Typography>
-      <LoanCreate
-        mutationOptions={{ onSuccess }}
-        loanFormProps={{
-          hideFields: ['loanedBy']
-        }}
-      />
+      <Create resource={constants.R_LOANS}>
+        <LoanForm hidefields={['loanedBy']} onSubmit={handleSubmit as any} />
+      </Create>
     </Box>
   )
 }
@@ -106,40 +104,34 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const notify = useNotify()
   const refresh = useRefresh()
-  const [loanItems, setLoanItems] = useState<LoanItem[]>([])
 
-  const label = useMemo(() => {
-    const userNames = loanItems.map((item) => {
-      const { receivedBy } = item
-      const user = usersById[receivedBy]
-      return user.name
+  const { label, selectedItems } = useMemo(() => {
+    const selectedItems: number[] = []
+    const userNames = items.map((item) => {
+      selectedItems.push(item.id)
+      if (item.loanedBy !== undefined) {
+        const user = usersById[item.loanedBy]
+        return user?.name
+      }
+      return ''
     })
 
-    const names: string = [...new Set(userNames)].join(', ')
-
-    return `Return ${items.length} items from: ${names}`
-  }, [items, loanItems])
+    const names: string | undefined = [...new Set(userNames)]?.join(', ')
+    return {
+      label: `Return ${items.length} items from: ${names}`,
+      selectedItems
+    }
+  }, [items, usersById])
 
   const handleLoanReturn = async (): Promise<void> => {
     try {
-      await dataProvider.returnItems(items)
-
+      await dataProvider.returnItems(selectedItems)
       refresh()
-      notify(label, { type: 'success' })
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })
     }
   }
-
-  useEffect(() => {
-    dataProvider
-      .getMany<LoanItem>(constants.R_LOAN_ITEMS, { ids: items })
-      .then(({ data }) => {
-        setLoanItems(data)
-      })
-      .catch(console.log)
-  }, [items])
 
   return (
     <Box>
@@ -168,13 +160,17 @@ export default function LoanItemsListBulkActionButtons(
 ): React.ReactElement {
   const { buttons = ['loan', 'loanReturn'] } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
-  const { selectedIds } = useListContext()
+  const { selectedIds, data } = useListContext<Item>()
 
   const handleClick = (buttonType: ButtonType) => {
     return () => {
       setButtonType(buttonType)
     }
   }
+
+  const selectedItems = useMemo(() => {
+    return data.filter((item) => selectedIds.includes(item.id))
+  }, [selectedIds, data])
 
   return (
     <FlexBox>
@@ -199,10 +195,10 @@ export default function LoanItemsListBulkActionButtons(
       <Modal open={Boolean(buttonType)} onClose={handleClick('')}>
         <Box sx={style}>
           {buttonType === 'loan' && (
-            <LoanItemsToUser items={selectedIds} onClose={handleClick('')} />
+            <LoanItemsToUser items={selectedItems} onClose={handleClick('')} />
           )}
           {buttonType === 'loanReturn' && (
-            <LoanItemsReturn items={selectedIds} onClose={handleClick('')} />
+            <LoanItemsReturn items={selectedItems} onClose={handleClick('')} />
           )}
         </Box>
       </Modal>

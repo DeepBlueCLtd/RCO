@@ -1,10 +1,5 @@
 interface CustomDataProvider {
-  loanItems: (
-    items: Array<Item['id']>,
-    recipient: User['id'],
-    loan: Loan['id'],
-    by?: User['id']
-  ) => Promise<any>
+  loanItems: (items: Array<Item['id']>, loan: Loan) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
 }
 
@@ -108,6 +103,7 @@ interface Item {
   musterRemarks: string
   createdAt: string
   createdBy: User['id']
+  loanedBy?: number
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -137,20 +133,8 @@ interface RCOStore {
 }
 
 interface Loan {
-  readonly id: number
-  createdAt: string
   holder: User['id']
   loanedBy: User['id']
-  remarks: string
-}
-
-interface LoanItem {
-  readonly id: number
-  createdAt: string
-  item: Item['id']
-  loan: Loan['id']
-  receivedBy: User['id']
-  returnedDate: string
   remarks: string
 }
 

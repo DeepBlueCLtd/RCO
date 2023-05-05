@@ -20,7 +20,7 @@ export const trackEvent =
           data: {
             user: user.id,
             resource,
-            id,
+            data_id: id,
             activityType: type,
             dateTime: new Date().toISOString(),
             activityDetail,

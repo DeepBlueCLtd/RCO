@@ -27,7 +27,7 @@ import React, { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
-import LoanItemsListBulkActionButtons from '../loan-items/LoanItemsListBulkActionButtons'
+import LoanItemsListBulkActionButtons from '../../components/LoanItemsListBulkActionButtons'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -120,7 +120,7 @@ export const BulkActions = (): React.ReactElement => {
           Change Location
         </Button>
       </FlexBox>
-      <LoanItemsListBulkActionButtons buttons={['loan']} />
+      <LoanItemsListBulkActionButtons />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}
@@ -151,6 +151,12 @@ export default function ItemList(
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
         <TextField source='mediaType' label='Media type' />
+        <SourceField
+          link='show'
+          source='loanedBy'
+          reference={constants.R_USERS}
+          label='Loaned By'
+        />
         <DateField showTime source='start' />
         <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
