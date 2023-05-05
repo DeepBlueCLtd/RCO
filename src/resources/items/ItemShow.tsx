@@ -2,16 +2,60 @@ import React from 'react'
 import {
   EditButton,
   Form,
+  Loading,
   Show,
   TabbedShowLayout,
-  TopToolbar
+  TopToolbar,
+  useShowContext
 } from 'react-admin'
-import { Album, GroupWork, MenuBook } from '@mui/icons-material'
+import { Album, GroupWork, MenuBook, History } from '@mui/icons-material'
 import CoreForm from './ItemForm/CoreForm'
 import MediaForm from './ItemForm/MediaForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
+import AuditList from '../audit/AuditList'
+
+const ShowForm = (): React.ReactElement => {
+  const { record, isLoading } = useShowContext<Item>()
+  if (isLoading) return <Loading />
+  return (
+    <Form>
+      <TabbedShowLayout>
+        <TabbedShowLayout.Tab label='Core'>
+          <SourceInput
+            label=''
+            source='createdBy'
+            inputProps={{ disabled: true, label: 'Added by' }}
+            reference={constants.R_USERS}
+          />
+          <CoreForm disabled />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab
+          label='Mag tape'
+          icon={<GroupWork />}
+          iconPosition='end'>
+          <MediaForm disabled type='Tape' source='magTape' />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label='DVD' icon={<Album />} iconPosition='end'>
+          <MediaForm disabled type='DVD' source='dvd' />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab
+          label='Paper'
+          icon={<MenuBook />}
+          iconPosition='end'>
+          <MediaForm disabled type='Paper' source='paper' />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab
+          label='History'
+          icon={<History />}
+          iconPosition='end'>
+          <AuditList filter={{ id: record?.id, resource: constants.R_ITEMS }} />
+        </TabbedShowLayout.Tab>
+      </TabbedShowLayout>
+    </Form>
+  )
+}
 
 export default function ItemShow(): React.ReactElement {
   return (
@@ -23,34 +67,7 @@ export default function ItemShow(): React.ReactElement {
           <EditButton />
         </TopToolbar>
       }>
-      <Form>
-        <TabbedShowLayout>
-          <TabbedShowLayout.Tab label='Core'>
-            <SourceInput
-              label=''
-              source='createdBy'
-              inputProps={{ disabled: true, label: 'Added by' }}
-              reference={constants.R_USERS}
-            />
-            <CoreForm disabled />
-          </TabbedShowLayout.Tab>
-          <TabbedShowLayout.Tab
-            label='Mag tape'
-            icon={<GroupWork />}
-            iconPosition='end'>
-            <MediaForm disabled type='Tape' source='magTape' />
-          </TabbedShowLayout.Tab>
-          <TabbedShowLayout.Tab label='DVD' icon={<Album />} iconPosition='end'>
-            <MediaForm disabled type='DVD' source='dvd' />
-          </TabbedShowLayout.Tab>
-          <TabbedShowLayout.Tab
-            label='Paper'
-            icon={<MenuBook />}
-            iconPosition='end'>
-            <MediaForm disabled type='Paper' source='paper' />
-          </TabbedShowLayout.Tab>
-        </TabbedShowLayout>
-      </Form>
+      <ShowForm />
     </Show>
   )
 }

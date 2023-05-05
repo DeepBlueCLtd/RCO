@@ -58,7 +58,13 @@ const filters = [
   />
 ]
 
-export default function AuditList(): React.ReactElement {
+interface AuditListProps {
+  filter?: any
+}
+
+export default function AuditList({
+  filter
+}: AuditListProps): React.ReactElement {
   return (
     <List
       perPage={25}
@@ -67,7 +73,8 @@ export default function AuditList(): React.ReactElement {
         field: 'dateTime',
         order: 'DESC'
       }}
-      filters={filters}>
+      filters={filters}
+      filter={filter}>
       <Datagrid bulkActionButtons={false}>
         <ReferenceField source='user' reference={constants.R_USERS} />
         <DateField source='dateTime' label='Date Time' showTime />;
