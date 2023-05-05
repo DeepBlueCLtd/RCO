@@ -16,18 +16,19 @@ export const trackEvent =
     try {
       const user = getUser()
       if (user !== undefined) {
+        const audit: Omit<Audit, 'id'> = {
+          user: user.id,
+          resource,
+          data_id: id,
+          activityType: type,
+          dateTime: new Date().toISOString(),
+          activityDetail,
+          label: getActivityTypeLabel(type),
+          securityRelated:
+            securityRelated !== undefined ? securityRelated : false
+        }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
-          data: {
-            user: user.id,
-            resource,
-            data_id: id,
-            activityType: type,
-            dateTime: new Date().toISOString(),
-            activityDetail,
-            label: getActivityTypeLabel(type),
-            securityRelated:
-              securityRelated !== undefined ? securityRelated : false
-          }
+          data: audit
         })
       }
     } catch (error) {}
