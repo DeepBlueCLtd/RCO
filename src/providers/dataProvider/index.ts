@@ -109,6 +109,25 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   }
 }
 
+const getDifference = (
+  data: Record<string, any>,
+  previousData: Record<string, any>
+): Record<any, string> => {
+  const valuesChanged: Record<string, any> = {}
+  Object.keys(data).forEach((item) => {
+    if (typeof data[item] !== 'object' && data[item] !== previousData[item]) {
+      valuesChanged[item] = previousData[item]
+    }
+  })
+  return valuesChanged
+}
+
+interface AuditDataArgs {
+  auditType: AuditType
+  activityDetail?: string
+  securityRelated?: boolean
+}
+
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<DataProvider<string>> => {
@@ -124,6 +143,21 @@ export const getDataProvider = async (
 
   const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
   const audit = trackEvent(providerWithCustomMethods)
+
+  const auditForUpdatedChanges = async (
+    record: UpdateParams,
+    auditData: AuditDataArgs
+  ): Promise<UpdateParams<Item>> => {
+    const difference = getDifference(record.data, record.previousData)
+    await audit(
+      auditData.auditType,
+      auditData.activityDetail,
+      auditData.securityRelated,
+      difference,
+      record.id as number
+    )
+    return record
+  }
 
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
@@ -213,7 +247,6 @@ export const getDataProvider = async (
           await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
           return record
         } catch (error) {
-          console.log({ error })
           return record
         }
       },
@@ -231,13 +264,13 @@ export const getDataProvider = async (
         return withCreatedBy(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
-        await audit(
-          AuditType.EDIT_ITEM,
-          `Item updated (${String(record.data.id)})`,
-          record.previousData.protectiveMarking !==
+        return await auditForUpdatedChanges(record, {
+          auditType: AuditType.EDIT_ITEM,
+          activityDetail: `Item updated (${String(record.data.id)})`,
+          securityRelated:
+            record.previousData.protectiveMarking !==
             record.data.protectiveMarking
-        )
-        return record
+        })
       },
       afterCreate: async (
         record: CreateResult<Item>,

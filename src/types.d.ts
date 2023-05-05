@@ -24,6 +24,8 @@ interface Audit {
   label: string
   activityDetail?: string
   securityRelated?: boolean
+  index?: number
+  previousValue?: Record<string, any>
 }
 
 interface Platform {

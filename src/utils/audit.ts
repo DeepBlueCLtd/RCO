@@ -7,7 +7,9 @@ export const trackEvent =
   async (
     type: AuditType,
     activityDetail?: string,
-    securityRelated?: boolean
+    securityRelated?: boolean,
+    previousData?: Record<string, any>,
+    index?: number
   ) => {
     try {
       const user = getUser()
@@ -20,7 +22,9 @@ export const trackEvent =
             activityDetail,
             label: getActivityTypeLabel(type),
             securityRelated:
-              securityRelated !== undefined ? securityRelated : false
+              securityRelated !== undefined ? securityRelated : false,
+            previousData,
+            index
           }
         })
       }
