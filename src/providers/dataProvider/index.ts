@@ -83,13 +83,15 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   const { name: userName = '' } = user ?? { name: '' }
 
   return {
-    loanItems: async (items: Array<Item['id']>, loan: Loan) => {
-      const { holder, remarks = '' } = loan
-
+    loanItems: async (
+      items: Array<Item['id']>,
+      holder: number,
+      remarks: string
+    ) => {
       await provider.updateMany<Item>(constants.R_ITEMS, {
         ids: items,
         data: {
-          loanedBy: holder
+          loanedTo: holder
         }
       })
 
@@ -103,7 +105,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
         await audit({
           type: AuditType.ITEM_LOAN,
           activityDetail: `Item loaned to ${name} by ${userName}. ${remarks}`,
-          resource: constants.R_LOAN_ITEMS,
+          resource: constants.R_ITEMS,
           id: item
         })
       })
@@ -116,7 +118,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
         constants.R_ITEMS,
         { ids: items }
       )
-      const usersIds = itemsData.map((item) => item.loanedBy) as number[]
+      const usersIds = itemsData.map((item) => item.loanedTo) as number[]
       const { data: usersData } = await provider.getMany<User>(
         constants.R_USERS,
         { ids: usersIds }
@@ -127,10 +129,10 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       })
 
       const promisees = itemsData.map(async (item) => {
-        const { loanedBy, remarks, id } = item
+        const { loanedTo, remarks, id } = item
 
-        if (loanedBy !== undefined) {
-          const { name } = userById[loanedBy]
+        if (loanedTo !== undefined) {
+          const { name } = userById[loanedTo]
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
@@ -143,7 +145,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       await provider.updateMany(constants.R_ITEMS, {
         ids: items,
         data: {
-          loanedBy: undefined
+          loanedTo: undefined
         }
       })
 

@@ -6,13 +6,24 @@ import {
   useListContext,
   useNotify,
   useRefresh,
-  Create
+  Create,
+  SimpleForm,
+  Toolbar,
+  SaveButton,
+  TextInput
 } from 'react-admin'
-import FlexBox from './FlexBox'
-import * as constants from '../constants'
-import LoanForm from './LoanForm'
+import FlexBox from '../../components/FlexBox'
+import * as constants from '../../constants'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import SourceInput from '../../components/SourceInput'
 
 type ButtonType = '' | 'loan' | 'loanReturn'
+
+interface FormState {
+  holder: User['id']
+  remarks: string
+}
 
 const style = {
   position: 'absolute',
@@ -65,6 +76,17 @@ const useUser = (): {
   return { users, usersById }
 }
 
+const schema = yup.object({
+  holder: yup.number().required(),
+  remarks: yup.string().required()
+})
+
+const ToolBar = (): React.ReactElement => (
+  <Toolbar>
+    <SaveButton label='Loan' />
+  </Toolbar>
+)
+
 function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
 
@@ -74,13 +96,15 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
 
   const label: string = `Loan ${items.length} items to`
 
-  const handleSubmit = async (loan: Loan): Promise<void> => {
+  const handleSubmit = async (values: FormState): Promise<void> => {
     try {
+      const { remarks, holder } = values
       const items = props.items.map((item) => item.id)
       if (items.length !== 0) {
-        await dataProvider.loanItems(items, loan)
+        await dataProvider.loanItems(items, holder, remarks)
       }
       refresh()
+      notify(`${items.length} items loaned`)
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })
@@ -91,7 +115,13 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
     <Box>
       <Typography variant='h6'>{label}:</Typography>
       <Create resource={constants.R_LOANS}>
-        <LoanForm hidefields={['loanedBy']} onSubmit={handleSubmit as any} />
+        <SimpleForm
+          onSubmit={handleSubmit as any}
+          toolbar={<ToolBar />}
+          resolver={yupResolver(schema)}>
+          <SourceInput source='holder' reference={constants.R_USERS} />
+          <TextInput sx={{ width: '100%' }} multiline source='remarks' />
+        </SimpleForm>
       </Create>
     </Box>
   )
@@ -109,8 +139,8 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
     const selectedItems: number[] = []
     const userNames = items.map((item) => {
       selectedItems.push(item.id)
-      if (item.loanedBy !== undefined) {
-        const user = usersById[item.loanedBy]
+      if (item.loanedTo !== undefined) {
+        const user = usersById[item.loanedTo]
         return user?.name
       }
       return ''
@@ -127,6 +157,7 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
     try {
       await dataProvider.returnItems(selectedItems)
       refresh()
+      notify(`${selectedItems.length} items returned`)
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })

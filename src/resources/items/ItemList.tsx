@@ -27,7 +27,7 @@ import React, { useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
-import LoanItemsListBulkActionButtons from '../../components/LoanItemsListBulkActionButtons'
+import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -39,7 +39,7 @@ const omitColumns: string[] = [
   'end',
   'vaultLocation',
   'musterRemarks',
-  'loanedBy'
+  'loanedTo'
 ]
 
 const filters = [
@@ -154,9 +154,9 @@ export default function ItemList(
         <TextField source='mediaType' label='Media type' />
         <SourceField
           link='show'
-          source='loanedBy'
+          source='loanedTo'
           reference={constants.R_USERS}
-          label='Loaned By'
+          label='Loaned to'
         />
         <DateField showTime source='start' />
         <DateField showTime source='end' />

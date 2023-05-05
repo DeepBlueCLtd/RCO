@@ -1,5 +1,9 @@
 interface CustomDataProvider {
-  loanItems: (items: Array<Item['id']>, loan: Loan) => Promise<any>
+  loanItems: (
+    items: Array<Item['id']>,
+    loanedTo: User['id'],
+    remarks: string
+  ) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
 }
 
@@ -103,7 +107,7 @@ interface Item {
   musterRemarks: string
   createdAt: string
   createdBy: User['id']
-  loanedBy?: number
+  loanedTo?: number
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -130,12 +134,6 @@ interface RCOStore {
   protectiveMarking: ReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ReferenceItem[]
-}
-
-interface Loan {
-  holder: User['id']
-  loanedBy: User['id']
-  remarks: string
 }
 
 interface ActivityType {

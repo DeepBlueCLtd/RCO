@@ -77,7 +77,7 @@ export default function ItemForm(): React.ReactElement {
 
   const defaultValues: Partial<Item> = {
     item_number: '',
-    loanedBy: undefined,
+    loanedTo: undefined,
     dvd: {
       mediaType: 'DVD',
       size: 0
