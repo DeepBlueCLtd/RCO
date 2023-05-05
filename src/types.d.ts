@@ -19,7 +19,7 @@ interface Audit {
   // the type of data being reported on (opt)
   resource: string | null
   // the id of the entity being reported on (opt)
-  id: number | null
+  data_id: number | null
   activityType: AuditType
   dateTime: string
   label: string
