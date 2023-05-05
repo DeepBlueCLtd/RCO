@@ -1,10 +1,5 @@
 interface CustomDataProvider {
-  loanItems: (
-    items: Array<Item['id']>,
-    recipient: User['id'],
-    loan: Loan['id'],
-    by?: User['id']
-  ) => Promise<any>
+  loanItems: (items: Array<Item['id']>, loanedTo: User['id']) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
 }
 
@@ -19,7 +14,13 @@ interface User {
 
 interface Audit {
   readonly id: number
-  activityType: string
+  // the user making the change
+  user: User['id']
+  // the type of data being reported on (opt)
+  resource: string | null
+  // the id of the entity being reported on (opt)
+  data_id: number | null
+  activityType: AuditType
   dateTime: string
   label: string
   activityDetail?: string
@@ -104,6 +105,7 @@ interface Item {
   musterRemarks: string
   createdAt: string
   createdBy: User['id']
+  loanedTo?: number
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -130,24 +132,6 @@ interface RCOStore {
   protectiveMarking: ReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ReferenceItem[]
-}
-
-interface Loan {
-  readonly id: number
-  createdAt: string
-  holder: User['id']
-  loanedBy: User['id']
-  remarks: string
-}
-
-interface LoanItem {
-  readonly id: number
-  createdAt: string
-  item: Item['id']
-  loan: Loan['id']
-  receivedBy: User['id']
-  returnedDate: string
-  remarks: string
 }
 
 interface ActivityType {

@@ -78,33 +78,74 @@ const withCreatedBy = (
 }
 
 const customMethods = (provider: DataProvider): CustomDataProvider => {
+  const audit = trackEvent(provider)
+  const user = getUser()
+  const { name: userName = '' } = user ?? { name: '' }
+
   return {
-    loanItems: async (
-      items: Array<Item['id']>,
-      recipient: User['id'],
-      loan: Loan['id']
-    ) => {
-      const promisees = items.map(async (item) => {
-        const data: Partial<LoanItem> = {
-          receivedBy: recipient,
-          loan,
-          item,
-          createdAt: nowDate()
+    loanItems: async (items: Array<Item['id']>, holder: number) => {
+      await provider.updateMany<Item>(constants.R_ITEMS, {
+        ids: items,
+        data: {
+          loanedTo: holder
         }
-        await provider.create<LoanItem>(constants.R_LOAN_ITEMS, {
-          data
+      })
+
+      const {
+        data: { name }
+      } = await provider.getOne<User>(constants.R_USERS, {
+        id: holder
+      })
+
+      const promisees = items.map(async (item) => {
+        await audit({
+          type: AuditType.ITEM_LOAN,
+          activityDetail: `Item loaned to ${name} by ${userName}.`,
+          resource: constants.R_ITEMS,
+          id: item
         })
       })
       await Promise.all(promisees)
     },
     returnItems: async (items: Array<Item['id']>) => {
-      const data: Partial<LoanItem> = {
-        returnedDate: DateTime.now().toFormat(constants.DATE_FORMAT)
-      }
-      await provider.updateMany<LoanItem>(constants.R_LOAN_ITEMS, {
-        ids: items,
-        data
+      const userById: Record<number, User> = {}
+
+      const { data: itemsData } = await provider.getMany<Item>(
+        constants.R_ITEMS,
+        { ids: items }
+      )
+      const usersIds = itemsData.map((item) => item.loanedTo) as number[]
+      const { data: usersData } = await provider.getMany<User>(
+        constants.R_USERS,
+        { ids: usersIds }
+      )
+
+      usersData.forEach((user) => {
+        userById[user.id] = user
       })
+
+      const promisees = itemsData.map(async (item) => {
+        const { loanedTo, id } = item
+
+        if (loanedTo !== undefined) {
+          const { name } = userById[loanedTo]
+          await audit({
+            id,
+            type: AuditType.ITEM_RETURN,
+            activityDetail: `Item returned to ${name} by ${userName}`,
+            resource: constants.R_ITEMS
+          })
+        }
+      })
+
+      await provider.updateMany(constants.R_ITEMS, {
+        ids: items,
+        data: {
+          loanedTo: undefined
+        }
+      })
+
+      await Promise.all(promisees)
     }
   }
 }
@@ -123,8 +164,8 @@ const getDifference = (
 }
 
 interface AuditDataArgs {
-  auditType: AuditType
-  activityDetail?: string
+  type: AuditType
+  activityDetail: string
   securityRelated?: boolean
 }
 
@@ -149,13 +190,13 @@ export const getDataProvider = async (
     auditData: AuditDataArgs
   ): Promise<UpdateParams<Item>> => {
     const difference = getDifference(record.data, record.previousData)
-    await audit(
-      auditData.auditType,
-      auditData.activityDetail,
-      auditData.securityRelated,
-      difference,
-      record.id as number
-    )
+    await audit({
+      ...auditData,
+      previousValue: difference,
+      resource: null,
+      index: record.id as number,
+      id: null
+    })
     return record
   }
 
@@ -163,15 +204,30 @@ export const getDataProvider = async (
     {
       resource: constants.R_USERS,
       afterDelete: async (record: DeleteResult<User>) => {
-        await audit(AuditType.DELETE_USER, `User deleted (${record.data.id})`)
+        await audit({
+          type: AuditType.DELETE_USER,
+          activityDetail: `User deleted (${record.data.id})`,
+          resource: constants.R_USERS,
+          id: record.data.id
+        })
         return record
       },
       afterCreate: async (record: CreateResult<User>) => {
-        await audit(AuditType.CREATE_USER, `User created (${record.data.id})`)
+        await audit({
+          type: AuditType.CREATE_USER,
+          activityDetail: `User created (${record.data.id})`,
+          resource: constants.R_USERS,
+          id: record.data.id
+        })
         return record
       },
       afterUpdate: async (record: UpdateResult<User>) => {
-        await audit(AuditType.EDIT_USER, `User updated (${record.data.id})`)
+        await audit({
+          type: AuditType.EDIT_USER,
+          activityDetail: `User updated (${record.data.id})`,
+          resource: constants.R_USERS,
+          id: record.data.id
+        })
         return record
       }
     },
@@ -181,10 +237,12 @@ export const getDataProvider = async (
         return withCreatedBy(record)
       },
       afterDelete: async (record: DeleteResult<Project>) => {
-        await audit(
-          AuditType.DELETE_PROJECT,
-          `Project deleted (${String(record.data.id)})`
-        )
+        await audit({
+          type: AuditType.DELETE_PROJECT,
+          activityDetail: `Project deleted (${String(record.data.id)})`,
+          resource: constants.R_PROJECTS,
+          id: record.data.id
+        })
         return record
       },
       afterCreate: async (
@@ -193,10 +251,12 @@ export const getDataProvider = async (
       ) => {
         const { data } = record
         const { id } = data
-        await audit(
-          AuditType.CREATE_PROJECT,
-          `Project created (${String(record.data.id)})`
-        )
+        await audit({
+          type: AuditType.CREATE_PROJECT,
+          activityDetail: `Project created (${String(record.data.id)})`,
+          resource: constants.R_PROJECTS,
+          id: record.data.id
+        })
         await dataProvider.update<Project>(constants.R_PROJECTS, {
           id,
           previousData: data,
@@ -205,22 +265,27 @@ export const getDataProvider = async (
         return record
       },
       afterUpdate: async (record: UpdateResult<Project>) => {
-        await audit(
-          AuditType.EDIT_PROJECT,
-          `Project updated (${String(record.data.id)})`
-        )
+        await audit({
+          type: AuditType.EDIT_PROJECT,
+          activityDetail: `Project updated (${String(record.data.id)})`,
+          resource: constants.R_PROJECTS,
+          id: record.data.id
+        })
         return record
       }
     },
     {
       resource: constants.R_BATCHES,
       beforeUpdate: async (record: UpdateParams<Batch>) => {
-        await audit(
-          AuditType.EDIT_BATCH,
-          `Batch updated (${String(record.data.id)})`,
-          record.previousData.maximumProtectiveMarking !==
-            record.data.maximumProtectiveMarking
-        )
+        await audit({
+          type: AuditType.EDIT_BATCH,
+          activityDetail: `Batch updated (${String(record.data.id)})`,
+          securityRelated:
+            record.previousData.maximumProtectiveMarking !==
+            record.data.maximumProtectiveMarking,
+          resource: constants.R_BATCHES,
+          id: record.previousData.id
+        })
         return record
       },
       beforeCreate: async (record: CreateResult<Batch>) => {
@@ -244,17 +309,24 @@ export const getDataProvider = async (
               createdAt: nowDate()
             }
           })
-          await audit(AuditType.CREATE_BATCH, `Batch created (${String(id)})`)
+          await audit({
+            type: AuditType.CREATE_BATCH,
+            activityDetail: `Batch created (${String(id)})`,
+            resource: constants.R_BATCHES,
+            id: record.data.id
+          })
           return record
         } catch (error) {
           return record
         }
       },
       afterDelete: async (record: DeleteResult<Batch>) => {
-        await audit(
-          AuditType.DELETE_BATCH,
-          `Batch deleted (${String(record.data.id)})`
-        )
+        await audit({
+          type: AuditType.DELETE_BATCH,
+          activityDetail: `Batch deleted (${String(record.data.id)})`,
+          resource: constants.R_BATCHES,
+          id: record.data.id
+        })
         return record
       }
     },
@@ -265,7 +337,7 @@ export const getDataProvider = async (
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
         return await auditForUpdatedChanges(record, {
-          auditType: AuditType.EDIT_ITEM,
+          type: AuditType.EDIT_ITEM,
           activityDetail: `Item updated (${String(record.data.id)})`,
           securityRelated:
             record.previousData.protectiveMarking !==
@@ -301,7 +373,12 @@ export const getDataProvider = async (
               createdAt: nowDate()
             }
           })
-          await audit(AuditType.CREATE_ITEM, `Item created (${String(id)})`)
+          await audit({
+            type: AuditType.CREATE_ITEM,
+            activityDetail: `Item created (${String(id)})`,
+            resource: constants.R_ITEMS,
+            id
+          })
           return record
         } catch (error) {
           console.log({ error })
@@ -309,61 +386,12 @@ export const getDataProvider = async (
         }
       },
       afterDelete: async (record: DeleteResult<Item>) => {
-        await audit(
-          AuditType.DELETE_ITEM,
-          `Item deleted (${String(record.data.id)})`
-        )
-        return record
-      }
-    },
-    {
-      resource: constants.R_LOANS,
-      beforeCreate: async (record: CreateResult<Project>) => {
-        return withCreatedBy(record)
-      },
-      afterDelete: async (record: DeleteResult<Loan>) => {
-        await audit(
-          AuditType.DELETE_LOAN,
-          `Loan deleted (${String(record.data.id)})`
-        )
-        return record
-      },
-      afterUpdate: async (record: UpdateResult<Loan>) => {
-        await audit(
-          AuditType.EDIT_LOAN,
-          `Loan updated (${String(record.data.id)})`
-        )
-        return record
-      },
-      afterCreate: async (record: CreateResult<Loan>) => {
-        await audit(
-          AuditType.CREATE_LOAN,
-          `Loan created (${String(record.data.id)})`
-        )
-        return record
-      }
-    },
-    {
-      resource: constants.R_LOAN_ITEMS,
-      afterDelete: async (record: DeleteResult<LoanItem>) => {
-        await audit(
-          AuditType.DELETE_LOAN_ITEM,
-          `Loan Item deleted (${String(record.data.id)})`
-        )
-        return record
-      },
-      afterUpdate: async (record: UpdateResult<LoanItem>) => {
-        await audit(
-          AuditType.EDIT_LOAN_ITEM,
-          `Loan Item updated (${String(record.data.id)})`
-        )
-        return record
-      },
-      afterCreate: async (record: CreateResult<LoanItem>) => {
-        await audit(
-          AuditType.CREATE_LOAN_ITEM,
-          `Loan Item created (${String(record.data.id)})`
-        )
+        await audit({
+          type: AuditType.DELETE_ITEM,
+          activityDetail: `Item deleted (${String(record.data.id)})`,
+          resource: constants.R_ITEMS,
+          id: record.data.id
+        })
         return record
       }
     }
