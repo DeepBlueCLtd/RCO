@@ -38,7 +38,8 @@ const omitColumns: string[] = [
   'start',
   'end',
   'vaultLocation',
-  'musterRemarks'
+  'musterRemarks',
+  'loanedBy'
 ]
 
 const filters = [
