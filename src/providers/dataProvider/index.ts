@@ -80,7 +80,7 @@ const withCreatedBy = (
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
   const user = getUser()
-  const { name: userName = '' } = (user != null) || { name: '' }
+  const { name: userName = '' } = user ?? { name: '' }
 
   return {
     loanItems: async (items: Array<Item['id']>, loan: Loan) => {
