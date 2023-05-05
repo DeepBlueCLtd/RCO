@@ -83,11 +83,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   const { name: userName = '' } = user ?? { name: '' }
 
   return {
-    loanItems: async (
-      items: Array<Item['id']>,
-      holder: number,
-      remarks: string
-    ) => {
+    loanItems: async (items: Array<Item['id']>, holder: number) => {
       await provider.updateMany<Item>(constants.R_ITEMS, {
         ids: items,
         data: {
@@ -104,7 +100,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       const promisees = items.map(async (item) => {
         await audit({
           type: AuditType.ITEM_LOAN,
-          activityDetail: `Item loaned to ${name} by ${userName}. ${remarks}`,
+          activityDetail: `Item loaned to ${name} by ${userName}.`,
           resource: constants.R_ITEMS,
           id: item
         })
@@ -129,14 +125,14 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       })
 
       const promisees = itemsData.map(async (item) => {
-        const { loanedTo, remarks, id } = item
+        const { loanedTo, id } = item
 
         if (loanedTo !== undefined) {
           const { name } = userById[loanedTo]
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
-            activityDetail: `Item returned to ${name} by ${userName}. ${remarks}`,
+            activityDetail: `Item returned to ${name} by ${userName}`,
             resource: constants.R_ITEMS
           })
         }

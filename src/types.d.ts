@@ -1,9 +1,5 @@
 interface CustomDataProvider {
-  loanItems: (
-    items: Array<Item['id']>,
-    loanedTo: User['id'],
-    remarks: string
-  ) => Promise<any>
+  loanItems: (items: Array<Item['id']>, loanedTo: User['id']) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
 }
 

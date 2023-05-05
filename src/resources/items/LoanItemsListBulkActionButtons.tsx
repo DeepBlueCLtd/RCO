@@ -9,8 +9,7 @@ import {
   Create,
   SimpleForm,
   Toolbar,
-  SaveButton,
-  TextInput
+  SaveButton
 } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
@@ -77,8 +76,7 @@ const useUser = (): {
 }
 
 const schema = yup.object({
-  holder: yup.number().required(),
-  remarks: yup.string().required()
+  holder: yup.number().required()
 })
 
 const ToolBar = (): React.ReactElement => (
@@ -98,10 +96,10 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
 
   const handleSubmit = async (values: FormState): Promise<void> => {
     try {
-      const { remarks, holder } = values
+      const { holder } = values
       const items = props.items.map((item) => item.id)
       if (items.length !== 0) {
-        await dataProvider.loanItems(items, holder, remarks)
+        await dataProvider.loanItems(items, holder)
       }
       refresh()
       notify(`${items.length} items loaned`)
@@ -120,7 +118,6 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
           toolbar={<ToolBar />}
           resolver={yupResolver(schema)}>
           <SourceInput source='holder' reference={constants.R_USERS} />
-          <TextInput sx={{ width: '100%' }} multiline source='remarks' />
         </SimpleForm>
       </Create>
     </Box>
