@@ -1,7 +1,4 @@
-import {
-  getActiveReferenceData,
-  getReferenceData
-} from '../providers/dataProvider/reference-data'
+import { getActiveReferenceData } from '../providers/dataProvider/reference-data'
 import users from '../providers/dataProvider/users'
 import { generateSalt, encryptData } from './encryption'
 import {
@@ -20,13 +17,13 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
   const projects = generateProject(10, user)
   const organisation = getActiveReferenceData('Organisation')
   const department = getActiveReferenceData('Department', 5)
-  const vaultLocation = getReferenceData('Vault Location')
-  const mediaType = getReferenceData('Media')
-  const protectiveMarking = getReferenceData('Protective Marking')
+  const vaultLocation = getActiveReferenceData('Vault Location')
+  const mediaType = getActiveReferenceData('Media')
+  const protectiveMarking = getActiveReferenceData('Protective Marking')
   const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
   )
-  const platformOriginator = getReferenceData('Platform Originator')
+  const platformOriginator = getActiveReferenceData('Platform Originator')
 
   const encryptedUsers = users.map((user) => {
     const salt: string = generateSalt()

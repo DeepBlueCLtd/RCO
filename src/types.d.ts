@@ -55,7 +55,7 @@ interface Batch {
   organisation: ActiveReferenceItem['id']
   // deprecated
   // protectiveMarkingAuthority: ReferenceItem['id']
-  maximumProtectiveMarking: ReferenceItem['id']
+  maximumProtectiveMarking: ActiveReferenceItem['id']
   remarks: string
   receiptNotes: string
   createdAt: string
@@ -93,9 +93,9 @@ interface Item {
   batchId: Batch['id']
   item_number: string
   end: string
-  vaultLocation: ReferenceItem['id']
+  vaultLocation: ActiveReferenceItem['id']
   remarks: string
-  protectiveMarking: ReferenceItem['id']
+  protectiveMarking: ActiveReferenceItem['id']
   magTape: Tape
   dvd: DVD
   paper: Paper
@@ -125,11 +125,11 @@ interface RCOStore {
   projects: Project[]
   organisation: ActiveReferenceItem[]
   department: ActiveReferenceItem[]
-  vaultLocation: ReferenceItem[]
-  mediaType: ReferenceItem[]
-  protectiveMarking: ReferenceItem[]
+  vaultLocation: ActiveReferenceItem[]
+  mediaType: ActiveReferenceItem[]
+  protectiveMarking: ActiveReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
-  platformOriginator: ReferenceItem[]
+  platformOriginator: ActiveReferenceItem[]
 }
 
 interface ActivityType {
