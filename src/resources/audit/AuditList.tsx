@@ -14,6 +14,7 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
+import DateFilter from '../../components/DateFilter'
 
 interface Props {
   label: string
@@ -55,7 +56,8 @@ const filters = [
     source='securityRelated'
     key='securityRelated'
     label='Security Related'
-  />
+  />,
+  <DateFilter key='createdAt' source='dateTime' label='Created At' />
 ]
 
 interface AuditListProps {
@@ -82,7 +84,7 @@ export default function AuditList({
         <TextField source='activityDetail' label='Activity Details' />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
-        <TextField source='item' label='Item' />
+        <TextField source='id' label='Item' />
       </Datagrid>
     </List>
   )

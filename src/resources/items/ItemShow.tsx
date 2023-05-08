@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import {
   EditButton,
   Form,
@@ -14,7 +14,8 @@ import MediaForm from './ItemForm/MediaForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
-import AuditList from '../audit/AuditList'
+
+const AuditList = lazy(async () => await import('../audit/AuditList'))
 
 const ShowForm = (): React.ReactElement => {
   const { record, isLoading } = useShowContext<Item>()
