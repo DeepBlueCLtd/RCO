@@ -95,11 +95,22 @@ const ItemActions = (): React.ReactElement => {
   )
 }
 
+const checkIfNoneIsLoaned = (
+  selectedIds: number[],
+  data: Item[]
+): boolean[] => {
+  const filteredData = data.filter((item) => selectedIds.includes(item.id))
+  return [
+    filteredData.every((f) => f.loanedTo === undefined),
+    filteredData.every((f) => f.loanedTo !== undefined)
+  ]
+}
+
 export const BulkActions = (): React.ReactElement => {
-  const { selectedIds } = useListContext()
+  const { selectedIds, data } = useListContext()
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
-
+  const [notLoaned, allLoaned] = checkIfNoneIsLoaned(selectedIds, data)
   const handleClose = (): void => {
     setOpen(false)
   }
@@ -121,7 +132,10 @@ export const BulkActions = (): React.ReactElement => {
           Change Location
         </Button>
       </FlexBox>
-      <LoanItemsListBulkActionButtons />
+      <LoanItemsListBulkActionButtons
+        notLoaned={notLoaned}
+        allLoaned={allLoaned}
+      />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}
