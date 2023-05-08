@@ -227,8 +227,14 @@ function App(): React.ReactElement {
   )
 }
 
+interface FilterType {
+  id: number
+  resource: string
+}
+
 interface ElementsProps {
   name: string
+  filter?: FilterType
 }
 
 interface Elements {

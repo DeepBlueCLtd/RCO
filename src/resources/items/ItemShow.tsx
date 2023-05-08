@@ -20,6 +20,12 @@ const AuditList = lazy(async () => await import('../audit/AuditList'))
 const ShowForm = (): React.ReactElement => {
   const { record, isLoading } = useShowContext<Item>()
   if (isLoading) return <Loading />
+
+  const filter =
+    record?.id !== undefined
+      ? { id: record.id, resource: constants.R_ITEMS }
+      : undefined
+
   return (
     <Form>
       <TabbedShowLayout>
@@ -51,7 +57,7 @@ const ShowForm = (): React.ReactElement => {
           label='History'
           icon={<History />}
           iconPosition='end'>
-          <AuditList filter={{ id: record?.id, resource: constants.R_ITEMS }} />
+          <AuditList filter={filter} />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
     </Form>

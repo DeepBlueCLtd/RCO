@@ -60,12 +60,16 @@ const filters = [
   <DateFilter key='createdAt' source='dateTime' label='Created At' />
 ]
 
-interface AuditListProps {
-  filter?: any
+interface FilterType {
+  id: number
+  resource: string
 }
 
+interface AuditListProps {
+  filter?: FilterType
+}
 export default function AuditList({
-  filter
+  filter = undefined
 }: AuditListProps): React.ReactElement {
   return (
     <List
