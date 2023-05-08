@@ -28,6 +28,7 @@ export default function ReferenceDataList({
   return (
     <List actions={<ListActions />} resource={cName}>
       <Datagrid
+        bulkActionButtons={false}
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
           return `/${cName}/${cID}`

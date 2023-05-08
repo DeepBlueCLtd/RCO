@@ -1,10 +1,8 @@
 import React from 'react'
 import {
   BooleanField,
-  BulkDeleteButton,
   CreateButton,
   Datagrid,
-  DeleteButton,
   EditButton,
   type Identifier,
   List,
@@ -43,11 +41,10 @@ export default function UserList(props: Props): React.ReactElement {
           const cID: string = id.toString()
           return `${basePath}/${cID}`
         }}
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
+        bulkActionButtons={false}>
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
         <CustomEditButton />
-        <DeleteButton mutationMode='pessimistic' />
       </Datagrid>
     </List>
   )
