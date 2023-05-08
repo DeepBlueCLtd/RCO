@@ -1,7 +1,6 @@
 import {
   DatagridConfigurable,
   DateField,
-  DateTimeInput,
   FilterButton,
   List,
   type ListProps,
@@ -28,6 +27,7 @@ import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
+import DateRangePicker from '../../components/DateRangePicker'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -60,8 +60,13 @@ const filters = [
     key='mediaType'
     choices={mediaTypeOptions}
   />,
-  <DateTimeInput source='start' key='start' />,
-  <DateTimeInput source='end' key='end' />,
+  <DateRangePicker
+    source='start'
+    label='Date Range'
+    startSource='start'
+    endSource='end'
+    key='start'
+  />,
   <SourceInput
     source='vaultLocation'
     key='vaultLocation'
@@ -158,8 +163,8 @@ export default function ItemList(
           reference={constants.R_USERS}
           label='Loaned to'
         />
-        <DateField showTime source='start' />
-        <DateField showTime source='end' />
+        <DateField source='start' />
+        <DateField source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <SourceField
