@@ -49,13 +49,11 @@ interface Batch {
   projectCode: string
   batchNumber: string
   yearOfReceipt: string
-  department: ActiveReferenceItem['id']
+  department: ReferenceItem['id']
   project: Project['id']
   platform: Platform['id']
-  organisation: ActiveReferenceItem['id']
-  // deprecated
-  // protectiveMarkingAuthority: ReferenceItem['id']
-  maximumProtectiveMarking: ActiveReferenceItem['id']
+  organisation: ReferenceItem['id']
+  maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
   receiptNotes: string
   createdAt: string
@@ -93,9 +91,9 @@ interface Item {
   batchId: Batch['id']
   item_number: string
   end: string
-  vaultLocation: ActiveReferenceItem['id']
+  vaultLocation: ReferenceItem['id']
   remarks: string
-  protectiveMarking: ActiveReferenceItem['id']
+  protectiveMarking: ReferenceItem['id']
   magTape: Tape
   dvd: DVD
   paper: Paper
