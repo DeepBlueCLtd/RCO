@@ -61,7 +61,7 @@ const filters = [
 ]
 
 interface FilterType {
-  id: number
+  data_id: number
   resource: string
 }
 
