@@ -20,7 +20,7 @@ interface Props {
   disabled?: boolean
 }
 
-const optionsText = (item: ActiveReferenceItem): string => item.name
+const optionsText = (item: ReferenceItem): string => item.name
 
 const CoreForm = (props: Props): React.ReactElement => {
   const { batchId, disabled } = props

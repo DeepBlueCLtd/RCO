@@ -57,7 +57,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     active?: boolean
   }
 
-  const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
+  const ConditionalReferenceInput = <T extends ReferenceItem>(
     props: Props
   ): React.ReactElement | null => {
     const { source, reference, inputProps = {}, active } = props

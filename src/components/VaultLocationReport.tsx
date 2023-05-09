@@ -24,7 +24,7 @@ import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 
-type ActiveReferenceItemById = Record<number, ActiveReferenceItem>
+type ReferenceItemById = Record<number, ReferenceItem>
 interface Result {
   name: string
   count: number
@@ -46,11 +46,11 @@ function ProtectiveMarking(): React.ReactElement {
       }
     })
     const { data: protectiveMarkings } =
-      await dataProvider.getMany<ActiveReferenceItem>('protectiveMarking', {
+      await dataProvider.getMany<ReferenceItem>('protectiveMarking', {
         ids: Object.keys(items)
       })
 
-    const protectiveMarkingById: ActiveReferenceItemById = {}
+    const protectiveMarkingById: ReferenceItemById = {}
 
     protectiveMarkings.forEach((protectiveMarking) => {
       protectiveMarkingById[protectiveMarking.id] = protectiveMarking
@@ -98,17 +98,17 @@ export default function VaultLocationReport(props: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const { selectedIds } = useListContext()
 
-  const [locations, setLocations] = useState<ActiveReferenceItemById>()
+  const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
   useEffect(() => {
     dataProvider
-      .getList<ActiveReferenceItem>(constants.R_VAULT_LOCATION, {
+      .getList<ReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: { id: selectedIds }
       })
       .then(({ data }) => {
-        const locations: ActiveReferenceItemById = {}
+        const locations: ReferenceItemById = {}
         data.forEach((location) => {
           const { id } = location
           locations[id] = location
