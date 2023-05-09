@@ -1,9 +1,5 @@
-import { Download } from '@mui/icons-material'
-import { Button } from '@mui/material'
-import React, { useState } from 'react'
-import { Create, Edit, TopToolbar } from 'react-admin'
-import Printable from '../../components/Printable'
-import VaultReport from './VaultReport'
+import React from 'react'
+import { Create, Edit } from 'react-admin'
 import VaultLocationForm from './VaultLocationForm'
 import VaultLocationList from './VaultLocationList'
 
@@ -16,37 +12,8 @@ const VaultLocationCreate = (): React.ReactElement => {
 }
 
 export const VaultLocationEdit = (): React.ReactElement => {
-  const EditActions = (): React.ReactElement => {
-    const [open, setOpen] = useState(false)
-
-    const handleClose = (): void => {
-      setOpen(false)
-    }
-
-    const handleOpen = (): void => {
-      setOpen(true)
-    }
-
-    return (
-      <>
-        <TopToolbar>
-          <Button
-            startIcon={<Download />}
-            sx={{ lineHeight: '1.5' }}
-            size='small'
-            onClick={handleOpen}>
-            Muster list
-          </Button>
-        </TopToolbar>
-        <Printable open={open} onClose={handleClose}>
-          <VaultReport />
-        </Printable>
-      </>
-    )
-  }
-
   return (
-    <Edit actions={<EditActions />}>
+    <Edit>
       <VaultLocationForm isEdit />
     </Edit>
   )
