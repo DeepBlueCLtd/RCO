@@ -1,7 +1,9 @@
 import { type DataProvider } from 'react-admin'
-import { LOCAL_STORAGE_DB_KEY, R_BATCHES } from '../../constants'
+import { R_BATCHES } from '../../constants'
 import { DateTime } from 'luxon'
 import localForageDataProvider from 'ra-data-local-forage'
+
+const TEST_STORAGE_KEY = 'rco-test'
 
 const year: number = 2025
 
@@ -41,7 +43,7 @@ describe('CRUD operations on each resource', () => {
 
   beforeEach(async () => {
     provider = await localForageDataProvider({
-      prefixLocalForageKey: LOCAL_STORAGE_DB_KEY
+      prefixLocalForageKey: TEST_STORAGE_KEY
     })
     // note: next block to be refactored, so we
     // declare array of resource names, then loop through them,
