@@ -31,8 +31,6 @@ import ReferenceDataCreate, {
 import items from './resources/items'
 import * as constants from './constants'
 import platforms from './resources/platforms'
-import loans from './resources/loans'
-import loanItems from './resources/loan-items'
 import vaultlocations from './resources/vault-locations'
 import loadDefaultData from './utils/init-data'
 
@@ -163,17 +161,6 @@ function App(): React.ReactElement {
                     icon={constants.ICON_ITEM}
                     name={constants.R_ITEMS}
                     {...items}
-                  />,
-                  <Resource
-                    key={constants.R_LOANS}
-                    icon={constants.ICON_LOAN}
-                    name={constants.R_LOANS}
-                    {...loans}
-                  />,
-                  <Resource
-                    key={constants.R_LOAN_ITEMS}
-                    name={constants.R_LOAN_ITEMS}
-                    {...loanItems}
                   />,
                   <Resource
                     key={constants.R_VAULT_LOCATION}

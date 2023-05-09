@@ -5,13 +5,24 @@ import {
   useDataProvider,
   useListContext,
   useNotify,
-  useRefresh
+  useRefresh,
+  Create,
+  SimpleForm,
+  Toolbar,
+  SaveButton
 } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
-import { LoanCreate } from '../loans'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import SourceInput from '../../components/SourceInput'
 
 type ButtonType = '' | 'loan' | 'loanReturn'
+
+interface FormState {
+  holder: User['id']
+  remarks: string
+}
 
 const style = {
   position: 'absolute',
@@ -26,7 +37,7 @@ const style = {
 }
 
 interface LoanItemsModalProps {
-  items: number[]
+  items: Item[]
   onClose: () => void
 }
 
@@ -64,6 +75,16 @@ const useUser = (): {
   return { users, usersById }
 }
 
+const schema = yup.object({
+  holder: yup.number().required()
+})
+
+const ToolBar = (): React.ReactElement => (
+  <Toolbar>
+    <SaveButton label='Loan' />
+  </Toolbar>
+)
+
 function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
 
@@ -73,13 +94,15 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
 
   const label: string = `Loan ${items.length} items to`
 
-  const onSuccess = async (response: Loan): Promise<void> => {
+  const handleSubmit = async (values: FormState): Promise<void> => {
     try {
+      const { holder } = values
+      const items = props.items.map((item) => item.id)
       if (items.length !== 0) {
-        await dataProvider.loanItems(items, response.loanedBy, response.id)
+        await dataProvider.loanItems(items, holder)
       }
       refresh()
-      notify('Loan created')
+      notify(`${items.length} items loaned`)
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })
@@ -89,12 +112,14 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   return (
     <Box>
       <Typography variant='h6'>{label}:</Typography>
-      <LoanCreate
-        mutationOptions={{ onSuccess }}
-        loanFormProps={{
-          hideFields: ['loanedBy']
-        }}
-      />
+      <Create resource={constants.R_LOANS}>
+        <SimpleForm
+          onSubmit={handleSubmit as any}
+          toolbar={<ToolBar />}
+          resolver={yupResolver(schema)}>
+          <SourceInput source='holder' reference={constants.R_USERS} />
+        </SimpleForm>
+      </Create>
     </Box>
   )
 }
@@ -106,40 +131,35 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const notify = useNotify()
   const refresh = useRefresh()
-  const [loanItems, setLoanItems] = useState<LoanItem[]>([])
 
-  const label = useMemo(() => {
-    const userNames = loanItems.map((item) => {
-      const { receivedBy } = item
-      const user = usersById[receivedBy]
-      return user.name
+  const { label, selectedItems } = useMemo(() => {
+    const selectedItems: number[] = []
+    const userNames = items.map((item) => {
+      selectedItems.push(item.id)
+      if (item.loanedTo !== undefined) {
+        const user = usersById[item.loanedTo]
+        return user?.name
+      }
+      return ''
     })
 
-    const names: string = [...new Set(userNames)].join(', ')
-
-    return `Return ${items.length} items from: ${names}`
-  }, [items, loanItems])
+    const names: string | undefined = [...new Set(userNames)]?.join(', ')
+    return {
+      label: `Return ${items.length} items from: ${names}`,
+      selectedItems
+    }
+  }, [items, usersById])
 
   const handleLoanReturn = async (): Promise<void> => {
     try {
-      await dataProvider.returnItems(items)
-
+      await dataProvider.returnItems(selectedItems)
       refresh()
-      notify(label, { type: 'success' })
+      notify(`${selectedItems.length} items returned`)
       onClose()
     } catch (error: any) {
       notify(error.message, { type: 'error' })
     }
   }
-
-  useEffect(() => {
-    dataProvider
-      .getMany<LoanItem>(constants.R_LOAN_ITEMS, { ids: items })
-      .then(({ data }) => {
-        setLoanItems(data)
-      })
-      .catch(console.log)
-  }, [items])
 
   return (
     <Box>
@@ -168,13 +188,17 @@ export default function LoanItemsListBulkActionButtons(
 ): React.ReactElement {
   const { buttons = ['loan', 'loanReturn'] } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
-  const { selectedIds } = useListContext()
+  const { selectedIds, data } = useListContext<Item>()
 
   const handleClick = (buttonType: ButtonType) => {
     return () => {
       setButtonType(buttonType)
     }
   }
+
+  const selectedItems = useMemo(() => {
+    return data.filter((item) => selectedIds.includes(item.id))
+  }, [selectedIds, data])
 
   return (
     <FlexBox>
@@ -199,10 +223,10 @@ export default function LoanItemsListBulkActionButtons(
       <Modal open={Boolean(buttonType)} onClose={handleClick('')}>
         <Box sx={style}>
           {buttonType === 'loan' && (
-            <LoanItemsToUser items={selectedIds} onClose={handleClick('')} />
+            <LoanItemsToUser items={selectedItems} onClose={handleClick('')} />
           )}
           {buttonType === 'loanReturn' && (
-            <LoanItemsReturn items={selectedIds} onClose={handleClick('')} />
+            <LoanItemsReturn items={selectedItems} onClose={handleClick('')} />
           )}
         </Box>
       </Modal>
