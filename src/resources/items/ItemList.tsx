@@ -99,7 +99,6 @@ const checkIfNoneIsLoaned = (
   selectedIds: number[],
   data: Item[]
 ): boolean[] => {
-  console.log('checking loan status')
   const filteredData = data.filter((item) => selectedIds.includes(item.id))
   return [
     filteredData.every((f) => f.loanedTo === undefined),
