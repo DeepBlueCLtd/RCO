@@ -3,8 +3,7 @@ export default defineConfig({
   testDir: './e2e/tests',
   fullyParallel: true,
   forbidOnly: !(process.env.CI == null),
-  retries: process.env.CI != null ? 2 : 0,
-  workers: process.env.CI != null ? 1 : undefined,
+  retries: 0,
   reporter: 'html',
   use: {
     baseURL: 'https://deepbluecltd.github.io/RCO/',

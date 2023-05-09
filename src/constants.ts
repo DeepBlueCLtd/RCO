@@ -21,7 +21,6 @@ export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
 export const R_LOANS = 'loans'
-export const R_LOAN_ITEMS = 'loanItems'
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
