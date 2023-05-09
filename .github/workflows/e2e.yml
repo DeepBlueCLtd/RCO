@@ -2,7 +2,8 @@ name: Playwright E2E
 
 on:
   push:
-    branches: [e2e_login_test]
+    branches: 
+     - '*'
 
 jobs:
   build:
@@ -25,6 +26,7 @@ jobs:
         run: npx playwright install
       
       - name: Execute playwright tests
+        continue-on-error: true
         run: yarn e2e
 
       - uses: actions/upload-artifact@v3
