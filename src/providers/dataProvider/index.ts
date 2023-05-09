@@ -300,6 +300,8 @@ export const getDataProvider = async (
     {
       resource: constants.R_ITEMS,
       beforeCreate: async (record: CreateResult<Item>) => {
+        record.data.start = new Date(record.data.start).toISOString()
+        record.data.end = new Date(record.data.end).toISOString()
         return withCreatedBy(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {

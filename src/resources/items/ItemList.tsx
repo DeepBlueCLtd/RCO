@@ -27,7 +27,9 @@ import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
-import DateRangePicker from '../../components/DateRangePicker'
+import DateRangePicker, {
+  ResetDateRangeFilter
+} from '../../components/DateRangePicker'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -61,11 +63,13 @@ const filters = [
     choices={mediaTypeOptions}
   />,
   <DateRangePicker
-    source='start'
+    startSource='start_gte'
+    endSource='end_lte'
+    startLabel='Start'
+    endLabel='End'
+    source='date_range'
+    key='date_range'
     label='Date Range'
-    startSource='start'
-    endSource='end'
-    key='start'
   />,
   <SourceInput
     source='vaultLocation'
@@ -149,6 +153,7 @@ export default function ItemList(
       filters={filters}
       {...props}>
       <ResetDateFilter source='createdAt' />
+      <ResetDateRangeFilter source='date_range' />
       <DatagridConfigurable
         rowClick='show'
         bulkActionButtons={<BulkActions />}
@@ -163,8 +168,8 @@ export default function ItemList(
           reference={constants.R_USERS}
           label='Loaned to'
         />
-        <DateField source='start' />
-        <DateField source='end' />
+        <DateField showTime source='start' />
+        <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
         <SourceField
