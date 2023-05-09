@@ -88,7 +88,7 @@ export default function AuditList({
         <TextField source='activityDetail' label='Activity Details' />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
-        <TextField source='id' label='Item' />
+        <TextField source='data_id' label='Item' />
       </Datagrid>
     </List>
   )

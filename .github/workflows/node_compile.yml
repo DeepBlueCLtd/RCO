@@ -24,3 +24,17 @@ jobs:
       - run: yarn
       - run: yarn build
       - run: yarn test
+      
+      - name: Install playwright dependencies
+        run: npx playwright install
+      
+      - name: Execute playwright tests
+        continue-on-error: true
+        run: yarn e2e
+      
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
