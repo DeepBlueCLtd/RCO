@@ -68,7 +68,7 @@ export default function UserList(props: Props): React.ReactElement {
         <CustomEditButton />
         <DeleteButton mutationMode='pessimistic' />
       </Datagrid>
-      <UserMusterList open={open} handleOpen={handleOpen} />
+      <UserMusterList open={open} onClose={handleOpen(false)} />
     </List>
   )
 }
