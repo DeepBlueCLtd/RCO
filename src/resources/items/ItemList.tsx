@@ -98,7 +98,7 @@ const ItemActions = (): React.ReactElement => {
 const checkIfNoneIsLoaned = (
   selectedIds: number[],
   data: Item[]
-): boolean[] => {
+): [boolean, boolean] => {
   if (selectedIds.length === 0) {
     return [false, false]
   } else {
