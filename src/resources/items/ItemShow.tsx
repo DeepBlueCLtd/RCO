@@ -19,11 +19,11 @@ const AuditList = lazy(async () => await import('../audit/AuditList'))
 
 const ShowForm = (): React.ReactElement => {
   const { record, isLoading } = useShowContext<Item>()
-  if (isLoading === true) return <Loading />
+  if (isLoading) return <Loading />
 
   const filter =
     record?.id !== undefined
-      ? { id: record.id, resource: constants.R_ITEMS }
+      ? { data_id: record.id, resource: constants.R_ITEMS }
       : undefined
 
   return (
