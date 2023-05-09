@@ -181,14 +181,16 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
 
 interface Props {
   buttons?: Array<'loan' | 'loanReturn'>
-  notLoaned: boolean
+  // none of the items have been loaned (so provide the Loan button)
+  noneLoaned: boolean
+  // all of the items have been loaned (so provide the Return button)
   allLoaned: boolean
 }
 
 export default function LoanItemsListBulkActionButtons(
   props: Props
 ): React.ReactElement {
-  const { buttons = ['loan', 'loanReturn'], notLoaned, allLoaned } = props
+  const { buttons = ['loan', 'loanReturn'], noneLoaned, allLoaned } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
   const { selectedIds, data } = useListContext<Item>()
 
@@ -204,7 +206,7 @@ export default function LoanItemsListBulkActionButtons(
 
   return (
     <FlexBox>
-      {buttons.includes('loan') && notLoaned && (
+      {buttons.includes('loan') && noneLoaned && (
         <Button
           variant='outlined'
           size='small'
