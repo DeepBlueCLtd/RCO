@@ -54,6 +54,11 @@ const filters = [
     source='createdBy'
     reference={constants.R_USERS}
   />,
+  <SourceInput
+    key='loanedTo'
+    source='loanedTo'
+    reference={constants.R_USERS}
+  />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
   <AutocompleteInput
     source='mediaType'
