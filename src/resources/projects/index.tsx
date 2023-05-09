@@ -16,7 +16,7 @@ const ProjectCreate = (): React.ReactElement => {
 const ProjectEdit = (): React.ReactElement => {
   return (
     <Edit>
-      <ProjectForm isEdit />
+      <ProjectForm />
     </Edit>
   )
 }

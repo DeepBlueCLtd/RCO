@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  BulkDeleteButton,
   CreateButton,
   DatagridConfigurable,
   FilterButton,
@@ -47,7 +46,7 @@ export default function ProjectList(): React.ReactElement {
       <DatagridConfigurable
         omit={omitColumns}
         rowClick='show'
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
+        bulkActionButtons={false}>
         <TextField source='name' />
         <TextField source='remarks' />
         <TextField source='createdAt' label='Created' />
