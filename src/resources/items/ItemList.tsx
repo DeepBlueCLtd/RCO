@@ -23,7 +23,7 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
 import { Button, Modal } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -99,6 +99,7 @@ const checkIfNoneIsLoaned = (
   selectedIds: number[],
   data: Item[]
 ): boolean[] => {
+  console.log('checking loan status')
   const filteredData = data.filter((item) => selectedIds.includes(item.id))
   return [
     filteredData.every((f) => f.loanedTo === undefined),
@@ -110,7 +111,15 @@ export const BulkActions = (): React.ReactElement => {
   const { selectedIds, data } = useListContext()
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
-  const [notLoaned, allLoaned] = checkIfNoneIsLoaned(selectedIds, data)
+  const [noneLoaned, setNoneLoaned] = useState(false)
+  const [allLoaned, setAllLoaned] = useState(false)
+
+  useEffect(() => {
+    const [noneLoanedVal, allLoanedVal] = checkIfNoneIsLoaned(selectedIds, data)
+    setNoneLoaned(noneLoanedVal)
+    setAllLoaned(allLoanedVal)
+  }, [selectedIds, data])
+
   const handleClose = (): void => {
     setOpen(false)
   }
@@ -133,7 +142,7 @@ export const BulkActions = (): React.ReactElement => {
         </Button>
       </FlexBox>
       <LoanItemsListBulkActionButtons
-        notLoaned={notLoaned}
+        noneLoaned={noneLoaned}
         allLoaned={allLoaned}
       />
       <Modal open={open} onClose={handleClose}>
