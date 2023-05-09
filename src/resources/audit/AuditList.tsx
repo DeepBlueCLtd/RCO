@@ -4,7 +4,6 @@ import {
   Datagrid,
   List,
   TextField,
-  ReferenceField,
   DateField,
   DateTimeInput,
   NumberInput,
@@ -15,6 +14,7 @@ import {
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
 import DateFilter from '../../components/DateFilter'
+import SourceField from '../../components/SourceField'
 
 interface Props {
   label: string
@@ -82,7 +82,7 @@ export default function AuditList({
       filters={filters}
       filter={filter}>
       <Datagrid bulkActionButtons={false}>
-        <ReferenceField source='user' reference={constants.R_USERS} />
+        <SourceField source='user' reference={constants.R_USERS} />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='label' label='Activity Type' />
         <TextField source='activityDetail' label='Activity Details' />
