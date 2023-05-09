@@ -4,13 +4,10 @@ import {
   BulkDeleteButton,
   CreateButton,
   Datagrid,
-  DeleteButton,
-  EditButton,
   type Identifier,
   List,
   TextField,
-  TopToolbar,
-  useRecordContext
+  TopToolbar
 } from 'react-admin'
 
 interface Props {
@@ -30,12 +27,6 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
 
-  const CustomEditButton = (): React.ReactElement => {
-    const record = useRecordContext(props)
-    const id: string = record.id.toString()
-    return <EditButton to={`${basePath}/${id}`} />
-  }
-
   return (
     <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
@@ -46,8 +37,7 @@ export default function UserList(props: Props): React.ReactElement {
         bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
-        <CustomEditButton />
-        <DeleteButton mutationMode='pessimistic' />
+        <BooleanField source='active' label='Active User' />
       </Datagrid>
     </List>
   )
