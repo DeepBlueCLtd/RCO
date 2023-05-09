@@ -22,7 +22,7 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
 import { Button, Modal } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -54,6 +54,11 @@ const filters = [
   <SourceInput
     key='createdBy'
     source='createdBy'
+    reference={constants.R_USERS}
+  />,
+  <SourceInput
+    key='loanedTo'
+    source='loanedTo'
     reference={constants.R_USERS}
   />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
@@ -104,10 +109,33 @@ const ItemActions = (): React.ReactElement => {
   )
 }
 
+const checkIfNoneIsLoaned = (
+  selectedIds: number[],
+  data: Item[]
+): [boolean, boolean] => {
+  if (selectedIds.length === 0) {
+    return [false, false]
+  } else {
+    const filteredData = data.filter((item) => selectedIds.includes(item.id))
+    return [
+      filteredData.every((f) => f.loanedTo === undefined),
+      filteredData.every((f) => f.loanedTo !== undefined)
+    ]
+  }
+}
+
 export const BulkActions = (): React.ReactElement => {
-  const { selectedIds } = useListContext()
+  const { selectedIds, data } = useListContext()
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
+  const [noneLoaned, setNoneLoaned] = useState(false)
+  const [allLoaned, setAllLoaned] = useState(false)
+
+  useEffect(() => {
+    const [noneLoanedVal, allLoanedVal] = checkIfNoneIsLoaned(selectedIds, data)
+    setNoneLoaned(noneLoanedVal)
+    setAllLoaned(allLoanedVal)
+  }, [selectedIds, data])
 
   const handleClose = (): void => {
     setOpen(false)
@@ -130,7 +158,10 @@ export const BulkActions = (): React.ReactElement => {
           Change Location
         </Button>
       </FlexBox>
-      <LoanItemsListBulkActionButtons />
+      <LoanItemsListBulkActionButtons
+        noneLoaned={noneLoaned}
+        allLoaned={allLoaned}
+      />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}
