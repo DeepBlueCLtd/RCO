@@ -1,7 +1,7 @@
 import { type DataProvider } from 'react-admin'
-import { getDataProvider } from '.'
-import { R_BATCHES } from '../../constants'
+import { LOCAL_STORAGE_DB_KEY, R_BATCHES } from '../../constants'
 import { DateTime } from 'luxon'
+import localForageDataProvider from 'ra-data-local-forage'
 
 const year: number = 2025
 
@@ -37,41 +37,38 @@ const generateDummyBatchForTesting = ({ name, id }: Props = {}): NewBatch => {
 
 describe('CRUD operations on each resource', () => {
   let provider: DataProvider
-  let id: number
+  let id: number | null = null
   let batch: Batch
-  beforeAll(async () => {
-    provider = await getDataProvider(false)
-  })
 
   beforeEach(async () => {
-    if (id !== undefined)
+    provider = await localForageDataProvider({
+      prefixLocalForageKey: LOCAL_STORAGE_DB_KEY
+    })
+    if (id !== null)
       await provider.delete(R_BATCHES, {
         id
       })
+    id = null
   })
 
-  describe('CRUD Operation on Batch', () => {
+  describe('CRUD operation on Batch', () => {
     it('should create a batch', async () => {
+      const list = await provider.getList<Batch>(R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(list.total).toBe(0)
       const result = await provider.create<Batch>(R_BATCHES, {
         data: generateDummyBatchForTesting()
       })
-      id = result.data.id
-      batch = result.data
-      expect(id).toBeDefined()
-      expect(batch).toBeDefined()
-    })
-
-    it('should get the batch', async () => {
-      const createdBatch = await provider.create<Batch>(R_BATCHES, {
-        data: generateDummyBatchForTesting()
+      const createdBatch = await provider.getOne<Batch>(R_BATCHES, {
+        id: result.data.id
       })
       id = createdBatch.data.id
-      const result = await provider.getOne<Batch>(R_BATCHES, {
-        id
-      })
-      const shouldMatchBatch = generateDummyBatchForTesting({ id })
-      const expectedResult = result.data
-      expect(expectedResult).toMatchObject(shouldMatchBatch)
+      batch = createdBatch.data
+      expect(id).toBeDefined()
+      expect(batch).toBeDefined()
     })
 
     it('should update the batch', async () => {
@@ -79,7 +76,7 @@ describe('CRUD operations on each resource', () => {
         data: generateDummyBatchForTesting()
       })
       id = createdBatch.data.id
-      const result = await provider.update<Batch>(R_BATCHES, {
+      await provider.update<Batch>(R_BATCHES, {
         id,
         previousData: batch,
         data: {
@@ -91,7 +88,8 @@ describe('CRUD operations on each resource', () => {
         name: 'dummy-batch',
         id
       })
-      const expectedResult = result.data
+      const updatedBatch = await provider.getOne<Batch>(R_BATCHES, { id })
+      const expectedResult = updatedBatch.data
       expect(expectedResult).toMatchObject(shouldMatchBatch)
     })
 
@@ -99,10 +97,20 @@ describe('CRUD operations on each resource', () => {
       const created = await provider.create<Batch>(R_BATCHES, {
         data: generateDummyBatchForTesting()
       })
-      id = created.data.id
       await expect(
-        provider.delete<Batch>(R_BATCHES, { id })
+        provider.delete<Batch>(R_BATCHES, { id: created.data.id })
       ).resolves.toBeTruthy()
+
+      const list = await provider.getList<Batch>(R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(list.total).toBe(0)
+    })
+
+    it('should try to get the deleted batch and fail', async () => {
+      await expect(provider.getOne<Batch>(R_BATCHES, { id })).rejects.toThrow()
     })
   })
 })
