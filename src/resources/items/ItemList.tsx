@@ -99,11 +99,15 @@ const checkIfNoneIsLoaned = (
   selectedIds: number[],
   data: Item[]
 ): boolean[] => {
-  const filteredData = data.filter((item) => selectedIds.includes(item.id))
-  return [
-    filteredData.every((f) => f.loanedTo === undefined),
-    filteredData.every((f) => f.loanedTo !== undefined)
-  ]
+  if (selectedIds.length === 0) {
+    return [false, false]
+  } else {
+    const filteredData = data.filter((item) => selectedIds.includes(item.id))
+    return [
+      filteredData.every((f) => f.loanedTo === undefined),
+      filteredData.every((f) => f.loanedTo !== undefined)
+    ]
+  }
 }
 
 export const BulkActions = (): React.ReactElement => {
