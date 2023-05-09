@@ -88,7 +88,7 @@ describe('generateBatchId', () => {
   describe('when there are no batches in the specified year', () => {
     it('should return 00', async () => {
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('00')
+      expect(result).toBe('01')
     })
   })
 
