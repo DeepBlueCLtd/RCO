@@ -17,10 +17,11 @@ const schema = yup.object({
 })
 
 export default function UserForm(): React.ReactElement {
-  const defaultValues = {
+  const defaultValues: Omit<User, 'id'> = {
     name: '',
     password: '',
-    adminRights: false
+    adminRights: false,
+    active: true
   }
   const { record } = useEditContext()
   return (
@@ -40,6 +41,7 @@ export default function UserForm(): React.ReactElement {
         }}
       />
       <BooleanInput source='adminRights' />
+      <BooleanInput source='active' />
     </SimpleForm>
   )
 }

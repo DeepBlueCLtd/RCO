@@ -10,6 +10,8 @@ interface User {
   name: string
   password: string
   adminRights: boolean
+  /** whether items can still be loaned to this user */
+  active: boolean
 }
 
 interface Audit {
