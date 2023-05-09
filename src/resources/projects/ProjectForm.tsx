@@ -9,7 +9,7 @@ const schema = yup.object({
   remarks: yup.string()
 })
 
-export default function ProjectForm(props: FormProps): React.ReactElement {
+export default function ProjectForm(): React.ReactElement {
   const defaultValues = {
     name: '',
     remarks: ''
@@ -17,7 +17,7 @@ export default function ProjectForm(props: FormProps): React.ReactElement {
 
   return (
     <SimpleForm
-      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />

@@ -14,7 +14,7 @@ const VaultLocationCreate = (): React.ReactElement => {
 export const VaultLocationEdit = (): React.ReactElement => {
   return (
     <Edit>
-      <VaultLocationForm isEdit />
+      <VaultLocationForm />
     </Edit>
   )
 }

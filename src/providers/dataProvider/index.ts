@@ -1,7 +1,6 @@
 import localForageDataProvider from 'ra-data-local-forage'
 import {
   withLifecycleCallbacks,
-  type DeleteResult,
   type CreateResult,
   type UpdateResult,
   type DataProvider,
@@ -169,15 +168,6 @@ export const getDataProvider = async (
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
       resource: constants.R_USERS,
-      afterDelete: async (record: DeleteResult<User>) => {
-        await audit({
-          type: AuditType.DELETE_USER,
-          activityDetail: `User deleted (${record.data.id})`,
-          resource: constants.R_USERS,
-          id: record.data.id
-        })
-        return record
-      },
       afterCreate: async (record: CreateResult<User>) => {
         await audit({
           type: AuditType.CREATE_USER,
@@ -201,15 +191,6 @@ export const getDataProvider = async (
       resource: constants.R_PROJECTS,
       beforeCreate: async (record: CreateResult<Project>) => {
         return withCreatedBy(record)
-      },
-      afterDelete: async (record: DeleteResult<Project>) => {
-        await audit({
-          type: AuditType.DELETE_PROJECT,
-          activityDetail: `Project deleted (${String(record.data.id)})`,
-          resource: constants.R_PROJECTS,
-          id: record.data.id
-        })
-        return record
       },
       afterCreate: async (
         record: CreateResult<Project>,
@@ -286,15 +267,6 @@ export const getDataProvider = async (
           console.log({ error })
           return record
         }
-      },
-      afterDelete: async (record: DeleteResult<Batch>) => {
-        await audit({
-          type: AuditType.DELETE_BATCH,
-          activityDetail: `Batch deleted (${String(record.data.id)})`,
-          resource: constants.R_BATCHES,
-          id: record.data.id
-        })
-        return record
       }
     },
     {
@@ -354,15 +326,6 @@ export const getDataProvider = async (
           console.log({ error })
           return record
         }
-      },
-      afterDelete: async (record: DeleteResult<Item>) => {
-        await audit({
-          type: AuditType.DELETE_ITEM,
-          activityDetail: `Item deleted (${String(record.data.id)})`,
-          resource: constants.R_ITEMS,
-          id: record.data.id
-        })
-        return record
       }
     }
   ])
