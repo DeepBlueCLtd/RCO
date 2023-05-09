@@ -49,7 +49,7 @@ test.describe('Login failed test', () => {
 
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-    ).not.toBeVisible()
+    ).toBeVisible()
 
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
