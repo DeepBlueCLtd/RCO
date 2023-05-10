@@ -1,16 +1,12 @@
 import React, { useState } from 'react'
 import {
   BooleanField,
-  BulkDeleteButton,
   CreateButton,
   Datagrid,
-  DeleteButton,
-  EditButton,
   type Identifier,
   List,
   TextField,
-  TopToolbar,
-  useRecordContext
+  TopToolbar
 } from 'react-admin'
 import { Button } from '@mui/material'
 import { Article } from '@mui/icons-material'
@@ -34,12 +30,6 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
 
-  const CustomEditButton = (): React.ReactElement => {
-    const record = useRecordContext(props)
-    const id: string = record.id.toString()
-    return <EditButton to={`${basePath}/${id}`} />
-  }
-
   const handleOpen = (open: boolean) => () => {
     setOpen(open)
   }
@@ -52,21 +42,17 @@ export default function UserList(props: Props): React.ReactElement {
           return `${basePath}/${cID}`
         }}
         bulkActionButtons={
-          <>
-            <Button
-              startIcon={<Article />}
-              sx={{ lineHeight: '1.5' }}
-              size='small'
-              onClick={handleOpen(true)}>
-              User Muster List
-            </Button>
-            <BulkDeleteButton mutationMode='pessimistic' />
-          </>
+          <Button
+            startIcon={<Article />}
+            sx={{ lineHeight: '1.5' }}
+            size='small'
+            onClick={handleOpen(true)}>
+            User Muster List
+          </Button>
         }>
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
-        <CustomEditButton />
-        <DeleteButton mutationMode='pessimistic' />
+        <BooleanField source='active' label='Active User' />
       </Datagrid>
       <UserMusterList open={open} onClose={handleOpen(false)} />
     </List>

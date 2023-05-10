@@ -87,7 +87,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   return (
     <>
       <SimpleForm
-        toolbar={<EditToolBar isEdit={isEdit} />}
+        toolbar={<EditToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <ReferenceInput

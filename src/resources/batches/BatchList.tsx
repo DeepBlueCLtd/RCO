@@ -121,7 +121,10 @@ export default function BatchList(): React.ReactElement {
   return (
     <List perPage={25} actions={<ListActions />} filters={filters}>
       <ResetDateFilter source='createdAt' />
-      <DatagridConfigurable omit={omitColumns} rowClick='show'>
+      <DatagridConfigurable
+        omit={omitColumns}
+        rowClick='show'
+        bulkActionButtons={false}>
         <TextField source='id' />
         <DateField source='startDate' />
         <DateField source='endDate' />

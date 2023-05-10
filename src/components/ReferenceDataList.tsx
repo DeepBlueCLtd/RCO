@@ -23,14 +23,12 @@ export default function ReferenceDataList({
     </TopToolbar>
   )
 
-  const showActive = (name: string): boolean =>
-    name === 'department' ||
-    name === 'organisation' ||
-    name === 'protectiveMarkingAuthority'
+  const notShowActive = (name: string): boolean => name === 'audit'
 
   return (
     <List actions={<ListActions />} resource={cName}>
       <Datagrid
+        bulkActionButtons={false}
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
           return `/${cName}/${cID}`
@@ -40,7 +38,7 @@ export default function ReferenceDataList({
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        {showActive(name) ? <BooleanField source='active' /> : ''}
+        {notShowActive(name) ? '' : <BooleanField source='active' />}
       </Datagrid>
     </List>
   )

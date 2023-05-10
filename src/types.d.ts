@@ -10,6 +10,8 @@ interface User {
   name: string
   password: string
   adminRights: boolean
+  /** whether items can still be loaned to this user */
+  active: boolean
 }
 
 interface Audit {
@@ -49,12 +51,10 @@ interface Batch {
   projectCode: string
   batchNumber: string
   yearOfReceipt: string
-  department: ActiveReferenceItem['id']
+  department: ReferenceItem['id']
   project: Project['id']
   platform: Platform['id']
-  organisation: ActiveReferenceItem['id']
-  // deprecated
-  // protectiveMarkingAuthority: ReferenceItem['id']
+  organisation: ReferenceItem['id']
   maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
   receiptNotes: string
@@ -125,11 +125,11 @@ interface RCOStore {
   projects: Project[]
   organisation: ActiveReferenceItem[]
   department: ActiveReferenceItem[]
-  vaultLocation: ReferenceItem[]
-  mediaType: ReferenceItem[]
-  protectiveMarking: ReferenceItem[]
+  vaultLocation: ActiveReferenceItem[]
+  mediaType: ActiveReferenceItem[]
+  protectiveMarking: ActiveReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
-  platformOriginator: ReferenceItem[]
+  platformOriginator: ActiveReferenceItem[]
 }
 
 interface ActivityType {
