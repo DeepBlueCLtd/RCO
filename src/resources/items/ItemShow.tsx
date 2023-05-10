@@ -26,14 +26,14 @@ const ShowForm = (): React.ReactElement => {
       : undefined
   const pageTitle = 'View Item'
   return (
-    <Form>
-      <FlexBox>
-        <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
-          <legend>
-            <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-              <constants.ICON_ITEM /> {pageTitle}
-            </Typography>
-          </legend>
+    <FlexBox>
+      <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
+        <legend>
+          <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+            <constants.ICON_ITEM /> {pageTitle}
+          </Typography>
+        </legend>
+        <Form>
           <SourceInput
             label=''
             source='createdBy'
@@ -41,17 +41,17 @@ const ShowForm = (): React.ReactElement => {
             reference={constants.R_USERS}
           />
           <CoreForm disabled />
-        </Box>
-        <Box component='fieldset' style={{ padding: '0 15px' }}>
-          <legend>
-            <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-              History
-            </Typography>
-          </legend>
-          <AuditList filter={filter} />
-        </Box>
-      </FlexBox>
-    </Form>
+        </Form>
+      </Box>
+      <Box component='fieldset' style={{ padding: '0 15px' }}>
+        <legend>
+          <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+            History
+          </Typography>
+        </legend>
+        <AuditList filter={filter} />
+      </Box>
+    </FlexBox>
   )
 }
 
