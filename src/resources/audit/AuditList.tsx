@@ -60,7 +60,7 @@ const filters = [
   <DateFilter key='createdAt' source='dateTime' label='Created At' />
 ]
 
-interface FilterType {
+export interface FilterType {
   data_id: number
   resource: string
 }
