@@ -56,7 +56,7 @@ describe('CRUD operations on each resource', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.password })
+    await auth.login({ username: 'ian', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
