@@ -17,6 +17,7 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -84,19 +85,35 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <AutocompleteInput source={source} choices={choices} sx={sx} />
     )
   }
+  const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
   return (
     <>
       <SimpleForm
         toolbar={<EditToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
-        <ReferenceInput
-          variant='outlined'
-          source='platform'
-          filter={isEdit === true ? {} : { active: true }}
-          reference={constants.R_PLATFORMS}>
-          <AutocompleteInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
+        <Typography variant='h5' fontWeight='bold'>
+          {pageTitle}
+        </Typography>
+        <FlexBox>
+          <ReferenceInput
+            variant='outlined'
+            source='platform'
+            filter={isEdit === true ? {} : { active: true }}
+            reference={constants.R_PLATFORMS}>
+            <AutocompleteInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+          <ReferenceInput
+            variant='outlined'
+            source='project'
+            reference={constants.R_PROJECTS}>
+            <AutocompleteInput
+              optionText={optionsText}
+              sx={sx}
+              defaultValue={projectId !== undefined ? projectId : null}
+            />
+          </ReferenceInput>
+        </FlexBox>
         <FlexBox>
           <DatePicker
             label='Year of receipt'
@@ -107,13 +124,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           />
           <ReferenceInput
             variant='outlined'
-            source='project'
-            reference={constants.R_PROJECTS}>
-            <AutocompleteInput
-              optionText={optionsText}
-              sx={sx}
-              defaultValue={projectId !== undefined ? projectId : null}
-            />
+            source='maximumProtectiveMarking'
+            reference='protectiveMarking'>
+            <AutocompleteInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
         <FlexBox>
@@ -147,14 +160,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <FlexBox>
-          <ReferenceInput
-            variant='outlined'
-            source='maximumProtectiveMarking'
-            reference='protectiveMarking'>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-        </FlexBox>
+        <FlexBox></FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>
