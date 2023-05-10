@@ -1,7 +1,6 @@
 import localForageDataProvider from 'ra-data-local-forage'
 import {
   withLifecycleCallbacks,
-  type DeleteResult,
   type CreateResult,
   type UpdateResult,
   type DataProvider,
@@ -74,6 +73,18 @@ const withCreatedBy = (
   if (user !== undefined) {
     record.data.createdBy = user.id
   }
+  return record
+}
+
+const convertDateToISO = <T>(
+  record: Partial<Record<keyof T, any>>,
+  keys: Array<keyof T>
+): Partial<T> => {
+  keys.forEach((key) => {
+    if (typeof record[key] !== 'undefined') {
+      record[key] = new Date(record[key]).toISOString()
+    }
+  })
   return record
 }
 
@@ -208,15 +219,6 @@ export const getDataProvider = async (
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
       resource: constants.R_USERS,
-      afterDelete: async (record: DeleteResult<User>) => {
-        await audit({
-          type: AuditType.DELETE_USER,
-          activityDetail: `User deleted (${record.data.id})`,
-          resource: constants.R_USERS,
-          id: record.data.id
-        })
-        return record
-      },
       afterCreate: async (record: CreateResult<User>) => {
         await audit({
           type: AuditType.CREATE_USER,
@@ -240,15 +242,6 @@ export const getDataProvider = async (
       resource: constants.R_PROJECTS,
       beforeCreate: async (record: CreateResult<Project>) => {
         return withCreatedBy(record)
-      },
-      afterDelete: async (record: DeleteResult<Project>) => {
-        await audit({
-          type: AuditType.DELETE_PROJECT,
-          activityDetail: `Project deleted (${String(record.data.id)})`,
-          resource: constants.R_PROJECTS,
-          id: record.data.id
-        })
-        return record
       },
       afterCreate: async (
         record: CreateResult<Project>,
@@ -324,20 +317,14 @@ export const getDataProvider = async (
         } catch (error) {
           return record
         }
-      },
-      afterDelete: async (record: DeleteResult<Batch>) => {
-        await audit({
-          type: AuditType.DELETE_BATCH,
-          activityDetail: `Batch deleted (${String(record.data.id)})`,
-          resource: constants.R_BATCHES,
-          id: record.data.id
-        })
-        return record
       }
     },
     {
       resource: constants.R_ITEMS,
       beforeCreate: async (record: CreateResult<Item>) => {
+        convertDateToISO<Item>(record.data, ['start', 'end'])
+        record.data.start = new Date(record.data.start).toISOString()
+        record.data.end = new Date(record.data.end).toISOString()
         return withCreatedBy(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
@@ -388,15 +375,6 @@ export const getDataProvider = async (
           console.log({ error })
           return record
         }
-      },
-      afterDelete: async (record: DeleteResult<Item>) => {
-        await audit({
-          type: AuditType.DELETE_ITEM,
-          activityDetail: `Item deleted (${String(record.data.id)})`,
-          resource: constants.R_ITEMS,
-          id: record.data.id
-        })
-        return record
       }
     }
   ])

@@ -1,7 +1,6 @@
 import {
   DatagridConfigurable,
   DateField,
-  DateTimeInput,
   FilterButton,
   List,
   type ListProps,
@@ -10,7 +9,6 @@ import {
   TextField,
   TextInput,
   TopToolbar,
-  BulkDeleteButton,
   useListContext,
   useRefresh,
   AutocompleteInput,
@@ -23,11 +21,14 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
 import { Button, Modal } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
+import DateRangePicker, {
+  ResetDateRangeFilter
+} from '../../components/DateRangePicker'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -54,14 +55,26 @@ const filters = [
     source='createdBy'
     reference={constants.R_USERS}
   />,
+  <SourceInput
+    key='loanedTo'
+    source='loanedTo'
+    reference={constants.R_USERS}
+  />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
   <AutocompleteInput
     source='mediaType'
     key='mediaType'
     choices={mediaTypeOptions}
   />,
-  <DateTimeInput source='start' key='start' />,
-  <DateTimeInput source='end' key='end' />,
+  <DateRangePicker
+    startSource='end_gte'
+    endSource='start_lte'
+    startLabel='Start'
+    endLabel='End'
+    source='date_range'
+    key='date_range'
+    label='Date Range'
+  />,
   <SourceInput
     source='vaultLocation'
     key='vaultLocation'
@@ -95,10 +108,33 @@ const ItemActions = (): React.ReactElement => {
   )
 }
 
+const checkIfNoneIsLoaned = (
+  selectedIds: number[],
+  data: Item[]
+): [boolean, boolean] => {
+  if (selectedIds.length === 0) {
+    return [false, false]
+  } else {
+    const filteredData = data.filter((item) => selectedIds.includes(item.id))
+    return [
+      filteredData.every((f) => f.loanedTo === undefined),
+      filteredData.every((f) => f.loanedTo !== undefined)
+    ]
+  }
+}
+
 export const BulkActions = (): React.ReactElement => {
-  const { selectedIds } = useListContext()
+  const { selectedIds, data } = useListContext()
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
+  const [noneLoaned, setNoneLoaned] = useState(false)
+  const [allLoaned, setAllLoaned] = useState(false)
+
+  useEffect(() => {
+    const [noneLoanedVal, allLoanedVal] = checkIfNoneIsLoaned(selectedIds, data)
+    setNoneLoaned(noneLoanedVal)
+    setAllLoaned(allLoanedVal)
+  }, [selectedIds, data])
 
   const handleClose = (): void => {
     setOpen(false)
@@ -116,12 +152,14 @@ export const BulkActions = (): React.ReactElement => {
   return (
     <>
       <FlexBox>
-        <BulkDeleteButton mutationMode='pessimistic' />
         <Button size='small' variant='outlined' onClick={handleOpen}>
           Change Location
         </Button>
       </FlexBox>
-      <LoanItemsListBulkActionButtons />
+      <LoanItemsListBulkActionButtons
+        noneLoaned={noneLoaned}
+        allLoaned={allLoaned}
+      />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}
@@ -144,6 +182,7 @@ export default function ItemList(
       filters={filters}
       {...props}>
       <ResetDateFilter source='createdAt' />
+      <ResetDateRangeFilter source='date_range' />
       <DatagridConfigurable
         rowClick='show'
         bulkActionButtons={<BulkActions />}
