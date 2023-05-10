@@ -23,8 +23,7 @@ export const trackEvent =
     securityRelated,
     resource,
     id,
-    index,
-    label
+    index
   }: Props) => {
     try {
       const user = getUser()
@@ -36,7 +35,7 @@ export const trackEvent =
           activityType: type,
           dateTime: new Date().toISOString(),
           activityDetail,
-          label: label ?? getActivityTypeLabel(type),
+          label: getActivityTypeLabel(type),
           securityRelated:
             securityRelated !== undefined ? securityRelated : false,
           index
