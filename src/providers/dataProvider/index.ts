@@ -78,8 +78,6 @@ const withCreatedBy = (
 
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
-  const user = getUser()
-  const { name: userName = '' } = user ?? { name: '' }
 
   return {
     loanItems: async (items: Array<Item['id']>, holder: number) => {
@@ -99,7 +97,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       const promisees = items.map(async (item) => {
         await audit({
           type: AuditType.ITEM_LOAN,
-          activityDetail: `Item loaned to ${name} by ${userName}.`,
+          activityDetail: `Item loaned to ${name}`,
           resource: constants.R_ITEMS,
           id: item
         })
@@ -131,7 +129,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
-            activityDetail: `Item returned to ${name} by ${userName}`,
+            activityDetail: `Item returned from ${name}`,
             resource: constants.R_ITEMS
           })
         }
