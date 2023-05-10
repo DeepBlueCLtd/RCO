@@ -21,16 +21,16 @@ export default function Printable(
 ): React.ReactElement {
   const { children, ...rest } = props
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     rest?.onClose?.({}, 'escapeKeyDown')
   }
 
-  const handlePrint = () => {
+  const handlePrint = (): void => {
     window.print()
   }
 
   return (
-    <Modal sx={style} hideBackdrop {...rest}>
+    <Modal sx={style} hideBackdrop className='printable' {...rest}>
       <Box width='100%' height='100%' overflow='auto'>
         <IconButton sx={buttonSx} onClick={handleClose}>
           <Close />

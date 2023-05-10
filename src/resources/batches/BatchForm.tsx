@@ -1,6 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useState } from 'react'
-import { ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin'
+import {
+  SelectInput,
+  type SelectInputProps,
+  SimpleForm,
+  TextInput,
+  useGetList,
+  type TextInputProps,
+  ReferenceInput,
+  AutocompleteInput
+} from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
 import FlexBox from '../../components/FlexBox'
@@ -8,6 +17,7 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -37,22 +47,73 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     }
   }, [])
 
-  const optionsText = (value: Batch) => value.name
+  const optionsText = (value: Batch): string => value.name
 
   const sx = { width: '100%' }
 
+  interface Props {
+    reference: string
+    source: string
+    inputProps?: SelectInputProps | TextInputProps
+    active?: boolean
+  }
+
+  const ConditionalReferenceInput = <T extends ReferenceItem>(
+    props: Props
+  ): React.ReactElement | null => {
+    const { source, reference, inputProps = {}, active } = props
+    const filter = active !== undefined && active ? { active: true } : {}
+    const { data, isLoading } = useGetList<T>(reference, {
+      filter
+    })
+    const boolIsLoading: boolean = isLoading
+    if (boolIsLoading) return null
+    if (data === undefined) return null
+    const choices = data.map((d) => ({ name: d.name, id: d.id }))
+
+    return data?.length === 1 ? (
+      <SelectInput
+        source={source}
+        disabled
+        sx={sx}
+        defaultValue={data[0].id}
+        optionText={optionsText}
+        choices={choices}
+        {...inputProps}
+      />
+    ) : (
+      <AutocompleteInput source={source} choices={choices} sx={sx} />
+    )
+  }
+  const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
   return (
     <>
       <SimpleForm
-        toolbar={<EditToolBar isEdit={isEdit} />}
+        toolbar={<EditToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
-        <ReferenceInput
-          variant='outlined'
-          source='platform'
-          reference={constants.R_PLATFORMS}>
-          <SelectInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
+        <Typography variant='h5' fontWeight='bold'>
+          <constants.ICON_BATCH /> {pageTitle}
+        </Typography>
+        <FlexBox>
+          <ReferenceInput
+            variant='outlined'
+            source='platform'
+            filter={isEdit === true ? {} : { active: true }}
+            reference={constants.R_PLATFORMS}>
+            <AutocompleteInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+          <ReferenceInput
+            variant='outlined'
+            source='project'
+            reference={constants.R_PROJECTS}>
+            <AutocompleteInput
+              optionText={optionsText}
+              sx={sx}
+              defaultValue={projectId !== undefined ? projectId : null}
+            />
+          </ReferenceInput>
+        </FlexBox>
         <FlexBox>
           <DatePicker
             label='Year of receipt'
@@ -63,38 +124,43 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           />
           <ReferenceInput
             variant='outlined'
-            source='project'
-            reference={constants.R_PROJECTS}>
-            <SelectInput
-              optionText={optionsText}
-              sx={sx}
-              defaultValue={projectId !== undefined ? projectId : null}
-            />
-          </ReferenceInput>
-        </FlexBox>
-        <FlexBox>
-          <ReferenceInput
-            variant='outlined'
-            source='organisation'
-            reference='organisation'>
-            <SelectInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
-            source='department'
-            {...(isEdit === undefined ? {} : { filter: { active: true } })}
-            reference='department'>
-            <SelectInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-        </FlexBox>
-        <FlexBox>
-          <ReferenceInput
-            variant='outlined'
             source='maximumProtectiveMarking'
             reference='protectiveMarking'>
-            <SelectInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText={optionsText} sx={sx} />
           </ReferenceInput>
         </FlexBox>
+        <FlexBox>
+          {isEdit === undefined || !isEdit ? (
+            <>
+              <ConditionalReferenceInput
+                source='organisation'
+                reference='organisation'
+                active
+              />
+              <ConditionalReferenceInput
+                source='department'
+                reference='department'
+                active
+              />
+            </>
+          ) : (
+            <>
+              <ReferenceInput
+                variant='outlined'
+                source='organisation'
+                reference='organisation'>
+                <AutocompleteInput optionText={optionsText} sx={sx} />
+              </ReferenceInput>
+              <ReferenceInput
+                variant='outlined'
+                source='department'
+                reference='department'>
+                <AutocompleteInput optionText={optionsText} sx={sx} />
+              </ReferenceInput>
+            </>
+          )}
+        </FlexBox>
+        <FlexBox></FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>

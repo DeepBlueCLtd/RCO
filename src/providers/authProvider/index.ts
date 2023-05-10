@@ -1,6 +1,11 @@
-import { type UserIdentity, type AuthProvider, type DataProvider } from 'react-admin'
+import {
+  type UserIdentity,
+  type AuthProvider,
+  type DataProvider
+} from 'react-admin'
 import * as constants from '../../constants'
-import { AuditType, trackEvent } from '../../utils/audit'
+import { trackEvent } from '../../utils/audit'
+import { AuditType } from '../../utils/activity-types'
 import {
   decryptData,
   decryptPassword,
@@ -50,7 +55,12 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           const salt: string = generateSalt()
           const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
           setToken(token, salt)
-          await audit(AuditType.LOGIN, 'Logged in')
+          await audit({
+            type: AuditType.LOGIN,
+            activityDetail: 'Logged in',
+            resource: null,
+            id: null
+          })
           return await Promise.resolve(data)
         } else {
           throw new Error('Wrong password')
@@ -60,7 +70,12 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       }
     },
     logout: async (): Promise<void> => {
-      await audit(AuditType.LOGOUT, 'Logged out')
+      await audit({
+        type: AuditType.LOGOUT,
+        activityDetail: 'Logged out',
+        resource: null,
+        id: null
+      })
       removeToken()
       await Promise.resolve()
     },

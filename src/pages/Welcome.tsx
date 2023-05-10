@@ -1,9 +1,9 @@
 import React from 'react'
 import * as constants from '../constants'
-
+import { ICON_PROJECT, ICON_BATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton } from 'react-admin'
+import { CreateButton, ListButton } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import RecentMock from '../components/RecentMock'
@@ -59,10 +59,18 @@ export default function Welcome(): React.ReactElement {
           <img src={AppIcon} height='100px' />
         </FlexBox>
         <FlexBox className={styles.headerColumn}>
+          <ListButton
+            color='primary'
+            variant='contained'
+            resource={constants.R_VAULT_LOCATION}
+            label='Vault Locations'
+            sx={{ width: '150px', height: '50px' }}
+          />
           <CreateButton
             color='primary'
             variant='contained'
             resource={constants.R_PROJECTS}
+            icon={<ICON_PROJECT />}
             label='New Project'
             sx={{ width: '150px', height: '50px' }}
           />
@@ -70,6 +78,7 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_BATCHES}
+            icon={<ICON_BATCH />}
             label='New Batch'
             sx={{ width: '150px', height: '50px' }}
           />

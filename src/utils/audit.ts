@@ -1,50 +1,48 @@
 import { type DataProvider } from 'react-admin'
 import { getUser } from '../providers/authProvider'
 import * as constants from '../constants'
+import { getActivityTypeLabel, type AuditType } from './activity-types'
 
-export enum AuditType {
-  LOGIN = 'login',
-  LOGOUT = 'logout',
-
-  CREATE_USER = 'create_user',
-  DELETE_USER = 'delete_user',
-  EDIT_USER = 'edit_user',
-
-  CREATE_PROJECT = 'create_project',
-  DELETE_PROJECT = 'delete_project',
-  EDIT_PROJECT = 'edit_project',
-
-  CREATE_BATCH = 'create_batch',
-  DELETE_BATCH = 'delete_batch',
-  EDIT_BATCH = 'edit_batch',
-
-  CREATE_ITEM = 'create_item',
-  DELETE_ITEM = 'delete_item',
-  EDIT_ITEM = 'edit_item'
+interface Props {
+  type: AuditType
+  activityDetail?: string
+  securityRelated?: boolean
+  resource: string | null
+  id: number | null
+  index?: number
+  label?: string
 }
-
+/**
+ * @param  {string=} activityDetail - Deprecated
+ */
 export const trackEvent =
   (dataProvider: DataProvider) =>
-  async (
-    type: AuditType,
-    activityDetail?: string,
-    securityRelated?: boolean
-  ) => {
+  async ({
+    type,
+    activityDetail = '',
+    securityRelated,
+    resource,
+    id,
+    index
+  }: Props) => {
     try {
       const user = getUser()
       if (user !== undefined) {
+        const audit: Omit<Audit, 'id'> = {
+          user: user.id,
+          resource,
+          data_id: id,
+          activityType: type,
+          dateTime: new Date().toISOString(),
+          activityDetail,
+          label: getActivityTypeLabel(type),
+          securityRelated:
+            securityRelated !== undefined ? securityRelated : false,
+          index
+        }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
-          data: {
-            user_id: user.id,
-            activityType: type,
-            dateTime: new Date().toISOString(),
-            activityDetail,
-            securityRelated:
-              securityRelated !== undefined ? securityRelated : false
-          }
+          data: audit
         })
       }
-    } catch (error) {
-      console.log(error)
-    }
+    } catch (error) {}
   }

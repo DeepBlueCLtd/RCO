@@ -3,14 +3,15 @@ import {
   Resource,
   CustomRoutes,
   Loading,
-  type DataProvider
+  type DataProvider,
+  type AuthProvider
 } from 'react-admin'
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { Save, Layers, AccountTree } from '@mui/icons-material'
+import { AllInbox } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import autProvider from './providers/authProvider'
+import rcoAuthProvider from './providers/authProvider'
 
 // pages
 import Welcome from './pages/Welcome'
@@ -30,6 +31,9 @@ import ReferenceDataCreate, {
 import items from './resources/items'
 import * as constants from './constants'
 import platforms from './resources/platforms'
+import vaultlocations from './resources/vault-locations'
+import loadDefaultData from './utils/init-data'
+import { type FilterType } from './resources/audit/AuditList'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -37,10 +41,33 @@ function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
   )
+  const [authProvider, setAuthProvider] = useState<AuthProvider | undefined>(
+    undefined
+  )
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const handleGetProvider = (): any => {
-    if (loggingPref !== null)
-      getDataProvider(loggingPref).then(setDataProvider).catch(console.log)
+    if (loggingPref !== null) {
+      getDataProvider(loggingPref)
+        .then((provider) => {
+          setDataProvider(provider)
+          const authenticationProvider = rcoAuthProvider(provider)
+          setAuthProvider(authenticationProvider)
+          if (provider !== undefined && dataProvider === undefined) {
+            const queryParams = new URLSearchParams(window.location.search)
+            const username = queryParams.get('username')
+            const password = queryParams.get('password')
+            if (username !== null && password !== null) {
+              authenticationProvider
+                .login({ username, password })
+                .then((_: any) => {
+                  window.history.replaceState({}, '', window.location.pathname)
+                })
+                .catch(console.log)
+            }
+          }
+        })
+        .catch(console.log)
+    }
   }
 
   useEffect(() => {
@@ -51,7 +78,7 @@ function App(): React.ReactElement {
       setLoggingPref(false)
     }
 
-    const onStorageChange = (event: any) => {
+    const onStorageChange = (event: any): void => {
       if (event.key === constants.LOGGING_ENABLED) {
         setLoggingPref(event.newValue === 'true')
       }
@@ -63,8 +90,51 @@ function App(): React.ReactElement {
     }
   }, [])
 
+  useEffect(() => {
+    const UI_VERSION = localStorage.getItem(constants.APP_VERSION)
+    if (UI_VERSION !== null) {
+      if (process.env.VITE_APP_VERSION !== UI_VERSION) {
+        Object.keys(localStorage).forEach((k) => {
+          if (k !== 'rco-user' && k !== 'salt') {
+            localStorage.removeItem(k)
+          }
+        })
+        if ('caches' in window) {
+          caches
+            .keys()
+            .then((values) => {
+              values.forEach((v) => {
+                caches.delete(v).catch(console.log)
+              })
+            })
+            .catch(console.log)
+        }
+      }
+    } else {
+      localStorage.setItem(
+        constants.APP_VERSION,
+        process.env.VITE_APP_VERSION ?? '1.0.0'
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    const DATA_VERSION = localStorage.getItem(constants.DATA_VERSION)
+    if (DATA_VERSION !== null) {
+      if (process.env.VITE_DATA_VERSION !== DATA_VERSION) {
+        loadDefaultData().catch(console.log)
+      }
+    } else {
+      localStorage.setItem(
+        constants.DATA_VERSION,
+        process.env.VITE_DATA_VERSION ?? '1.0.0'
+      )
+    }
+  }, [])
+
   useEffect(handleGetProvider, [loggingPref])
   if (dataProvider === undefined) return LoadingPage
+  if (authProvider === undefined) return LoadingPage
 
   return (
     <Suspense fallback={LoadingPage}>
@@ -72,7 +142,7 @@ function App(): React.ReactElement {
         dashboard={Welcome}
         dataProvider={dataProvider}
         loginPage={Login}
-        authProvider={autProvider(dataProvider)}
+        authProvider={authProvider}
         layout={MyLayout}
         theme={rcoTheme}
         disableTelemetry
@@ -83,55 +153,58 @@ function App(): React.ReactElement {
               ? [
                   <Resource
                     key={constants.R_BATCHES}
-                    icon={Layers}
+                    icon={constants.ICON_BATCH}
                     name={constants.R_BATCHES}
                     {...batches}
                   />,
                   <Resource
                     key={constants.R_ITEMS}
-                    icon={Save}
+                    icon={constants.ICON_ITEM}
                     name={constants.R_ITEMS}
                     {...items}
                   />,
+                  <Resource
+                    key={constants.R_VAULT_LOCATION}
+                    name={constants.R_VAULT_LOCATION}
+                    icon={AllInbox}
+                    options={{ label: 'Vault Locations' }}
+                    {...vaultlocations}
+                  />,
                   <CustomRoutes key='routes'>
-                    <Route path='/reference-data' element={<ReferenceData />}>
-                      <Route path='protectiveMarking'>
-                        {...createRoutes('protectiveMarking')}
-                      </Route>
-                      <Route path='protectiveMarkingAuthority'>
-                        {...createRoutes('protectiveMarkingAuthority')}
-                      </Route>
-                      <Route path='department'>
-                        {...createRoutes('department')}
-                      </Route>
-                      <Route path='vaultLocation'>
-                        {...createRoutes('vaultLocation')}
-                      </Route>
-                      <Route path='platformOriginator'>
-                        {...createRoutes('platformOriginator')}
-                      </Route>
-                      <Route path='organisation'>
-                        {...createRoutes('organisation')}
-                      </Route>
-                      <Route path='mediaType'>
-                        {...createRoutes('mediaType')}
-                      </Route>
-                      <Route path='platforms'>
-                        {...createRoutes('platforms', platforms)}
-                      </Route>
-                      <Route path='users'>
-                        {...createRoutes('users', users)}
-                      </Route>
-                      <Route path='audit'>
-                        {...createRoutes('audit', audit)}
-                      </Route>
+                    <Route path='/protectiveMarking'>
+                      {...createRoutes('protectiveMarking')}
                     </Route>
+                    <Route path='/protectiveMarkingAuthority'>
+                      {...createRoutes('protectiveMarkingAuthority')}
+                    </Route>
+                    <Route path='/department'>
+                      {...createRoutes('department')}
+                    </Route>
+                    <Route path='/platformOriginator'>
+                      {...createRoutes('platformOriginator')}
+                    </Route>
+                    <Route path='/organisation'>
+                      {...createRoutes('organisation')}
+                    </Route>
+                    <Route path='/mediaType'>
+                      {...createRoutes('mediaType')}
+                    </Route>
+                    <Route path='/platforms'>
+                      {...createRoutes('platforms', platforms)}
+                    </Route>
+                    <Route path='/users'>
+                      {...createRoutes('users', users)}
+                    </Route>
+                    <Route path='/audit'>
+                      {...createRoutes('audit', audit)}
+                    </Route>
+                    <Route path='/reference-data' element={<ReferenceData />} />
                   </CustomRoutes>
                 ]
               : []),
             <Resource
               key={constants.R_PROJECTS}
-              icon={AccountTree}
+              icon={constants.ICON_PROJECT}
               name={constants.R_PROJECTS}
               {...projects}
             />
@@ -144,6 +217,7 @@ function App(): React.ReactElement {
 
 interface ElementsProps {
   name: string
+  filter?: FilterType
 }
 
 interface Elements {
@@ -158,7 +232,10 @@ const defaultElements = {
   list: ReferenceDataList
 }
 
-const createRoutes = (name: string, elements: Elements = defaultElements) => {
+const createRoutes = (
+  name: string,
+  elements: Elements = defaultElements
+): React.ReactNode[] => {
   const cName: string = name
 
   const {
@@ -175,7 +252,7 @@ const createRoutes = (name: string, elements: Elements = defaultElements) => {
     />,
     <Route
       key={`${cName}edit`}
-      path=':id'
+      path={`/${cName}:id`}
       element={React.createElement(edit, { name })}
     />,
     <Route

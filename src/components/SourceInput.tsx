@@ -2,13 +2,13 @@ import { type ReactElement } from 'react'
 import {
   ReferenceInput,
   type ReferenceInputProps,
-  SelectInput,
-  type SelectInputProps
+  AutocompleteInput,
+  type AutocompleteInputProps
 } from 'react-admin'
 
 interface Props<T> {
   optionField?: keyof T
-  inputProps?: SelectInputProps
+  inputProps?: AutocompleteInputProps
 }
 
 export default function SourceInput<T extends Record<string, any>>(
@@ -16,11 +16,11 @@ export default function SourceInput<T extends Record<string, any>>(
 ): ReactElement {
   const { optionField = 'name', inputProps = {}, ...rest } = props
 
-  const optionText = (item: T) => item[optionField] as string
+  const optionText = (item: T): string => item[optionField] as string
 
   return (
     <ReferenceInput {...rest}>
-      <SelectInput
+      <AutocompleteInput
         sx={{ width: '100%' }}
         optionText={optionText}
         {...inputProps}

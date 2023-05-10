@@ -1,36 +1,50 @@
 import {
   DatagridConfigurable,
   DateField,
-  DateTimeInput,
-  EditButton,
   FilterButton,
   List,
   type ListProps,
   SearchInput,
   SelectColumnsButton,
-  SelectInput,
   TextField,
   TextInput,
   TopToolbar,
-  BulkDeleteButton,
   useListContext,
-  useRefresh
+  useRefresh,
+  AutocompleteInput,
+  type SortPayload
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import { mediaTypeOptions } from '../../utils/media'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
+import { ItemAssetReport } from './ItemsReport'
 import { Button, Modal } from '@mui/material'
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
-const sort = (field = 'name') => ({ field, order: 'ASC' })
+import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
+import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
+import DateRangePicker, {
+  ResetDateRangeFilter
+} from '../../components/DateRangePicker'
 
-const omitColumns: string[] = ['createdAt']
+const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
+
+const omitColumns: string[] = [
+  'id',
+  'createdAt',
+  'remarks',
+  'start',
+  'end',
+  'vaultLocation',
+  'musterRemarks',
+  'loanedTo'
+]
 
 const filters = [
-  <SearchInput source='q' key='q' alwaysOn />,
+  <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
   <CreatedByMeFilter
     key='createdByMe'
     source='createdBy_eq'
@@ -41,10 +55,26 @@ const filters = [
     source='createdBy'
     reference={constants.R_USERS}
   />,
+  <SourceInput
+    key='loanedTo'
+    source='loanedTo'
+    reference={constants.R_USERS}
+  />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
-  <SelectInput source='mediaType' key='mediaType' choices={mediaTypeOptions} />,
-  <DateTimeInput source='start' key='start' />,
-  <DateTimeInput source='end' key='end' />,
+  <AutocompleteInput
+    source='mediaType'
+    key='mediaType'
+    choices={mediaTypeOptions}
+  />,
+  <DateRangePicker
+    startSource='end_gte'
+    endSource='start_lte'
+    startLabel='Start'
+    endLabel='End'
+    source='date_range'
+    key='date_range'
+    label='Date Range'
+  />,
   <SourceInput
     source='vaultLocation'
     key='vaultLocation'
@@ -64,30 +94,57 @@ const filters = [
     reference={constants.R_BATCHES}
     optionField='batchNumber'
   />,
-  <TextInput key='remarks' source='remarks' />
+  <TextInput key='remarks' source='remarks' />,
+  <DateFilter source='createdAt' label='Created At' key='createdAt' />
 ]
 
-const ItemActions = () => (
-  <TopToolbar>
-    <FilterButton />
-    <SelectColumnsButton />
-  </TopToolbar>
-)
+const ItemActions = (): React.ReactElement => {
+  return (
+    <TopToolbar>
+      <ItemAssetReport storeKey='items-asset-report' />
+      <FilterButton />
+      <SelectColumnsButton />
+    </TopToolbar>
+  )
+}
 
-export const BulkActions = () => {
-  const { selectedIds } = useListContext()
+const checkIfNoneIsLoaned = (
+  selectedIds: number[],
+  data: Item[]
+): [boolean, boolean] => {
+  if (selectedIds.length === 0) {
+    return [false, false]
+  } else {
+    const filteredData = data.filter((item) => selectedIds.includes(item.id))
+    return [
+      filteredData.every((f) => f.loanedTo === undefined),
+      filteredData.every((f) => f.loanedTo !== undefined)
+    ]
+  }
+}
+
+export const BulkActions = (): React.ReactElement => {
+  const { selectedIds, data } = useListContext()
   const [open, setOpen] = useState(false)
   const refresh = useRefresh()
+  const [noneLoaned, setNoneLoaned] = useState(false)
+  const [allLoaned, setAllLoaned] = useState(false)
 
-  const handleClose = () => {
+  useEffect(() => {
+    const [noneLoanedVal, allLoanedVal] = checkIfNoneIsLoaned(selectedIds, data)
+    setNoneLoaned(noneLoanedVal)
+    setAllLoaned(allLoanedVal)
+  }, [selectedIds, data])
+
+  const handleClose = (): void => {
     setOpen(false)
   }
 
-  const handleOpen = () => {
+  const handleOpen = (): void => {
     setOpen(true)
   }
 
-  const handleSuccess = () => {
+  const handleSuccess = (): void => {
     handleClose()
     refresh()
   }
@@ -95,11 +152,14 @@ export const BulkActions = () => {
   return (
     <>
       <FlexBox>
-        <BulkDeleteButton mutationMode='pessimistic' />
         <Button size='small' variant='outlined' onClick={handleOpen}>
           Change Location
         </Button>
       </FlexBox>
+      <LoanItemsListBulkActionButtons
+        noneLoaned={noneLoaned}
+        allLoaned={allLoaned}
+      />
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}
@@ -116,23 +176,39 @@ export default function ItemList(
 ): React.ReactElement {
   return (
     <List
-      bulkActionButtons={<BulkActions />}
       hasCreate={false}
       actions={<ItemActions />}
-      resource='items'
+      resource={constants.R_ITEMS}
       filters={filters}
       {...props}>
-      <DatagridConfigurable rowClick='show' omit={omitColumns}>
+      <ResetDateFilter source='createdAt' />
+      <ResetDateRangeFilter source='date_range' />
+      <DatagridConfigurable
+        rowClick='show'
+        bulkActionButtons={<BulkActions />}
+        omit={omitColumns}>
+        <TextField source='item_number' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
-        <TextField source='item_number' label='Reference' />
         <TextField source='mediaType' label='Media type' />
+        <SourceField
+          link='show'
+          source='loanedTo'
+          reference={constants.R_USERS}
+          label='Loaned to'
+        />
         <DateField showTime source='start' />
         <DateField showTime source='end' />
         <SourceField source='vaultLocation' reference='vaultLocation' />
         <SourceField source='protectiveMarking' reference='protectiveMarking' />
+        <SourceField
+          link='show'
+          source='batchId'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
         <TextField source='remarks' />
-        <EditButton />
+        <TextField source='musterRemarks' />
       </DatagridConfigurable>
     </List>
   )
