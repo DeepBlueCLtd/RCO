@@ -33,6 +33,7 @@ import * as constants from './constants'
 import platforms from './resources/platforms'
 import vaultlocations from './resources/vault-locations'
 import loadDefaultData from './utils/init-data'
+import { type FilterType } from './resources/audit/AuditList'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -216,6 +217,7 @@ function App(): React.ReactElement {
 
 interface ElementsProps {
   name: string
+  filter?: FilterType
 }
 
 interface Elements {

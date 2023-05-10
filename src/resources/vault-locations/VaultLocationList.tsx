@@ -1,5 +1,5 @@
 import React from 'react'
-import { BulkDeleteButton, Datagrid, FunctionField, List } from 'react-admin'
+import { Datagrid, FunctionField, List } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 
@@ -9,7 +9,6 @@ export default function VaultLocationList(): React.ReactElement {
       <>
         <FlexBox>
           <VaultLocationReport />
-          <BulkDeleteButton mutationMode='pessimistic' />
         </FlexBox>
       </>
     )

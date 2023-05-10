@@ -7,7 +7,6 @@ import {
   TopToolbar,
   FilterButton,
   SelectColumnsButton,
-  DeleteButton,
   DateField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
@@ -27,7 +26,6 @@ const ShowActions = (): React.ReactElement => {
       <TopToolbar>
         <TopToolbarField source='batchNumber' />
         <EditButton />
-        <DeleteButton mutationMode='pessimistic' />
       </TopToolbar>
     </>
   )

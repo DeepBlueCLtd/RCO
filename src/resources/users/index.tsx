@@ -49,7 +49,7 @@ const UserEdit = (): React.ReactElement => {
       mutationOptions={{
         onSuccess
       }}>
-      <UserForm isEdit />
+      <UserForm />
     </Edit>
   )
 }
