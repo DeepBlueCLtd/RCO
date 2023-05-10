@@ -1,4 +1,3 @@
-import { getActiveReferenceData } from '../providers/dataProvider/reference-data'
 import users from '../providers/dataProvider/defaults/users'
 import { generateSalt, encryptData } from './encryption'
 import {
@@ -20,6 +19,21 @@ export const encryptedUsers = users.map((user) => {
   }
   return updatedUser
 })
+
+export const getActiveReferenceData = (
+  nameVal: string,
+  length = 5
+): ActiveReferenceItem[] => {
+  return Array(length)
+    .fill('')
+    .map((_, index): ActiveReferenceItem => {
+      return {
+        id: index + 1,
+        name: nameVal + ':' + String(index + 1),
+        active: index === 0
+      }
+    })
+}
 
 const loadDefaultData = async (userId?: number): Promise<void> => {
   const user = typeof userId === 'undefined' ? users[0].id : userId
