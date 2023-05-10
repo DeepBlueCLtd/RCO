@@ -141,7 +141,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
-            activityDetail: `Item returned to ${name}`,
+            activityDetail: `Item returned from ${name}`,
             resource: constants.R_ITEMS
           })
         }
