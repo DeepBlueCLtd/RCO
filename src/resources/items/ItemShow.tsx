@@ -4,16 +4,16 @@ import {
   Form,
   Loading,
   Show,
-  TabbedShowLayout,
   TopToolbar,
   useShowContext
 } from 'react-admin'
-import { Album, GroupWork, MenuBook, History } from '@mui/icons-material'
 import CoreForm from './ItemForm/CoreForm'
-import MediaForm from './ItemForm/MediaForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
+import FlexBox from '../../components/FlexBox'
+import { Box } from '@mui/system'
+import { Typography } from '@mui/material'
 
 const AuditList = lazy(async () => await import('../audit/AuditList'))
 
@@ -28,8 +28,13 @@ const ShowForm = (): React.ReactElement => {
 
   return (
     <Form>
-      <TabbedShowLayout>
-        <TabbedShowLayout.Tab label='Core'>
+      <FlexBox>
+        <Box component='fieldset' style={{ width: '50%', padding: '0 15px' }}>
+          <legend>
+            <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+              Detail
+            </Typography>
+          </legend>
           <SourceInput
             label=''
             source='createdBy'
@@ -37,29 +42,16 @@ const ShowForm = (): React.ReactElement => {
             reference={constants.R_USERS}
           />
           <CoreForm disabled />
-        </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab
-          label='Mag tape'
-          icon={<GroupWork />}
-          iconPosition='end'>
-          <MediaForm disabled type='Tape' source='magTape' />
-        </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab label='DVD' icon={<Album />} iconPosition='end'>
-          <MediaForm disabled type='DVD' source='dvd' />
-        </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab
-          label='Paper'
-          icon={<MenuBook />}
-          iconPosition='end'>
-          <MediaForm disabled type='Paper' source='paper' />
-        </TabbedShowLayout.Tab>
-        <TabbedShowLayout.Tab
-          label='History'
-          icon={<History />}
-          iconPosition='end'>
+        </Box>
+        <Box component='fieldset' style={{ width: '50%', padding: '0 15px' }}>
+          <legend>
+            <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+              History
+            </Typography>
+          </legend>
           <AuditList filter={filter} />
-        </TabbedShowLayout.Tab>
-      </TabbedShowLayout>
+        </Box>
+      </FlexBox>
     </Form>
   )
 }
