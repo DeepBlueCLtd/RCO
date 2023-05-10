@@ -14,6 +14,7 @@ import MediaForm from './ItemForm/MediaForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
+import { Typography } from '@mui/material'
 
 const AuditList = lazy(async () => await import('../audit/AuditList'))
 
@@ -25,9 +26,12 @@ const ShowForm = (): React.ReactElement => {
     record?.id !== undefined
       ? { data_id: record.id, resource: constants.R_ITEMS }
       : undefined
-
+  const pageTitle = 'View Item'
   return (
     <Form>
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
+        <constants.ICON_ITEM /> {pageTitle}
+      </Typography>
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label='Core'>
           <SourceInput

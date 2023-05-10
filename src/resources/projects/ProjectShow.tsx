@@ -41,8 +41,12 @@ const Actions = (): React.ReactElement => {
 }
 
 export default function ProjectShow(): React.ReactElement {
+  const pageTitle = 'View Project'
   return (
     <Show actions={<Actions />}>
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
+        <constants.ICON_PROJECT /> {pageTitle}
+      </Typography>
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <ValueField label='Id'>

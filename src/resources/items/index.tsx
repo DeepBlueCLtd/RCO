@@ -23,7 +23,7 @@ const ItemEdit = (): React.ReactElement => {
           <ShowButton />
         </TopToolbar>
       }>
-      <ItemForm />
+      <ItemForm isEdit />
     </Edit>
   )
 }
