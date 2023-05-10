@@ -208,10 +208,10 @@ export const getDataProvider = async (
     const difference = getDifference(record.data, record.previousData)
     await audit({
       ...auditData,
-      activityDetail: `Previous values: ${JSON.stringify(difference)}`,
-      resource: null,
+      label: `Previous values: ${JSON.stringify(difference)}`,
+      resource: constants.R_ITEMS,
       index: record.id as number,
-      id: null
+      id: record.data.id
     })
     return record
   }

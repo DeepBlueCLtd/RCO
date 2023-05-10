@@ -5,21 +5,26 @@ import { getActivityTypeLabel, type AuditType } from './activity-types'
 
 interface Props {
   type: AuditType
-  activityDetail: string
+  activityDetail?: string
   securityRelated?: boolean
   resource: string | null
   id: number | null
   index?: number
+  label?: string
 }
+/**
+ * @param  {string=} activityDetail - Deprecated
+ */
 export const trackEvent =
   (dataProvider: DataProvider) =>
   async ({
     type,
-    activityDetail,
+    activityDetail = '',
     securityRelated,
     resource,
     id,
-    index
+    index,
+    label
   }: Props) => {
     try {
       const user = getUser()
@@ -31,7 +36,7 @@ export const trackEvent =
           activityType: type,
           dateTime: new Date().toISOString(),
           activityDetail,
-          label: getActivityTypeLabel(type),
+          label: label ?? getActivityTypeLabel(type),
           securityRelated:
             securityRelated !== undefined ? securityRelated : false,
           index
