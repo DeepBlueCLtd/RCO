@@ -1,7 +1,6 @@
 import {
   DatagridConfigurable,
   DateField,
-  DateTimeInput,
   FilterButton,
   List,
   type ListProps,
@@ -27,6 +26,9 @@ import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
+import DateRangePicker, {
+  ResetDateRangeFilter
+} from '../../components/DateRangePicker'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -64,8 +66,15 @@ const filters = [
     key='mediaType'
     choices={mediaTypeOptions}
   />,
-  <DateTimeInput source='start' key='start' />,
-  <DateTimeInput source='end' key='end' />,
+  <DateRangePicker
+    startSource='end_gte'
+    endSource='start_lte'
+    startLabel='Start'
+    endLabel='End'
+    source='date_range'
+    key='date_range'
+    label='Date Range'
+  />,
   <SourceInput
     source='vaultLocation'
     key='vaultLocation'
@@ -173,6 +182,7 @@ export default function ItemList(
       filters={filters}
       {...props}>
       <ResetDateFilter source='createdAt' />
+      <ResetDateRangeFilter source='date_range' />
       <DatagridConfigurable
         rowClick='show'
         bulkActionButtons={<BulkActions />}
