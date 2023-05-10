@@ -93,9 +93,6 @@
     },
     "testPathIgnorePatterns": [
       "e2e"
-    ],
-    "setupFiles": [
-      "<rootDir>/.jest/env.js"
     ]
   }
 }

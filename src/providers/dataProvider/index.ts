@@ -4,7 +4,8 @@ import {
   type CreateResult,
   type UpdateResult,
   type DataProvider,
-  type UpdateParams
+  type UpdateParams,
+  type ResourceCallbacks
 } from 'react-admin'
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
@@ -147,23 +148,27 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   }
 }
 
-export const getDataProvider = async (
-  loggingEnabled: boolean
-): Promise<DataProvider<string>> => {
-  const localForageData = await localForage.keys()
-  if (localForageData.length === 0) {
-    await loadDefaultData()
-  }
+interface Props {
+  type: AuditType
+  activityDetail: string
+  securityRelated?: boolean
+  resource: string | null
+  id: number | null
+}
 
-  const provider = await localForageDataProvider({
-    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-    loggingEnabled
-  })
+type AuditFunctionType = ({
+  type,
+  activityDetail,
+  securityRelated,
+  resource,
+  id
+}: Props) => Promise<void>
 
-  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
-  const audit = trackEvent(providerWithCustomMethods)
-
-  return withLifecycleCallbacks(providerWithCustomMethods, [
+export const lifecycleCallbacks = (
+  audit: AuditFunctionType,
+  provider: DataProvider
+): Array<ResourceCallbacks<any>> => {
+  return [
     {
       resource: constants.R_USERS,
       afterCreate: async (record: CreateResult<User>) => {
@@ -326,5 +331,27 @@ export const getDataProvider = async (
         }
       }
     }
-  ])
+  ]
+}
+
+export const getDataProvider = async (
+  loggingEnabled: boolean
+): Promise<DataProvider<string>> => {
+  const localForageData = await localForage.keys()
+  if (localForageData.length === 0) {
+    await loadDefaultData()
+  }
+
+  const provider = await localForageDataProvider({
+    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+    loggingEnabled
+  })
+
+  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
+  const audit = trackEvent(providerWithCustomMethods)
+
+  return withLifecycleCallbacks(
+    providerWithCustomMethods,
+    lifecycleCallbacks(audit, providerWithCustomMethods)
+  )
 }
