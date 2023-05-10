@@ -79,8 +79,6 @@ const withCreatedBy = (
 
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
-  const user = getUser()
-  const { name: userName = '' } = user ?? { name: '' }
 
   return {
     loanItems: async (items: Array<Item['id']>, holder: number) => {
@@ -100,7 +98,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       const promisees = items.map(async (item) => {
         await audit({
           type: AuditType.ITEM_LOAN,
-          activityDetail: `Item loaned to ${name} by ${userName}.`,
+          activityDetail: `Item loaned to ${name}.`,
           resource: constants.R_ITEMS,
           id: item
         })
@@ -132,7 +130,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
-            activityDetail: `Item returned to ${name} by ${userName}`,
+            activityDetail: `Item returned to ${name}`,
             resource: constants.R_ITEMS
           })
         }
@@ -156,7 +154,15 @@ const getDifference = (
 ): Record<any, string> => {
   const valuesChanged: Record<string, any> = {}
   Object.keys(data).forEach((item) => {
-    if (typeof data[item] !== 'object' && data[item] !== previousData[item]) {
+    const isDateModified =
+      data[item] instanceof Date &&
+      !DateTime.fromJSDate(data[item]).equals(
+        DateTime.fromJSDate(previousData[item])
+      )
+    if (
+      isDateModified ||
+      (typeof data[item] !== 'object' && data[item] !== previousData[item])
+    ) {
       valuesChanged[item] = previousData[item]
     }
   })
@@ -165,7 +171,6 @@ const getDifference = (
 
 interface AuditDataArgs {
   type: AuditType
-  activityDetail: string
   securityRelated?: boolean
 }
 
@@ -192,7 +197,7 @@ export const getDataProvider = async (
     const difference = getDifference(record.data, record.previousData)
     await audit({
       ...auditData,
-      previousValue: difference,
+      activityDetail: `Previous values: ${JSON.stringify(difference)}`,
       resource: null,
       index: record.id as number,
       id: null
@@ -338,7 +343,6 @@ export const getDataProvider = async (
       beforeUpdate: async (record: UpdateParams<Item>) => {
         return await auditForUpdatedChanges(record, {
           type: AuditType.EDIT_ITEM,
-          activityDetail: `Item updated (${String(record.data.id)})`,
           securityRelated:
             record.previousData.protectiveMarking !==
             record.data.protectiveMarking

@@ -9,7 +9,6 @@ interface Props {
   securityRelated?: boolean
   resource: string | null
   id: number | null
-  previousValue?: Record<string, any>
   index?: number
 }
 export const trackEvent =
@@ -20,7 +19,6 @@ export const trackEvent =
     securityRelated,
     resource,
     id,
-    previousValue,
     index
   }: Props) => {
     try {
@@ -36,7 +34,6 @@ export const trackEvent =
           label: getActivityTypeLabel(type),
           securityRelated:
             securityRelated !== undefined ? securityRelated : false,
-          previousValue,
           index
         }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
