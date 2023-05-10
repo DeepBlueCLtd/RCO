@@ -18,7 +18,8 @@ import loadDefaultData from '../../utils/init-data'
 import { getUser } from '../authProvider'
 
 export const nowDate = (): string => {
-  return DateTime.now().toFormat('yyyy-MM-dd')
+  const isoDate = DateTime.utc().toISO()
+  return isoDate !== null ? isoDate : 'n/a'
 }
 
 export const compareVersions = (v1: string, v2: string): number => {
@@ -67,13 +68,15 @@ export const generateBatchId = async (
   )
 }
 
-const withCreatedBy = (
+/** utility method to initialise the created by and created at fields */
+const withCreatedByAt = (
   record: CreateResult<Item | Batch | Project>
 ): CreateResult<Batch | Project | Item> => {
   const user = getUser()
   if (user !== undefined) {
     record.data.createdBy = user.id
   }
+  record.data.createdAt = nowDate()
   return record
 }
 
@@ -148,7 +151,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   }
 }
 
-interface Props {
+interface AuditProps {
   type: AuditType
   activityDetail: string
   securityRelated?: boolean
@@ -162,7 +165,7 @@ type AuditFunctionType = ({
   securityRelated,
   resource,
   id
-}: Props) => Promise<void>
+}: AuditProps) => Promise<void>
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -193,24 +196,14 @@ export const lifecycleCallbacks = (
     {
       resource: constants.R_PROJECTS,
       beforeCreate: async (record: CreateResult<Project>) => {
-        return withCreatedBy(record)
+        return withCreatedByAt(record)
       },
-      afterCreate: async (
-        record: CreateResult<Project>,
-        dataProvider: DataProvider
-      ) => {
-        const { data } = record
-        const { id } = data
+      afterCreate: async (record: CreateResult<Project>) => {
         await audit({
           type: AuditType.CREATE_PROJECT,
           activityDetail: `Project created (${String(record.data.id)})`,
           resource: constants.R_PROJECTS,
           id: record.data.id
-        })
-        await dataProvider.update<Project>(constants.R_PROJECTS, {
-          id,
-          previousData: data,
-          data: { createdAt: nowDate() }
         })
         return record
       },
@@ -239,7 +232,7 @@ export const lifecycleCallbacks = (
         return record
       },
       beforeCreate: async (record: CreateResult<Batch>) => {
-        return withCreatedBy(record)
+        return withCreatedByAt(record)
       },
       afterCreate: async (
         record: CreateResult<Batch>,
@@ -255,8 +248,7 @@ export const lifecycleCallbacks = (
             id,
             previousData: data,
             data: {
-              batchNumber,
-              createdAt: nowDate()
+              batchNumber
             }
           })
           await audit({
@@ -275,7 +267,7 @@ export const lifecycleCallbacks = (
     {
       resource: constants.R_ITEMS,
       beforeCreate: async (record: CreateResult<Item>) => {
-        return withCreatedBy(record)
+        return withCreatedByAt(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
         await audit({
@@ -314,8 +306,7 @@ export const lifecycleCallbacks = (
             id,
             previousData: data,
             data: {
-              item_number: itemNumber,
-              createdAt: nowDate()
+              item_number: itemNumber
             }
           })
           await audit({
