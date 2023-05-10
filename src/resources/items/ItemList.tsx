@@ -68,8 +68,8 @@ const filters = [
     choices={mediaTypeOptions}
   />,
   <DateRangePicker
-    startSource='start_gte'
-    endSource='end_lte'
+    startSource='end_gte'
+    endSource='start_lte'
     startLabel='Start'
     endLabel='End'
     source='date_range'
