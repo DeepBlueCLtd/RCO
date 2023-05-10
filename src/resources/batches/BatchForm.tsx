@@ -17,6 +17,7 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -84,27 +85,24 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <AutocompleteInput source={source} choices={choices} sx={sx} />
     )
   }
+  const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
   return (
     <>
       <SimpleForm
-        toolbar={<EditToolBar isEdit={isEdit} />}
+        toolbar={<EditToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
-        <ReferenceInput
-          variant='outlined'
-          source='platform'
-          filter={isEdit === true ? {} : { active: true }}
-          reference={constants.R_PLATFORMS}>
-          <AutocompleteInput optionText={optionsText} sx={sx} />
-        </ReferenceInput>
+        <Typography variant='h5' fontWeight='bold'>
+          {pageTitle}
+        </Typography>
         <FlexBox>
-          <DatePicker
-            label='Year of receipt'
-            source='yearOfReceipt'
+          <ReferenceInput
             variant='outlined'
-            format='YYYY'
-            dataPickerProps={{ views: ['year'] }}
-          />
+            source='platform'
+            filter={isEdit === true ? {} : { active: true }}
+            reference={constants.R_PLATFORMS}>
+            <AutocompleteInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
           <ReferenceInput
             variant='outlined'
             source='project'
@@ -117,11 +115,27 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           </ReferenceInput>
         </FlexBox>
         <FlexBox>
+          <DatePicker
+            label='Year of receipt'
+            source='yearOfReceipt'
+            variant='outlined'
+            format='YYYY'
+            dataPickerProps={{ views: ['year'] }}
+          />
+          <ReferenceInput
+            variant='outlined'
+            source='maximumProtectiveMarking'
+            reference='protectiveMarking'>
+            <AutocompleteInput optionText={optionsText} sx={sx} />
+          </ReferenceInput>
+        </FlexBox>
+        <FlexBox>
           {isEdit === undefined || !isEdit ? (
             <>
               <ConditionalReferenceInput
                 source='organisation'
                 reference='organisation'
+                active
               />
               <ConditionalReferenceInput
                 source='department'
@@ -146,14 +160,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <FlexBox>
-          <ReferenceInput
-            variant='outlined'
-            source='maximumProtectiveMarking'
-            reference='protectiveMarking'>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
-        </FlexBox>
+        <FlexBox></FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>

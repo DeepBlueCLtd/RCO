@@ -16,16 +16,17 @@ const schema = yup.object({
   adminRights: yup.boolean()
 })
 
-export default function UserForm(props: FormProps): React.ReactElement {
-  const defaultValues = {
+export default function UserForm(): React.ReactElement {
+  const defaultValues: Omit<User, 'id'> = {
     name: '',
     password: '',
-    adminRights: false
+    adminRights: false,
+    active: true
   }
   const { record } = useEditContext()
   return (
     <SimpleForm
-      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
@@ -40,6 +41,7 @@ export default function UserForm(props: FormProps): React.ReactElement {
         }}
       />
       <BooleanInput source='adminRights' />
+      <BooleanInput source='active' />
     </SimpleForm>
   )
 }

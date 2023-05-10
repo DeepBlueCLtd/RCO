@@ -117,7 +117,11 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
           onSubmit={handleSubmit as any}
           toolbar={<ToolBar />}
           resolver={yupResolver(schema)}>
-          <SourceInput source='holder' reference={constants.R_USERS} />
+          <SourceInput
+            source='holder'
+            reference={constants.R_USERS}
+            filter={{ active: true }}
+          />
         </SimpleForm>
       </Create>
     </Box>

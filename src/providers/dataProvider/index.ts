@@ -1,7 +1,6 @@
 import localForageDataProvider from 'ra-data-local-forage'
 import {
   withLifecycleCallbacks,
-  type DeleteResult,
   type CreateResult,
   type UpdateResult,
   type DataProvider,
@@ -79,8 +78,6 @@ const withCreatedBy = (
 
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
-  const user = getUser()
-  const { name: userName = '' } = user ?? { name: '' }
 
   return {
     loanItems: async (items: Array<Item['id']>, holder: number) => {
@@ -100,7 +97,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       const promisees = items.map(async (item) => {
         await audit({
           type: AuditType.ITEM_LOAN,
-          activityDetail: `Item loaned to ${name} by ${userName}.`,
+          activityDetail: `Item loaned to ${name}`,
           resource: constants.R_ITEMS,
           id: item
         })
@@ -132,7 +129,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
-            activityDetail: `Item returned to ${name} by ${userName}`,
+            activityDetail: `Item returned from ${name}`,
             resource: constants.R_ITEMS
           })
         }
@@ -169,15 +166,6 @@ export const getDataProvider = async (
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
       resource: constants.R_USERS,
-      afterDelete: async (record: DeleteResult<User>) => {
-        await audit({
-          type: AuditType.DELETE_USER,
-          activityDetail: `User deleted (${record.data.id})`,
-          resource: constants.R_USERS,
-          id: record.data.id
-        })
-        return record
-      },
       afterCreate: async (record: CreateResult<User>) => {
         await audit({
           type: AuditType.CREATE_USER,
@@ -201,15 +189,6 @@ export const getDataProvider = async (
       resource: constants.R_PROJECTS,
       beforeCreate: async (record: CreateResult<Project>) => {
         return withCreatedBy(record)
-      },
-      afterDelete: async (record: DeleteResult<Project>) => {
-        await audit({
-          type: AuditType.DELETE_PROJECT,
-          activityDetail: `Project deleted (${String(record.data.id)})`,
-          resource: constants.R_PROJECTS,
-          id: record.data.id
-        })
-        return record
       },
       afterCreate: async (
         record: CreateResult<Project>,
@@ -286,15 +265,6 @@ export const getDataProvider = async (
           console.log({ error })
           return record
         }
-      },
-      afterDelete: async (record: DeleteResult<Batch>) => {
-        await audit({
-          type: AuditType.DELETE_BATCH,
-          activityDetail: `Batch deleted (${String(record.data.id)})`,
-          resource: constants.R_BATCHES,
-          id: record.data.id
-        })
-        return record
       }
     },
     {
@@ -356,15 +326,6 @@ export const getDataProvider = async (
           console.log({ error })
           return record
         }
-      },
-      afterDelete: async (record: DeleteResult<Item>) => {
-        await audit({
-          type: AuditType.DELETE_ITEM,
-          activityDetail: `Item deleted (${String(record.data.id)})`,
-          resource: constants.R_ITEMS,
-          id: record.data.id
-        })
-        return record
       }
     }
   ])

@@ -2,7 +2,6 @@ import { Chip } from '@mui/material'
 import React, { useEffect } from 'react'
 import {
   BooleanField,
-  BulkDeleteButton,
   CreateButton,
   Datagrid,
   type Identifier,
@@ -59,7 +58,7 @@ export default function PlatformList(props: Props): React.ReactElement {
           const cID: string = id.toString()
           return `${basePath}/${cID}`
         }}
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
+        bulkActionButtons={false}>
         <TextField source='name' />
         <BooleanField source='active' label='Active Platform' />
       </Datagrid>

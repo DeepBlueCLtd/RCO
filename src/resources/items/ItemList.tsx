@@ -9,7 +9,6 @@ import {
   TextField,
   TextInput,
   TopToolbar,
-  BulkDeleteButton,
   useListContext,
   useRefresh,
   AutocompleteInput,
@@ -153,7 +152,6 @@ export const BulkActions = (): React.ReactElement => {
   return (
     <>
       <FlexBox>
-        <BulkDeleteButton mutationMode='pessimistic' />
         <Button size='small' variant='outlined' onClick={handleOpen}>
           Change Location
         </Button>

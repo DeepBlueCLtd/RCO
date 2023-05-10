@@ -8,17 +8,14 @@ const schema = yup.object({
   name: yup.string().required()
 })
 
-export default function VaultLocationForm(
-  props: FormProps
-): React.ReactElement {
-  const { isEdit } = props
+export default function VaultLocationForm(): React.ReactElement {
   const defaultValues = {
     name: ''
   }
 
   return (
     <SimpleForm
-      toolbar={<EditToolBar isEdit={isEdit} />}
+      toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
