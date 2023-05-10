@@ -115,10 +115,10 @@ export default function Login(): React.ReactElement {
               margin='normal'
               required
               fullWidth
-              name='password'
+              name='password-fail'
               label='Password'
               type='password'
-              id='password'
+              id='password-fail'
               autoComplete='current-password'
             />
             <Button
