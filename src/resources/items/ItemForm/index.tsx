@@ -17,7 +17,7 @@ import { mediaTypeOptions } from '../../../utils/media'
 import dayjs from 'dayjs'
 import MediaForm from './MediaForm'
 import ItemFormToolbar from './ItemFormToolbar'
-import { Box, InputAdornment, TextField } from '@mui/material'
+import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 
 const schema = yup.object({
   mediaType: yup
@@ -47,7 +47,7 @@ const schema = yup.object({
   })
 })
 
-export default function ItemForm(): React.ReactElement {
+export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const [batch, setBatch] = useState<Batch>()
   const location = useLocation()
   const redirect = useRedirect()
@@ -88,6 +88,8 @@ export default function ItemForm(): React.ReactElement {
       brand: ''
     }
   }
+
+  const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
   return (
     <Box>
       {batch != null && (
@@ -111,6 +113,9 @@ export default function ItemForm(): React.ReactElement {
           }}
         />
       )}
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '0 15px' }}>
+        <constants.ICON_ITEM /> {pageTitle}
+      </Typography>
       <TabbedForm
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}

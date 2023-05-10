@@ -11,9 +11,8 @@ import CoreForm from './ItemForm/CoreForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
+import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
-import { Box } from '@mui/system'
-import { Typography } from '@mui/material'
 
 const AuditList = lazy(async () => await import('../audit/AuditList'))
 
@@ -25,14 +24,14 @@ const ShowForm = (): React.ReactElement => {
     record?.id !== undefined
       ? { data_id: record.id, resource: constants.R_ITEMS }
       : undefined
-
+  const pageTitle = 'View Item'
   return (
     <Form>
       <FlexBox>
         <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
           <legend>
             <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-              Detail
+              <constants.ICON_ITEM /> {pageTitle}
             </Typography>
           </legend>
           <SourceInput
