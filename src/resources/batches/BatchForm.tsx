@@ -122,6 +122,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
               <ConditionalReferenceInput
                 source='organisation'
                 reference='organisation'
+                active
               />
               <ConditionalReferenceInput
                 source='department'
