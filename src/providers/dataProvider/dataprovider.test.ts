@@ -10,12 +10,13 @@ import { lifecycleCallbacks } from '.'
 import { trackEvent } from '../../utils/audit'
 import authProvider from '../authProvider'
 import { encryptedUsers } from '../../utils/init-data'
+import { AuditType } from '../../utils/activity-types'
 
 const TEST_STORAGE_KEY = 'rco-test'
 
 const year: number = 2025
 
-interface NewBatch extends Omit<Batch, 'id'> {
+interface NewBatch extends Omit<Batch, 'id' | 'createdAt' | 'createdBy'> {
   readonly id?: number
 }
 
@@ -39,9 +40,7 @@ const generateDummyBatchForTesting = ({ name, id }: Props = {}): NewBatch => {
     organisation: 1,
     maximumProtectiveMarking: 1,
     remarks: 'remarks-1',
-    receiptNotes: 'receipt-notes-1',
-    createdAt: DateTime.now().toFormat('yyyy-MM-dd'),
-    createdBy: 1
+    receiptNotes: 'receipt-notes-1'
   }
 }
 
@@ -170,9 +169,14 @@ describe('CRUD operations on each resource', () => {
         filter: {}
       })
       expect(beforeUpdateList.total).toBe(0)
+      const dummyBatch = generateDummyBatchForTesting()
+      expect(dummyBatch.id).toBeUndefined()
       const createdBatch = await provider.create<Batch>(R_BATCHES, {
-        data: generateDummyBatchForTesting()
+        data: dummyBatch
       })
+      expect(createdBatch.data.id).not.toBeUndefined()
+      expect(createdBatch.data.createdAt).not.toBeUndefined()
+      expect(createdBatch.data.createdBy).not.toBeUndefined()
       const createId = createdBatch.data.id
       const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
         sort: { field: 'id', order: 'ASC' },
@@ -180,6 +184,10 @@ describe('CRUD operations on each resource', () => {
         filter: {}
       })
       expect(auditListAfterCreate.total).toBe(1)
+      const firstAuditEntry = auditListAfterCreate.data[0]
+      expect(firstAuditEntry.data_id).toEqual(createId)
+      expect(firstAuditEntry.resource).toEqual(R_BATCHES)
+      expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_BATCH)
       await provider.update<Batch>(R_BATCHES, {
         id: createId,
         previousData: createdBatch.data,
@@ -194,6 +202,10 @@ describe('CRUD operations on each resource', () => {
         filter: {}
       })
       expect(auditListAfterUpdate.total).toBe(2)
+      const secondAuditEntry = auditListAfterUpdate.data[1]
+      expect(secondAuditEntry.data_id).toEqual(createId)
+      expect(secondAuditEntry.resource).toEqual(R_BATCHES)
+      expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_BATCH)
     })
 
     it('should test before create', async () => {
@@ -207,7 +219,8 @@ describe('CRUD operations on each resource', () => {
           id: createId
         })
       ).data
-      expect(fetchedBatch).toHaveProperty('createdBy')
+      expect(fetchedBatch.createdAt).not.toBeUndefined()
+      expect(fetchedBatch.createdBy).not.toBeUndefined()
     })
 
     it('should test after create', async () => {
@@ -217,7 +230,7 @@ describe('CRUD operations on each resource', () => {
         filter: {}
       })
       expect(beforeCreateList.total).toBe(0)
-      await provider.create<Batch>(R_BATCHES, {
+      const createdBatch = await provider.create<Batch>(R_BATCHES, {
         data: generateDummyBatchForTesting()
       })
       const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
@@ -226,6 +239,10 @@ describe('CRUD operations on each resource', () => {
         filter: {}
       })
       expect(auditListAfterCreate.total).toBe(1)
+      const audit = auditListAfterCreate.data[0]
+      expect(audit.activityType).toEqual(AuditType.CREATE_BATCH)
+      expect(audit.resource).toEqual(R_BATCHES)
+      expect(audit.data_id).toEqual(createdBatch.data.id)
     })
   })
 })
