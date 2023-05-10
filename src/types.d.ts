@@ -27,6 +27,7 @@ interface Audit {
   label: string
   activityDetail?: string
   securityRelated?: boolean
+  index?: number
 }
 
 interface Platform {

@@ -124,16 +124,13 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         <TabbedForm.Tab label='Core'>
           <CoreForm batchId={batch?.id} />
         </TabbedForm.Tab>
-        <TabbedForm.Tab
-          label='Mag tape'
-          icon={<GroupWork />}
-          iconPosition='end'>
+        <TabbedForm.Tab label='Mag tape' icon={<GroupWork />}>
           <MediaForm type='Tape' source='magTape' />
         </TabbedForm.Tab>
-        <TabbedForm.Tab label='DVD' icon={<Album />} iconPosition='end'>
+        <TabbedForm.Tab label='DVD' icon={<Album />}>
           <MediaForm type='DVD' source='dvd' />
         </TabbedForm.Tab>
-        <TabbedForm.Tab label='Paper' icon={<MenuBook />} iconPosition='end'>
+        <TabbedForm.Tab label='Paper' icon={<MenuBook />}>
           <MediaForm type='Paper' source='paper' />
         </TabbedForm.Tab>
       </TabbedForm>
