@@ -93,7 +93,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <Typography variant='h5' fontWeight='bold'>
-          {pageTitle}
+          <constants.ICON_BATCH /> {pageTitle}
         </Typography>
         <FlexBox>
           <ReferenceInput
