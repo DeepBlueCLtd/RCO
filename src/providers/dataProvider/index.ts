@@ -15,6 +15,7 @@ import { isNumber } from '../../utils/number'
 import localForage from 'localforage'
 import loadDefaultData from '../../utils/init-data'
 import { getUser } from '../authProvider'
+import { isSameDate } from '../../utils/date'
 
 export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
@@ -167,9 +168,7 @@ const getDifference = (
   Object.keys(data).forEach((item) => {
     const isDateModified =
       data[item] instanceof Date &&
-      !DateTime.fromJSDate(data[item]).equals(
-        DateTime.fromJSDate(previousData[item])
-      )
+      !isSameDate(data[item], previousData[item])
     if (
       isDateModified ||
       (typeof data[item] !== 'object' && data[item] !== previousData[item])
