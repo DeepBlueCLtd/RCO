@@ -14,11 +14,12 @@ interface ResetFilterProps {
 }
 
 const useResetFilter = (source: string): void => {
-  const { setFilters, displayedFilters } = useListContext()
+  const { setFilters, filterValues, displayedFilters } = useListContext()
   useEffect(() => {
     if (displayedFilters?.[source] !== true) {
       setFilters(
         {
+          ...filterValues,
           start_gte: undefined,
           end_lte: undefined
         },

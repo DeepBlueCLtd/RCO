@@ -76,6 +76,18 @@ const withCreatedBy = (
   return record
 }
 
+const convertDateToISO = <T>(
+  record: Partial<Record<keyof T, any>>,
+  keys: Array<keyof T>
+): Partial<T> => {
+  keys.forEach((key) => {
+    if (typeof record[key] !== 'undefined') {
+      record[key] = new Date(record[key]).toISOString()
+    }
+  })
+  return record
+}
+
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
 
@@ -270,11 +282,13 @@ export const getDataProvider = async (
     {
       resource: constants.R_ITEMS,
       beforeCreate: async (record: CreateResult<Item>) => {
+        convertDateToISO<Item>(record.data, ['start', 'end'])
         record.data.start = new Date(record.data.start).toISOString()
         record.data.end = new Date(record.data.end).toISOString()
         return withCreatedBy(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
+        convertDateToISO<Item>(record.data, ['start', 'end'])
         await audit({
           type: AuditType.EDIT_ITEM,
           activityDetail: `Item updated (${String(record.data.id)})`,
