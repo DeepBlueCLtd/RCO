@@ -1,5 +1,5 @@
 import { getActiveReferenceData } from '../providers/dataProvider/reference-data'
-import users from '../providers/dataProvider/users'
+import users from '../providers/dataProvider/defaults/users'
 import { generateSalt, encryptData } from './encryption'
 import {
   generatePlatform,
