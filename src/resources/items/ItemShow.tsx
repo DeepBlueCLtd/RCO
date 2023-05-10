@@ -29,7 +29,7 @@ const ShowForm = (): React.ReactElement => {
   return (
     <Form>
       <FlexBox>
-        <Box component='fieldset' style={{ width: '50%', padding: '0 15px' }}>
+        <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
           <legend>
             <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
               Detail
@@ -43,7 +43,7 @@ const ShowForm = (): React.ReactElement => {
           />
           <CoreForm disabled />
         </Box>
-        <Box component='fieldset' style={{ width: '50%', padding: '0 15px' }}>
+        <Box component='fieldset' style={{ padding: '0 15px' }}>
           <legend>
             <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
               History
