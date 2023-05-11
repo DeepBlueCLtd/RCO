@@ -1,0 +1,248 @@
+import {
+  withLifecycleCallbacks,
+  type DataProvider,
+  type AuthProvider
+} from 'react-admin'
+import { R_AUDIT, R_BATCHES, R_USERS } from '../../constants'
+import { DateTime } from 'luxon'
+import localForageDataProvider from 'ra-data-local-forage'
+import { lifecycleCallbacks } from '.'
+import { trackEvent } from '../../utils/audit'
+import authProvider from '../authProvider'
+import { encryptedUsers } from '../../utils/init-data'
+import { AuditType } from '../../utils/activity-types'
+
+const TEST_STORAGE_KEY = 'rco-test'
+
+const year: number = 2025
+
+interface NewBatch extends Omit<Batch, 'id' | 'createdAt' | 'createdBy'> {
+  readonly id?: number
+}
+
+interface Props {
+  name?: string
+  id?: number
+}
+
+const generateDummyBatchForTesting = ({ name, id }: Props = {}): NewBatch => {
+  return {
+    ...(id !== undefined ? { id } : null),
+    name: name ?? 'Dummy-Batch',
+    startDate: DateTime.now().toFormat('yyyy-MM-dd'),
+    endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
+    projectCode: '1',
+    batchNumber: `V01/${year}`,
+    yearOfReceipt: String(year),
+    department: 1,
+    project: 1,
+    platform: 1,
+    organisation: 1,
+    maximumProtectiveMarking: 1,
+    remarks: 'remarks-1',
+    receiptNotes: 'receipt-notes-1'
+  }
+}
+
+describe('CRUD operations on each resource', () => {
+  let provider: DataProvider
+  let auth: AuthProvider
+  beforeAll(async () => {
+    const provider = await localForageDataProvider({
+      prefixLocalForageKey: TEST_STORAGE_KEY
+    })
+    for (const user of encryptedUsers) {
+      await provider.create<User>(R_USERS, { data: { ...user } })
+    }
+    auth = authProvider(provider)
+    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+  })
+
+  beforeEach(async () => {
+    const withOutLifecycleProvider = await localForageDataProvider({
+      prefixLocalForageKey: TEST_STORAGE_KEY
+    })
+    provider = withLifecycleCallbacks(
+      withOutLifecycleProvider,
+      lifecycleCallbacks(
+        trackEvent(withOutLifecycleProvider),
+        withOutLifecycleProvider
+      )
+    )
+    // note: next block to be refactored, so we
+    // declare array of resource names, then loop through them,
+    // clearing each resource
+    const list = await provider.getList<Batch>(R_BATCHES, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+    if (list.total !== undefined && list.total > 0) {
+      await provider.deleteMany(R_BATCHES, {
+        ids: list.data.map((item) => item.id)
+      })
+    }
+
+    const auditList = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    if (auditList.total !== undefined && auditList.total > 0) {
+      await provider.deleteMany<Audit>(R_AUDIT, {
+        ids: auditList.data.map((item) => item.id)
+      })
+    }
+  })
+
+  describe('CRUD operation on Batch', () => {
+    it('should create a batch', async () => {
+      const list = await provider.getList<Batch>(R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(list.total).toBe(0)
+      const result = await provider.create<Batch>(R_BATCHES, {
+        data: generateDummyBatchForTesting()
+      })
+      const createId = result.data.id
+      expect(createId).toBeDefined()
+      const createdBatch = await provider.getOne<Batch>(R_BATCHES, {
+        id: createId
+      })
+      expect(createdBatch).toBeDefined()
+      expect(createId).toEqual(createdBatch.data.id)
+    })
+
+    it('should update the batch', async () => {
+      const createdBatch = await provider.create<Batch>(R_BATCHES, {
+        data: generateDummyBatchForTesting()
+      })
+      const createId = createdBatch.data.id
+      await provider.update<Batch>(R_BATCHES, {
+        id: createId,
+        previousData: createdBatch,
+        data: {
+          name: 'dummy-batch',
+          createdAt: DateTime.now().toFormat('yyyy-MM-dd')
+        }
+      })
+      const shouldMatchBatch = generateDummyBatchForTesting({
+        name: 'dummy-batch',
+        id: createId
+      })
+      const updatedBatch = await provider.getOne<Batch>(R_BATCHES, {
+        id: createId
+      })
+      const expectedResult = updatedBatch.data
+      expect(expectedResult).toMatchObject(shouldMatchBatch)
+    })
+
+    it('should delete the batch', async () => {
+      const created = await provider.create<Batch>(R_BATCHES, {
+        data: generateDummyBatchForTesting()
+      })
+      const listBefore = await provider.getList<Batch>(R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(listBefore.total).toBe(1)
+      await expect(
+        provider.delete<Batch>(R_BATCHES, { id: created.data.id })
+      ).resolves.toBeTruthy()
+
+      const listAfter = await provider.getList<Batch>(R_BATCHES, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(listAfter.total).toBe(0)
+    })
+
+    it('should test before update', async () => {
+      const beforeUpdateList = await provider.getList<Audit>(R_AUDIT, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(beforeUpdateList.total).toBe(0)
+      const dummyBatch = generateDummyBatchForTesting()
+      expect(dummyBatch.id).toBeUndefined()
+      const createdBatch = await provider.create<Batch>(R_BATCHES, {
+        data: dummyBatch
+      })
+      expect(createdBatch.data.id).not.toBeUndefined()
+      expect(createdBatch.data.createdAt).not.toBeUndefined()
+      expect(createdBatch.data.createdBy).not.toBeUndefined()
+      const createId = createdBatch.data.id
+      const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(auditListAfterCreate.total).toBe(1)
+      const firstAuditEntry = auditListAfterCreate.data[0]
+      expect(firstAuditEntry.data_id).toEqual(createId)
+      expect(firstAuditEntry.resource).toEqual(R_BATCHES)
+      expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_BATCH)
+      await provider.update<Batch>(R_BATCHES, {
+        id: createId,
+        previousData: createdBatch.data,
+        data: {
+          name: 'dummy-batch',
+          createdAt: DateTime.now().toFormat('yyyy-MM-dd')
+        }
+      })
+      const auditListAfterUpdate = await provider.getList<Audit>(R_AUDIT, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(auditListAfterUpdate.total).toBe(2)
+      const secondAuditEntry = auditListAfterUpdate.data[1]
+      expect(secondAuditEntry.data_id).toEqual(createId)
+      expect(secondAuditEntry.resource).toEqual(R_BATCHES)
+      expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_BATCH)
+    })
+
+    it('should test before create', async () => {
+      const createdBatch = await provider.create<Batch>(R_BATCHES, {
+        data: generateDummyBatchForTesting()
+      })
+      const createId = createdBatch.data.id
+
+      const fetchedBatch = (
+        await provider.getOne<Batch>(R_BATCHES, {
+          id: createId
+        })
+      ).data
+      expect(fetchedBatch.createdAt).not.toBeUndefined()
+      expect(fetchedBatch.createdBy).not.toBeUndefined()
+    })
+
+    it('should test after create', async () => {
+      const beforeCreateList = await provider.getList<Audit>(R_AUDIT, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(beforeCreateList.total).toBe(0)
+      const createdBatch = await provider.create<Batch>(R_BATCHES, {
+        data: generateDummyBatchForTesting()
+      })
+      const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 },
+        filter: {}
+      })
+      expect(auditListAfterCreate.total).toBe(1)
+      const audit = auditListAfterCreate.data[0]
+      expect(audit.activityType).toEqual(AuditType.CREATE_BATCH)
+      expect(audit.resource).toEqual(R_BATCHES)
+      expect(audit.data_id).toEqual(createdBatch.data.id)
+    })
+  })
+})
