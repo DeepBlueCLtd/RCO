@@ -12,7 +12,8 @@ import {
   useListContext,
   useRefresh,
   AutocompleteInput,
-  type SortPayload
+  type SortPayload,
+  useGetList
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -20,15 +21,13 @@ import { mediaTypeOptions } from '../../utils/media'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
-import { Button, Modal } from '@mui/material'
+import { Button, Chip, Modal } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
-import DateRangePicker, {
-  ResetDateRangeFilter
-} from '../../components/DateRangePicker'
+import DateRangePicker from '../../components/DateRangePicker'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -42,6 +41,35 @@ const omitColumns: string[] = [
   'musterRemarks',
   'loanedTo'
 ]
+
+interface Props {
+  source: string
+  label: string
+}
+
+const OnLoanFilter = ({ source, label }: Props): React.ReactElement => {
+  const { setFilters, displayedFilters } = useListContext()
+  const { data } = useGetList<Item>(constants.R_ITEMS, {
+    sort: { field: 'id', order: 'ASC' }
+  })
+  useEffect(() => {
+    if (data !== undefined) {
+      const filteredIds = data
+        .filter((d) => d.loanedTo !== undefined)
+        .map((f) => f.id)
+      if (filteredIds.length > 0)
+        setFilters(
+          {
+            ...displayedFilters,
+            [source]: filteredIds
+          },
+          displayedFilters
+        )
+    }
+  }, [data])
+
+  return <Chip sx={{ marginBottom: 1 }} label={label} />
+}
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
@@ -95,7 +123,8 @@ const filters = [
     optionField='batchNumber'
   />,
   <TextInput key='remarks' source='remarks' />,
-  <DateFilter source='createdAt' label='Created At' key='createdAt' />
+  <DateFilter source='createdAt' label='Created At' key='createdAt' />,
+  <OnLoanFilter source='id' label='On loan' key='loaned' />
 ]
 
 const ItemActions = (): React.ReactElement => {
@@ -182,7 +211,7 @@ export default function ItemList(
       filters={filters}
       {...props}>
       <ResetDateFilter source='createdAt' />
-      <ResetDateRangeFilter source='date_range' />
+      {/* <ResetDateRangeFilter source='date_range' /> */}
       <DatagridConfigurable
         rowClick='show'
         bulkActionButtons={<BulkActions />}
