@@ -97,7 +97,8 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       await provider.updateMany<Item>(constants.R_ITEMS, {
         ids: items,
         data: {
-          loanedTo: holder
+          loanedTo: holder,
+          loanedDate: nowDate()
         }
       })
 
@@ -151,7 +152,8 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       await provider.updateMany(constants.R_ITEMS, {
         ids: items,
         data: {
-          loanedTo: undefined
+          loanedTo: undefined,
+          loanedDate: undefined
         }
       })
 
@@ -167,8 +169,7 @@ const getDifference = (
   const valuesChanged: Record<string, any> = {}
   Object.keys(data).forEach((item) => {
     const isDateModified =
-      data[item] instanceof Date &&
-      !isSameDate(data[item], previousData[item])
+      data[item] instanceof Date && !isSameDate(data[item], previousData[item])
     if (
       isDateModified ||
       (typeof data[item] !== 'object' && data[item] !== previousData[item])

@@ -1,6 +1,12 @@
 import { Box, type Theme, Typography } from '@mui/material'
 import React from 'react'
-import { Datagrid, List, ResourceContext, TextField } from 'react-admin'
+import {
+  Datagrid,
+  type FilterPayload,
+  List,
+  ResourceContext,
+  TextField
+} from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
@@ -48,6 +54,7 @@ interface Props<T> {
   itemsCount?: number
   label?: string
   fields: Array<Field<T>>
+  filter?: FilterPayload
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
@@ -102,12 +109,13 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
   )
 }
 export default function Recent<T>(props: Props<T>): React.ReactElement {
-  const { resource, itemsCount = 5, label, fields = [] } = props
+  const { resource, itemsCount = 5, label, fields = [], filter } = props
 
   return (
     <RecentCard label={label} resource={resource}>
       <ResourceContext.Provider value={resource}>
         <List
+          filter={filter}
           storeKey={`recent-${resource}`}
           hasCreate={false}
           actions={false}

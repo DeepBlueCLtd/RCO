@@ -32,11 +32,6 @@ const useStyles = makeStyles({
 })
 
 const mockData = {
-  loans: [
-    { id: 1, name: 'TAPE01', loanNumber: 'MAYO' },
-    { id: 2, name: 'TAPE01', loanNumber: 'DISC/23/32 ' },
-    { id: 3, name: 'SMITH', loanNumber: 'REPORT/2/23' }
-  ],
   hasteners: [
     { id: 1, name: '2023/02/11', hastenersNumber: 'RAC' },
     { id: 2, name: '2023/02/15', hastenersNumber: 'AA' },
@@ -94,11 +89,15 @@ export default function Welcome(): React.ReactElement {
             { source: 'project', reference: constants.R_PROJECTS }
           ]}
         />
-        <RecentMock
-          label='Recent Loans'
-          data={mockData.loans}
-          fields={['name', 'loanNumber']}
-        />
+        <Recent<Item>
+          label='Recent loans'
+          resource={constants.R_ITEMS}
+          fields={[
+            { source: 'loanedTo', reference: constants.R_USERS },
+            { source: 'item_number' },
+            { source: 'batchId', reference: constants.R_BATCHES }
+          ]}
+          filter={{ loanedTo_neq: undefined }}></Recent>
       </FlexBox>
       <FlexBox className={styles.row}>
         <RecentMock
