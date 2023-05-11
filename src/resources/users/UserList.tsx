@@ -6,11 +6,15 @@ import {
   type Identifier,
   List,
   TextField,
-  TopToolbar
+  TopToolbar,
+  ArrayField,
+  SingleFieldList,
+  useRecordContext
 } from 'react-admin'
-import { Button } from '@mui/material'
+import { Button, Chip } from '@mui/material'
 import { Article } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
+import { rolesOptions } from '../../utils/options'
 
 interface Props {
   name: string
@@ -53,8 +57,23 @@ export default function UserList(props: Props): React.ReactElement {
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
         <BooleanField source='active' label='Active User' />
+        <ArrayField source='roles'>
+          <SingleFieldList sx={{ columnGap: 1 }}>
+            <ChipField />
+          </SingleFieldList>
+        </ArrayField>
       </Datagrid>
       <UserMusterList open={open} onClose={handleOpen(false)} />
     </List>
   )
+}
+
+function ChipField(): React.ReactElement {
+  const record = useRecordContext<any>()
+
+  const role = rolesOptions.find(({ value }) => value === record)
+
+  if (typeof role === 'undefined') return <></>
+
+  return <Chip size='small' label={role.label} />
 }

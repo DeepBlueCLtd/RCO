@@ -17,7 +17,7 @@ import {
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
-import { mediaTypeOptions } from '../../utils/media'
+import { mediaTypeOptions } from '../../utils/options'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
