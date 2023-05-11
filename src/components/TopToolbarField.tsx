@@ -1,10 +1,11 @@
 import { type Theme } from '@mui/material'
 import { Show, type ShowProps, TextField } from 'react-admin'
 import { type ReactElement } from 'react'
+import { type SystemStyleObject } from '@mui/system'
 
-const sx = (theme: Theme) => {
+const sx = (theme: Theme): SystemStyleObject<Theme> => {
   const color: string = `${theme.palette.common.white} !important`
-  
+
   return {
     width: '150px',
     fontWeight: 'bold',

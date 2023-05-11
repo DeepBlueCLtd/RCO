@@ -1,11 +1,11 @@
 import React from 'react'
-import { Create, Edit, useRedirect } from 'react-admin'
+import { Create, Edit, type TransformData, useRedirect } from 'react-admin'
 import UserForm from './UserForm'
 import { encryptData, generateSalt } from '../../utils/encryption'
 
 const UserList = React.lazy(async () => await import('./UserList'))
 
-const transform = (data: any) => {
+const transform = (data: any): TransformData => {
   const salt: string = generateSalt()
   const userPassword: string = data.password
   const updatedData = {
@@ -17,14 +17,15 @@ const transform = (data: any) => {
 }
 
 const UserCreate = (): React.ReactElement => {
-  const path: string = '/reference-data/users'
+  const path: string = '/users'
   const redirect = useRedirect()
-  const onSuccess = () => {
+  const onSuccess = (): void => {
     redirect(path)
   }
 
   return (
     <Create
+      resource='users'
       transform={transform}
       mutationOptions={{
         onSuccess
@@ -35,14 +36,15 @@ const UserCreate = (): React.ReactElement => {
 }
 
 const UserEdit = (): React.ReactElement => {
-  const path: string = '/reference-data/users'
+  const path: string = '/users'
   const redirect = useRedirect()
-  const onSuccess = () => {
+  const onSuccess = (): void => {
     redirect(path)
   }
 
   return (
     <Edit
+      resource='users'
       transform={transform}
       mutationOptions={{
         onSuccess

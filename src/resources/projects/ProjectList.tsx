@@ -1,9 +1,7 @@
 import React from 'react'
 import {
-  BulkDeleteButton,
   CreateButton,
   DatagridConfigurable,
-  DateField,
   FilterButton,
   List,
   SearchInput,
@@ -12,6 +10,7 @@ import {
   TopToolbar
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
+import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 
@@ -28,11 +27,12 @@ const filters = [
     key='createdBy'
     source='createdBy'
     reference={constants.R_USERS}
-  />
+  />,
+  <DateFilter key='createdAt' source='createdAt' label='Created At' />
 ]
 
 export default function ProjectList(): React.ReactElement {
-  const ListActions = () => (
+  const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <FilterButton />
       <CreateButton />
@@ -42,14 +42,12 @@ export default function ProjectList(): React.ReactElement {
 
   return (
     <List actions={<ListActions />} perPage={25} filters={filters}>
+      <ResetDateFilter source='createdAt' />
       <DatagridConfigurable
         omit={omitColumns}
         rowClick='show'
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
+        bulkActionButtons={false}>
         <TextField source='name' />
-        <DateField source='startDate' />
-        <DateField source='endDate' />
-        <TextField source='projectCode' />
         <TextField source='remarks' />
         <TextField source='createdAt' label='Created' />
       </DatagridConfigurable>

@@ -3,6 +3,7 @@ import { SimpleForm, TextInput, BooleanInput, Create, Edit } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import PlatformList from './PlatformList'
+import EditToolBar from '../../components/EditToolBar'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -19,7 +20,10 @@ const PlatformForm = (): React.ReactElement => {
     active: true
   }
   return (
-    <SimpleForm defaultValues={defaultValues} resolver={yupResolver(schema)}>
+    <SimpleForm
+      defaultValues={defaultValues}
+      resolver={yupResolver(schema)}
+      toolbar={<EditToolBar />}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <BooleanInput source='active' />
     </SimpleForm>
@@ -29,7 +33,7 @@ const PlatformForm = (): React.ReactElement => {
 const PlatformCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Create redirect={`/reference-data/${cName}`}>
+    <Create redirect={`/${cName}`} resource='platforms'>
       <PlatformForm />
     </Create>
   )
@@ -38,7 +42,7 @@ const PlatformCreate = ({ name }: PropType): React.ReactElement => {
 const PlatformEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Edit redirect={`/reference-data/${cName}`}>
+    <Edit redirect={`/${cName}`} resource='platforms'>
       <PlatformForm />
     </Edit>
   )

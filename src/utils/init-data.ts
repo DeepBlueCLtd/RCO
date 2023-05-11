@@ -1,7 +1,4 @@
-import {
-  getActiveReferenceData,
-  getReferenceData
-} from '../providers/dataProvider/reference-data'
+import { getActiveReferenceData } from '../providers/dataProvider/reference-data'
 import users from '../providers/dataProvider/users'
 import { generateSalt, encryptData } from './encryption'
 import {
@@ -13,20 +10,20 @@ import {
 import * as constants from '../constants'
 import localForage from 'localforage'
 
-const loadDefaultData = async (userId?: number) => {
+const loadDefaultData = async (userId?: number): Promise<void> => {
   const user = typeof userId === 'undefined' ? users[0].id : userId
 
   const platforms = generatePlatform(10)
   const projects = generateProject(10, user)
-  const organisation = getReferenceData('Organisation')
+  const organisation = getActiveReferenceData('Organisation')
   const department = getActiveReferenceData('Department', 5)
-  const vaultLocation = getReferenceData('Vault Location')
-  const mediaType = getReferenceData('Media')
-  const protectiveMarking = getReferenceData('Protective Marking')
-  const protectiveMarkingAuthority = getReferenceData(
+  const vaultLocation = getActiveReferenceData('Vault Location')
+  const mediaType = getActiveReferenceData('Media')
+  const protectiveMarking = getActiveReferenceData('Protective Marking')
+  const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
   )
-  const platformOriginator = getReferenceData('Platform Originator')
+  const platformOriginator = getActiveReferenceData('Platform Originator')
 
   const encryptedUsers = users.map((user) => {
     const salt: string = generateSalt()
@@ -61,7 +58,6 @@ const loadDefaultData = async (userId?: number) => {
           batches[index],
           vaultLocation.length,
           protectiveMarking.length,
-          project,
           user
         )
       )

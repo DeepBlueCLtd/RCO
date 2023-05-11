@@ -1,16 +1,12 @@
 import React from 'react'
 import {
   BooleanField,
-  BulkDeleteButton,
   CreateButton,
   Datagrid,
-  DeleteButton,
-  EditButton,
   type Identifier,
   List,
   TextField,
-  TopToolbar,
-  useRecordContext
+  TopToolbar
 } from 'react-admin'
 
 interface Props {
@@ -20,9 +16,9 @@ interface Props {
 export default function UserList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
-  const basePath: string = `/reference-data/${cName}`
+  const basePath: string = `/${cName}`
 
-  const ListActions = () => {
+  const ListActions = (): React.ReactElement => {
     return (
       <TopToolbar>
         <CreateButton to={`${basePath}/create`} />
@@ -30,24 +26,17 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
 
-  const CustomEditButton = () => {
-    const record = useRecordContext(props)
-    const id: string = record.id.toString()
-    return <EditButton to={`${basePath}/${id}`} />
-  }
-
   return (
-    <List actions={<ListActions />} perPage={25}>
+    <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
           return `${basePath}/${cID}`
         }}
-        bulkActionButtons={<BulkDeleteButton mutationMode='pessimistic' />}>
+        bulkActionButtons={false}>
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
-        <CustomEditButton />
-        <DeleteButton mutationMode='pessimistic' />
+        <BooleanField source='active' label='Active User' />
       </Datagrid>
     </List>
   )

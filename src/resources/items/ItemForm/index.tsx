@@ -17,7 +17,7 @@ import { mediaTypeOptions } from '../../../utils/media'
 import dayjs from 'dayjs'
 import MediaForm from './MediaForm'
 import ItemFormToolbar from './ItemFormToolbar'
-import { Box, InputAdornment, TextField } from '@mui/material'
+import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 
 const schema = yup.object({
   mediaType: yup
@@ -47,7 +47,7 @@ const schema = yup.object({
   })
 })
 
-export default function ItemForm() {
+export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const [batch, setBatch] = useState<Batch>()
   const location = useLocation()
   const redirect = useRedirect()
@@ -77,6 +77,7 @@ export default function ItemForm() {
 
   const defaultValues: Partial<Item> = {
     item_number: '',
+    loanedTo: undefined,
     dvd: {
       mediaType: 'DVD',
       size: 0
@@ -87,6 +88,8 @@ export default function ItemForm() {
       brand: ''
     }
   }
+
+  const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
   return (
     <Box>
       {batch != null && (
@@ -110,6 +113,9 @@ export default function ItemForm() {
           }}
         />
       )}
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '0 15px' }}>
+        <constants.ICON_ITEM /> {pageTitle}
+      </Typography>
       <TabbedForm
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
@@ -118,16 +124,13 @@ export default function ItemForm() {
         <TabbedForm.Tab label='Core'>
           <CoreForm batchId={batch?.id} />
         </TabbedForm.Tab>
-        <TabbedForm.Tab
-          label='Mag tape'
-          icon={<GroupWork />}
-          iconPosition='end'>
+        <TabbedForm.Tab label='Mag tape' icon={<GroupWork />}>
           <MediaForm type='Tape' source='magTape' />
         </TabbedForm.Tab>
-        <TabbedForm.Tab label='DVD' icon={<Album />} iconPosition='end'>
+        <TabbedForm.Tab label='DVD' icon={<Album />}>
           <MediaForm type='DVD' source='dvd' />
         </TabbedForm.Tab>
-        <TabbedForm.Tab label='Paper' icon={<MenuBook />} iconPosition='end'>
+        <TabbedForm.Tab label='Paper' icon={<MenuBook />}>
           <MediaForm type='Paper' source='paper' />
         </TabbedForm.Tab>
       </TabbedForm>

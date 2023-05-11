@@ -5,7 +5,7 @@ import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-
+import { ICON_BATCH, R_BATCHES } from '../constants'
 import SourceField from './SourceField'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -50,7 +50,7 @@ interface Props<T> {
   fields: Array<Field<T>>
 }
 
-function Column<T>(props: Field<T>) {
+function Column<T>(props: Field<T>): React.ReactElement {
   const { source, reference } = props
   if (typeof reference !== 'undefined') {
     return (
@@ -70,20 +70,29 @@ interface RecentCardProps {
   resource?: string
 }
 
-export function RecentCard(props: RecentCardProps) {
+export function RecentCard(props: RecentCardProps): React.ReactElement {
   const { label, resource = '', children } = props
   const classes = useStyles()
   return (
     <Box>
       <Card variant='outlined'>
         <CardContent className={classes.cardContent}>
-          <Typography variant='h6'>
-            {typeof label !== 'undefined' && (
-              <Link to={resource} className={classes.label}>
-                {label}
-              </Link>
-            )}
-          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '15px',
+              justifyContent: 'center'
+            }}>
+            {resource === R_BATCHES ? <ICON_BATCH /> : ''}
+            <Typography variant='h6'>
+              {typeof label !== 'undefined' && (
+                <Link to={resource} className={classes.label}>
+                  {label}
+                </Link>
+              )}
+            </Typography>
+          </div>
           <Box sx={{ mt: 2 }} className={classes.container}>
             {children}
           </Box>

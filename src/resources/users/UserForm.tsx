@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { decryptPassword } from '../../utils/encryption'
 import EditToolBar from '../../components/EditToolBar'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -16,18 +17,24 @@ const schema = yup.object({
   adminRights: yup.boolean()
 })
 
-export default function UserForm(props: FormProps): React.ReactElement {
-  const defaultValues = {
+export default function UserForm({ isEdit }: FormProps): React.ReactElement {
+  const defaultValues: Omit<User, 'id'> = {
     name: '',
     password: '',
-    adminRights: false
+    adminRights: false,
+    active: true
   }
   const { record } = useEditContext()
+  const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
+
   return (
     <SimpleForm
-      toolbar={<EditToolBar isEdit={props.isEdit} />}
+      toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
+      <Typography variant='h5' fontWeight='bold'>
+        {pageTitle}
+      </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <TextInput
         source='password'
@@ -40,6 +47,7 @@ export default function UserForm(props: FormProps): React.ReactElement {
         }}
       />
       <BooleanInput source='adminRights' />
+      <BooleanInput source='active' />
     </SimpleForm>
   )
 }

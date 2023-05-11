@@ -8,8 +8,10 @@ export default {
     react(),
     preval(),
     EnvironmentPlugin({
-      VITE_KEY: null
+      VITE_KEY: null,
+      VITE_APP_VERSION: null,
+      VITE_DATA_VERSION: null
     })
   ],
-  base: '/RCO/'
+  base: './'
 }

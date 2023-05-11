@@ -17,24 +17,28 @@ export default function ReferenceDataList({
   name
 }: PropType): React.ReactElement {
   const cName: string = name
-  const ListActions = () => (
+  const ListActions = (): React.ReactElement => (
     <TopToolbar>
-      <CreateButton to={`/reference-data/${cName}/create`} />
+      <CreateButton to={'create'} />
     </TopToolbar>
   )
+
+  const notShowActive = (name: string): boolean => name === 'audit'
+
   return (
-    <List actions={<ListActions />}>
+    <List actions={<ListActions />} resource={cName}>
       <Datagrid
+        bulkActionButtons={false}
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
-          return `/reference-data/${cName}/${cID}`
+          return `/${cName}/${cID}`
         }}>
         <FunctionField
           style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        {name === 'department' ? <BooleanField source='active' /> : ''}
+        {notShowActive(name) ? '' : <BooleanField source='active' />}
       </Datagrid>
     </List>
   )

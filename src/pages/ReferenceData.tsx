@@ -7,20 +7,14 @@ import {
   Typography
 } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import React, { useMemo } from 'react'
-import {
-  type CreatePathParams,
-  ResourceContextProvider,
-  useCreatePath,
-  useRedirect
-} from 'react-admin'
-import { Outlet, useLocation } from 'react-router-dom'
+import React from 'react'
+import { type CreatePathParams, useCreatePath, useRedirect } from 'react-admin'
 
 interface CardWithNavigationProps {
   title: string
   path: CreatePathParams['resource']
   type?: CreatePathParams['type']
-  active?: boolean
+  isRarelyUsed?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -40,29 +34,38 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center'
+  },
+  common: {
+    height: '50px',
+    width: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center'
   }
 }))
 
 const CardWithNavigation = (
   props: CardWithNavigationProps
 ): React.ReactElement => {
-  const { path, title, type = 'list', active } = props
+  const { path, title, type = 'list' } = props
   const createPath = useCreatePath()
   const styles = useStyles()
   const redirect = useRedirect()
   const pathStr: string = path
-  const to = createPath({ resource: `/reference-data${pathStr}`, type })
+  const to = createPath({ resource: `${pathStr}`, type })
   const rootStyle: string = styles.root
   return (
     <Card
       onClick={() => {
         redirect(to)
       }}
-      className={`${rootStyle} ${
-        active !== undefined && active ? 'active' : ''
-      }`}>
+      className={`${rootStyle}`}>
       <CardActionArea>
-        <CardContent className={styles.content}>
+        <CardContent
+          className={
+            props.isRarelyUsed === true ? styles.common : styles.content
+          }>
           <Typography>{title}</Typography>
         </CardContent>
       </CardActionArea>
@@ -70,7 +73,14 @@ const CardWithNavigation = (
   )
 }
 
-const routes = [
+const mainReferenceRoutes = [
+  { path: '/platforms', title: 'Platforms' },
+  { path: '/users', title: 'Users' },
+  { path: '/audit', title: 'Audit Log' }
+]
+
+const rarelyUsedRoutes = [
+  { path: '/platformOriginator', title: 'Platform Originator' },
   { path: '/organisation', title: 'Organisation' },
   { path: '/protectiveMarking', title: 'Protective Marking' },
   { path: '/mediaType', title: 'Media Type' },
@@ -78,48 +88,24 @@ const routes = [
     path: '/protectiveMarkingAuthority',
     title: 'Protective Marking Authority'
   },
-  { path: '/department', title: 'Department' },
-  { path: '/vaultLocation', title: 'Vault Location' },
-  { path: '/platformOriginator', title: 'Platform Originator' },
-  { path: '/platforms', title: 'Platforms' },
-  { path: '/users', title: 'Users' },
-  { path: '/audit', title: 'Audit Log' }
+  { path: '/department', title: 'Department' }
 ]
 
 export default function ReferenceData(): React.ReactElement {
-  const location = useLocation()
-
-  const { resource, title } = useMemo(() => {
-    const items = location.pathname.split('/')
-    const resource: string = items.length > 2 ? items[2] : ''
-    const title = routes.find((route) => route.path === `/${resource}`)?.title
-    return { resource, title }
-  }, [location])
-
   return (
     <div>
+      <h1></h1>
       <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
-        {routes.map((route) => (
-          <CardWithNavigation
-            key={route.title}
-            {...route}
-            active={title === route.title}
-          />
+        {mainReferenceRoutes.map((route) => (
+          <CardWithNavigation key={route.title} {...route} />
         ))}
       </Box>
 
-      {resource.length > 0 && (
-        <>
-          <Box my={5}>
-            <Typography textAlign='center' variant='h4'>
-              {title}
-            </Typography>
-            <ResourceContextProvider value={resource}>
-              <Outlet />
-            </ResourceContextProvider>
-          </Box>
-        </>
-      )}
+      <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
+        {rarelyUsedRoutes.map((route) => (
+          <CardWithNavigation isRarelyUsed key={route.title} {...route} />
+        ))}
+      </Box>
     </div>
   )
 }

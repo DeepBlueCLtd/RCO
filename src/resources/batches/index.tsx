@@ -17,7 +17,7 @@ const BatchShow = React.lazy(async () => await import('./BatchShow'))
 const BatchCreate = (): React.ReactElement => {
   const redirect = useRedirect()
 
-  const onSuccess = (data: Batch) => {
+  const onSuccess = (data: Batch): void => {
     const path: string = `/batches/${data.id}/show`
     redirect(path)
   }
@@ -28,7 +28,7 @@ const BatchCreate = (): React.ReactElement => {
   )
 }
 
-const Actions = () => {
+const Actions = (): React.ReactElement => {
   return (
     <TopToolbar>
       <Show sx={{ marginRight: 'auto' }} actions={false}>

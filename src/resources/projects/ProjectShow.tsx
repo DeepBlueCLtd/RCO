@@ -2,7 +2,6 @@ import React from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import {
   CreateButton,
-  DateField,
   EditButton,
   Show,
   TextField,
@@ -26,7 +25,7 @@ const ValueField = ({
   )
 }
 
-const Actions = () => {
+const Actions = (): React.ReactElement => {
   const { id = '' } = useParams()
   const projectId: string = id
 
@@ -42,8 +41,12 @@ const Actions = () => {
 }
 
 export default function ProjectShow(): React.ReactElement {
+  const pageTitle = 'View Project'
   return (
     <Show actions={<Actions />}>
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
+        <constants.ICON_PROJECT /> {pageTitle}
+      </Typography>
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <ValueField label='Id'>
@@ -54,15 +57,6 @@ export default function ProjectShow(): React.ReactElement {
           </ValueField>
           <ValueField label='Name'>
             <TextField variant='h6' source='name' />
-          </ValueField>
-          <ValueField label='Start Date'>
-            <DateField source='startDate' />
-          </ValueField>
-          <ValueField label='End Date'>
-            <DateField source='endDate' />
-          </ValueField>
-          <ValueField label='Project code'>
-            <TextField source='projectCode' />
           </ValueField>
           <ValueField label='Remarks'>
             <TextField source='remarks' />
