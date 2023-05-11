@@ -1,0 +1,1 @@
+process.env.PASSWORD = 'admin'

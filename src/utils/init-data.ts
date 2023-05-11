@@ -1,5 +1,4 @@
-import { getActiveReferenceData } from '../providers/dataProvider/reference-data'
-import users from '../providers/dataProvider/users'
+import users from '../providers/dataProvider/defaults/users'
 import { generateSalt, encryptData } from './encryption'
 import {
   generatePlatform,
@@ -9,6 +8,32 @@ import {
 } from './generateData'
 import * as constants from '../constants'
 import localForage from 'localforage'
+
+export const encryptedUsers = users.map((user) => {
+  const salt: string = generateSalt()
+  const userPassword: string = user.password
+  const updatedUser = {
+    ...user,
+    salt,
+    password: encryptData(`${userPassword}${salt}`)
+  }
+  return updatedUser
+})
+
+export const getActiveReferenceData = (
+  nameVal: string,
+  length = 5
+): ActiveReferenceItem[] => {
+  return Array(length)
+    .fill('')
+    .map((_, index): ActiveReferenceItem => {
+      return {
+        id: index + 1,
+        name: nameVal + ':' + String(index + 1),
+        active: index === 0
+      }
+    })
+}
 
 const loadDefaultData = async (userId?: number): Promise<void> => {
   const user = typeof userId === 'undefined' ? users[0].id : userId
@@ -24,17 +49,6 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
     'Protective Marking Authority'
   )
   const platformOriginator = getActiveReferenceData('Platform Originator')
-
-  const encryptedUsers = users.map((user) => {
-    const salt: string = generateSalt()
-    const userPassword: string = user.password
-    const updatedUser = {
-      ...user,
-      salt,
-      password: encryptData(`${userPassword}${salt}`)
-    }
-    return updatedUser
-  })
 
   const batches = generateBatch(
     10,
