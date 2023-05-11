@@ -4,7 +4,8 @@ import {
   type CreateResult,
   type UpdateResult,
   type DataProvider,
-  type UpdateParams
+  type UpdateParams,
+  type ResourceCallbacks
 } from 'react-admin'
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
@@ -18,12 +19,14 @@ import { getUser } from '../authProvider'
 import { isSameDate } from '../../utils/date'
 
 export const nowDate = (): string => {
-  return DateTime.now().toFormat('yyyy-MM-dd')
+  const isoDate = DateTime.utc().toISO()
+  return isoDate !== null ? isoDate : 'n/a'
 }
 
-const compareVersions = (v1: string, v2: string): number => {
+export const compareVersions = (v1: string, v2: string): number => {
   const s1 = parseInt(v1.substring(1))
   const s2 = parseInt(v2.substring(1))
+  if (isNaN(s1) || isNaN(s2)) return NaN
   if (s1 < s2) {
     return -1
   } else if (s1 > s2) {
@@ -51,7 +54,6 @@ export const generateBatchId = async (
   if (batches.data.length === 1) {
     return '01'
   }
-
   const greatestBatch = batches.data.reduce((prev, current) =>
     compareVersions(prev.batchNumber, current.batchNumber) === -1
       ? current
@@ -67,13 +69,15 @@ export const generateBatchId = async (
   )
 }
 
-const withCreatedBy = (
+/** utility method to initialise the created by and created at fields */
+const withCreatedByAt = (
   record: CreateResult<Item | Batch | Project>
 ): CreateResult<Batch | Project | Item> => {
   const user = getUser()
   if (user !== undefined) {
     record.data.createdBy = user.id
   }
+  record.data.createdAt = nowDate()
   return record
 }
 
@@ -160,6 +164,14 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   }
 }
 
+interface AuditProps {
+  type: AuditType
+  activityDetail: string
+  securityRelated?: boolean
+  resource: string | null
+  id: number | null
+  index?: number
+}
 const getDifference = (
   data: Record<string, any>,
   previousData: Record<string, any>
@@ -167,8 +179,7 @@ const getDifference = (
   const valuesChanged: Record<string, any> = {}
   Object.keys(data).forEach((item) => {
     const isDateModified =
-      data[item] instanceof Date &&
-      !isSameDate(data[item], previousData[item])
+      data[item] instanceof Date && !isSameDate(data[item], previousData[item])
     if (
       isDateModified ||
       (typeof data[item] !== 'object' && data[item] !== previousData[item])
@@ -184,38 +195,35 @@ interface AuditDataArgs {
   securityRelated?: boolean
 }
 
-export const getDataProvider = async (
-  loggingEnabled: boolean
-): Promise<DataProvider<string>> => {
-  const localForageData = await localForage.keys()
-  if (localForageData.length === 0) {
-    await loadDefaultData()
-  }
+type AuditFunctionType = ({
+  type,
+  activityDetail,
+  securityRelated,
+  resource,
+  id
+}: AuditProps) => Promise<void>
 
-  const provider = await localForageDataProvider({
-    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-    loggingEnabled
+const auditForUpdatedChanges = async (
+  record: UpdateParams,
+  auditData: AuditDataArgs,
+  audit: AuditFunctionType
+): Promise<UpdateParams<Item>> => {
+  const difference = getDifference(record.data, record.previousData)
+  await audit({
+    ...auditData,
+    activityDetail: `Previous values: ${JSON.stringify(difference)}`,
+    resource: constants.R_ITEMS,
+    index: record.id as number,
+    id: record.data.id
   })
+  return record
+}
 
-  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
-  const audit = trackEvent(providerWithCustomMethods)
-
-  const auditForUpdatedChanges = async (
-    record: UpdateParams,
-    auditData: AuditDataArgs
-  ): Promise<UpdateParams<Item>> => {
-    const difference = getDifference(record.data, record.previousData)
-    await audit({
-      ...auditData,
-      activityDetail: `Previous values: ${JSON.stringify(difference)}`,
-      resource: constants.R_ITEMS,
-      index: record.id as number,
-      id: record.data.id
-    })
-    return record
-  }
-
-  return withLifecycleCallbacks(providerWithCustomMethods, [
+export const lifecycleCallbacks = (
+  audit: AuditFunctionType,
+  provider: DataProvider
+): Array<ResourceCallbacks<any>> => {
+  return [
     {
       resource: constants.R_USERS,
       afterCreate: async (record: CreateResult<User>) => {
@@ -240,24 +248,14 @@ export const getDataProvider = async (
     {
       resource: constants.R_PROJECTS,
       beforeCreate: async (record: CreateResult<Project>) => {
-        return withCreatedBy(record)
+        return withCreatedByAt(record)
       },
-      afterCreate: async (
-        record: CreateResult<Project>,
-        dataProvider: DataProvider
-      ) => {
-        const { data } = record
-        const { id } = data
+      afterCreate: async (record: CreateResult<Project>) => {
         await audit({
           type: AuditType.CREATE_PROJECT,
           activityDetail: `Project created (${String(record.data.id)})`,
           resource: constants.R_PROJECTS,
           id: record.data.id
-        })
-        await dataProvider.update<Project>(constants.R_PROJECTS, {
-          id,
-          previousData: data,
-          data: { createdAt: nowDate() }
         })
         return record
       },
@@ -286,7 +284,7 @@ export const getDataProvider = async (
         return record
       },
       beforeCreate: async (record: CreateResult<Batch>) => {
-        return withCreatedBy(record)
+        return withCreatedByAt(record)
       },
       afterCreate: async (
         record: CreateResult<Batch>,
@@ -302,8 +300,7 @@ export const getDataProvider = async (
             id,
             previousData: data,
             data: {
-              batchNumber,
-              createdAt: nowDate()
+              batchNumber
             }
           })
           await audit({
@@ -324,15 +321,19 @@ export const getDataProvider = async (
         convertDateToISO<Item>(record.data, ['start', 'end'])
         record.data.start = new Date(record.data.start).toISOString()
         record.data.end = new Date(record.data.end).toISOString()
-        return withCreatedBy(record)
+        return withCreatedByAt(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
-        return await auditForUpdatedChanges(record, {
-          type: AuditType.EDIT_ITEM,
-          securityRelated:
-            record.previousData.protectiveMarking !==
-            record.data.protectiveMarking
-        })
+        return await auditForUpdatedChanges(
+          record,
+          {
+            type: AuditType.EDIT_ITEM,
+            securityRelated:
+              record.previousData.protectiveMarking !==
+              record.data.protectiveMarking
+          },
+          audit
+        )
       },
       afterCreate: async (
         record: CreateResult<Item>,
@@ -359,8 +360,7 @@ export const getDataProvider = async (
             id,
             previousData: data,
             data: {
-              item_number: itemNumber,
-              createdAt: nowDate()
+              item_number: itemNumber
             }
           })
           await audit({
@@ -376,5 +376,27 @@ export const getDataProvider = async (
         }
       }
     }
-  ])
+  ]
+}
+
+export const getDataProvider = async (
+  loggingEnabled: boolean
+): Promise<DataProvider<string>> => {
+  const localForageData = await localForage.keys()
+  if (localForageData.length === 0) {
+    await loadDefaultData()
+  }
+
+  const provider = await localForageDataProvider({
+    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+    loggingEnabled
+  })
+
+  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
+  const audit = trackEvent(providerWithCustomMethods)
+
+  return withLifecycleCallbacks(
+    providerWithCustomMethods,
+    lifecycleCallbacks(audit, providerWithCustomMethods)
+  )
 }

@@ -8,7 +8,7 @@ import {
   DateTimeInput,
   NumberInput,
   useListContext,
-  AutocompleteInput,
+  AutocompleteArrayInput,
   TextInput
 } from 'react-admin'
 import * as constants from '../../constants'
@@ -43,7 +43,7 @@ const filters = [
     alwaysOn={true}
   />,
   <DateTimeInput key='end' source='dateTime_lte' label='Before' />,
-  <AutocompleteInput
+  <AutocompleteArrayInput
     source='label'
     choices={choices}
     key='Activity Type'
