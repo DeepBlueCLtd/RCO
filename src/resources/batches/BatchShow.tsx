@@ -19,6 +19,7 @@ import FieldWithLabel, {
 } from '../../components/FieldWithLabel'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
+import { Typography } from '@mui/material'
 
 const ShowActions = (): React.ReactElement => {
   return (
@@ -61,8 +62,12 @@ function StyledFieldWithLabel(props: FieldWithLabelProps): React.ReactElement {
 
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
+  const pageTitle = 'View Batch'
   return (
     <Show actions={<ShowActions />}>
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
+        <constants.ICON_BATCH /> {pageTitle}
+      </Typography>
       <TabbedShowLayout>
         <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
           <FlexBox>

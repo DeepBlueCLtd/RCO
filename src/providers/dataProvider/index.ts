@@ -16,6 +16,7 @@ import { isNumber } from '../../utils/number'
 import localForage from 'localforage'
 import loadDefaultData from '../../utils/init-data'
 import { getUser } from '../authProvider'
+import { isSameDate } from '../../utils/date'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -80,6 +81,18 @@ const withCreatedByAt = (
   return record
 }
 
+const convertDateToISO = <T>(
+  record: Partial<Record<keyof T, any>>,
+  keys: Array<keyof T>
+): Partial<T> => {
+  keys.forEach((key) => {
+    if (typeof record[key] !== 'undefined') {
+      record[key] = new Date(record[key]).toISOString()
+    }
+  })
+  return record
+}
+
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
 
@@ -101,7 +114,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       const promisees = items.map(async (item) => {
         await audit({
           type: AuditType.ITEM_LOAN,
-          activityDetail: `Item loaned to ${name}`,
+          activityDetail: `Item loaned to ${name}.`,
           resource: constants.R_ITEMS,
           id: item
         })
@@ -157,6 +170,29 @@ interface AuditProps {
   securityRelated?: boolean
   resource: string | null
   id: number | null
+  index?: number
+}
+const getDifference = (
+  data: Record<string, any>,
+  previousData: Record<string, any>
+): Record<any, string> => {
+  const valuesChanged: Record<string, any> = {}
+  Object.keys(data).forEach((item) => {
+    const isDateModified =
+      data[item] instanceof Date && !isSameDate(data[item], previousData[item])
+    if (
+      isDateModified ||
+      (typeof data[item] !== 'object' && data[item] !== previousData[item])
+    ) {
+      valuesChanged[item] = previousData[item]
+    }
+  })
+  return valuesChanged
+}
+
+interface AuditDataArgs {
+  type: AuditType
+  securityRelated?: boolean
 }
 
 type AuditFunctionType = ({
@@ -166,6 +202,22 @@ type AuditFunctionType = ({
   resource,
   id
 }: AuditProps) => Promise<void>
+
+const auditForUpdatedChanges = async (
+  record: UpdateParams,
+  auditData: AuditDataArgs,
+  audit: AuditFunctionType
+): Promise<UpdateParams<Item>> => {
+  const difference = getDifference(record.data, record.previousData)
+  await audit({
+    ...auditData,
+    activityDetail: `Previous values: ${JSON.stringify(difference)}`,
+    resource: constants.R_ITEMS,
+    index: record.id as number,
+    id: record.data.id
+  })
+  return record
+}
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -259,7 +311,6 @@ export const lifecycleCallbacks = (
           })
           return record
         } catch (error) {
-          console.log({ error })
           return record
         }
       }
@@ -267,19 +318,22 @@ export const lifecycleCallbacks = (
     {
       resource: constants.R_ITEMS,
       beforeCreate: async (record: CreateResult<Item>) => {
+        convertDateToISO<Item>(record.data, ['start', 'end'])
+        record.data.start = new Date(record.data.start).toISOString()
+        record.data.end = new Date(record.data.end).toISOString()
         return withCreatedByAt(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
-        await audit({
-          type: AuditType.EDIT_ITEM,
-          activityDetail: `Item updated (${String(record.data.id)})`,
-          securityRelated:
-            record.previousData.protectiveMarking !==
-            record.data.protectiveMarking,
-          resource: constants.R_ITEMS,
-          id: record.previousData.id
-        })
-        return record
+        return await auditForUpdatedChanges(
+          record,
+          {
+            type: AuditType.EDIT_ITEM,
+            securityRelated:
+              record.previousData.protectiveMarking !==
+              record.data.protectiveMarking
+          },
+          audit
+        )
       },
       afterCreate: async (
         record: CreateResult<Item>,
