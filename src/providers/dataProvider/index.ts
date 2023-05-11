@@ -101,7 +101,8 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       await provider.updateMany<Item>(constants.R_ITEMS, {
         ids: items,
         data: {
-          loanedTo: holder
+          loanedTo: holder,
+          loanedDate: nowDate()
         }
       })
 

@@ -99,7 +99,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     reference='protectiveMarking'
                   />
                   <CompositeField label='Project & Platform' />
-                  <DateField showTime source='loanedDate' label='Loaned Date' />
+                  <DateField source='loanedDate' label='Loaned Date' />
                 </ItemsReport>
                 <ReportSignature id={userId} />
               </Box>
