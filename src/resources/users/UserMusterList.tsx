@@ -7,7 +7,9 @@ import {
   Show,
   BooleanField,
   Count,
-  useRecordContext
+  ReferenceField,
+  useRecordContext,
+  DateField
 } from 'react-admin'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
@@ -19,6 +21,25 @@ import { DateTime } from 'luxon'
 interface Props {
   open: boolean
   onClose?: () => void
+}
+
+interface CompositeFieldProps {
+  label: string
+}
+
+const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
+  const { label } = props
+  return (
+    <ReferenceField
+      label={label}
+      source='batchId'
+      reference={constants.R_ITEMS}>
+      <ReferenceField source='id' reference={constants.R_BATCHES}>
+        <SourceField source='id' reference={constants.R_PROJECTS} />,{' '}
+        <SourceField source='id' reference={constants.R_PLATFORMS} />
+      </ReferenceField>
+    </ReferenceField>
+  )
 }
 
 const Title = (): React.ReactElement => {
@@ -41,8 +62,12 @@ export default function UserMusterList(props: Props): React.ReactElement {
         {userIds.map((userId, index) => {
           return (
             <>
-              <Box padding={'20px'} key={userId}>
-                <Show id={userId} resource={constants.R_USERS} actions={false}>
+              <Box padding={'20px'} key={index}>
+                <Show
+                  component={'div'}
+                  id={userId}
+                  resource={constants.R_USERS}
+                  actions={false}>
                   <Title />
                   <Typography variant='h5' textAlign='center' margin='10px'>
                     {
@@ -53,9 +78,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                       />
                     }{' '}
                     Items Currently Booked Out{' '}
-                    {DateTime.fromISO(new Date().toISOString()).toFormat(
-                      'dd/MMM/yyyy HH:mm'
-                    )}{' '}
+                    {DateTime.now().toFormat(constants.DATETIME_FORMAT)}
                   </Typography>
                 </Show>
                 <Show id={userId} resource={constants.R_USERS} actions={false}>
@@ -75,12 +98,8 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     source='protectiveMarking'
                     reference='protectiveMarking'
                   />
-                  <SourceField
-                    label='Project & Platform'
-                    source='batchId'
-                    sourceField='project'
-                    reference={constants.R_BATCHES}
-                  />
+                  <CompositeField label='Project & Platform' />
+                  <DateField showTime source='loanedDate' label='Loaned Date' />
                 </ItemsReport>
                 <ReportSignature id={userId} />
               </Box>
