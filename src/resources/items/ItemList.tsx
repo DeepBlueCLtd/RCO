@@ -27,9 +27,7 @@ import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
-import DateRangePicker, {
-  ResetDateRangeFilter
-} from '../../components/DateRangePicker'
+import DateRangePicker from '../../components/DateRangePicker'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -213,7 +211,7 @@ export default function ItemList(
       filters={filters}
       {...props}>
       <ResetDateFilter source='createdAt' />
-      <ResetDateRangeFilter source='date_range' />
+      {/* <ResetDateRangeFilter source='date_range' /> */}
       <DatagridConfigurable
         rowClick='show'
         bulkActionButtons={<BulkActions />}
