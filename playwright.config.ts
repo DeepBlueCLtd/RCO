@@ -8,7 +8,7 @@ export default defineConfig({
   use: {
     baseURL: 'https://deepbluecltd.github.io/RCO/',
 
-    trace: 'on',
+    trace: 'on-first-retry',
     headless: true
   },
 
