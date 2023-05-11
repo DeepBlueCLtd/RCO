@@ -27,6 +27,7 @@ interface Audit {
   label: string
   activityDetail?: string
   securityRelated?: boolean
+  index?: number
 }
 
 interface Platform {
@@ -71,6 +72,8 @@ interface ReferenceItem {
 }
 
 interface ActiveReferenceItem extends ReferenceItem {
+  // when false, the item should not be included in drop-downs
+  // for `create` forms, though it should for `edit` forms
   active: boolean
 }
 
@@ -101,9 +104,12 @@ interface Item {
   paper: Paper
   // notes relating to how this item is mustered
   musterRemarks: string
+  // the date this item was added
   createdAt: string
+  // who added this item
   createdBy: User['id']
-  loanedTo?: number
+  // who this item is currently loaned to
+  loanedTo?: User['id']
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'

@@ -4,7 +4,6 @@ import {
   Datagrid,
   List,
   TextField,
-  ReferenceField,
   DateField,
   DateTimeInput,
   NumberInput,
@@ -14,6 +13,8 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
+import DateFilter from '../../components/DateFilter'
+import SourceField from '../../components/SourceField'
 
 interface Props {
   label: string
@@ -55,10 +56,21 @@ const filters = [
     source='securityRelated'
     key='securityRelated'
     label='Security Related'
-  />
+  />,
+  <DateFilter key='createdAt' source='dateTime' label='Created At' />
 ]
 
-export default function AuditList(): React.ReactElement {
+export interface FilterType {
+  data_id: number
+  resource: string
+}
+
+interface AuditListProps {
+  filter?: FilterType
+}
+export default function AuditList({
+  filter = undefined
+}: AuditListProps): React.ReactElement {
   return (
     <List
       perPage={25}
@@ -67,9 +79,10 @@ export default function AuditList(): React.ReactElement {
         field: 'dateTime',
         order: 'DESC'
       }}
-      filters={filters}>
+      filters={filters}
+      filter={filter}>
       <Datagrid bulkActionButtons={false}>
-        <ReferenceField source='user' reference={constants.R_USERS} />
+        <SourceField source='user' reference={constants.R_USERS} />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='label' label='Activity Type' />
         <TextField source='activityDetail' label='Activity Details' />

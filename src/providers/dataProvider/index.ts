@@ -15,6 +15,7 @@ import { isNumber } from '../../utils/number'
 import localForage from 'localforage'
 import loadDefaultData from '../../utils/init-data'
 import { getUser } from '../authProvider'
+import { isSameDate } from '../../utils/date'
 
 export const nowDate = (): string => {
   return DateTime.now().toFormat('yyyy-MM-dd')
@@ -76,10 +77,20 @@ const withCreatedBy = (
   return record
 }
 
+const convertDateToISO = <T>(
+  record: Partial<Record<keyof T, any>>,
+  keys: Array<keyof T>
+): Partial<T> => {
+  keys.forEach((key) => {
+    if (typeof record[key] !== 'undefined') {
+      record[key] = new Date(record[key]).toISOString()
+    }
+  })
+  return record
+}
+
 const customMethods = (provider: DataProvider): CustomDataProvider => {
   const audit = trackEvent(provider)
-  const user = getUser()
-  const { name: userName = '' } = user ?? { name: '' }
 
   return {
     loanItems: async (items: Array<Item['id']>, holder: number) => {
@@ -99,7 +110,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
       const promisees = items.map(async (item) => {
         await audit({
           type: AuditType.ITEM_LOAN,
-          activityDetail: `Item loaned to ${name} by ${userName}.`,
+          activityDetail: `Item loaned to ${name}.`,
           resource: constants.R_ITEMS,
           id: item
         })
@@ -131,7 +142,7 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
           await audit({
             id,
             type: AuditType.ITEM_RETURN,
-            activityDetail: `Item returned to ${name} by ${userName}`,
+            activityDetail: `Item returned from ${name}`,
             resource: constants.R_ITEMS
           })
         }
@@ -149,6 +160,30 @@ const customMethods = (provider: DataProvider): CustomDataProvider => {
   }
 }
 
+const getDifference = (
+  data: Record<string, any>,
+  previousData: Record<string, any>
+): Record<any, string> => {
+  const valuesChanged: Record<string, any> = {}
+  Object.keys(data).forEach((item) => {
+    const isDateModified =
+      data[item] instanceof Date &&
+      !isSameDate(data[item], previousData[item])
+    if (
+      isDateModified ||
+      (typeof data[item] !== 'object' && data[item] !== previousData[item])
+    ) {
+      valuesChanged[item] = previousData[item]
+    }
+  })
+  return valuesChanged
+}
+
+interface AuditDataArgs {
+  type: AuditType
+  securityRelated?: boolean
+}
+
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<DataProvider<string>> => {
@@ -164,6 +199,21 @@ export const getDataProvider = async (
 
   const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
   const audit = trackEvent(providerWithCustomMethods)
+
+  const auditForUpdatedChanges = async (
+    record: UpdateParams,
+    auditData: AuditDataArgs
+  ): Promise<UpdateParams<Item>> => {
+    const difference = getDifference(record.data, record.previousData)
+    await audit({
+      ...auditData,
+      activityDetail: `Previous values: ${JSON.stringify(difference)}`,
+      resource: constants.R_ITEMS,
+      index: record.id as number,
+      id: record.data.id
+    })
+    return record
+  }
 
   return withLifecycleCallbacks(providerWithCustomMethods, [
     {
@@ -264,7 +314,6 @@ export const getDataProvider = async (
           })
           return record
         } catch (error) {
-          console.log({ error })
           return record
         }
       }
@@ -272,19 +321,18 @@ export const getDataProvider = async (
     {
       resource: constants.R_ITEMS,
       beforeCreate: async (record: CreateResult<Item>) => {
+        convertDateToISO<Item>(record.data, ['start', 'end'])
+        record.data.start = new Date(record.data.start).toISOString()
+        record.data.end = new Date(record.data.end).toISOString()
         return withCreatedBy(record)
       },
       beforeUpdate: async (record: UpdateParams<Item>) => {
-        await audit({
+        return await auditForUpdatedChanges(record, {
           type: AuditType.EDIT_ITEM,
-          activityDetail: `Item updated (${String(record.data.id)})`,
           securityRelated:
             record.previousData.protectiveMarking !==
-            record.data.protectiveMarking,
-          resource: constants.R_ITEMS,
-          id: record.previousData.id
+            record.data.protectiveMarking
         })
-        return record
       },
       afterCreate: async (
         record: CreateResult<Item>,

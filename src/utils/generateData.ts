@@ -44,7 +44,7 @@ function setMinuteToStep(date: string, step = 15): string {
     minute: luxonDate.minute % step,
     second: luxonDate.second
   })
-  return updatedDate.toJSDate().toString()
+  return updatedDate.toJSDate().toISOString()
 }
 const getItemReferenceNumber = (batch: Batch, items: Item[]): string => {
   const existing = items.filter((i) => i.batchId === batch.id)
