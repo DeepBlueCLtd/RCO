@@ -5,13 +5,14 @@ import {
   type FilterPayload,
   List,
   ResourceContext,
-  TextField
+  TextField,
+  useGetList
 } from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import { ICON_BATCH, R_BATCHES } from '../constants'
+import { ICON_BATCH, R_BATCHES, R_ITEMS } from '../constants'
 import SourceField from './SourceField'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,6 +56,7 @@ interface Props<T> {
   label?: string
   fields: Array<Field<T>>
   filter?: FilterPayload
+  onFilter?: boolean
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
@@ -75,11 +77,18 @@ interface RecentCardProps {
   children: React.ReactElement
   label?: string
   resource?: string
+  onFilter?: boolean
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', children } = props
+  const { label, resource = '', onFilter, children } = props
   const classes = useStyles()
+
+  const { data } = useGetList<Item>(R_ITEMS, {
+    sort: { field: 'id', order: 'ASC' }
+  })
+  const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
+
   return (
     <Box>
       <Card variant='outlined'>
@@ -94,7 +103,17 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
             {resource === R_BATCHES ? <ICON_BATCH /> : ''}
             <Typography variant='h6'>
               {typeof label !== 'undefined' && (
-                <Link to={resource} className={classes.label}>
+                <Link
+                  to={{
+                    pathname: resource,
+                    search:
+                      onFilter !== false
+                        ? `filter=${JSON.stringify({
+                            id: loaned
+                          })}`
+                        : ''
+                  }}
+                  className={classes.label}>
                   {label}
                 </Link>
               )}
@@ -109,10 +128,17 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
   )
 }
 export default function Recent<T>(props: Props<T>): React.ReactElement {
-  const { resource, itemsCount = 5, label, fields = [], filter } = props
+  const {
+    resource,
+    itemsCount = 5,
+    label,
+    fields = [],
+    filter,
+    onFilter
+  } = props
 
   return (
-    <RecentCard label={label} resource={resource}>
+    <RecentCard label={label} resource={resource} onFilter={onFilter}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}
