@@ -5,6 +5,8 @@ interface CustomDataProvider {
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
+type UserRole = 'rco-user' | 'rco-power-user'
+
 interface User {
   readonly id: number
   name: string
@@ -12,6 +14,7 @@ interface User {
   adminRights: boolean
   /** whether items can still be loaned to this user */
   active: boolean
+  roles: UserRole[]
 }
 
 interface Audit {

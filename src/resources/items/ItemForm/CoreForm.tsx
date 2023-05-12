@@ -5,7 +5,7 @@ import {
   TextField,
   TextInput
 } from 'react-admin'
-import { mediaTypeOptions } from '../../../utils/media'
+import { mediaTypeOptions } from '../../../utils/options'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'

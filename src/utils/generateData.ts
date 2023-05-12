@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { nowDate } from '../providers/dataProvider'
+import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
 const MediaType = ['DVD', 'Tape', 'Paper']
 
@@ -65,7 +65,11 @@ const generateBatchId = (year: string, batch: Batch[]): string => {
 export const generatePlatform = (length: number): Platform[] => {
   const platforms: Platform[] = []
   for (let i = 1; i <= length; i++) {
-    const newP: Omit<Platform, 'id'> = { name: `platform-${i}`, active: true }
+    const isActive = i < 5 || i >= 9
+    const newP: Omit<Platform, 'id'> = {
+      name: `platform-${i}`,
+      active: isActive
+    }
     platforms.push(newP as Platform)
   }
   return platforms
