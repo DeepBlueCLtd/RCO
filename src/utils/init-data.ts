@@ -22,15 +22,17 @@ export const encryptedUsers = users.map((user) => {
 
 export const getActiveReferenceData = (
   nameVal: string,
+  alternateInactive = false,
   length = 5
 ): ActiveReferenceItem[] => {
   return Array(length)
     .fill('')
     .map((_, index): ActiveReferenceItem => {
+      const active = alternateInactive ? index % 2 === 0 : index === 0
       return {
         id: index + 1,
         name: nameVal + ':' + String(index + 1),
-        active: index === 0
+        active
       }
     })
 }
@@ -44,7 +46,7 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
   const department = getActiveReferenceData('Department', 5)
   const vaultLocation = getActiveReferenceData('Vault Location')
   const mediaType = getActiveReferenceData('Media')
-  const protectiveMarking = getActiveReferenceData('Protective Marking')
+  const protectiveMarking = getActiveReferenceData('Protective Marking', true)
   const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
   )
