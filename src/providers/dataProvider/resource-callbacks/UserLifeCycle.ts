@@ -12,7 +12,6 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   afterCreate: async (record: CreateResult<User>) => {
     await audit({
       type: AuditType.CREATE_USER,
-      activityDetail: `User created (${record.data.id})`,
       resource: R_USERS,
       dataId: record.data.id
     })
@@ -21,7 +20,6 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   afterUpdate: async (record: UpdateResult<User>) => {
     await audit({
       type: AuditType.EDIT_USER,
-      activityDetail: `User updated (${record.data.id})`,
       resource: R_USERS,
       dataId: record.data.id
     })

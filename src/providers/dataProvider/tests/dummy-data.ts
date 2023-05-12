@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { type R_AUDIT, type R_BATCHES, type R_ITEMS } from '../../../constants'
+import { type ResourceTypes } from '../../../constants'
 import { type DataProvider } from 'react-admin'
 
 const year: number = 2025
@@ -86,10 +86,8 @@ export const generateItemForTesting = ({
   }
 }
 
-export type ResourceType = typeof R_ITEMS | typeof R_AUDIT | typeof R_BATCHES
-
 export const clear =
-  (provider: DataProvider) => async (resource: ResourceType) => {
+  (provider: DataProvider) => async (resource: ResourceTypes) => {
     const list = await provider.getList<RCOResource>(resource, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },

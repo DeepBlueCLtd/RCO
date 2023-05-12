@@ -3,7 +3,12 @@ import {
   type DataProvider,
   type AuthProvider
 } from 'react-admin'
-import { R_AUDIT, R_BATCHES, R_USERS } from '../../../constants'
+import {
+  R_AUDIT,
+  R_BATCHES,
+  R_USERS,
+  type ResourceTypes
+} from '../../../constants'
 import { DateTime } from 'luxon'
 import localForageDataProvider from 'ra-data-local-forage'
 import { lifecycleCallbacks } from '..'
@@ -11,14 +16,10 @@ import { trackEvent } from '../../../utils/audit'
 import authProvider from '../../authProvider'
 import { encryptedUsers } from '../../../utils/init-data'
 import { AuditType } from '../../../utils/activity-types'
-import {
-  type ResourceType,
-  clear,
-  generateDummyBatchForTesting
-} from './dummy-data'
+import { clear, generateDummyBatchForTesting } from './dummy-data'
 
 const TEST_STORAGE_KEY = 'rco-test'
-const resources: ResourceType[] = [R_AUDIT, R_BATCHES]
+const TO_CLEAR: ResourceTypes[] = [R_AUDIT, R_BATCHES]
 
 describe('CRUD operations on Batch Resource', () => {
   let provider: DataProvider
@@ -47,7 +48,7 @@ describe('CRUD operations on Batch Resource', () => {
     )
 
     const clearLists = clear(provider)
-    for (const resource of resources) {
+    for (const resource of TO_CLEAR) {
       await clearLists(resource)
     }
   })

@@ -1,9 +1,9 @@
 import { type UpdateParams, type CreateResult } from 'ra-core'
-import * as constants from '../../constants'
 import { DateTime } from 'luxon'
 import { type AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
+import { type ResourceTypes } from '../../constants'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -52,6 +52,7 @@ export type AuditFunctionType = ({
 
 export const auditForUpdatedChanges = async (
   record: UpdateParams<RCOResource>,
+  resource: ResourceTypes,
   auditData: AuditDataArgs,
   audit: AuditFunctionType
 ): Promise<UpdateParams<RCOResource>> => {
@@ -60,7 +61,7 @@ export const auditForUpdatedChanges = async (
   await audit({
     ...auditData,
     activityDetail: `Previous values: ${JSON.stringify(difference)}`,
-    resource: constants.R_ITEMS,
+    resource,
     dataId
   })
   return record
