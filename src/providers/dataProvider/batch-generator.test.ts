@@ -3,7 +3,7 @@ import { describe, it, beforeAll } from '@jest/globals'
 import { getDataProvider } from '.'
 import { type DataProvider } from 'react-admin'
 import { generateRandomDate } from '../../utils/generateData'
-import { generateBatchId } from './dataprovider-utils'
+import { generateBatchId } from './resource-callbacks/BatchLifeCycle'
 interface BatchType {
   data: Batch[]
 }
