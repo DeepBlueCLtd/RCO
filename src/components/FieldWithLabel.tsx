@@ -41,13 +41,17 @@ const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
   return (
     <Box fontWeight='bold'>
       {labelPosition === 'top' ? (
-        <Typography fontWeight='bold' sx={labelStyles}>
-          {labelWithSeparator}
-        </Typography>
+        <>
+          <Typography fontWeight='bold' sx={labelStyles}>
+            {labelWithSeparator}
+          </Typography>
+          {render}
+        </>
       ) : (
-        labelWithSeparator
+        <Typography fontWeight='bold' sx={labelStyles}>
+          {labelWithSeparator} {render}
+        </Typography>
       )}{' '}
-      {render}
     </Box>
   )
 }

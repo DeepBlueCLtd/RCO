@@ -110,6 +110,7 @@ interface Item {
   createdBy: User['id']
   // who this item is currently loaned to
   loanedTo?: User['id']
+  loanedDate?: string
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
