@@ -5,7 +5,9 @@ const users: User[] = [
     password: 'admin',
     adminRights: true,
     active: true,
-    roles: ['rco-power-user']
+    roles: ['rco-power-user'],
+    createdAt: '',
+    createdBy: 2
   },
   {
     id: 2,
@@ -13,7 +15,9 @@ const users: User[] = [
     password: 'user',
     adminRights: false,
     active: true,
-    roles: ['rco-user']
+    roles: ['rco-user'],
+    createdAt: '',
+    createdBy: 2
   },
   {
     id: 3,
@@ -21,7 +25,9 @@ const users: User[] = [
     password: 'bobWord',
     adminRights: true,
     active: false,
-    roles: ['rco-user']
+    roles: ['rco-user'],
+    createdAt: '',
+    createdBy: 2
   },
   {
     id: 4,
@@ -29,7 +35,9 @@ const users: User[] = [
     password: 'arthurWord',
     adminRights: false,
     active: false,
-    roles: ['rco-user']
+    roles: ['rco-user'],
+    createdAt: '',
+    createdBy: 2
   }
 ]
 

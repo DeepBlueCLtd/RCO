@@ -124,6 +124,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           />
           <ReferenceInput
             variant='outlined'
+            filter={isEdit === true ? {} : { active: true }}
             source='maximumProtectiveMarking'
             reference='protectiveMarking'>
             <AutocompleteInput optionText={optionsText} sx={sx} />

@@ -15,7 +15,7 @@ import { rolesOptions } from '../../utils/options'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: yup.string().max(8).min(4),
+  password: yup.string().required(),
   adminRights: yup.boolean(),
   roles: yup
     .array(yup.string().oneOf(rolesOptions.map(({ value }) => value)))
@@ -23,7 +23,7 @@ const schema = yup.object({
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
-  const defaultValues: Omit<User, 'id'> = {
+  const defaultValues: Omit<User, 'id' | 'createdAt' | 'createdBy'> = {
     name: '',
     password: '',
     adminRights: false,
