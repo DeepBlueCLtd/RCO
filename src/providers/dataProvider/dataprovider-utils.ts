@@ -57,7 +57,8 @@ export const auditForUpdatedChanges = async (
   audit: AuditFunctionType
 ): Promise<UpdateParams<RCOResource>> => {
   const difference = getDifference(record.data, record.previousData)
-  const dataId = record.data.id !== undefined ? record.data.id : null
+  const dataId =
+    record.previousData.id !== undefined ? record.previousData.id : null
   await audit({
     ...auditData,
     activityDetail: `Previous values: ${JSON.stringify(difference)}`,
