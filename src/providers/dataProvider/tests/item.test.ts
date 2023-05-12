@@ -255,7 +255,8 @@ describe('CRUD operations on Item Resource', () => {
         id: createdId
       })
     ).data
-    const fetchedIdInc: number = fetchedItem.id + 1
+    const fetchedId: number = fetchedItem.id
+    const fetchedIdInc: number = fetchedId + 1
     const batchId: number = batch.id
     expect(fetchedItem.item_number).toEqual(
       `V0${batchId}/${year}/0${fetchedIdInc}`
