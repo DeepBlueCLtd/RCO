@@ -21,6 +21,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - run: yarn
       - run: yarn build
       - run: yarn test
@@ -28,7 +33,7 @@ jobs:
       - name: Execute playwright tests
         continue-on-error: false
         run: yarn e2e
-      
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
