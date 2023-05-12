@@ -13,7 +13,7 @@ const users: User[] = [
     password: 'user',
     adminRights: false,
     active: true,
-    roles: ['rco-power-user']
+    roles: ['rco-user']
   },
   {
     id: 3,
