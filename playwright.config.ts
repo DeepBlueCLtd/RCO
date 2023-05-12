@@ -4,7 +4,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !(process.env.CI == null),
   retries: 0,
-  reporter: 'html',
+  reporter: process.env.CI ? 'dot' : 'list',
+  timeout: 10000,
   // Run your local dev server before starting the tests
   webServer: {
     command: 'yarn dev',
