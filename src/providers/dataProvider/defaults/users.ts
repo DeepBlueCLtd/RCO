@@ -4,28 +4,32 @@ const users: User[] = [
     name: 'ian',
     password: 'admin',
     adminRights: true,
-    active: true
+    active: true,
+    roles: ['rco-power-user']
   },
   {
     id: 2,
     name: 'jason',
     password: 'user',
     adminRights: false,
-    active: true
+    active: true,
+    roles: ['rco-user']
   },
   {
     id: 3,
     name: 'bob',
     password: 'bobWord',
     adminRights: true,
-    active: false
+    active: false,
+    roles: ['rco-user']
   },
   {
     id: 4,
     name: 'arthur',
     password: 'arthurWord',
     adminRights: false,
-    active: false
+    active: false,
+    roles: ['rco-user']
   }
 ]
 
