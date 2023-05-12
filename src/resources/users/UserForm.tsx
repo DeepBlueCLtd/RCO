@@ -23,7 +23,7 @@ const schema = yup.object({
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
-  const defaultValues: Omit<User, 'id'> = {
+  const defaultValues: Omit<User, 'id' | 'createdAt' | 'createdBy'> = {
     name: '',
     password: '',
     adminRights: false,
