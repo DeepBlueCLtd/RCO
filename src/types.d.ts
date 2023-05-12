@@ -146,3 +146,12 @@ interface ActivityType {
   name: string
   label: string
 }
+
+interface Permission {
+  read?: boolean
+  write?: boolean
+  delete?: boolean
+  all?: '*'
+}
+
+type ResourcePermissions = Record<string, Permission>

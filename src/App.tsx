@@ -152,18 +152,6 @@ function App(): React.ReactElement {
             ...(permissions === 'admin'
               ? [
                   <Resource
-                    key={constants.R_BATCHES}
-                    icon={constants.ICON_BATCH}
-                    name={constants.R_BATCHES}
-                    {...batches}
-                  />,
-                  <Resource
-                    key={constants.R_ITEMS}
-                    icon={constants.ICON_ITEM}
-                    name={constants.R_ITEMS}
-                    {...items}
-                  />,
-                  <Resource
                     key={constants.R_VAULT_LOCATION}
                     name={constants.R_VAULT_LOCATION}
                     icon={AllInbox}
@@ -207,6 +195,18 @@ function App(): React.ReactElement {
               icon={constants.ICON_PROJECT}
               name={constants.R_PROJECTS}
               {...projects}
+            />,
+            <Resource
+              key={constants.R_BATCHES}
+              icon={constants.ICON_BATCH}
+              name={constants.R_BATCHES}
+              {...batches}
+            />,
+            <Resource
+              key={constants.R_ITEMS}
+              icon={constants.ICON_ITEM}
+              name={constants.R_ITEMS}
+              {...items}
             />
           ]
         }}
