@@ -5,6 +5,10 @@ export default defineConfig({
   forbidOnly: !(process.env.CI == null),
   retries: 0,
   reporter: 'html',
+  webServer: {
+    command: 'yarn dev',
+    url: 'http://localhost:5173/'
+  },
   use: {
     baseURL: 'https://deepbluecltd.github.io/RCO/',
 
