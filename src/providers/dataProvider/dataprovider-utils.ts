@@ -30,10 +30,10 @@ export const getDifference = (
 
 interface AuditProps {
   type: AuditType
-  activityDetail: string
+  activityDetail?: string
   securityRelated?: boolean
   resource: string | null
-  id: number | null
+  dataId: number | null
   index?: number
 }
 
@@ -47,21 +47,21 @@ export type AuditFunctionType = ({
   activityDetail,
   securityRelated,
   resource,
-  id
+  dataId
 }: AuditProps) => Promise<void>
 
 export const auditForUpdatedChanges = async (
-  record: UpdateParams,
+  record: UpdateParams<RCOResource>,
   auditData: AuditDataArgs,
   audit: AuditFunctionType
-): Promise<UpdateParams<Item>> => {
+): Promise<UpdateParams<RCOResource>> => {
   const difference = getDifference(record.data, record.previousData)
+  const dataId = record.data.id !== undefined ? record.data.id : null
   await audit({
     ...auditData,
     activityDetail: `Previous values: ${JSON.stringify(difference)}`,
     resource: constants.R_ITEMS,
-    index: record.id as number,
-    id: record.data.id
+    dataId
   })
   return record
 }
@@ -79,8 +79,8 @@ export const convertDateToISO = <T>(
 }
 /** utility method to initialise the created by and created at fields */
 export const withCreatedByAt = (
-  record: CreateResult<Item | Batch | Project>
-): CreateResult<Batch | Project | Item> => {
+  record: CreateResult<ResourceWithCreation>
+): CreateResult<ResourceWithCreation> => {
   const user = getUser()
   if (user !== undefined) {
     record.data.createdBy = user.id

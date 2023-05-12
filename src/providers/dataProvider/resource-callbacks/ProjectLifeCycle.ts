@@ -17,7 +17,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       type: AuditType.CREATE_PROJECT,
       activityDetail: `Project created (${String(record.data.id)})`,
       resource: R_PROJECTS,
-      id: record.data.id
+      dataId: record.data.id
     })
     return record
   },
@@ -26,7 +26,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       type: AuditType.EDIT_PROJECT,
       activityDetail: `Project updated (${String(record.data.id)})`,
       resource: R_PROJECTS,
-      id: record.data.id
+      dataId: record.data.id
     })
     return record
   }

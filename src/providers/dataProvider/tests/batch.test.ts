@@ -11,7 +11,11 @@ import { trackEvent } from '../../../utils/audit'
 import authProvider from '../../authProvider'
 import { encryptedUsers } from '../../../utils/init-data'
 import { AuditType } from '../../../utils/activity-types'
-import { type ResourceType, clear, generateDummyBatchForTesting } from './dummy-data'
+import {
+  type ResourceType,
+  clear,
+  generateDummyBatchForTesting
+} from './dummy-data'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const resources: ResourceType[] = [R_AUDIT, R_BATCHES]
@@ -136,7 +140,7 @@ describe('CRUD operations on Batch Resource', () => {
     })
     expect(auditListAfterCreate.total).toBe(1)
     const firstAuditEntry = auditListAfterCreate.data[0]
-    expect(firstAuditEntry.data_id).toEqual(createId)
+    expect(firstAuditEntry.dataId).toEqual(createId)
     expect(firstAuditEntry.resource).toEqual(R_BATCHES)
     expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_BATCH)
     await provider.update<Batch>(R_BATCHES, {
@@ -154,7 +158,7 @@ describe('CRUD operations on Batch Resource', () => {
     })
     expect(auditListAfterUpdate.total).toBe(2)
     const secondAuditEntry = auditListAfterUpdate.data[1]
-    expect(secondAuditEntry.data_id).toEqual(createId)
+    expect(secondAuditEntry.dataId).toEqual(createId)
     expect(secondAuditEntry.resource).toEqual(R_BATCHES)
     expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_BATCH)
   })
@@ -193,6 +197,6 @@ describe('CRUD operations on Batch Resource', () => {
     const audit = auditListAfterCreate.data[0]
     expect(audit.activityType).toEqual(AuditType.CREATE_BATCH)
     expect(audit.resource).toEqual(R_BATCHES)
-    expect(audit.data_id).toEqual(createdBatch.data.id)
+    expect(audit.dataId).toEqual(createdBatch.data.id)
   })
 })

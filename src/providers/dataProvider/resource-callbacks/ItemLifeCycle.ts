@@ -63,7 +63,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
         type: AuditType.CREATE_ITEM,
         activityDetail: `Item created (${String(id)})`,
         resource: R_ITEMS,
-        id
+        dataId: id
       })
       return record
     } catch (error) {

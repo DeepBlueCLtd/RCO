@@ -87,11 +87,10 @@ export const generateItemForTesting = ({
 }
 
 export type ResourceType = typeof R_ITEMS | typeof R_AUDIT | typeof R_BATCHES
-type Resources = Item | Batch | Audit
 
 export const clear =
   (provider: DataProvider) => async (resource: ResourceType) => {
-    const list = await provider.getList<Resources>(resource, {
+    const list = await provider.getList<RCOResource>(resource, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
       filter: {}

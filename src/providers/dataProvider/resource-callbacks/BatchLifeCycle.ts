@@ -68,7 +68,7 @@ export default (
         record.previousData.maximumProtectiveMarking !==
         record.data.maximumProtectiveMarking,
       resource: R_BATCHES,
-      id: record.previousData.id
+      dataId: record.previousData.id
     })
     return record
   },
@@ -96,7 +96,7 @@ export default (
         type: AuditType.CREATE_BATCH,
         activityDetail: `Batch created (${String(id)})`,
         resource: R_BATCHES,
-        id: record.data.id
+        dataId: record.data.id
       })
       return record
     } catch (error) {

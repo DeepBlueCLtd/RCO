@@ -22,7 +22,7 @@ const ShowForm = (): React.ReactElement => {
 
   const filter =
     record?.id !== undefined
-      ? { data_id: record.id, resource: constants.R_ITEMS }
+      ? { dataId: record.id, resource: constants.R_ITEMS }
       : undefined
   const pageTitle = 'View Item'
   return (

@@ -61,7 +61,7 @@ const filters = [
 ]
 
 export interface FilterType {
-  data_id: number
+  dataId: number
   resource: string
 }
 
@@ -88,7 +88,7 @@ export default function AuditList({
         <TextField source='activityDetail' label='Activity Details' />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
-        <TextField source='data_id' label='Item' />
+        <TextField source='dataId' label='Item' />
       </Datagrid>
     </List>
   )

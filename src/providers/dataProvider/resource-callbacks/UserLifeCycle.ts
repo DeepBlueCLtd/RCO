@@ -14,7 +14,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       type: AuditType.CREATE_USER,
       activityDetail: `User created (${record.data.id})`,
       resource: R_USERS,
-      id: record.data.id
+      dataId: record.data.id
     })
     return record
   },
@@ -23,7 +23,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       type: AuditType.EDIT_USER,
       activityDetail: `User updated (${record.data.id})`,
       resource: R_USERS,
-      id: record.data.id
+      dataId: record.data.id
     })
     return record
   }

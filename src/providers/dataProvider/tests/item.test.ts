@@ -185,7 +185,7 @@ describe('CRUD operations on Item Resource', () => {
 
     expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_ITEM)
     expect(firstAuditEntry.activityDetail).toBeDefined()
-    expect(firstAuditEntry.data_id).toEqual(createdItem.data.id)
+    expect(firstAuditEntry.dataId).toEqual(createdItem.data.id)
     expect(firstAuditEntry.resource).toEqual(R_ITEMS)
 
     await provider.update<Item>(R_ITEMS, {
@@ -207,7 +207,7 @@ describe('CRUD operations on Item Resource', () => {
 
     expect(auditListAfterUpdate.total).toBe(2)
     const secondAuditEntry = auditListAfterUpdate.data[1]
-    expect(secondAuditEntry.data_id).toEqual(createdItem.data.id)
+    expect(secondAuditEntry.dataId).toEqual(createdItem.data.id)
     expect(secondAuditEntry.resource).toEqual(R_ITEMS)
     expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_ITEM)
   })
@@ -258,6 +258,6 @@ describe('CRUD operations on Item Resource', () => {
     const firstAuditEntry = auditListAfterCreate.data[0]
     expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_ITEM)
     expect(firstAuditEntry.resource).toEqual(R_ITEMS)
-    expect(firstAuditEntry.data_id).toEqual(fetchedItem.id)
+    expect(firstAuditEntry.dataId).toEqual(fetchedItem.id)
   })
 })
