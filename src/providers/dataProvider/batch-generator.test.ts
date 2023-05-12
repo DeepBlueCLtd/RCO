@@ -1,8 +1,9 @@
 import * as constants from '../../constants'
 import { describe, it, beforeAll } from '@jest/globals'
-import { getDataProvider, generateBatchId } from '.'
+import { getDataProvider } from '.'
 import { type DataProvider } from 'react-admin'
 import { generateRandomDate } from '../../utils/generateData'
+import { generateBatchId } from './dataprovider-utils'
 interface BatchType {
   data: Batch[]
 }
