@@ -216,7 +216,7 @@ const auditForUpdatedChanges = async (
     activityDetail: `Previous values: ${JSON.stringify(difference)}`,
     resource: constants.R_ITEMS,
     index: record.id as number,
-    id: record.data.id
+    id: record.previousData.id
   })
   return record
 }

@@ -1,8 +1,8 @@
-import * as constants from '../../constants'
+import * as constants from '../../../constants'
 import { describe, it, beforeAll } from '@jest/globals'
-import { getDataProvider, generateBatchId } from '.'
+import { getDataProvider, generateBatchId } from '..'
 import { type DataProvider } from 'react-admin'
-import { generateRandomDate } from '../../utils/generateData'
+import { generateRandomDate } from '../../../utils/generateData'
 interface BatchType {
   data: Batch[]
 }
@@ -36,8 +36,8 @@ const mockProvider = {
   }
 }
 
-jest.mock('.', () => {
-  const originalModule = jest.requireActual('.')
+jest.mock('..', () => {
+  const originalModule = jest.requireActual('..')
   return {
     ...originalModule,
     async getDataProvider() {
