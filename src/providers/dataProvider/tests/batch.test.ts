@@ -11,9 +11,10 @@ import { trackEvent } from '../../../utils/audit'
 import authProvider from '../../authProvider'
 import { encryptedUsers } from '../../../utils/init-data'
 import { AuditType } from '../../../utils/activity-types'
-import { generateDummyBatchForTesting } from './dummy-data'
+import { type ResourceType, clear, generateDummyBatchForTesting } from './dummy-data'
 
 const TEST_STORAGE_KEY = 'rco-test'
+const resources: ResourceType[] = [R_AUDIT, R_BATCHES]
 
 describe('CRUD operations on Batch Resource', () => {
   let provider: DataProvider
@@ -40,30 +41,10 @@ describe('CRUD operations on Batch Resource', () => {
         withOutLifecycleProvider
       )
     )
-    // note: next block to be refactored, so we
-    // declare array of resource names, then loop through them,
-    // clearing each resource
-    const list = await provider.getList<Batch>(R_BATCHES, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
-    if (list.total !== undefined && list.total > 0) {
-      await provider.deleteMany(R_BATCHES, {
-        ids: list.data.map((item) => item.id)
-      })
-    }
 
-    const auditList = await provider.getList<Audit>(R_AUDIT, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
-
-    if (auditList.total !== undefined && auditList.total > 0) {
-      await provider.deleteMany<Audit>(R_AUDIT, {
-        ids: auditList.data.map((item) => item.id)
-      })
+    const clearLists = clear(provider)
+    for (const resource of resources) {
+      await clearLists(resource)
     }
   })
 

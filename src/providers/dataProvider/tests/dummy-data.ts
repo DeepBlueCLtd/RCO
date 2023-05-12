@@ -1,4 +1,6 @@
 import { DateTime } from 'luxon'
+import { type R_AUDIT, type R_BATCHES, type R_ITEMS } from '../../../constants'
+import { type DataProvider } from 'react-admin'
 
 const year: number = 2025
 
@@ -83,3 +85,21 @@ export const generateItemForTesting = ({
     musterRemarks: 'muster-remarks-1'
   }
 }
+
+export type ResourceType = typeof R_ITEMS | typeof R_AUDIT | typeof R_BATCHES
+type Resources = Item | Batch | Audit
+
+export const clear =
+  (provider: DataProvider) => async (resource: ResourceType) => {
+    const list = await provider.getList<Resources>(resource, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    if (list.total !== undefined && list.total > 0) {
+      await provider.deleteMany(resource, {
+        ids: list.data.map((item) => item.id)
+      })
+    }
+  }

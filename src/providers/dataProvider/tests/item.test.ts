@@ -10,6 +10,8 @@ import { R_AUDIT, R_BATCHES, R_ITEMS, R_USERS } from '../../../constants'
 import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
 import {
+  type ResourceType,
+  clear,
   generateDummyBatchForTesting,
   generateItemForTesting
 } from './dummy-data'
@@ -18,24 +20,7 @@ import { AuditType } from '../../../utils/activity-types'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const year: number = 2025
-
-type ResrouceType = typeof R_ITEMS | typeof R_AUDIT | typeof R_BATCHES
-type Resources = Item | Batch | Audit
-const resources: ResrouceType[] = [R_ITEMS, R_AUDIT]
-
-const clear = (provider: DataProvider) => async (resource: ResrouceType) => {
-  const list = await provider.getList<Resources>(resource, {
-    sort: { field: 'id', order: 'ASC' },
-    pagination: { page: 1, perPage: 1000 },
-    filter: {}
-  })
-
-  if (list.total !== undefined && list.total > 0) {
-    await provider.deleteMany(resource, {
-      ids: list.data.map((item) => item.id)
-    })
-  }
-}
+const resources: ResourceType[] = [R_ITEMS, R_AUDIT]
 
 describe('CRUD operations on Item Resource', () => {
   let provider: DataProvider
