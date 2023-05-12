@@ -6,12 +6,16 @@ import {
 } from 'ra-core'
 import {
   auditForUpdatedChanges,
-  type AuditFunctionType
+  type AuditFunctionType,
+  withCreatedByAt
 } from '../dataprovider-utils'
 import { R_USERS } from '../../../constants'
 
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   resource: R_USERS,
+  beforeCreate: async (record: CreateResult<User>) => {
+    return withCreatedByAt(record)
+  },
   afterCreate: async (record: CreateResult<User>) => {
     await audit({
       type: AuditType.CREATE_USER,

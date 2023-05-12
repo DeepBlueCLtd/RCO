@@ -19,7 +19,7 @@ interface ResourceWithCreation extends RCOResource {
   createdBy: User['id']
 }
 
-interface User extends RCOResource {
+interface User extends ResourceWithCreation {
   name: string
   password: string
   adminRights: boolean
