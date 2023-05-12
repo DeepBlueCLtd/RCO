@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { nowDate } from '../providers/dataProvider'
+import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
 const MediaType = ['DVD', 'Tape', 'Paper']
 
