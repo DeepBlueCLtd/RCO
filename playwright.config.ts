@@ -6,8 +6,8 @@ export default defineConfig({
   retries: 0,
   reporter: 'html',
   use: {
-    baseURL: 'https://deepbluecltd.github.io/RCO/',
-
+    // url when app started with `yarn dev`
+    baseURL: 'http://localhost:5173/',
     trace: 'on-first-retry',
     headless: true
   },
