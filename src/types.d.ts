@@ -7,8 +7,19 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 type UserRole = 'rco-user' | 'rco-power-user'
 
-interface User {
+/** an entity, with an id unique to that table */
+interface RCOResource {
   readonly id: number
+}
+
+/** an entity for which we track instance creation */
+interface ResourceWithCreation extends RCOResource {
+  // ISO date value
+  createdAt: string
+  createdBy: User['id']
+}
+
+interface User extends RCOResource {
   name: string
   password: string
   adminRights: boolean
@@ -17,38 +28,32 @@ interface User {
   roles: UserRole[]
 }
 
-interface Audit {
-  readonly id: number
+interface Audit extends RCOResource {
   // the user making the change
   user: User['id']
   // the type of data being reported on (opt)
   resource: string | null
   // the id of the entity being reported on (opt)
-  data_id: number | null
+  dataId: number | null
   activityType: AuditType
   dateTime: string
   label: string
   activityDetail?: string
   securityRelated?: boolean
-  index?: number
 }
 
-interface Platform {
-  readonly id: number
+interface Platform extends RCOResource {
   name: string
   active: boolean
 }
 
-interface Project {
+interface Project extends ResourceWithCreation {
   readonly id: number
   name: string
   remarks: string
-  createdAt: string
-  createdBy: User['id']
 }
 
-interface Batch {
-  readonly id: number
+interface Batch extends ResourceWithCreation {
   name: string
   startDate: string
   endDate: string
@@ -62,15 +67,12 @@ interface Batch {
   maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
   receiptNotes: string
-  createdAt: string
-  createdBy: User['id']
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
  * interface becomes more complex, introduce a type-specific interface
  */
-interface ReferenceItem {
-  readonly id: number
+interface ReferenceItem extends RCOResource {
   name: string
 }
 
@@ -92,8 +94,7 @@ interface Tape extends CoreMedia {
   brand: string
 }
 
-interface Item {
-  readonly id: number
+interface Item extends ResourceWithCreation {
   mediaType: MediaType
   start: string
   batchId: Batch['id']
@@ -107,10 +108,6 @@ interface Item {
   paper: Paper
   // notes relating to how this item is mustered
   musterRemarks: string
-  // the date this item was added
-  createdAt: string
-  // who added this item
-  createdBy: User['id']
   // who this item is currently loaned to
   loanedTo?: User['id']
   loanedDate?: string
