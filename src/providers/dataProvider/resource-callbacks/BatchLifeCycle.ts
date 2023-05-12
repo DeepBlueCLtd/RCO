@@ -1,4 +1,8 @@
-import { type AuditFunctionType, withCreatedByAt } from '../dataprovider-utils'
+import {
+  type AuditFunctionType,
+  withCreatedByAt,
+  auditForUpdatedChanges
+} from '../dataprovider-utils'
 import {
   type CreateResult,
   type DataProvider,
@@ -61,16 +65,18 @@ export default (
 ): ResourceCallbacks<any> => ({
   resource: R_BATCHES,
   beforeUpdate: async (record: UpdateParams<Batch>) => {
-    await audit({
-      type: AuditType.EDIT_BATCH,
-      activityDetail: `Batch updated (${String(record.data.id)})`,
-      securityRelated:
-        record.previousData.maximumProtectiveMarking !==
-        record.data.maximumProtectiveMarking,
-      resource: R_BATCHES,
-      id: record.previousData.id
-    })
-    return record
+    const securityRelated =
+      record.previousData.maximumProtectiveMarking !==
+      record.data.maximumProtectiveMarking
+    return await auditForUpdatedChanges(
+      record,
+      R_BATCHES,
+      {
+        type: AuditType.EDIT_BATCH,
+        securityRelated
+      },
+      audit
+    )
   },
   beforeCreate: async (record: CreateResult<Batch>) => {
     return withCreatedByAt(record)
@@ -94,9 +100,8 @@ export default (
       })
       await audit({
         type: AuditType.CREATE_BATCH,
-        activityDetail: `Batch created (${String(id)})`,
         resource: R_BATCHES,
-        id: record.data.id
+        dataId: record.data.id
       })
       return record
     } catch (error) {

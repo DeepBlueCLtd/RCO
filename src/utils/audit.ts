@@ -8,7 +8,7 @@ interface Props {
   activityDetail?: string
   securityRelated?: boolean
   resource: string | null
-  id: number | null
+  dataId: number | null
   index?: number
   label?: string
 }
@@ -22,8 +22,7 @@ export const trackEvent =
     activityDetail = '',
     securityRelated,
     resource,
-    id,
-    index
+    dataId
   }: Props) => {
     try {
       const user = getUser()
@@ -31,14 +30,13 @@ export const trackEvent =
         const audit: Omit<Audit, 'id'> = {
           user: user.id,
           resource,
-          data_id: id,
+          dataId,
           activityType: type,
           dateTime: new Date().toISOString(),
           activityDetail,
           label: getActivityTypeLabel(type),
           securityRelated:
-            securityRelated !== undefined ? securityRelated : false,
-          index
+            securityRelated !== undefined ? securityRelated : false
         }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
           data: audit

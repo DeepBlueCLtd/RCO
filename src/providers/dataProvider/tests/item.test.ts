@@ -6,11 +6,16 @@ import {
 import localForageDataProvider from 'ra-data-local-forage'
 import { encryptedUsers } from '../../../utils/init-data'
 import authProvider from '../../authProvider'
-import { R_AUDIT, R_BATCHES, R_ITEMS, R_USERS } from '../../../constants'
+import {
+  R_AUDIT,
+  R_BATCHES,
+  R_ITEMS,
+  R_USERS,
+  type ResourceTypes
+} from '../../../constants'
 import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
 import {
-  type ResourceType,
   clear,
   generateDummyBatchForTesting,
   generateItemForTesting
@@ -20,7 +25,7 @@ import { AuditType } from '../../../utils/activity-types'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const year: number = 2025
-const resources: ResourceType[] = [R_ITEMS, R_AUDIT]
+const TO_CLEAR: ResourceTypes[] = [R_ITEMS, R_AUDIT]
 
 describe('CRUD operations on Item Resource', () => {
   let provider: DataProvider
@@ -55,7 +60,7 @@ describe('CRUD operations on Item Resource', () => {
       )
     )
     const clearLists = clear(provider)
-    for (const resource of resources) {
+    for (const resource of TO_CLEAR) {
       await clearLists(resource)
     }
   })
@@ -185,7 +190,7 @@ describe('CRUD operations on Item Resource', () => {
 
     expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_ITEM)
     expect(firstAuditEntry.activityDetail).toBeDefined()
-    expect(firstAuditEntry.data_id).toEqual(createdItem.data.id)
+    expect(firstAuditEntry.dataId).toEqual(createdItem.data.id)
     expect(firstAuditEntry.resource).toEqual(R_ITEMS)
 
     await provider.update<Item>(R_ITEMS, {
@@ -207,7 +212,7 @@ describe('CRUD operations on Item Resource', () => {
 
     expect(auditListAfterUpdate.total).toBe(2)
     const secondAuditEntry = auditListAfterUpdate.data[1]
-    expect(secondAuditEntry.data_id).toEqual(createdItem.data.id)
+    expect(secondAuditEntry.dataId).toEqual(createdItem.data.id)
     expect(secondAuditEntry.resource).toEqual(R_ITEMS)
     expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_ITEM)
   })
@@ -258,6 +263,6 @@ describe('CRUD operations on Item Resource', () => {
     const firstAuditEntry = auditListAfterCreate.data[0]
     expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_ITEM)
     expect(firstAuditEntry.resource).toEqual(R_ITEMS)
-    expect(firstAuditEntry.data_id).toEqual(fetchedItem.id)
+    expect(firstAuditEntry.dataId).toEqual(fetchedItem.id)
   })
 })

@@ -23,13 +23,14 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     return withCreatedByAt(record)
   },
   beforeUpdate: async (record: UpdateParams<Item>) => {
+    const securityRelated =
+      record.previousData.protectiveMarking !== record.data.protectiveMarking
     return await auditForUpdatedChanges(
       record,
+      R_ITEMS,
       {
         type: AuditType.EDIT_ITEM,
-        securityRelated:
-          record.previousData.protectiveMarking !==
-          record.data.protectiveMarking
+        securityRelated
       },
       audit
     )
@@ -61,9 +62,8 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       })
       await audit({
         type: AuditType.CREATE_ITEM,
-        activityDetail: `Item created (${String(id)})`,
         resource: R_ITEMS,
-        id
+        dataId: id
       })
       return record
     } catch (error) {
