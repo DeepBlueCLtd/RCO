@@ -17,7 +17,7 @@ import { DateTime } from 'luxon'
 import { AuditType } from '../../../utils/activity-types'
 
 const TEST_STORAGE_KEY = 'rco-test'
-const year = 2025
+const year: number = 2025
 describe('CRUD operations on Item Resource', () => {
   let provider: DataProvider
   let auth: AuthProvider
@@ -255,9 +255,10 @@ describe('CRUD operations on Item Resource', () => {
         id: createdId
       })
     ).data
-
+    const fetchedIdInc: number = fetchedItem.id + 1
+    const batchId: number = batch.id
     expect(fetchedItem.item_number).toEqual(
-      `V0${batch.id}/${year}/0${fetchedItem.id + 1}`
+      `V0${batchId}/${year}/0${fetchedIdInc}`
     )
 
     const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
