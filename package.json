@@ -16,7 +16,7 @@
     "prepare": "husky install",
     "deploy": "gh-pages -d build",
     "test": "jest",
-    "e2e": "npx playwright install && yarn playwright test"
+    "e2e": "yarn playwright install && yarn playwright test"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
