@@ -18,6 +18,25 @@ import { AuditType } from '../../../utils/activity-types'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const year: number = 2025
+
+type ResrouceType = typeof R_ITEMS | typeof R_AUDIT | typeof R_BATCHES
+type Resources = Item | Batch | Audit
+const resources: ResrouceType[] = [R_ITEMS, R_AUDIT]
+
+const clear = (provider: DataProvider) => async (resource: ResrouceType) => {
+  const list = await provider.getList<Resources>(resource, {
+    sort: { field: 'id', order: 'ASC' },
+    pagination: { page: 1, perPage: 1000 },
+    filter: {}
+  })
+
+  if (list.total !== undefined && list.total > 0) {
+    await provider.deleteMany(resource, {
+      ids: list.data.map((item) => item.id)
+    })
+  }
+}
+
 describe('CRUD operations on Item Resource', () => {
   let provider: DataProvider
   let auth: AuthProvider
@@ -50,27 +69,9 @@ describe('CRUD operations on Item Resource', () => {
         withOutLifecycleProvider
       )
     )
-
-    const list = await provider.getList<Item>(R_ITEMS, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
-    if (list.total !== undefined && list.total > 0) {
-      await provider.deleteMany(R_ITEMS, {
-        ids: list.data.map((item) => item.id)
-      })
-    }
-
-    const auditList = await provider.getList<Audit>(R_AUDIT, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
-    if (auditList.total !== undefined && auditList.total > 0) {
-      await provider.deleteMany(R_AUDIT, {
-        ids: auditList.data.map((audit) => audit.id)
-      })
+    const clearLists = clear(provider)
+    for (const resource of resources) {
+      await clearLists(resource)
     }
   })
 
