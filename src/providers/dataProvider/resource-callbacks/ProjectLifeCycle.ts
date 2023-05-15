@@ -1,11 +1,12 @@
-import { type AuditFunctionType, withCreatedByAt } from '../dataprovider-utils'
-import { AuditType } from '../../../utils/activity-types'
 import {
-  type ResourceCallbacks,
-  type CreateResult,
-  type UpdateResult
-} from 'ra-core'
+  type AuditFunctionType,
+  withCreatedByAt,
+  auditForUpdatedChanges
+} from '../dataprovider-utils'
+import { AuditType } from '../../../utils/activity-types'
+import { type ResourceCallbacks, type CreateResult } from 'ra-core'
 import { R_PROJECTS } from '../../../constants'
+import { type UpdateParams } from 'react-admin'
 
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   resource: R_PROJECTS,
@@ -20,12 +21,14 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     })
     return record
   },
-  afterUpdate: async (record: UpdateResult<Project>) => {
-    await audit({
-      type: AuditType.EDIT_PROJECT,
-      resource: R_PROJECTS,
-      dataId: record.data.id
-    })
-    return record
+  beforeUpdate: async (record: UpdateParams<Batch>) => {
+    return await auditForUpdatedChanges(
+      record,
+      R_PROJECTS,
+      {
+        type: AuditType.EDIT_PROJECT
+      },
+      audit
+    )
   }
 })

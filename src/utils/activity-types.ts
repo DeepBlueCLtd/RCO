@@ -19,7 +19,9 @@ export enum AuditType {
   EDIT_ITEM = 'edit_item',
 
   ITEM_LOAN = 'item_loan',
-  ITEM_RETURN = 'item_return'
+  ITEM_RETURN = 'item_return',
+
+  EDIT_PLATFROM = 'edit_platform'
 }
 
 const ActivityTypes = Object.values(AuditType).map((val) => {
