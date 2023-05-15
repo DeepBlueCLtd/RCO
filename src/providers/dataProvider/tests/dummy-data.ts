@@ -86,6 +86,23 @@ export const generateItemForTesting = ({
   }
 }
 
+interface ProjectProps {
+  name?: string
+  id?: number
+}
+
+export const generateProjectForTesting = ({
+  name,
+  id
+}: ProjectProps = {}): Omit<Project, 'id' | 'createdAt'> => {
+  return {
+    ...(id !== undefined ? { id } : null),
+    name: name ?? 'Dummy-Project',
+    remarks: 'dummy-remarks-1',
+    createdBy: 1
+  }
+}
+
 export const clear =
   (provider: DataProvider) => async (resource: ResourceTypes) => {
     const list = await provider.getList<RCOResource>(resource, {
