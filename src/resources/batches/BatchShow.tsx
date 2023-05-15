@@ -20,6 +20,7 @@ import FieldWithLabel, {
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
 import { Typography } from '@mui/material'
+import useCanAccess from '../../hooks/useCanAccess'
 
 const ShowActions = (): React.ReactElement => {
   return (
@@ -34,11 +35,14 @@ const ShowActions = (): React.ReactElement => {
 
 const ItemActions = (): React.ReactElement => {
   const { id = '' } = useParams()
+  const { hasAccess } = useCanAccess()
   const batchId: string = id
 
   return (
     <TopToolbar>
-      <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
+      {hasAccess(constants.R_ITEMS, { write: true }) ? (
+        <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
+      ) : null}
       <ItemAssetReport
         storeKey='batch-items-report'
         filterDefaultValues={{ batchId }}

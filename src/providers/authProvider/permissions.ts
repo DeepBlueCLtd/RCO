@@ -72,7 +72,16 @@ export const canAccess = (
   resource: string,
   actions: Permission
 ): boolean => {
-  const resourcePermissions = permissions[resource]
+  if (typeof permissions === 'undefined') return false
+
+  const resourcePermissions =
+    typeof permissions[resource] !== 'undefined'
+      ? permissions[resource]
+      : typeof permissions['*'] !== 'undefined'
+      ? permissions['*']
+      : undefined
+
+  if (typeof resourcePermissions === 'undefined') return false
 
   // check if user have * permissions
   if (actions.all === '*' && resourcePermissions.all === '*') {

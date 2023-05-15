@@ -4,6 +4,7 @@ import { makeStyles } from '@mui/styles'
 import { Menu, MenuItemLink } from 'react-admin'
 import { LibraryBooks, Home } from '@mui/icons-material'
 import * as constants from '../../constants'
+import useCanAccess from '../../hooks/useCanAccess'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -19,20 +20,38 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
+  const { hasAccess, loading } = useCanAccess()
+
+  if (loading) return <></>
+
   return (
     <Menu className={styles.root}>
       <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Home />} />
-      <Menu.ResourceItem name={constants.R_PLATFORMS} />
-      <Menu.ResourceItem name={constants.R_PROJECTS} />
-      <Menu.ResourceItem name={constants.R_BATCHES} />
-      <Menu.ResourceItem name={constants.R_ITEMS} />
-      <Menu.ResourceItem name={constants.R_LOANS} />
-      <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
-      <Menu.Item
-        to='/reference-data'
-        primaryText='Reference Data'
-        leftIcon={<LibraryBooks />}
-      />
+      {hasAccess(constants.R_PLATFORMS, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_PLATFORMS} />
+      )}
+      {hasAccess(constants.R_PROJECTS, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_PROJECTS} />
+      )}
+      {hasAccess(constants.R_BATCHES, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_BATCHES} />
+      )}
+      {hasAccess(constants.R_ITEMS, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_ITEMS} />
+      )}
+      {hasAccess(constants.R_VAULT_LOCATION, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
+      )}
+      {hasAccess(constants.R_PLATFORMS, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_PLATFORMS} />
+      )}
+      {hasAccess('reference-data', { read: true }) && (
+        <Menu.Item
+          to='/reference-data'
+          primaryText='Reference Data'
+          leftIcon={<LibraryBooks />}
+        />
+      )}
     </Menu>
   )
 }
