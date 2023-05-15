@@ -6,7 +6,12 @@ import {
 import localForageDataProvider from 'ra-data-local-forage'
 import authProvider from '../../authProvider'
 import { encryptedUsers } from '../../../utils/init-data'
-import { R_AUDIT, R_PROJECTS, R_USERS, type ResourceTypes } from '../../../constants'
+import {
+  R_AUDIT,
+  R_PROJECTS,
+  R_USERS,
+  type ResourceTypes
+} from '../../../constants'
 import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
 import { clear, generateProjectForTesting } from './dummy-data'
@@ -184,7 +189,7 @@ describe('CRUD operation on Project Resource', () => {
     const secondAuditEntry = auditListAfterCreate.data[0]
     expect(secondAuditEntry.resource).toBe(R_PROJECTS)
     expect(secondAuditEntry.dataId).toBe(createdProject.id)
-    expect(secondAuditEntry.activityType).toBe(AuditType.CREATE_PROJECT)
+    expect(secondAuditEntry.activityType).toBe(AuditType.CREATE)
   })
 
   it('should test after update', async () => {
@@ -214,7 +219,7 @@ describe('CRUD operation on Project Resource', () => {
     expect(auditListAfterCreate.total).toBe(1)
     const firstAuditEntry = auditListAfterCreate.data[0]
     expect(firstAuditEntry.resource).toBe(R_PROJECTS)
-    expect(firstAuditEntry.activityType).toBe(AuditType.CREATE_PROJECT)
+    expect(firstAuditEntry.activityType).toBe(AuditType.CREATE)
     expect(firstAuditEntry.dataId).toBe(createdProject.id)
 
     await provider.update<Project>(R_PROJECTS, {
@@ -233,6 +238,6 @@ describe('CRUD operation on Project Resource', () => {
     const secondAuditEntry = auditListAfterUpdate.data[1]
     expect(secondAuditEntry.dataId).toBe(createdProject.id)
     expect(secondAuditEntry.resource).toBe(R_PROJECTS)
-    expect(secondAuditEntry.activityType).toBe(AuditType.EDIT_PROJECT)
+    expect(secondAuditEntry.activityType).toBe(AuditType.EDIT)
   })
 })

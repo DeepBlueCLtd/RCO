@@ -5,7 +5,7 @@ import {
 import { AuditType } from '../../../utils/activity-types'
 import { type ResourceCallbacks } from 'ra-core'
 import { R_PLATFORMS } from '../../../constants'
-import { type UpdateParams } from 'react-admin'
+import { type CreateResult, type UpdateParams } from 'react-admin'
 
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   resource: R_PLATFORMS,
@@ -14,9 +14,17 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       record,
       R_PLATFORMS,
       {
-        type: AuditType.EDIT_PLATFROM
+        type: AuditType.EDIT
       },
       audit
     )
+  },
+  afterCreate: async (record: CreateResult<Project>) => {
+    await audit({
+      type: AuditType.CREATE,
+      resource: R_PLATFORMS,
+      dataId: record.data.id
+    })
+    return record
   }
 })
