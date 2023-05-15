@@ -72,7 +72,7 @@ export default (
       record,
       R_BATCHES,
       {
-        type: AuditType.EDIT_BATCH,
+        type: AuditType.EDIT,
         securityRelated
       },
       audit
@@ -99,7 +99,7 @@ export default (
         }
       })
       await audit({
-        type: AuditType.CREATE_BATCH,
+        type: AuditType.CREATE,
         resource: R_BATCHES,
         dataId: record.data.id
       })

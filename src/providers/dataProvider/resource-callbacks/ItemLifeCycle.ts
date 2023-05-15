@@ -29,7 +29,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       record,
       R_ITEMS,
       {
-        type: AuditType.EDIT_ITEM,
+        type: AuditType.EDIT,
         securityRelated
       },
       audit
@@ -61,7 +61,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
         }
       })
       await audit({
-        type: AuditType.CREATE_ITEM,
+        type: AuditType.CREATE,
         resource: R_ITEMS,
         dataId: id
       })

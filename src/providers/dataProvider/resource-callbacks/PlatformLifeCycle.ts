@@ -14,7 +14,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       record,
       R_PLATFORMS,
       {
-        type: AuditType.EDIT_PLATFROM
+        type: AuditType.EDIT
       },
       audit
     )
