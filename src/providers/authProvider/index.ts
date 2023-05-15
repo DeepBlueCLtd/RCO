@@ -113,7 +113,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           throw new Error('You are not a registered user.')
         }
       } catch (error) {
-        await Promise.resolve()
+        const permissions = getPermissionsByRoles(['user'])
+        return await Promise.resolve(permissions)
       }
     }
   }
