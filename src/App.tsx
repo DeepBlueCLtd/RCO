@@ -257,7 +257,10 @@ const createRoutes = (
 ): React.ReactNode[] => {
   const cName: string = name
 
-  const { read, write } = (permissions != null) || { read: false, write: false }
+  const { read, write } =
+    typeof permissions !== 'undefined'
+      ? permissions
+      : { read: false, write: false }
 
   const routes: React.ReactElement[] = []
 
