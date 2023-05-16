@@ -81,11 +81,22 @@ export default function AuditList({
       }}
       filters={filters}
       filter={filter}>
-      <Datagrid bulkActionButtons={false}>
+      <Datagrid
+        bulkActionButtons={false}
+        sx={{
+          '&  .RaDatagrid-rowCell': {
+            maxWidth: '600px',
+            padding: '12px'
+          }
+        }}>
         <SourceField source='user' reference={constants.R_USERS} />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='label' label='Activity Type' />
-        <TextField source='activityDetail' label='Activity Details' />
+        <TextField
+          source='activityDetail'
+          label='Activity Details'
+          sx={{ wordBreak: 'break-all', display: 'inline-block' }}
+        />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
         <TextField source='dataId' label='Item' />
