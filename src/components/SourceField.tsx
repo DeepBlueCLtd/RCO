@@ -2,8 +2,10 @@ import {
   ReferenceField,
   TextField,
   type TextFieldProps,
-  type LinkToType
+  type LinkToType,
+  FunctionField
 } from 'react-admin'
+import { R_USERS } from '../constants'
 
 interface SourceFieldProps {
   source: string
@@ -29,7 +31,15 @@ const SourceField = (props: SourceFieldProps): React.ReactElement => {
       source={source}
       reference={reference !== undefined ? reference : source}
       label={label}>
-      <TextField source={sourceField} {...textProps} />
+      {reference !== undefined && reference === R_USERS ? (
+        <FunctionField
+          label={label}
+          {...textProps}
+          render={(record: User) => `${record.name} (${record.staffNumber})`}
+        />
+      ) : (
+        <TextField source={sourceField} {...textProps} />
+      )}
     </ReferenceField>
   )
 }

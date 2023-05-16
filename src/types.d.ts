@@ -26,6 +26,7 @@ interface User extends ResourceWithCreation {
   /** whether items can still be loaned to this user */
   active: boolean
   roles: UserRole[]
+  staffNumber: string
 }
 
 interface Audit extends RCOResource {
