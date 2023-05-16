@@ -75,7 +75,6 @@ const CardWithNavigation = (
 
 const mainReferenceRoutes = [
   { path: '/platforms', title: 'Platforms' },
-  { path: '/users', title: 'Users' },
   { path: '/audit', title: 'Audit Log' }
 ]
 

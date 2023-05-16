@@ -3,7 +3,6 @@ import {
   BooleanField,
   CreateButton,
   Datagrid,
-  type Identifier,
   List,
   TextField,
   TopToolbar,
@@ -41,10 +40,7 @@ export default function UserList(props: Props): React.ReactElement {
   return (
     <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
-        rowClick={(id: Identifier) => {
-          const cID: string = id.toString()
-          return `${basePath}/${cID}`
-        }}
+        rowClick='edit'
         bulkActionButtons={
           <Button
             startIcon={<Article />}
