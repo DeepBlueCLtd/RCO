@@ -33,18 +33,11 @@ export default function useCanAccess(): UserCanAccess {
   return { hasAccess, loading }
 }
 
-interface Routes {
-  create?: any
-  edit?: any
-  list?: any
-  show?: any
-}
-
 export const protectedRoutes = (
   permissions: ResourcePermissions,
   resource: string,
-  routes: Routes
-): Routes => {
+  routes: ResourceRoutes
+): ResourceRoutes => {
   const permission =
     typeof permissions[resource] !== 'undefined'
       ? permissions[resource]

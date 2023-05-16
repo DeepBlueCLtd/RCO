@@ -249,7 +249,7 @@ interface Elements {
   list?: React.FunctionComponent<ElementsProps>
 }
 
-const defaultElements = {
+const defaultElements: ResourceRoutes = {
   create: ReferenceDataCreate,
   edit: ReferenceDataEdit,
   list: ReferenceDataList

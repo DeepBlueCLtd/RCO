@@ -151,4 +151,12 @@ interface Permission {
   all?: '*'
 }
 
+/** the set of routes for a resource */
+interface ResourceRoutes {
+  create?: any
+  edit?: any
+  list?: any
+  show?: any
+}
+
 type ResourcePermissions = Record<string, Permission>
