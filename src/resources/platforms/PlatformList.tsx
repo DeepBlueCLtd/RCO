@@ -11,6 +11,8 @@ import {
   FilterButton,
   useListContext
 } from 'react-admin'
+import useCanAccess from '../../hooks/useCanAccess'
+import * as constants from '../../constants'
 
 interface Props {
   name: string
@@ -20,9 +22,12 @@ export default function PlatformList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
   const basePath: string = `/${cName}`
+  const { hasAccess } = useCanAccess()
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
-      <CreateButton to={`${basePath}/create`} />
+      {hasAccess(constants.R_PLATFORMS, { write: true }) ? (
+        <CreateButton to={`${basePath}/create`} />
+      ) : null}
       <FilterButton />
     </TopToolbar>
   )

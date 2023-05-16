@@ -35,6 +35,7 @@ import vaultlocations from './resources/vault-locations'
 import loadDefaultData from './utils/init-data'
 import { type FilterType } from './resources/audit/AuditList'
 import { canAccess } from './providers/authProvider/permissions'
+import { protectedRoutes } from './hooks/useCanAccess'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -162,7 +163,11 @@ function App(): React.ReactElement {
           name={constants.R_VAULT_LOCATION}
           icon={AllInbox}
           options={{ label: 'Vault Locations' }}
-          {...vaultlocations}
+          {...protectedRoutes(
+            permissions,
+            constants.R_VAULT_LOCATION,
+            vaultlocations
+          )}
         />
         <CustomRoutes key='routes'>
           <Route path='/protectiveMarking'>
@@ -214,19 +219,19 @@ function App(): React.ReactElement {
           key={constants.R_PROJECTS}
           icon={constants.ICON_PROJECT}
           name={constants.R_PROJECTS}
-          {...projects}
+          {...protectedRoutes(permissions, constants.R_PROJECTS, projects)}
         />
         <Resource
           key={constants.R_BATCHES}
           icon={constants.ICON_BATCH}
           name={constants.R_BATCHES}
-          {...batches}
+          {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
         />
         <Resource
           key={constants.R_ITEMS}
           icon={constants.ICON_ITEM}
           name={constants.R_ITEMS}
-          {...items}
+          {...protectedRoutes(permissions, constants.R_ITEMS, items)}
         />
       </Admin>
     </Suspense>

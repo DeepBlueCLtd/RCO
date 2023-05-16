@@ -15,6 +15,8 @@ import { Button, Chip } from '@mui/material'
 import { Article } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
+import useCanAccess from '../../hooks/useCanAccess'
+import * as constants from '../../constants'
 
 interface Props {
   name: string
@@ -25,11 +27,14 @@ export default function UserList(props: Props): React.ReactElement {
   const cName: string = name
   const basePath: string = `/${cName}`
   const [open, setOpen] = useState(false)
+  const { hasAccess } = useCanAccess()
 
   const ListActions = (): React.ReactElement => {
     return (
       <TopToolbar>
-        <CreateButton to={`${basePath}/create`} />
+        {hasAccess(constants.R_USERS, { write: true }) ? (
+          <CreateButton to={`${basePath}/create`} />
+        ) : null}
       </TopToolbar>
     )
   }

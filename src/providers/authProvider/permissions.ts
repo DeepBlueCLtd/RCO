@@ -12,7 +12,8 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
     batches: { read: true, write: true, delete: false },
     items: { read: true, write: true, delete: false },
     users: { read: true, write: true, delete: false },
-    platforms: { read: true, write: true, delete: false }
+    platforms: { read: true, write: true, delete: false },
+    'reference-data': { read: true, write: true, delete: false }
   },
   'rco-power-user': {
     '*': { all: '*' }
@@ -84,7 +85,7 @@ export const canAccess = (
   if (typeof resourcePermissions === 'undefined') return false
 
   // check if user have * permissions
-  if (actions.all === '*' && resourcePermissions.all === '*') {
+  if (resourcePermissions.all === '*') {
     return true
   } else if (
     actions.all === '*' &&

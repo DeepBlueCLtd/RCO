@@ -20,7 +20,9 @@ export default function useCanAccess(): UserCanAccess {
       getPermissions()
         .then(setPermissions)
         .catch(console.log)
-        .finally(() => { setLoading(false) })
+        .finally(() => {
+          setLoading(false)
+        })
     }
   }, [data])
 
@@ -29,4 +31,41 @@ export default function useCanAccess(): UserCanAccess {
   }
 
   return { hasAccess, loading }
+}
+
+interface Routes {
+  create?: any
+  edit?: any
+  list?: any
+  show?: any
+}
+
+export const protectedRoutes = (
+  permissions: ResourcePermissions,
+  resource: string,
+  routes: Routes
+): Routes => {
+  const permission =
+    typeof permissions[resource] !== 'undefined'
+      ? permissions[resource]
+      : permissions['*']
+
+  if (typeof permission === 'undefined') return {}
+
+  const { write, read, all } = permission
+
+  const hastReadPermission =
+    typeof read !== 'undefined' && read ? true : all === '*'
+
+  const hastWritePermission =
+    hastReadPermission && typeof write !== 'undefined' && write
+      ? true
+      : all === '*'
+
+  return {
+    create: hastWritePermission ? routes.create : undefined,
+    edit: hastWritePermission ? routes.edit : undefined,
+    list: hastReadPermission ? routes.list : undefined,
+    show: hastReadPermission ? routes.show : undefined
+  }
 }
