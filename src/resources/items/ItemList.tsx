@@ -13,7 +13,8 @@ import {
   useRefresh,
   AutocompleteInput,
   type SortPayload,
-  useGetList
+  useGetList,
+  type FilterPayload
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -229,15 +230,18 @@ export const BulkActions = (): React.ReactElement => {
   )
 }
 
-export default function ItemList(
-  props?: Omit<ListProps, 'children'>
-): React.ReactElement {
+interface ItemListType extends Omit<ListProps, 'children'> {
+  filter?: FilterPayload
+}
+
+export default function ItemList(props?: ItemListType): React.ReactElement {
   return (
     <List
       hasCreate={false}
       actions={<ItemActions />}
       resource={constants.R_ITEMS}
       filters={filters}
+      filter={props !== undefined ? props.filter : undefined}
       {...props}>
       <ResetDateFilter source='createdAt' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
