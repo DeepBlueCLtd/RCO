@@ -4,8 +4,7 @@ import {
   TextInput,
   BooleanInput,
   useEditContext,
-  SelectArrayInput,
-  NumberInput
+  SelectArrayInput
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -66,11 +65,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           sx={{ width: '100%', flex: 1 }}
           choices={rolesOptions}
         />
-        <NumberInput
-          source='staffNumber'
-          label='Staff number'
-          sx={{ flex: 1 }}
-        />
+        <TextInput source='staffNumber' label='Staff number' sx={{ flex: 1 }} />
       </FlexBox>
       <FlexBox>
         <BooleanInput source='adminRights' />
