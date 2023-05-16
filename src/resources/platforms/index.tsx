@@ -56,7 +56,7 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
 //   )
 // }
 
-const platforms = {
+const platforms: ResourceRoutes = {
   create: PlatformCreate,
   edit: PlatformEdit,
   list: PlatformList
