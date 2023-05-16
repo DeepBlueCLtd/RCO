@@ -143,7 +143,7 @@ describe('CRUD operations on Batch Resource', () => {
     const firstAuditEntry = auditListAfterCreate.data[0]
     expect(firstAuditEntry.dataId).toEqual(createId)
     expect(firstAuditEntry.resource).toEqual(R_BATCHES)
-    expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_BATCH)
+    expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE)
     await provider.update<Batch>(R_BATCHES, {
       id: createId,
       previousData: createdBatch.data,
@@ -161,7 +161,7 @@ describe('CRUD operations on Batch Resource', () => {
     const secondAuditEntry = auditListAfterUpdate.data[1]
     expect(secondAuditEntry.dataId).toEqual(createId)
     expect(secondAuditEntry.resource).toEqual(R_BATCHES)
-    expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_BATCH)
+    expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT)
   })
 
   it('should test before create', async () => {
@@ -196,7 +196,7 @@ describe('CRUD operations on Batch Resource', () => {
     })
     expect(auditListAfterCreate.total).toBe(1)
     const audit = auditListAfterCreate.data[0]
-    expect(audit.activityType).toEqual(AuditType.CREATE_BATCH)
+    expect(audit.activityType).toEqual(AuditType.CREATE)
     expect(audit.resource).toEqual(R_BATCHES)
     expect(audit.dataId).toEqual(createdBatch.data.id)
   })

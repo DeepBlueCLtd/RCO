@@ -18,7 +18,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   },
   afterCreate: async (record: CreateResult<User>) => {
     await audit({
-      type: AuditType.CREATE_USER,
+      type: AuditType.CREATE,
       resource: R_USERS,
       dataId: record.data.id
     })
@@ -31,7 +31,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       record,
       R_USERS,
       {
-        type: AuditType.EDIT_USER,
+        type: AuditType.EDIT,
         securityRelated
       },
       audit

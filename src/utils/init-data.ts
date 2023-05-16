@@ -43,7 +43,7 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
   const platforms = generatePlatform(10)
   const projects = generateProject(10, user)
   const organisation = getActiveReferenceData('Organisation')
-  const department = getActiveReferenceData('Department', false, 5)
+  const department = getActiveReferenceData('Department')
   const vaultLocation = getActiveReferenceData('Vault Location')
   const mediaType = getActiveReferenceData('Media')
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
