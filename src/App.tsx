@@ -9,7 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { AllInbox } from '@mui/icons-material'
+import { AllInbox, Groups } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 
@@ -101,6 +101,10 @@ function App(): React.ReactElement {
     const UI_VERSION = localStorage.getItem(constants.APP_VERSION)
     if (UI_VERSION !== null) {
       if (process.env.VITE_APP_VERSION !== UI_VERSION) {
+        localStorage.setItem(
+          constants.APP_VERSION,
+          process.env.VITE_APP_VERSION ?? '1'
+        )
         Object.keys(localStorage).forEach((k) => {
           if (k !== 'rco-user' && k !== 'salt') {
             localStorage.removeItem(k)
@@ -120,7 +124,7 @@ function App(): React.ReactElement {
     } else {
       localStorage.setItem(
         constants.APP_VERSION,
-        process.env.VITE_APP_VERSION ?? '1.0.0'
+        process.env.VITE_APP_VERSION ?? '1'
       )
     }
   }, [])
@@ -130,11 +134,15 @@ function App(): React.ReactElement {
     if (DATA_VERSION !== null) {
       if (process.env.VITE_DATA_VERSION !== DATA_VERSION) {
         loadDefaultData().catch(console.log)
+        localStorage.setItem(
+          constants.DATA_VERSION,
+          process.env.VITE_DATA_VERSION ?? '1'
+        )
       }
     } else {
       localStorage.setItem(
         constants.DATA_VERSION,
-        process.env.VITE_DATA_VERSION ?? '1.0.0'
+        process.env.VITE_DATA_VERSION ?? '1'
       )
     }
   }, [])
@@ -168,6 +176,12 @@ function App(): React.ReactElement {
             constants.R_VAULT_LOCATION,
             vaultlocations
           )}
+        />
+        <Resource
+          key={constants.R_USERS}
+          name={constants.R_USERS}
+          icon={Groups}
+          {...protectedRoutes(permissions, constants.R_USERS, users)}
         />
         <CustomRoutes key='routes'>
           <Route path='/protectiveMarking'>

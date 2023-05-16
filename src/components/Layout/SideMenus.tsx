@@ -45,6 +45,9 @@ export const SideMenus = (): React.ReactElement => {
       {hasAccess(constants.R_PLATFORMS, { read: true }) && (
         <Menu.ResourceItem name={constants.R_PLATFORMS} />
       )}
+      {hasAccess(constants.R_USERS, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_USERS} />
+      )}
       {hasAccess('reference-data', { read: true }) && (
         <Menu.Item
           to='/reference-data'
