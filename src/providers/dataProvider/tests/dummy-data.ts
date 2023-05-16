@@ -103,6 +103,22 @@ export const generateProjectForTesting = ({
   }
 }
 
+interface PlatformProps {
+  name?: string
+  id?: number
+}
+
+export const generatePlatformForTesting = ({
+  id,
+  name
+}: PlatformProps = {}): Omit<Platform, 'id'> => {
+  return {
+    ...(id !== undefined ? { id } : null),
+    name: name ?? 'Dummy-Platform',
+    active: true
+  }
+}
+
 export const clear =
   (provider: DataProvider) => async (resource: ResourceTypes) => {
     const list = await provider.getList<RCOResource>(resource, {
