@@ -13,6 +13,7 @@ import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
+import useCanAccess from '../../hooks/useCanAccess'
 
 const omitColumns: string[] = ['createdAt']
 
@@ -32,10 +33,11 @@ const filters = [
 ]
 
 export default function ProjectList(): React.ReactElement {
+  const { hasAccess } = useCanAccess()
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <FilterButton />
-      <CreateButton />
+      {hasAccess('reference-data', { write: true }) ? <CreateButton /> : null}
       <SelectColumnsButton />
     </TopToolbar>
   )

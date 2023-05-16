@@ -22,6 +22,14 @@ export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
 export const R_LOANS = 'loans'
 
+export type ResourceTypes =
+  | typeof R_ITEMS
+  | typeof R_AUDIT
+  | typeof R_BATCHES
+  | typeof R_USERS
+  | typeof R_PROJECTS
+  | typeof R_PLATFORMS
+
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 

@@ -3,7 +3,12 @@ import {
   type DataProvider,
   type AuthProvider
 } from 'react-admin'
-import { R_AUDIT, R_BATCHES, R_USERS } from '../../../constants'
+import {
+  R_AUDIT,
+  R_BATCHES,
+  R_USERS,
+  type ResourceTypes
+} from '../../../constants'
 import { DateTime } from 'luxon'
 import localForageDataProvider from 'ra-data-local-forage'
 import { lifecycleCallbacks } from '..'
@@ -11,10 +16,10 @@ import { trackEvent } from '../../../utils/audit'
 import authProvider from '../../authProvider'
 import { encryptedUsers } from '../../../utils/init-data'
 import { AuditType } from '../../../utils/activity-types'
-import { type ResourceType, clear, generateDummyBatchForTesting } from './dummy-data'
+import { clear, generateDummyBatchForTesting } from './dummy-data'
 
 const TEST_STORAGE_KEY = 'rco-test'
-const resources: ResourceType[] = [R_AUDIT, R_BATCHES]
+const TO_CLEAR: ResourceTypes[] = [R_AUDIT, R_BATCHES]
 
 describe('CRUD operations on Batch Resource', () => {
   let provider: DataProvider
@@ -43,7 +48,7 @@ describe('CRUD operations on Batch Resource', () => {
     )
 
     const clearLists = clear(provider)
-    for (const resource of resources) {
+    for (const resource of TO_CLEAR) {
       await clearLists(resource)
     }
   })
@@ -136,9 +141,9 @@ describe('CRUD operations on Batch Resource', () => {
     })
     expect(auditListAfterCreate.total).toBe(1)
     const firstAuditEntry = auditListAfterCreate.data[0]
-    expect(firstAuditEntry.data_id).toEqual(createId)
+    expect(firstAuditEntry.dataId).toEqual(createId)
     expect(firstAuditEntry.resource).toEqual(R_BATCHES)
-    expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE_BATCH)
+    expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE)
     await provider.update<Batch>(R_BATCHES, {
       id: createId,
       previousData: createdBatch.data,
@@ -154,9 +159,9 @@ describe('CRUD operations on Batch Resource', () => {
     })
     expect(auditListAfterUpdate.total).toBe(2)
     const secondAuditEntry = auditListAfterUpdate.data[1]
-    expect(secondAuditEntry.data_id).toEqual(createId)
+    expect(secondAuditEntry.dataId).toEqual(createId)
     expect(secondAuditEntry.resource).toEqual(R_BATCHES)
-    expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT_BATCH)
+    expect(secondAuditEntry.activityType).toEqual(AuditType.EDIT)
   })
 
   it('should test before create', async () => {
@@ -191,8 +196,8 @@ describe('CRUD operations on Batch Resource', () => {
     })
     expect(auditListAfterCreate.total).toBe(1)
     const audit = auditListAfterCreate.data[0]
-    expect(audit.activityType).toEqual(AuditType.CREATE_BATCH)
+    expect(audit.activityType).toEqual(AuditType.CREATE)
     expect(audit.resource).toEqual(R_BATCHES)
-    expect(audit.data_id).toEqual(createdBatch.data.id)
+    expect(audit.dataId).toEqual(createdBatch.data.id)
   })
 })

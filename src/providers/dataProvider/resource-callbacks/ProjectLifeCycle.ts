@@ -14,19 +14,17 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   },
   afterCreate: async (record: CreateResult<Project>) => {
     await audit({
-      type: AuditType.CREATE_PROJECT,
-      activityDetail: `Project created (${String(record.data.id)})`,
+      type: AuditType.CREATE,
       resource: R_PROJECTS,
-      id: record.data.id
+      dataId: record.data.id
     })
     return record
   },
   afterUpdate: async (record: UpdateResult<Project>) => {
     await audit({
-      type: AuditType.EDIT_PROJECT,
-      activityDetail: `Project updated (${String(record.data.id)})`,
+      type: AuditType.EDIT,
       resource: R_PROJECTS,
-      id: record.data.id
+      dataId: record.data.id
     })
     return record
   }

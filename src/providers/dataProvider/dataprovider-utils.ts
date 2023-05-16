@@ -1,9 +1,9 @@
 import { type UpdateParams, type CreateResult } from 'ra-core'
-import * as constants from '../../constants'
 import { DateTime } from 'luxon'
 import { type AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
+import { type ResourceTypes } from '../../constants'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -30,10 +30,10 @@ export const getDifference = (
 
 interface AuditProps {
   type: AuditType
-  activityDetail: string
+  activityDetail?: string
   securityRelated?: boolean
   resource: string | null
-  id: number | null
+  dataId: number | null
   index?: number
 }
 
@@ -47,21 +47,23 @@ export type AuditFunctionType = ({
   activityDetail,
   securityRelated,
   resource,
-  id
+  dataId
 }: AuditProps) => Promise<void>
 
 export const auditForUpdatedChanges = async (
-  record: UpdateParams,
+  record: UpdateParams<RCOResource>,
+  resource: ResourceTypes,
   auditData: AuditDataArgs,
   audit: AuditFunctionType
-): Promise<UpdateParams<Item>> => {
+): Promise<UpdateParams<RCOResource>> => {
   const difference = getDifference(record.data, record.previousData)
+  const dataId =
+    record.previousData.id !== undefined ? record.previousData.id : null
   await audit({
     ...auditData,
     activityDetail: `Previous values: ${JSON.stringify(difference)}`,
-    resource: constants.R_ITEMS,
-    index: record.id as number,
-    id: record.data.id
+    resource,
+    dataId
   })
   return record
 }
@@ -79,8 +81,8 @@ export const convertDateToISO = <T>(
 }
 /** utility method to initialise the created by and created at fields */
 export const withCreatedByAt = (
-  record: CreateResult<Item | Batch | Project>
-): CreateResult<Batch | Project | Item> => {
+  record: CreateResult<ResourceWithCreation>
+): CreateResult<ResourceWithCreation> => {
   const user = getUser()
   if (user !== undefined) {
     record.data.createdBy = user.id

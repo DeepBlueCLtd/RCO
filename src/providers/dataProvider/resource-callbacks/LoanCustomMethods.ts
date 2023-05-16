@@ -25,10 +25,10 @@ export const customMethods = (provider: DataProvider): CustomDataProvider => {
 
       const promisees = items.map(async (item) => {
         await audit({
-          type: AuditType.ITEM_LOAN,
+          type: AuditType.LOAN,
           activityDetail: `Item loaned to ${name}.`,
           resource: R_ITEMS,
-          id: item
+          dataId: item
         })
       })
       await Promise.all(promisees)
@@ -54,8 +54,8 @@ export const customMethods = (provider: DataProvider): CustomDataProvider => {
         if (loanedTo !== undefined) {
           const { name } = userById[loanedTo]
           await audit({
-            id,
-            type: AuditType.ITEM_RETURN,
+            dataId: id,
+            type: AuditType.RETURN,
             activityDetail: `Item returned from ${name}`,
             resource: R_ITEMS
           })

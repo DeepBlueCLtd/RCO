@@ -58,9 +58,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           setToken(token, salt)
           await audit({
             type: AuditType.LOGIN,
-            activityDetail: 'Logged in',
             resource: null,
-            id: null
+            dataId: null
           })
           return await Promise.resolve(data)
         } else {
@@ -73,9 +72,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     logout: async (): Promise<void> => {
       await audit({
         type: AuditType.LOGOUT,
-        activityDetail: 'Logged out',
         resource: null,
-        id: null
+        dataId: null
       })
       removeToken()
       await Promise.resolve()
@@ -115,7 +113,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           throw new Error('You are not a registered user.')
         }
       } catch (error) {
-        await Promise.resolve()
+        const permissions = getPermissionsByRoles(['user'])
+        return await Promise.resolve(permissions)
       }
     }
   }
