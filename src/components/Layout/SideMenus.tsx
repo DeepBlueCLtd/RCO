@@ -28,6 +28,7 @@ export const SideMenus = (): React.ReactElement => {
       <Menu.ResourceItem name={constants.R_ITEMS} />
       <Menu.ResourceItem name={constants.R_LOANS} />
       <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
+      <Menu.ResourceItem name={constants.R_USERS} />
       <Menu.Item
         to='/reference-data'
         primaryText='Reference Data'
