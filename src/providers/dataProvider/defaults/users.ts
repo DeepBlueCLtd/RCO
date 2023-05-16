@@ -8,7 +8,7 @@ const users: User[] = [
     roles: ['rco-power-user'],
     createdAt: '',
     createdBy: 2,
-    staffNumber: 1
+    staffNumber: 'd-1'
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ const users: User[] = [
     roles: ['rco-user'],
     createdAt: '',
     createdBy: 2,
-    staffNumber: 2
+    staffNumber: 'd-2'
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const users: User[] = [
     roles: ['rco-user'],
     createdAt: '',
     createdBy: 2,
-    staffNumber: 3
+    staffNumber: 'd-3'
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const users: User[] = [
     roles: ['rco-user'],
     createdAt: '',
     createdBy: 2,
-    staffNumber: 4
+    staffNumber: 'd-4'
   }
 ]
 
