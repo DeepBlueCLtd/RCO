@@ -40,7 +40,7 @@ export default function UserList(props: Props): React.ReactElement {
   return (
     <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
-        rowClick='edit'
+        rowClick='show'
         bulkActionButtons={
           <Button
             startIcon={<Article />}

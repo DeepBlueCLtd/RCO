@@ -27,6 +27,7 @@ interface User extends ResourceWithCreation {
   active: boolean
   roles: UserRole[]
   staffNumber: string
+  departedDate?: string
 }
 
 interface Audit extends RCOResource {
