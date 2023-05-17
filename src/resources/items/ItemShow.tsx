@@ -13,6 +13,7 @@ import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
+import useCanAccess from '../../hooks/useCanAccess'
 
 const AuditList = lazy(async () => await import('../audit/AuditList'))
 
@@ -56,13 +57,14 @@ const ShowForm = (): React.ReactElement => {
 }
 
 export default function ItemShow(): React.ReactElement {
+  const { hasAccess } = useCanAccess()
   return (
     <Show
       resource={constants.R_ITEMS}
       actions={
         <TopToolbar>
           <TopToolbarField source='item_number' />
-          <EditButton />
+          {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
         </TopToolbar>
       }>
       <ShowForm />

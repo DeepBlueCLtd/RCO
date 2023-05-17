@@ -28,12 +28,12 @@ export default function UserList(props: Props): React.ReactElement {
   const [open, setOpen] = useState(false)
   const { hasAccess } = useCanAccess()
 
+  const hasWriteAccess = hasAccess(constants.R_USERS, { write: true })
+
   const ListActions = (): React.ReactElement => {
     return (
       <TopToolbar>
-        {hasAccess(constants.R_USERS, { write: true }) ? (
-          <CreateButton to={`${basePath}/create`} />
-        ) : null}
+        {hasWriteAccess ? <CreateButton to={`${basePath}/create`} /> : null}
       </TopToolbar>
     )
   }
@@ -45,7 +45,7 @@ export default function UserList(props: Props): React.ReactElement {
   return (
     <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
-        rowClick='edit'
+        rowClick={hasWriteAccess ? 'edit' : undefined}
         bulkActionButtons={
           <Button
             startIcon={<Article />}

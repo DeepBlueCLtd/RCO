@@ -33,12 +33,14 @@ const Actions = (): React.ReactElement => {
 
   return (
     <TopToolbar>
-      <EditButton />
       {hasAccess(constants.R_PROJECTS, { write: true }) ? (
-        <CreateButton
-          label='Add new batch'
-          to={`/batches/create?project=${projectId}`}
-        />
+        <>
+          <EditButton />
+          <CreateButton
+            label='Add new batch'
+            to={`/batches/create?project=${projectId}`}
+          />
+        </>
       ) : null}
     </TopToolbar>
   )

@@ -23,11 +23,12 @@ import { Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 
 const ShowActions = (): React.ReactElement => {
+  const { hasAccess } = useCanAccess()
   return (
     <>
       <TopToolbar>
         <TopToolbarField source='batchNumber' />
-        <EditButton />
+        {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
       </TopToolbar>
     </>
   )
