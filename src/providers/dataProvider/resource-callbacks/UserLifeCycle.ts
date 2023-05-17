@@ -25,13 +25,15 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     return record
   },
   beforeUpdate: async (record: UpdateParams<User>) => {
+    const departed =
+      record.previousData.active && record.data.active === false
     // all user changes are security related
     const securityRelated = true
     return await auditForUpdatedChanges(
       record,
       R_USERS,
       {
-        type: AuditType.EDIT,
+        type: departed ? AuditType.USER_DEPARTED : AuditType.EDIT,
         securityRelated
       },
       audit
