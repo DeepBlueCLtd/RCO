@@ -15,6 +15,7 @@ import BatchLifeCycle from './resource-callbacks/BatchLifeCycle'
 import ItemLifeCycle from './resource-callbacks/ItemLifeCycle'
 import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import PlatformLifeCycle from './resource-callbacks/PlatformLifeCycle'
+import VaultLocationLifeCycle from './resource-callbacks/VaultLocationLifeCycle'
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -25,7 +26,8 @@ export const lifecycleCallbacks = (
     ProjectLifeCycle(audit),
     BatchLifeCycle(audit, provider),
     ItemLifeCycle(audit),
-    PlatformLifeCycle(audit)
+    PlatformLifeCycle(audit),
+    VaultLocationLifeCycle(audit)
   ]
 }
 
