@@ -61,24 +61,26 @@ const CoreForm = (props: Props): React.ReactElement => {
           sx={sx}
         />
         <Card sx={{ ...sx, margin: '8px 0 20px' }}>
-          <CardContent sx={{ padding: '12px !important' }}>
-            Consec/Pages should contain one of the following:
-            <ul>
-              <li>
-                The Consec/Serial reference (<strong>125/2022</strong> or
-                similiar) for mag media, when provided.
-              </li>
-              <li>
-                The acronym <strong>LEP</strong> if a list of effective pages is
-                present
-              </li>
-              <li>
-                The count of effective sheets (<strong>12</strong>), for printed
-                materials without an LEP
-              </li>
-              <li>Blank, otherwise</li>
-            </ul>
-          </CardContent>
+          {!(disabled === true) && (
+            <CardContent sx={{ padding: '12px !important' }}>
+              Consec/Pages should contain one of the following:
+              <ul>
+                <li>
+                  The Consec/Serial reference (<strong>125/2022</strong> or
+                  similiar) for mag media, when provided.
+                </li>
+                <li>
+                  The acronym <strong>LEP</strong> if a list of effective pages
+                  is present
+                </li>
+                <li>
+                  The count of effective sheets (<strong>12</strong>), for
+                  printed materials without an LEP
+                </li>
+                <li>Blank, otherwise</li>
+              </ul>
+            </CardContent>
+          )}
         </Card>
       </FlexBox>
       <FlexBox>
