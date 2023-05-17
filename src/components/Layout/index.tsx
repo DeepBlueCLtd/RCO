@@ -11,7 +11,8 @@ import {
   Logout,
   useRedirect,
   UserMenu,
-  type UserMenuProps
+  type UserMenuProps,
+  useLogout
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
@@ -46,6 +47,7 @@ const useStyles = makeStyles(() => ({
 const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const styles = useStyles()
   const [authenticated, setAuthenticated] = useState(false)
+  const logout = useLogout()
   const redirect = useRedirect()
 
   const [loggingPref, setLoggingPref] = useState<boolean>(
@@ -77,6 +79,14 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     window.dispatchEvent(storageEvent)
   }
 
+  const handleLogOut = (): void => {
+    logout()
+      .then(() => {
+        redirect('/')
+      })
+      .catch(console.error)
+  }
+
   useEffect(() => {
     const user = getUser()
     setAuthenticated(user !== undefined)
@@ -96,7 +106,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           <Typography sx={{ textTransform: 'none' }}> Login</Typography>
         </Button>
       )}
-      {authenticated && <Logout />}
+      {authenticated && <Logout onClick={handleLogOut} />}
       <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}
