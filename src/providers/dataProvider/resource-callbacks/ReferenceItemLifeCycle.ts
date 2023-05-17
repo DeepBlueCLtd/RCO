@@ -8,14 +8,17 @@ import {
   auditForUpdatedChanges,
   type AuditFunctionType
 } from '../dataprovider-utils'
-import { R_VAULT_LOCATION } from '../../../constants'
+import { type ResourceTypes } from '../../../constants'
 
-export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
-  resource: R_VAULT_LOCATION,
+export default (
+  audit: AuditFunctionType,
+  resource: ResourceTypes
+): ResourceCallbacks<any> => ({
+  resource,
   afterCreate: async (record: CreateResult<User>) => {
     await audit({
       type: AuditType.CREATE,
-      resource: R_VAULT_LOCATION,
+      resource,
       dataId: record.data.id
     })
     return record
@@ -23,10 +26,9 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   beforeUpdate: async (record: UpdateParams<User>) => {
     return await auditForUpdatedChanges(
       record,
-      R_VAULT_LOCATION,
+      resource,
       {
-        type: AuditType.EDIT,
-        securityRelated: false
+        type: AuditType.EDIT
       },
       audit
     )
