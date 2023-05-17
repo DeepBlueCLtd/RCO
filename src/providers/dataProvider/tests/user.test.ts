@@ -228,7 +228,6 @@ describe('CRUD operations on User', () => {
       data: generateUserForTesting({
         id: createdUser.id,
         name: 'dummy-user',
-        active: false,
         adminRights: false
       })
     })
