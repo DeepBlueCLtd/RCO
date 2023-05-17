@@ -72,16 +72,7 @@ export const generateItemForTesting = ({
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
-    magTape: {
-      minutes: 1,
-      brand: 'dummy-brand-1',
-      mediaType: 'DVD'
-    },
-    dvd: {
-      mediaType: 'DVD',
-      size: 1
-    },
-    paper: 'paper',
+    consecPages: 'consec-pages-1',
     musterRemarks: 'muster-remarks-1'
   }
 }
