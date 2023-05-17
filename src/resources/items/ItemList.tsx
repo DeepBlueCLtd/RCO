@@ -29,6 +29,7 @@ import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
 import DateRangePicker from '../../components/DateRangePicker'
+import useCanAccess from '../../hooks/useCanAccess'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -160,6 +161,8 @@ export const BulkActions = (): React.ReactElement => {
   const [noneLoaned, setNoneLoaned] = useState(false)
   const [allLoaned, setAllLoaned] = useState(false)
 
+  const { hasAccess } = useCanAccess()
+
   useEffect(() => {
     const [noneLoanedVal, allLoanedVal] = checkIfNoneIsLoaned(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
@@ -186,10 +189,12 @@ export const BulkActions = (): React.ReactElement => {
           Change Location
         </Button>
       </FlexBox>
-      <LoanItemsListBulkActionButtons
-        noneLoaned={noneLoaned}
-        allLoaned={allLoaned}
-      />
+      {hasAccess(constants.R_ITEMS, { write: true }) ? (
+        <LoanItemsListBulkActionButtons
+          noneLoaned={noneLoaned}
+          allLoaned={allLoaned}
+        />
+      ) : null}
       <Modal open={open} onClose={handleClose}>
         <ChangeLocation
           successCallback={handleSuccess}

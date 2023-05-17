@@ -145,3 +145,20 @@ interface ActivityType {
   name: string
   label: string
 }
+
+interface Permission {
+  read?: boolean
+  write?: boolean
+  delete?: boolean
+  all?: '*'
+}
+
+/** the set of routes for a resource */
+interface ResourceRoutes {
+  create?: any
+  edit?: any
+  list?: any
+  show?: any
+}
+
+type ResourcePermissions = Record<string, Permission>

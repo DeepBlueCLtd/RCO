@@ -10,6 +10,7 @@ import {
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
+import useCanAccess from '../../hooks/useCanAccess'
 
 const ValueField = ({
   label,
@@ -28,14 +29,19 @@ const ValueField = ({
 const Actions = (): React.ReactElement => {
   const { id = '' } = useParams()
   const projectId: string = id
+  const { hasAccess } = useCanAccess()
 
   return (
     <TopToolbar>
-      <EditButton />
-      <CreateButton
-        label='Add new batch'
-        to={`/batches/create?project=${projectId}`}
-      />
+      {hasAccess(constants.R_PROJECTS, { write: true }) ? (
+        <>
+          <EditButton />
+          <CreateButton
+            label='Add new batch'
+            to={`/batches/create?project=${projectId}`}
+          />
+        </>
+      ) : null}
     </TopToolbar>
   )
 }

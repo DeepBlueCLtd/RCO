@@ -7,6 +7,7 @@ import { CreateButton, ListButton } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import RecentMock from '../components/RecentMock'
+import useCanAccess from '../hooks/useCanAccess'
 
 const useStyles = makeStyles({
   root: {
@@ -46,6 +47,9 @@ const mockData = {
 
 export default function Welcome(): React.ReactElement {
   const styles = useStyles()
+  const { hasAccess, loading } = useCanAccess()
+
+  if (loading) return <></>
 
   return (
     <div className={styles.root}>
@@ -58,12 +62,14 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_VAULT_LOCATION}
+            disabled={!hasAccess(constants.R_VAULT_LOCATION, { write: true })}
             label='Vault Locations'
             sx={{ width: '150px', height: '50px' }}
           />
           <CreateButton
             color='primary'
             variant='contained'
+            disabled={!hasAccess(constants.R_PROJECTS, { write: true })}
             resource={constants.R_PROJECTS}
             icon={<ICON_PROJECT />}
             label='New Project'
@@ -73,6 +79,7 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_BATCHES}
+            disabled={!hasAccess(constants.R_BATCHES, { write: true })}
             icon={<ICON_BATCH />}
             label='New Batch'
             sx={{ width: '150px', height: '50px' }}
