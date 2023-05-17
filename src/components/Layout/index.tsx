@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Login, Loop } from '@mui/icons-material'
 import { Box, Icon, Typography, Button, Switch } from '@mui/material'
 import { makeStyles } from '@mui/styles'
@@ -9,7 +9,6 @@ import {
   Layout,
   type LayoutProps,
   Logout,
-  useAuthState,
   useRedirect,
   UserMenu,
   type UserMenuProps
@@ -19,6 +18,7 @@ import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
 import loadDefaultData from '../../utils/init-data'
 import * as constants from '../../constants'
+import { getUser } from '../../providers/authProvider'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles(() => ({
 
 const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const styles = useStyles()
-  const { authenticated } = useAuthState()
+  const [authenticated, setAuthenticated] = useState(false)
   const redirect = useRedirect()
 
   const [loggingPref, setLoggingPref] = useState<boolean>(
@@ -77,9 +77,14 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     window.dispatchEvent(storageEvent)
   }
 
+  useEffect(() => {
+    const user = getUser()
+    setAuthenticated(user !== undefined)
+  }, [])
+
   return (
     <UserMenu {...props}>
-      {authenticated === null && (
+      {!authenticated && (
         <Button
           onClick={handleLogin}
           classes={{ root: styles.root, startIcon: styles.startIcon }}
@@ -91,7 +96,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           <Typography sx={{ textTransform: 'none' }}> Login</Typography>
         </Button>
       )}
-      <Logout />
+      {authenticated && <Logout />}
       <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}
