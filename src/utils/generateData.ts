@@ -169,16 +169,7 @@ export const generateItems = (
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      magTape: {
-        minutes: i,
-        brand: `brand-${i}`,
-        mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType
-      },
-      dvd: {
-        mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
-        size: i
-      },
-      paper: `paper-${i}`,
+      consecPages: `consec-pages-${i + 1}`,
       createdBy: user
     }
     items.push(obj)

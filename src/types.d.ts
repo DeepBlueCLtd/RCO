@@ -105,14 +105,12 @@ interface Item extends ResourceWithCreation {
   vaultLocation: ReferenceItem['id']
   remarks: string
   protectiveMarking: ReferenceItem['id']
-  magTape: Tape
-  dvd: DVD
-  paper: Paper
   // notes relating to how this item is mustered
   musterRemarks: string
   // who this item is currently loaned to
   loanedTo?: User['id']
   loanedDate?: string
+  consecPages?: string
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
