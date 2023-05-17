@@ -29,6 +29,7 @@ export type ResourceTypes =
   | typeof R_USERS
   | typeof R_PROJECTS
   | typeof R_PLATFORMS
+  | typeof R_VAULT_LOCATION
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
