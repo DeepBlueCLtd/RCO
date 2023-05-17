@@ -19,7 +19,7 @@ export const VaultLocationEdit = (): React.ReactElement => {
   )
 }
 
-const vaultLocations = {
+const vaultLocations: ResourceRoutes = {
   create: VaultLocationCreate,
   edit: VaultLocationEdit,
   list: VaultLocationList
