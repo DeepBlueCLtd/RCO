@@ -2,7 +2,7 @@ import React from 'react'
 
 const AuditList = React.lazy(async () => await import('./AuditList'))
 
-const audit = {
+const audit: ResourceRoutes = {
   list: AuditList
 }
 

@@ -119,6 +119,44 @@ export const generatePlatformForTesting = ({
   }
 }
 
+interface UserProps {
+  id?: number
+  adminRights?: boolean
+  active?: boolean
+  name?: string
+}
+
+export const generateUserForTesting = ({
+  id,
+  name,
+  adminRights,
+  active
+}: UserProps = {}): Omit<User, 'id' | 'createdAt' | 'createdBy'> => ({
+  ...(id !== undefined ? { id } : null),
+  name: name ?? 'Dummy-User',
+  password: 'abcd',
+  adminRights: adminRights ?? true,
+  active: active ?? true,
+  roles: ['rco-user'],
+  staffNumber: 'd-1'
+})
+
+interface VaultLocationProps {
+  id?: number
+  active?: boolean
+  name?: string
+}
+
+export const generateVaultLocationForTesting = ({
+  id,
+  active,
+  name
+}: VaultLocationProps = {}): Omit<ActiveReferenceItem, 'id'> => ({
+  ...(id !== undefined ? { id } : null),
+  active: active ?? true,
+  name: name ?? 'Dummy-Vault-Location-1'
+})
+
 export const clear =
   (provider: DataProvider) => async (resource: ResourceTypes) => {
     const list = await provider.getList<RCOResource>(resource, {

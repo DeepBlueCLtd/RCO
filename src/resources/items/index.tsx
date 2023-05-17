@@ -28,7 +28,7 @@ const ItemEdit = (): React.ReactElement => {
   )
 }
 
-const items = {
+const items: ResourceRoutes = {
   create: ItemCreate,
   edit: ItemEdit,
   list: ItemList,
