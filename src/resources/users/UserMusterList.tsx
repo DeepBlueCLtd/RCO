@@ -100,6 +100,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   />
                   <CompositeField label='Project & Platform' />
                   <DateField source='loanedDate' label='Loaned Date' />
+                  <TextField source='consecPages' label='Consec/Pages' />
                 </ItemsReport>
                 <ReportSignature id={userId} />
               </Box>
