@@ -6,6 +6,8 @@ export enum AuditType {
   DELETE = 'delete',
   EDIT = 'edit',
 
+  USER_DEPARTED = 'USER_DEPARTED',
+
   LOAN = 'loan',
   RETURN = 'return'
 }

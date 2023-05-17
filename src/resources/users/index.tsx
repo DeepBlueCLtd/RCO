@@ -1,11 +1,12 @@
 import React from 'react'
-import { Create, Edit, type TransformData } from 'react-admin'
+import { Create, Edit, Show, type TransformData } from 'react-admin'
 import UserForm from './UserForm'
 import {
   decryptPassword,
   encryptData,
   generateSalt
 } from '../../utils/encryption'
+import UserShow from './UserShow'
 
 const UserList = React.lazy(async () => await import('./UserList'))
 
@@ -46,10 +47,19 @@ const UserEdit = (): React.ReactElement => {
   )
 }
 
-const users: ResourceRoutes = {
+const show = (): React.ReactElement => {
+  return (
+    <Show>
+      <UserShow />
+    </Show>
+  )
+}
+
+const users = {
   create: UserCreate,
   edit: UserEdit,
-  list: UserList
+  list: UserList,
+  show
 }
 
 export default users

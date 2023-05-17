@@ -45,7 +45,7 @@ export default function UserList(props: Props): React.ReactElement {
   return (
     <List actions={<ListActions />} perPage={25} resource={cName}>
       <Datagrid
-        rowClick={hasWriteAccess ? 'edit' : undefined}
+        rowClick={'show'}
         bulkActionButtons={
           <Button
             startIcon={<Article />}

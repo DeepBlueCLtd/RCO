@@ -1,4 +1,8 @@
-import { type AuthProvider, type DataProvider, withLifecycleCallbacks } from 'react-admin'
+import {
+  type AuthProvider,
+  type DataProvider,
+  withLifecycleCallbacks
+} from 'react-admin'
 import { lifecycleCallbacks } from '..'
 import {
   type ResourceTypes,
