@@ -9,7 +9,7 @@ import { mediaTypeOptions } from '../../../utils/options'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'
-import { Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 
@@ -52,6 +52,20 @@ const CoreForm = (props: Props): React.ReactElement => {
         choices={mediaTypeOptions}
         sx={sx}
       />
+      <FlexBox alignItems='flex-start'>
+        <TextInput
+          multiline
+          disabled={disabled}
+          label='Consec/Pages'
+          source='consecPages'
+          sx={sx}
+        />
+        <Card sx={{ ...sx, margin: '8px 0 20px' }}>
+          <CardContent sx={{ padding: '12px !important' }}>
+            Note: Store this information in Cosec/Pages: Blah-blah
+          </CardContent>
+        </Card>
+      </FlexBox>
       <FlexBox>
         <DateTimeInput
           sx={sx}

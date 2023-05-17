@@ -166,6 +166,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                       source='protectiveMarking'
                       reference='protectiveMarking'
                     />
+                    <TextField source='consecPages' label='Consec/Pages' />
                   </ItemsReport>
                   <ReportSignature id={id} />
                 </Box>

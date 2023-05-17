@@ -1,10 +1,10 @@
-import { Album, GroupWork, MenuBook, Save } from '@mui/icons-material'
+import { Save } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
 import {
-  TabbedForm,
+  SimpleForm,
   useCreatePath,
   useDataProvider,
   useRecordContext,
@@ -15,7 +15,6 @@ import { isNumber } from '../../../utils/number'
 import CoreForm from './CoreForm'
 import { mediaTypeOptions } from '../../../utils/options'
 import dayjs from 'dayjs'
-import MediaForm from './MediaForm'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 
@@ -37,14 +36,7 @@ const schema = yup.object({
     ),
   batchId: yup.number().required(),
   vaultLocation: yup.number().required(),
-  protectiveMarking: yup.number().required(),
-  magTape: yup.object({
-    brand: yup.string(),
-    minutes: yup.number().typeError('Invalid value')
-  }),
-  dvd: yup.object({
-    size: yup.number().typeError('Invalid value')
-  })
+  protectiveMarking: yup.number().required()
 })
 
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
@@ -77,16 +69,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
 
   const defaultValues: Partial<Item> = {
     item_number: '',
-    loanedTo: undefined,
-    dvd: {
-      mediaType: 'DVD',
-      size: 0
-    },
-    magTape: {
-      mediaType: 'Tape',
-      minutes: 0,
-      brand: ''
-    }
+    loanedTo: undefined
   }
 
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
@@ -116,24 +99,13 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '0 15px' }}>
         <constants.ICON_ITEM /> {pageTitle}
       </Typography>
-      <TabbedForm
+      <SimpleForm
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
         defaultValues={defaultValues}
         toolbar={<ItemFormToolbar />}>
-        <TabbedForm.Tab label='Core'>
-          <CoreForm batchId={batch?.id} />
-        </TabbedForm.Tab>
-        <TabbedForm.Tab label='Mag tape' icon={<GroupWork />}>
-          <MediaForm type='Tape' source='magTape' />
-        </TabbedForm.Tab>
-        <TabbedForm.Tab label='DVD' icon={<Album />}>
-          <MediaForm type='DVD' source='dvd' />
-        </TabbedForm.Tab>
-        <TabbedForm.Tab label='Paper' icon={<MenuBook />}>
-          <MediaForm type='Paper' source='paper' />
-        </TabbedForm.Tab>
-      </TabbedForm>
+        <CoreForm batchId={batch?.id} />
+      </SimpleForm>
     </Box>
   )
 }

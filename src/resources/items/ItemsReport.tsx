@@ -258,6 +258,7 @@ export function ItemAssetReport(props: Props): React.ReactElement {
             <TextField source='item_number' label='Item Number' />
             <TextField source='mediaType' label='Media type' />
             <TextField source='remarks' label='Remark' />
+            <TextField source='consecPages' label='Consec/Pages' />
           </ItemsReport>
         </Box>
       </Printable>
