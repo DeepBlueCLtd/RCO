@@ -23,27 +23,28 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
 export default permissions
 
 const generatePermission = (
-  permission1: Permission,
-  permission2?: Permission
+  resourcePermission: Permission,
+  mergedPermissions?: Permission
 ): Permission => {
-  if (permission2 == null) return permission1
+  if (mergedPermissions == null) return resourcePermission
 
-  if (permission2.all === '*' || permission1.all === '*') {
+  if (mergedPermissions.all === '*' || resourcePermission.all === '*') {
     return { read: true, write: true, delete: true }
   }
 
   const read =
-    typeof permission1.read !== 'undefined' && permission1.read
+    typeof resourcePermission.read !== 'undefined' && resourcePermission.read
       ? true
-      : permission2.read
+      : mergedPermissions.read
   const write =
-    typeof permission1.write !== 'undefined' && permission1.write
+    typeof resourcePermission.write !== 'undefined' && resourcePermission.write
       ? true
-      : permission2.write
+      : mergedPermissions.write
   const deletePermission =
-    typeof permission1.delete !== 'undefined' && permission1.read === true
+    typeof resourcePermission.delete !== 'undefined' &&
+    resourcePermission.read === true
       ? true
-      : permission2.delete
+      : mergedPermissions.delete
 
   return { read, write, delete: deletePermission }
 }
