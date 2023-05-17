@@ -46,7 +46,7 @@ const UserEdit = (): React.ReactElement => {
   )
 }
 
-const users = {
+const users: ResourceRoutes = {
   create: UserCreate,
   edit: UserEdit,
   list: UserList

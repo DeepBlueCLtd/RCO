@@ -21,7 +21,7 @@ const ProjectEdit = (): React.ReactElement => {
   )
 }
 
-const projects = {
+const projects: ResourceRoutes = {
   create: ProjectCreate,
   edit: ProjectEdit,
   list: ProjectList,

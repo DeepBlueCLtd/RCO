@@ -8,6 +8,7 @@ import {
   TopToolbar,
   BooleanField
 } from 'react-admin'
+import useCanAccess from '../hooks/useCanAccess'
 
 interface PropType {
   name: string
@@ -17,9 +18,14 @@ export default function ReferenceDataList({
   name
 }: PropType): React.ReactElement {
   const cName: string = name
+
+  const { hasAccess } = useCanAccess()
+
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
-      <CreateButton to={'create'} />
+      {hasAccess('reference-data', { write: true }) ? (
+        <CreateButton to={'create'} />
+      ) : null}
     </TopToolbar>
   )
 

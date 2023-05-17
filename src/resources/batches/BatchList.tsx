@@ -21,14 +21,20 @@ import DatePicker from '../../components/DatePicker'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
+import useCanAccess from '../../hooks/useCanAccess'
 
-const ListActions = (): React.ReactElement => (
-  <TopToolbar>
-    <CreateButton label='ADD NEW BATCH' />
-    <FilterButton />
-    <SelectColumnsButton />
-  </TopToolbar>
-)
+const ListActions = (): React.ReactElement => {
+  const { hasAccess } = useCanAccess()
+  return (
+    <TopToolbar>
+      {hasAccess(constants.R_BATCHES, { write: true }) ? (
+        <CreateButton label='ADD NEW BATCH' />
+      ) : null}
+      <FilterButton />
+      <SelectColumnsButton />
+    </TopToolbar>
+  )
+}
 
 const omitColumns: string[] = [
   'protectiveMarkingAuthority',
