@@ -1,14 +1,14 @@
 import { Box, Button, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
-import { useDataProvider, useNotify } from 'react-admin'
+import { useDataProvider, useListContext, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useState } from 'react'
 import Printable from '../../components/Printable'
 
 interface Props {
-  ids: number[]
   onClose: () => void
   successCallback: () => void
+  destructionId: string
 }
 
 const style = {
@@ -24,14 +24,21 @@ const style = {
 }
 
 export default function DestroyItems(props: Props): React.ReactElement {
-  const { onClose, successCallback, ids } = props
+  const { onClose, successCallback, destructionId } = props
+  const { selectedIds: ids } = useListContext()
   const [open, setOpen] = useState(false)
   const datProvider = useDataProvider()
   const notify = useNotify()
 
   const onDestroy = (): void => {
     datProvider
-      .deleteMany(constants.R_ITEMS, { ids })
+      .updateMany<Item>(constants.R_ITEMS, {
+        ids,
+        data: {
+          destruction: destructionId,
+          destructionDate: new Date().toISOString()
+        }
+      })
       .then(() => {
         notify(`${ids.length} items destroyed!`)
         setOpen(true)

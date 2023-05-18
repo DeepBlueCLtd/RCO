@@ -19,7 +19,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   const getReference = (lastId: number, year: number): string => {
     const id = lastId + 1
-    return `DC/V/${id}/${year}` 
+    return `DC/V/${id}/${year}`
   }
 
   useEffect(() => {
@@ -34,7 +34,9 @@ export default function DestructionForm(props: Props): React.ReactElement {
           setLastId(data[0]?.id ?? 0)
         })
         .catch(console.log)
-        .finally(() => { setLoading(false) })
+        .finally(() => {
+          setLoading(false)
+        })
     }
   }, [isEdit])
 
