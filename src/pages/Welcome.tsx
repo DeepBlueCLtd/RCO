@@ -62,18 +62,14 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_VAULT_LOCATION}
-            disabled={
-              !hasAccess(constants.R_VAULT_LOCATION, { write: true })
-            }
+            disabled={!hasAccess(constants.R_VAULT_LOCATION, { write: true })}
             label='Vault Locations'
             sx={{ width: '150px', height: '50px' }}
           />
           <CreateButton
             color='primary'
             variant='contained'
-            disabled={
-              !hasAccess(constants.R_PROJECTS, { write: true })
-            }
+            disabled={!hasAccess(constants.R_PROJECTS, { write: true })}
             resource={constants.R_PROJECTS}
             icon={<ICON_PROJECT />}
             label='New Project'

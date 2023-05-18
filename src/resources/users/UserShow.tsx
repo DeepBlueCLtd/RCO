@@ -4,7 +4,7 @@ import { Box } from '@mui/system'
 import ItemList from '../items/ItemList'
 import {
   BooleanInput,
-  Form,
+  SimpleForm,
   TextInput,
   useGetList,
   useShowContext,
@@ -14,12 +14,17 @@ import { Chip, Typography, Button } from '@mui/material'
 import { decryptPassword } from '../../utils/encryption'
 import { R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
+import useCanAccess from '../../hooks/useCanAccess'
+import EditToolBar from '../../components/EditToolBar'
 
 export default function UserShow(): React.ReactElement {
   const { record } = useShowContext<User & { salt: string }>()
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const [update] = useUpdate()
+  const { hasAccess } = useCanAccess()
+
+  const hasWriteAccess = hasAccess(R_USERS, { write: true })
 
   const loanedItems = useGetList<Item>(R_ITEMS, {
     sort: { field: 'id', order: 'ASC' },
@@ -43,7 +48,7 @@ export default function UserShow(): React.ReactElement {
             {viewUser}
           </Typography>
         </legend>
-        <Form>
+        <SimpleForm toolbar={hasWriteAccess && <EditToolBar />}>
           <TextInput
             disabled
             source='name'
@@ -80,12 +85,13 @@ export default function UserShow(): React.ReactElement {
             disabled={
               (loanedItems.data !== undefined &&
                 loanedItems.data?.length > 0) ||
-              record?.active === false
+              record?.active === false ||
+              !hasWriteAccess
             }
             onClick={handleDepartUser}>
             Depart Organisation
           </Button>
-        </Form>
+        </SimpleForm>
       </Box>
       <Box component='fieldset' style={{ padding: '0 15px' }}>
         <legend>
