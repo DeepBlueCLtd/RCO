@@ -23,7 +23,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   }
 
   useEffect(() => {
-    if (loading) {
+    if (typeof loading === 'boolean' && loading) {
       dataProvider
         .getList<Destruction>(constants.R_DESTRUCTION, {
           filter: {},
