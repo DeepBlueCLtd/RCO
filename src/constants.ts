@@ -21,6 +21,11 @@ export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
 export const R_LOANS = 'loans'
+export const R_PLATFORM_ORIGINATOR = 'platformOriginator'
+export const R_PROTECTIVE_MARKING_AUTHORITY = 'protectiveMarkingAuthority'
+export const R_PROTECTIVE_MARKING = 'protectiveMarking'
+export const R_DEPARTMENT = 'department'
+export const R_MEDIA_TYPE = 'mediaType'
 
 export type ResourceTypes =
   | typeof R_ITEMS
@@ -30,6 +35,13 @@ export type ResourceTypes =
   | typeof R_PROJECTS
   | typeof R_PLATFORMS
   | typeof R_VAULT_LOCATION
+  | typeof R_ORGANISATION
+  | typeof R_LOANS
+  | typeof R_MEDIA_TYPE
+  | typeof R_DEPARTMENT
+  | typeof R_PROTECTIVE_MARKING
+  | typeof R_PROTECTIVE_MARKING_AUTHORITY
+  | typeof R_PLATFORM_ORIGINATOR
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
