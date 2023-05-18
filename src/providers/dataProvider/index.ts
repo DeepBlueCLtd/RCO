@@ -15,17 +15,25 @@ import BatchLifeCycle from './resource-callbacks/BatchLifeCycle'
 import ItemLifeCycle from './resource-callbacks/ItemLifeCycle'
 import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import PlatformLifeCycle from './resource-callbacks/PlatformLifeCycle'
+import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
   provider: DataProvider
 ): Array<ResourceCallbacks<any>> => {
   return [
+    BatchLifeCycle(audit, provider),
     UserLifeCycle(audit),
     ProjectLifeCycle(audit),
-    BatchLifeCycle(audit, provider),
     ItemLifeCycle(audit),
-    PlatformLifeCycle(audit)
+    PlatformLifeCycle(audit),
+    ReferenceItemLifeCycle(audit, constants.R_VAULT_LOCATION),
+    ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
+    ReferenceItemLifeCycle(audit, constants.R_PLATFORM_ORIGINATOR),
+    ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
+    ReferenceItemLifeCycle(audit, constants.R_MEDIA_TYPE),
+    ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING_AUTHORITY),
+    ReferenceItemLifeCycle(audit, constants.R_DEPARTMENT)
   ]
 }
 
