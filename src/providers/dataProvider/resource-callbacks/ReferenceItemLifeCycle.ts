@@ -15,7 +15,7 @@ export default (
   resource: ResourceTypes
 ): ResourceCallbacks<any> => ({
   resource,
-  afterCreate: async (record: CreateResult<User>) => {
+  afterCreate: async (record: CreateResult<RCOResource>) => {
     await audit({
       type: AuditType.CREATE,
       resource,
@@ -23,7 +23,7 @@ export default (
     })
     return record
   },
-  beforeUpdate: async (record: UpdateParams<User>) => {
+  beforeUpdate: async (record: UpdateParams<RCOResource>) => {
     return await auditForUpdatedChanges(
       record,
       resource,
