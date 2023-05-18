@@ -33,12 +33,14 @@ export default function DestroyItems(props: Props): React.ReactElement {
     datProvider
       .deleteMany(constants.R_ITEMS, { ids })
       .then(() => {
-        notify(`${ids.length} items destroyed!` )
+        notify(`${ids.length} items destroyed!`)
         setOpen(true)
         successCallback()
       })
       .catch(console.log)
-      .finally(() => { setOpen(true) })
+      .finally(() => {
+        setOpen(true)
+      })
   }
 
   return (
@@ -55,7 +57,9 @@ export default function DestroyItems(props: Props): React.ReactElement {
       <DestroyItemsReport
         ids={ids}
         open={open}
-        onClose={() => { setOpen(false) }}
+        onClose={() => {
+          setOpen(false)
+        }}
       />
     </Box>
   )
