@@ -64,7 +64,7 @@ const UserShowActions = (): React.ReactElement => {
   )
 }
 
-const show = (): React.ReactElement => {
+const ShowUser = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
 
@@ -79,7 +79,7 @@ const users = {
   create: UserCreate,
   edit: UserEdit,
   list: UserList,
-  show
+  show: ShowUser
 }
 
 export default users
