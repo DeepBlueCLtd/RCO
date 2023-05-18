@@ -50,7 +50,6 @@ const DepartOrganisation = ({
   }
   return (
     <Box sx={style}>
-      <Warning />
       <Typography variant='h6'>
         Are you sure this user is departing the organisation? Doing this will
         prevent items from being loaned to the user
@@ -138,18 +137,24 @@ export default function UserShow(): React.ReactElement {
               <BooleanInput disabled source='adminRights' />
               <BooleanInput disabled source='active' />
             </FlexBox>
-            <Button
-              variant='outlined'
-              sx={{ marginBottom: 1 }}
-              disabled={cannotDepart()}
-              onClick={handleDepartUser}>
-              Depart Organisation
-            </Button>
-            <Typography variant='subtitle1' sx={{ color: 'red' }}>
+            <FlexBox justifyContent='center'>
+              <Button
+                variant='outlined'
+                sx={{ marginBottom: 1 }}
+                disabled={cannotDepart()}
+                onClick={handleDepartUser}>
+                Depart Organisation
+              </Button>
               {loanedItems.data !== undefined &&
-                loanedItems.data?.length > 0 &&
-                'User still has items loaned'}
-            </Typography>
+                loanedItems.data?.length > 0 && (
+                  <>
+                    <Warning sx={{ color: 'red' }} />
+                    <Typography variant='subtitle1' sx={{ color: 'red' }}>
+                      User still has items loaned
+                    </Typography>
+                  </>
+                )}
+            </FlexBox>
           </SimpleForm>
         </Box>
         <Box component='fieldset' style={{ padding: '0 15px' }}>
