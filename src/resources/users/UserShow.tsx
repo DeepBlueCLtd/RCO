@@ -15,7 +15,6 @@ import { decryptPassword } from '../../utils/encryption'
 import { R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
-import EditToolBar from '../../components/EditToolBar'
 
 export default function UserShow(): React.ReactElement {
   const { record } = useShowContext<User & { salt: string }>()
@@ -48,7 +47,7 @@ export default function UserShow(): React.ReactElement {
             {viewUser}
           </Typography>
         </legend>
-        <SimpleForm toolbar={hasWriteAccess && <EditToolBar />}>
+        <SimpleForm toolbar={false}>
           <TextInput
             disabled
             source='name'

@@ -1,5 +1,12 @@
 import React from 'react'
-import { Create, Edit, Show, type TransformData } from 'react-admin'
+import {
+  Create,
+  Edit,
+  EditButton,
+  Show,
+  TopToolbar,
+  type TransformData
+} from 'react-admin'
 import UserForm from './UserForm'
 import {
   decryptPassword,
@@ -7,6 +14,8 @@ import {
   generateSalt
 } from '../../utils/encryption'
 import UserShow from './UserShow'
+import useCanAccess from '../../hooks/useCanAccess'
+import { R_USERS } from '../../constants'
 
 const UserList = React.lazy(async () => await import('./UserList'))
 
@@ -47,9 +56,20 @@ const UserEdit = (): React.ReactElement => {
   )
 }
 
-const show = (): React.ReactElement => {
+const UserShowActions = (): React.ReactElement => {
   return (
-    <Show>
+    <TopToolbar>
+      <EditButton />
+    </TopToolbar>
+  )
+}
+
+const show = (): React.ReactElement => {
+  const { hasAccess } = useCanAccess()
+  const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
+
+  return (
+    <Show actions={hasDeleteAccess && <UserShowActions />}>
       <UserShow />
     </Show>
   )
