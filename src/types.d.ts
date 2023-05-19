@@ -150,6 +150,7 @@ interface Destruction {
   createdBy: User['id']
   finalisedAt?: string
   finalisedBy?: User['id']
+  remarks: string
 }
 
 interface ActivityType {

@@ -30,6 +30,8 @@ import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
 import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
+import DestroyItems from './DestroyItems'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -154,9 +156,11 @@ const checkIfNoneIsLoaned = (
   }
 }
 
+type ModalOpenType = 'destroy' | 'location' | ''
+
 export const BulkActions = (): React.ReactElement => {
   const { selectedIds, data } = useListContext()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<ModalOpenType>('')
   const refresh = useRefresh()
   const [noneLoaned, setNoneLoaned] = useState(false)
   const [allLoaned, setAllLoaned] = useState(false)
@@ -170,11 +174,13 @@ export const BulkActions = (): React.ReactElement => {
   }, [selectedIds, data])
 
   const handleClose = (): void => {
-    setOpen(false)
+    setOpen('')
   }
 
-  const handleOpen = (): void => {
-    setOpen(true)
+  const handleOpen = (type: ModalOpenType): (() => void) => {
+    return () => {
+      setOpen(type)
+    }
   }
 
   const handleSuccess = (): void => {
@@ -185,7 +191,19 @@ export const BulkActions = (): React.ReactElement => {
   return (
     <>
       <FlexBox>
-        <Button size='small' variant='outlined' onClick={handleOpen}>
+        <Button
+          startIcon={<DeleteSweepIcon />}
+          onClick={handleOpen('destroy')}
+          size='small'
+          variant='outlined'>
+          Destroy
+        </Button>
+      </FlexBox>
+      <FlexBox>
+        <Button
+          size='small'
+          variant='outlined'
+          onClick={handleOpen('location')}>
           Change Location
         </Button>
       </FlexBox>
@@ -195,12 +213,20 @@ export const BulkActions = (): React.ReactElement => {
           allLoaned={allLoaned}
         />
       ) : null}
-      <Modal open={open} onClose={handleClose}>
-        <ChangeLocation
-          successCallback={handleSuccess}
-          onCancel={handleClose}
-          ids={selectedIds}
-        />
+      <Modal open={Boolean(open)} onClose={handleClose}>
+        {open === 'location' ? (
+          <ChangeLocation
+            successCallback={handleSuccess}
+            onCancel={handleClose}
+            ids={selectedIds}
+          />
+        ) : (
+          <DestroyItems
+            ids={selectedIds}
+            onClose={handleClose}
+            successCallback={handleSuccess}
+          />
+        )}
       </Modal>
     </>
   )
@@ -245,6 +271,13 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
+        <SourceField
+          link='show'
+          source='destruction'
+          reference={constants.R_DESTRUCTION}
+          sourceField='reference'
+        />
+        <DateField source='destructionDate' />
         <TextField source='remarks' />
         <TextField source='musterRemarks' />
       </DatagridConfigurable>

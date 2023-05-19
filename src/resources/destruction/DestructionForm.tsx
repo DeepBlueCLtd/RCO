@@ -1,12 +1,32 @@
-import { useEffect, useState } from 'react'
-import { SimpleForm, useCreate, useDataProvider, useNotify } from 'react-admin'
+import React, { useEffect, useState } from 'react'
+import {
+  SaveButton,
+  SimpleForm,
+  TextInput,
+  Toolbar,
+  useCreate,
+  useDataProvider,
+  useNotify
+} from 'react-admin'
 import * as constants from '../../constants'
 import DatePicker from '../../components/DatePicker'
 import TextFields from '@mui/material/TextField'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 interface Props {
   isEdit?: boolean
 }
+
+const schema = yup.object({
+  remarks: yup.string().required()
+})
+
+const DestructionFormToolbar = (): React.ReactElement => (
+  <Toolbar>
+    <SaveButton label='Crate' />
+  </Toolbar>
+)
 
 export default function DestructionForm(props: Props): React.ReactElement {
   const { isEdit = false } = props
@@ -42,10 +62,11 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   const reference = getReference(lastId, year)
 
-  const onSubmit = async (): Promise<void> => {
+  const onSubmit = async (data: any): Promise<void> => {
+    const { remarks } = data
     try {
       await create(constants.R_DESTRUCTION, {
-        data: { reference }
+        data: { reference, remarks }
       })
       notify('Element created')
     } catch (error: any) {
@@ -56,7 +77,10 @@ export default function DestructionForm(props: Props): React.ReactElement {
   if (loading) return <></>
 
   return (
-    <SimpleForm onSubmit={onSubmit}>
+    <SimpleForm
+      onSubmit={onSubmit}
+      toolbar={<DestructionFormToolbar />}
+      resolver={yupResolver(schema)}>
       <DatePicker
         label='Year'
         source='year'
@@ -66,6 +90,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
         dataPickerProps={{ views: ['year'] }}
       />
       <TextFields fullWidth value={reference} label='Reference' />
+      <TextInput sx={{ width: '100%' }} source='remarks' />
     </SimpleForm>
   )
 }
