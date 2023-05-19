@@ -16,7 +16,8 @@ const lifeCycles = (
     return withCreatedByAt(record)
   },
   beforeUpdate: async (record: UpdateParams<User>) => {
-    const departed = record.previousData.active && record.data.active === false
+    const departed =
+      record.previousData.active && record.data.active === false
     // all user changes are security related
     const securityRelated = true
     return await auditForUpdatedChanges(
@@ -31,6 +32,8 @@ const lifeCycles = (
   }
 })
 
+const securityRelated = (): boolean => true
+
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => {
-  return extendLifeCycle(R_USERS, audit, true, lifeCycles(audit))
+  return extendLifeCycle(R_USERS, audit, securityRelated, lifeCycles(audit))
 }

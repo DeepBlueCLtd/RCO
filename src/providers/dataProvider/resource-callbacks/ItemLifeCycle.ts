@@ -12,6 +12,7 @@ import {
 } from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES, R_ITEMS } from '../../../constants'
+import { type UpdateParams } from 'react-admin'
 
 const lifeCycles = (
   audit: AuditFunctionType
@@ -60,6 +61,10 @@ const lifeCycles = (
   }
 })
 
+const securityRelated: (record: UpdateParams<any>) => boolean = (record) => {
+  return record.previousData.protectiveMarking !== record.data.protectiveMarking
+}
+
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => {
-  return extendLifeCycle(R_ITEMS, audit, true, lifeCycles(audit))
+  return extendLifeCycle(R_ITEMS, audit, securityRelated, lifeCycles(audit))
 }

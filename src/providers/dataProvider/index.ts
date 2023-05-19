@@ -25,7 +25,7 @@ export const lifecycleCallbacks = (
     UserLifeCycle(audit),
     ProjectLifeCycle(audit),
     ItemLifeCycle(audit),
-    extendLifeCycle(constants.R_PLATFORMS, audit, false),
+    extendLifeCycle(constants.R_PLATFORMS, audit),
     ReferenceItemLifeCycle(audit, constants.R_VAULT_LOCATION),
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
     ReferenceItemLifeCycle(audit, constants.R_PLATFORM_ORIGINATOR),

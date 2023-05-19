@@ -96,9 +96,9 @@ export const withCreatedByAt = (
 export const extendLifeCycle = (
   resource: ResourceTypes,
   audit: AuditFunctionType,
-  checkSecurityRelated?: boolean,
+  securityRelated?: (record: UpdateParams<RCOResource>) => boolean,
   callbacks?: Omit<ResourceCallbacks, 'resource'>
 ): ResourceCallbacks<any> => ({
-  ...ReferenceItemLifeCycle(audit, resource, checkSecurityRelated),
+  ...ReferenceItemLifeCycle(audit, resource, securityRelated),
   ...callbacks
 })

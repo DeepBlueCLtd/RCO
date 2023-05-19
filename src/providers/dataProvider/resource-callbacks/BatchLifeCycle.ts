@@ -6,7 +6,7 @@ import {
 import { type CreateResult, type DataProvider } from 'ra-core'
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES } from '../../../constants'
-import { type ResourceCallbacks } from 'react-admin'
+import { type UpdateParams, type ResourceCallbacks } from 'react-admin'
 import { isNumber } from '../../../utils/number'
 
 const compareVersions = (v1: string, v2: string): number => {
@@ -91,9 +91,19 @@ const lifeCycles = (
     }
   }
 })
+
+const securityRelated = (record: UpdateParams<any>): boolean =>
+  record.previousData.maximumProtectiveMarking !==
+  record.data.maximumProtectiveMarking
+
 export default (
   audit: AuditFunctionType,
   provider: DataProvider
 ): ResourceCallbacks<any> => {
-  return extendLifeCycle(R_BATCHES, audit, true, lifeCycles(provider, audit))
+  return extendLifeCycle(
+    R_BATCHES,
+    audit,
+    securityRelated,
+    lifeCycles(provider, audit)
+  )
 }

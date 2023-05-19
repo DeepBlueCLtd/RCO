@@ -13,5 +13,5 @@ const lifeCycles = (): Omit<ResourceCallbacks<any>, 'resource'> => ({
 })
 
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => {
-  return extendLifeCycle(R_PROJECTS, audit, false, lifeCycles())
+  return extendLifeCycle(R_PROJECTS, audit, undefined, lifeCycles())
 }
