@@ -4,6 +4,8 @@ import { type AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
 import { type ResourceTypes } from '../../constants'
+import { type ResourceCallbacks } from 'react-admin'
+import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -90,3 +92,13 @@ export const withCreatedByAt = (
   record.data.createdAt = nowDate()
   return record
 }
+
+export const extendLifeCycle = (
+  resource: ResourceTypes,
+  audit: AuditFunctionType,
+  checkSecurityRelated?: boolean,
+  callbacks?: Omit<ResourceCallbacks, 'resource'>
+): ResourceCallbacks<any> => ({
+  ...ReferenceItemLifeCycle(audit, resource, checkSecurityRelated),
+  ...callbacks
+})

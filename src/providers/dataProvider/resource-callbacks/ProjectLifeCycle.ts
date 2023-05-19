@@ -1,4 +1,8 @@
-import { type AuditFunctionType, withCreatedByAt } from '../dataprovider-utils'
+import {
+  type AuditFunctionType,
+  withCreatedByAt,
+  extendLifeCycle
+} from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import {
   type ResourceCallbacks,
@@ -7,18 +11,11 @@ import {
 } from 'ra-core'
 import { R_PROJECTS } from '../../../constants'
 
-export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
-  resource: R_PROJECTS,
+const lifeCycles = (
+  audit: AuditFunctionType
+): Omit<ResourceCallbacks<any>, 'resource'> => ({
   beforeCreate: async (record: CreateResult<Project>) => {
     return withCreatedByAt(record)
-  },
-  afterCreate: async (record: CreateResult<Project>) => {
-    await audit({
-      type: AuditType.CREATE,
-      resource: R_PROJECTS,
-      dataId: record.data.id
-    })
-    return record
   },
   afterUpdate: async (record: UpdateResult<Project>) => {
     await audit({
@@ -29,3 +26,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     return record
   }
 })
+
+export default (audit: AuditFunctionType): ResourceCallbacks<any> => {
+  return extendLifeCycle(R_PROJECTS, audit, false, lifeCycles(audit))
+}

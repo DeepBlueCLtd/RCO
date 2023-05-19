@@ -1,13 +1,9 @@
 import {
   type AuditFunctionType,
   withCreatedByAt,
-  auditForUpdatedChanges
+  extendLifeCycle
 } from '../dataprovider-utils'
-import {
-  type CreateResult,
-  type DataProvider,
-  type UpdateParams
-} from 'ra-core'
+import { type CreateResult, type DataProvider } from 'ra-core'
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES } from '../../../constants'
 import { type ResourceCallbacks } from 'react-admin'
@@ -59,27 +55,13 @@ export const generateBatchId = async (
   )
 }
 
-export default (
-  audit: AuditFunctionType,
-  provider: DataProvider
-): ResourceCallbacks<any> => ({
-  resource: R_BATCHES,
-  beforeUpdate: async (record: UpdateParams<Batch>) => {
-    const securityRelated =
-      record.previousData.maximumProtectiveMarking !==
-      record.data.maximumProtectiveMarking
-    return await auditForUpdatedChanges(
-      record,
-      R_BATCHES,
-      {
-        type: AuditType.EDIT,
-        securityRelated
-      },
-      audit
-    )
-  },
+const lifeCycles = (
+  provider: DataProvider,
+  audit: AuditFunctionType
+): Omit<ResourceCallbacks<any>, 'resource'> => ({
   beforeCreate: async (record: CreateResult<Batch>) => {
-    return withCreatedByAt(record)
+    const createdByAt = withCreatedByAt(record)
+    return createdByAt
   },
   afterCreate: async (
     record: CreateResult<Batch>,
@@ -109,3 +91,9 @@ export default (
     }
   }
 })
+export default (
+  audit: AuditFunctionType,
+  provider: DataProvider
+): ResourceCallbacks<any> => {
+  return extendLifeCycle(R_BATCHES, audit, true, lifeCycles(provider, audit))
+}

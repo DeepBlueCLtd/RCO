@@ -1,39 +1,26 @@
 import {
   type CreateResult,
   type DataProvider,
-  type ResourceCallbacks,
-  type UpdateParams
+  type ResourceCallbacks
 } from 'ra-core'
 
 import {
   convertDateToISO,
   withCreatedByAt,
-  auditForUpdatedChanges,
-  type AuditFunctionType
+  type AuditFunctionType,
+  extendLifeCycle
 } from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES, R_ITEMS } from '../../../constants'
 
-export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
-  resource: R_ITEMS,
+const lifeCycles = (
+  audit: AuditFunctionType
+): Omit<ResourceCallbacks<any>, 'resource'> => ({
   beforeCreate: async (record: CreateResult<Item>) => {
     convertDateToISO<Item>(record.data, ['start', 'end'])
     record.data.start = new Date(record.data.start).toISOString()
     record.data.end = new Date(record.data.end).toISOString()
     return withCreatedByAt(record)
-  },
-  beforeUpdate: async (record: UpdateParams<Item>) => {
-    const securityRelated =
-      record.previousData.protectiveMarking !== record.data.protectiveMarking
-    return await auditForUpdatedChanges(
-      record,
-      R_ITEMS,
-      {
-        type: AuditType.EDIT,
-        securityRelated
-      },
-      audit
-    )
   },
   afterCreate: async (
     record: CreateResult<Item>,
@@ -72,3 +59,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     }
   }
 })
+
+export default (audit: AuditFunctionType): ResourceCallbacks<any> => {
+  return extendLifeCycle(R_ITEMS, audit, true, lifeCycles(audit))
+}
