@@ -15,6 +15,7 @@ import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
 import DateFilter from '../../components/DateFilter'
 import SourceField from '../../components/SourceField'
+import SourceInput from '../../components/SourceInput'
 
 interface Props {
   label: string
@@ -57,7 +58,9 @@ const filters = [
     key='securityRelated'
     label='Security Related'
   />,
-  <DateFilter key='createdAt' source='dateTime' label='Created At' />
+  <DateFilter key='createdAt' source='dateTime' label='Created At' />,
+  <SourceInput source='subject' reference={constants.R_USERS}/>
+  
 ]
 
 export interface FilterType {
@@ -100,6 +103,7 @@ export default function AuditList({
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
         <TextField source='dataId' label='Item' />
+        <SourceField source='subject' reference={constants.R_USERS} />
       </Datagrid>
     </List>
   )

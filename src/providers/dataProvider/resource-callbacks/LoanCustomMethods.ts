@@ -18,7 +18,7 @@ export const customMethods = (provider: DataProvider): CustomDataProvider => {
       })
 
       const {
-        data: { name }
+        data: { name, id }
       } = await provider.getOne<User>(R_USERS, {
         id: holder
       })
@@ -28,7 +28,8 @@ export const customMethods = (provider: DataProvider): CustomDataProvider => {
           type: AuditType.LOAN,
           activityDetail: `Item loaned to ${name}.`,
           resource: R_ITEMS,
-          dataId: item
+          dataId: item,
+          subject: id
         })
       })
       await Promise.all(promisees)

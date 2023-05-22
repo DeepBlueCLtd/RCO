@@ -27,7 +27,8 @@ const lifeCycles = (
         type: departed ? AuditType.USER_DEPARTED : AuditType.EDIT,
         securityRelated
       },
-      audit
+      audit,
+      record.id as number
     )
   }
 })

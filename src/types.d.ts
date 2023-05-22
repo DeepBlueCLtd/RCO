@@ -42,6 +42,7 @@ interface Audit extends RCOResource {
   label: string
   activityDetail?: string
   securityRelated?: boolean
+  subject?:User['id']
 }
 
 interface Platform extends RCOResource {
