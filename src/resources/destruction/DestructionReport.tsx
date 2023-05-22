@@ -5,10 +5,11 @@ import {
   Show,
   useGetList,
   useRecordContext,
-  TextField
+  TextField,
+  useGetOne
 } from 'react-admin'
 import {
-  List,
+  List as MuiList,
   ListItem,
   Table,
   TableBody,
@@ -19,7 +20,6 @@ import {
   Typography
 } from '@mui/material'
 import * as constants from '../../constants'
-import SourceField from '../../components/SourceField'
 import FlexBox from '../../components/FlexBox'
 
 const ItemsCount = (): React.ReactElement => {
@@ -51,7 +51,7 @@ const TablesData = (): React.ReactElement => {
   return (
     <Box>
       <Typography>NOTES:</Typography>
-      <List
+      <MuiList
         sx={{
           listStyleType: 'decimal',
           pl: 2,
@@ -71,7 +71,7 @@ const TablesData = (): React.ReactElement => {
             the additional details at the foot of the form should be completed.
           </Typography>
         </ListItem>
-      </List>
+      </MuiList>
       <Typography>UNIT: VAULT</Typography>
       <TableContainer>
         <Table>
@@ -106,7 +106,23 @@ const TablesData = (): React.ReactElement => {
           </TableHead>
           <TableBody>
             {data?.map((item, index) => {
-              const { item_number: itemNumber, mediaType, platform } = item
+              const {
+                item_number: itemNumber,
+                mediaType,
+                batchId,
+                protectiveMarking,
+                consecPages
+              } = item
+              const { data: pMarketing } = useGetOne(
+                constants.R_PROTECTIVE_MARKING,
+                { id: protectiveMarking }
+              )
+              const { data: batch } = useGetOne(constants.R_BATCHES, {
+                id: batchId
+              })
+              const { data: platform } = useGetOne(constants.R_PLATFORMS, {
+                id: batch?.platform
+              })
               return (
                 <TableRow key={index}>
                   <TableCell sx={cellStyle} align='center'>
@@ -116,16 +132,13 @@ const TablesData = (): React.ReactElement => {
                     {mediaType}
                   </TableCell>
                   <TableCell sx={cellStyle} align='center'>
-                    {}
+                    {consecPages}
                   </TableCell>
                   <TableCell sx={cellStyle} align='center'>
-                    <SourceField
-                      reference={constants.R_PROTECTIVE_MARKING}
-                      source='protectiveMarking'
-                    />
+                    {pMarketing?.name}
                   </TableCell>
                   <TableCell sx={cellStyle} align='center'>
-                    {platform}
+                    {platform?.name}
                   </TableCell>
                 </TableRow>
               )
@@ -258,7 +271,11 @@ export default function DestructionReport(props: Props): React.ReactElement {
   const { open, handleOpen } = props
 
   return (
-    <Printable open={open} onClose={() => { handleOpen(false) }}>
+    <Printable
+      open={open}
+      onClose={() => {
+        handleOpen(false)
+      }}>
       <Box padding={'20px'}>
         <Show component={'div'}>
           <Typography variant='h5' textAlign='center' margin='10px'>
