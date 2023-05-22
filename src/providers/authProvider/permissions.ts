@@ -13,7 +13,7 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
     items: { read: true, write: true, delete: false },
     users: { read: true, write: true, delete: false },
     platforms: { read: true, write: true, delete: false },
-    'reference-data': { read: true, write: true, delete: false }
+    'reference-data': { read: true, write: false, delete: false }
   },
   'rco-power-user': {
     '*': { all: '*' }
