@@ -46,7 +46,7 @@ export default function UserList(props: Props): React.ReactElement {
     setOpen(open)
   }
 
-  const UserActions = () => {
+  const UserActions = (): React.ReactElement => {
     const { selectedIds, data } = useListContext()
     const [showReturn, setShowReturn] = useState<boolean>(false)
     const [selectedUser, setSelectedUser] = useState<User[] | null>(null)
@@ -61,7 +61,7 @@ export default function UserList(props: Props): React.ReactElement {
       )
     }, [selectedIds, data])
 
-    const handleUserReturn = () => {
+    const handleUserReturn = (): void => {
       if (selectedUser !== null) {
         selectedUser.forEach((user) => {
           update(constants.R_USERS, {
