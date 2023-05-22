@@ -35,7 +35,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const [loading, setLoading] = useState(false)
 
-  const datProvider = useDataProvider()
+  const dataProvider = useDataProvider()
   const [items, setItems] = useState<Destruction[]>([])
 
   const notify = useNotify()
@@ -43,7 +43,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   useEffect(() => {
     setLoading(true)
-    datProvider
+    dataProvider
       .getList<Destruction>(constants.R_DESTRUCTION, {
         filter: { finalisedAt: undefined },
         sort: { field: 'id', order: 'ASC' },
@@ -62,26 +62,39 @@ export default function DestroyItems(props: Props): React.ReactElement {
       })
   }, [])
 
-  const onDestroy = (): void => {
+  const onDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
-      datProvider
-        .updateMany<Item>(constants.R_ITEMS, {
-          ids,
-          data: {
-            destruction: Number(destructionId),
-            destructionDate: new Date().toISOString()
-          }
+      const { data } = await dataProvider.getMany<Item>(constants.R_ITEMS, {
+        ids
+      })
+
+      const items = data
+        .filter(({ loanedDate, loanedTo, destruction }) => {
+          return (
+            typeof loanedTo === 'undefined' &&
+            typeof loanedDate === 'undefined' &&
+            typeof destruction === 'undefined'
+          )
         })
-        .then(() => {
-          notify(`${ids.length} items destroyed!` )
-          successCallback()
-        })
-        .catch(console.log)
+        .map((item) => item.id)
+
+      await dataProvider.updateMany<Item>(constants.R_ITEMS, {
+        ids: items,
+        data: {
+          destruction: Number(destructionId),
+          destructionDate: new Date().toISOString()
+        }
+      })
+      notify(`${items.length} items destroyed!`, { type: 'success' })
+      if (items.length !== ids.length) {
+        notify(`${ids.length - items.length} items not destroyed!`)
+      }
+      successCallback()
     }
   }
   const label = 'Destructions'
 
-  if (loading) return <></>
+  if (typeof loading === 'boolean' && loading) return <></>
 
   return (
     <Box sx={style}>
@@ -91,7 +104,9 @@ export default function DestroyItems(props: Props): React.ReactElement {
           <InputLabel>{label}</InputLabel>
           <Select
             value={String(destructionId)}
-            onChange={(event) => { setDestructionId(event.target.value) }}
+            onChange={(event) => {
+              setDestructionId(event.target.value)
+            }}
             label={label}>
             {items.map((item) => (
               <MenuItem key={item.id} value={String(item.id)}>
@@ -102,7 +117,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         </FormControl>
       </Box>
       <FlexBox>
-        <Button onClick={onDestroy} variant='contained'>
+        <Button onClick={onDestroy as any} variant='contained'>
           Destroy
         </Button>
         <Button onClick={onClose} variant='outlined'>
