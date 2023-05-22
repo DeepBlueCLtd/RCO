@@ -74,7 +74,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
     }
   }
 
-  if (loading) return <></>
+  if (typeof loading !== 'undefined' && loading) return <></>
 
   return (
     <SimpleForm

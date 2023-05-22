@@ -6,7 +6,8 @@ import {
   useGetList,
   useRecordContext,
   TextField,
-  useGetOne
+  ReferenceField,
+  type Identifier
 } from 'react-admin'
 import {
   List as MuiList,
@@ -15,12 +16,14 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography
 } from '@mui/material'
 import * as constants from '../../constants'
 import FlexBox from '../../components/FlexBox'
+import ItemsReport from '../items/ItemsReport'
+import SourceField from '../../components/SourceField'
+import React from 'react'
 
 const ItemsCount = (): React.ReactElement => {
   const record = useRecordContext()
@@ -38,16 +41,7 @@ const ItemsCount = (): React.ReactElement => {
   )
 }
 
-const TablesData = (): React.ReactElement => {
-  const record = useRecordContext()
-  const { data, total } = useGetList(constants.R_ITEMS, {
-    filter: {
-      destruction: record.id
-    }
-  })
-
-  const cellStyle = { border: '1px solid black', width: 200 }
-
+const Notes = (): React.ReactElement => {
   return (
     <Box>
       <Typography>NOTES:</Typography>
@@ -72,134 +66,153 @@ const TablesData = (): React.ReactElement => {
           </Typography>
         </ListItem>
       </MuiList>
-      <Typography>UNIT: VAULT</Typography>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                align='center'
-                sx={{ fontWeight: '600', border: '1px solid black' }}>
-                Item
-              </TableCell>
-              <TableCell
-                align='center'
-                sx={{ fontWeight: '600', border: '1px solid black' }}>
-                Media Type
-              </TableCell>
-              <TableCell
-                align='center'
-                sx={{ fontWeight: '600', border: '1px solid black' }}>
-                Sri/Pages
-              </TableCell>
-              <TableCell
-                align='center'
-                sx={{ fontWeight: '600', border: '1px solid black' }}>
-                Prot Marking
-              </TableCell>
-              <TableCell
-                align='center'
-                sx={{ fontWeight: '600', border: '1px solid black' }}>
-                Platform
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data?.map((item, index) => {
-              const {
-                item_number: itemNumber,
-                mediaType,
-                batchId,
-                protectiveMarking,
-                consecPages
-              } = item
-              const { data: pMarketing } = useGetOne(
-                constants.R_PROTECTIVE_MARKING,
-                { id: protectiveMarking }
-              )
-              const { data: batch } = useGetOne(constants.R_BATCHES, {
-                id: batchId
-              })
-              const { data: platform } = useGetOne(constants.R_PLATFORMS, {
-                id: batch?.platform
-              })
-              return (
-                <TableRow key={index}>
-                  <TableCell sx={cellStyle} align='center'>
-                    {itemNumber}
-                  </TableCell>
-                  <TableCell sx={cellStyle} align='center'>
-                    {mediaType}
-                  </TableCell>
-                  <TableCell sx={cellStyle} align='center'>
-                    {consecPages}
-                  </TableCell>
-                  <TableCell sx={cellStyle} align='center'>
-                    {pMarketing?.name}
-                  </TableCell>
-                  <TableCell sx={cellStyle} align='center'>
-                    {platform?.name}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Typography
-        sx={{
-          margin: '20px 0'
-        }}>
-        It is certified that the {total} above mentioned item(s) of{' '}
-        {record.reference} has been destroyed in the presence of:-
-      </Typography>
-      <TableContainer>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell sx={cellStyle} align='center'>
-                Signature
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-              <TableCell sx={cellStyle} align='center'>
-                Signature
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell sx={cellStyle} align='center'>
-                Name (Block letters)
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-              <TableCell sx={cellStyle} align='center'>
-                Name (Block letters)
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell sx={cellStyle} align='center'>
-                Grade
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-              <TableCell sx={cellStyle} align='center'>
-                Grade
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell sx={cellStyle} align='center'>
-                Date
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-              <TableCell sx={cellStyle} align='center'>
-                Date
-              </TableCell>
-              <TableCell sx={cellStyle} align='center'></TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+    </Box>
+  )
+}
 
+interface ItemsListBoxProps {
+  recordId: Identifier
+}
+
+const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
+  const { recordId } = props
+  return (
+    <Box>
+      <Typography>UNIT: VAULT</Typography>
+      <ItemsReport
+        filter={{
+          destruction: recordId
+        }}>
+        <TextField source='item_number' />
+        <TextField source='mediaType' />
+        <TextField source='consecPages' label='Srl/Pages' />
+        <SourceField
+          reference={constants.R_PROTECTIVE_MARKING}
+          source='protectiveMarking'
+        />
+        <ReferenceField
+          label='Platform'
+          reference={constants.R_BATCHES}
+          source='batchId'>
+          <ReferenceField reference={constants.R_PLATFORMS} source='platform'>
+            <TextField source='name' />
+          </ReferenceField>
+        </ReferenceField>
+      </ItemsReport>
+    </Box>
+  )
+}
+
+const cellStyle = { border: '1px solid black', width: 200 }
+
+interface SignatureProps {
+  cellStyle?: Record<string, any>
+}
+
+const Signature = (props: SignatureProps): React.ReactElement => {
+  const { cellStyle } = props
+
+  return (
+    <Table>
+      <TableBody>
+        <TableRow>
+          <TableCell sx={cellStyle} align='center'>
+            Signature
+          </TableCell>
+          <TableCell sx={cellStyle} align='center'></TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell sx={cellStyle} align='center'>
+            Name (Block letters)
+          </TableCell>
+          <TableCell sx={cellStyle} align='center'></TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell sx={cellStyle} align='center'>
+            Grade
+          </TableCell>
+          <TableCell sx={cellStyle} align='center'></TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell sx={cellStyle} align='center'>
+            Date
+          </TableCell>
+          <TableCell sx={cellStyle} align='center'></TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  )
+}
+
+const AuthoritySignature = (): React.ReactElement => {
+  return (
+    <FlexBox alignItems={'start'}>
+      <TableContainer>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell sx={cellStyle} align='center'>
+                Signature of Authority
+              </TableCell>
+              <TableCell sx={cellStyle} align='center'></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={cellStyle} align='center'>
+                Name (block letters)
+              </TableCell>
+              <TableCell sx={cellStyle} align='center'></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={cellStyle} align='center'>
+                Grade/Rank
+              </TableCell>
+              <TableCell sx={cellStyle} align='center'></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={cellStyle} align='center'>
+                Date
+              </TableCell>
+              <TableCell sx={cellStyle} align='center'></TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TableContainer>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell sx={cellStyle} align='center'>
+                Details of document authorising destruction OR document ref
+              </TableCell>
+              <TableCell sx={cellStyle} align='center'></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={cellStyle} align='center'>
+                Date
+              </TableCell>
+              <TableCell sx={cellStyle} align='center'></TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </FlexBox>
+  )
+}
+
+const SignatureForms = (): React.ReactElement => {
+  return (
+    <Box>
+      <TableContainer>
+        <FlexBox gap={0}>
+          <Signature
+            cellStyle={{
+              ...cellStyle,
+              borderRight: 'none'
+            }}
+          />
+          <Signature cellStyle={cellStyle} />
+        </FlexBox>
+      </TableContainer>
       <Typography
         sx={{
           margin: '20px 0'
@@ -207,57 +220,31 @@ const TablesData = (): React.ReactElement => {
         See Note 2
         ---------------------------------------------------------------------------------------------------------
       </Typography>
+      <AuthoritySignature />
+    </Box>
+  )
+}
 
-      <FlexBox alignItems={'start'}>
-        <TableContainer>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell sx={cellStyle} align='center'>
-                  Signature of Authority
-                </TableCell>
-                <TableCell sx={cellStyle} align='center'></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={cellStyle} align='center'>
-                  Name (block letters)
-                </TableCell>
-                <TableCell sx={cellStyle} align='center'></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={cellStyle} align='center'>
-                  Grade/Rank
-                </TableCell>
-                <TableCell sx={cellStyle} align='center'></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={cellStyle} align='center'>
-                  Date
-                </TableCell>
-                <TableCell sx={cellStyle} align='center'></TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TableContainer>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell sx={cellStyle} align='center'>
-                  Details of document authorising destruction OR document ref
-                </TableCell>
-                <TableCell sx={cellStyle} align='center'></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={cellStyle} align='center'>
-                  Date
-                </TableCell>
-                <TableCell sx={cellStyle} align='center'></TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </FlexBox>
+const TablesData = (): React.ReactElement => {
+  const record = useRecordContext()
+  const { total } = useGetList(constants.R_ITEMS, {
+    filter: {
+      destruction: record.id
+    }
+  })
+
+  return (
+    <Box>
+      <Notes />
+      <ItemsListBox recordId={record.id} />
+      <Typography
+        sx={{
+          margin: '20px 0'
+        }}>
+        It is certified that the {total} above mentioned item(s) of{' '}
+        {record.reference} has been destroyed in the presence of:-
+      </Typography>
+      <SignatureForms />
     </Box>
   )
 }
