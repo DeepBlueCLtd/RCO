@@ -13,6 +13,7 @@ import {
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES, R_ITEMS } from '../../../constants'
 import { type UpdateParams } from 'react-admin'
+import { emitter } from '../../../resources/items/ItemForm/ItemFormToolbar'
 
 const lifeCycles = (
   audit: AuditFunctionType
@@ -53,6 +54,7 @@ const lifeCycles = (
         resource: R_ITEMS,
         dataId: id
       })
+      emitter.emit('save', itemNumber)
       return record
     } catch (error) {
       console.log({ error })
