@@ -94,7 +94,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 
   return (
     <UserMenu {...props}>
-      {!authenticated && (
+      {authenticated === null && (
         <Button
           onClick={handleLogin}
           classes={{ root: styles.root, startIcon: styles.startIcon }}
@@ -106,7 +106,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           <Typography sx={{ textTransform: 'none' }}> Login</Typography>
         </Button>
       )}
-      {authenticated && <Logout onClick={handleLogOut} />}
+      {authenticated !== null && <Logout onClick={handleLogOut} />}
       <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}
