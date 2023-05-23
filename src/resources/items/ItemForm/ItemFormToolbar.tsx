@@ -18,6 +18,20 @@ const ItemFormToolbar = (): React.ReactElement => {
   const notify = useNotify()
   const { id } = useParams()
 
+  const saveHandler = (e: string): void => {
+    if (clone) {
+      saveAndClone(e, 'clone')
+    }
+    if (save) saveAndClone(e, 'save')
+  }
+
+  useEffect(() => {
+    emitter.on('save', saveHandler)
+    return () => {
+      emitter.off('save', saveHandler)
+    }
+  }, [])
+
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
@@ -33,20 +47,6 @@ const ItemFormToolbar = (): React.ReactElement => {
       } item.`
     )
   }
-
-  const saveHandler = (e: string): void => {
-    if (clone) {
-      saveAndClone(e, 'clone')
-    }
-    if (save) saveAndClone(e, 'save')
-  }
-
-  useEffect(() => {
-    emitter.on('save', saveHandler)
-    return () => {
-      emitter.off('save', saveHandler)
-    }
-  }, [])
 
   return (
     <Toolbar>
