@@ -10,6 +10,11 @@ type Events = {
   save: string
 }
 
+enum ItemFormSaveType {
+  'SAVE' = 1,
+  'CLONE' = 2
+}
+
 let clone = false
 let save = false
 export const emitter = mitt<Events>()
@@ -21,11 +26,11 @@ const ItemFormToolbar = (): React.ReactElement => {
   const saveHandler = (e: string): void => {
     if (clone) {
       clone = false
-      saveAndClone(e, 'clone')
+      saveAndClone(e, ItemFormSaveType.CLONE)
     }
     if (save) {
       save = false
-      saveAndClone(e, 'save')
+      saveAndClone(e, ItemFormSaveType.SAVE)
       reset()
     }
   }
@@ -45,16 +50,11 @@ const ItemFormToolbar = (): React.ReactElement => {
     )
   }
 
-  const saveAndClone = (itemNumber: string, type: string): void => {
+  const saveAndClone = (itemNumber: string, type: ItemFormSaveType): void => {
     notify(
       `Item ${itemNumber} has been saved. Now showing ${
-        type === 'clone' ? 'clone of previous' : 'blank'
-      } item.`,
-      {
-        type: 'success',
-        autoHideDuration: 0,
-        anchorOrigin: { vertical: 'top', horizontal: 'center' }
-      }
+        type === ItemFormSaveType.CLONE ? 'clone of previous' : 'blank'
+      } item.`
     )
   }
 
