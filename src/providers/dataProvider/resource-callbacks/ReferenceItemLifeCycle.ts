@@ -12,7 +12,8 @@ import { type ResourceTypes } from '../../../constants'
 
 export default (
   audit: AuditFunctionType,
-  resource: ResourceTypes
+  resource: ResourceTypes,
+  securityRelated?: (record: UpdateParams<RCOResource>) => boolean
 ): ResourceCallbacks<any> => ({
   resource,
   afterCreate: async (record: CreateResult<RCOResource>) => {
@@ -28,7 +29,10 @@ export default (
       record,
       resource,
       {
-        type: AuditType.EDIT
+        type: AuditType.EDIT,
+        ...(securityRelated !== undefined
+          ? { securityRelated: securityRelated(record) }
+          : null)
       },
       audit
     )

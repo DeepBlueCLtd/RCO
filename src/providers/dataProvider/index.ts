@@ -8,13 +8,12 @@ import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
 import localForage from 'localforage'
 import loadDefaultData from '../../utils/init-data'
-import { type AuditFunctionType } from './dataprovider-utils'
+import { extendLifeCycle, type AuditFunctionType } from './dataprovider-utils'
 import UserLifeCycle from './resource-callbacks/UserLifeCycle'
 import ProjectLifeCycle from './resource-callbacks/ProjectLifeCycle'
 import BatchLifeCycle from './resource-callbacks/BatchLifeCycle'
 import ItemLifeCycle from './resource-callbacks/ItemLifeCycle'
 import { customMethods } from './resource-callbacks/LoanCustomMethods'
-import PlatformLifeCycle from './resource-callbacks/PlatformLifeCycle'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
 
@@ -27,7 +26,7 @@ export const lifecycleCallbacks = (
     UserLifeCycle(audit),
     ProjectLifeCycle(audit),
     ItemLifeCycle(audit),
-    PlatformLifeCycle(audit),
+    extendLifeCycle(constants.R_PLATFORMS, audit),
     ReferenceItemLifeCycle(audit, constants.R_VAULT_LOCATION),
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
     ReferenceItemLifeCycle(audit, constants.R_PLATFORM_ORIGINATOR),

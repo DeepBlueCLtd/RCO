@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   BooleanField,
   CreateButton,
@@ -8,10 +8,13 @@ import {
   TopToolbar,
   ArrayField,
   SingleFieldList,
-  useRecordContext
+  useRecordContext,
+  useListContext,
+  useUpdate,
+  useNotify
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article } from '@mui/icons-material'
+import { Article , KeyboardReturn } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -42,19 +45,62 @@ export default function UserList(props: Props): React.ReactElement {
     setOpen(open)
   }
 
-  return (
-    <List actions={<ListActions />} perPage={25} resource={cName}>
-      <Datagrid
-        rowClick='show'
-        bulkActionButtons={
+  const UserActions = (): React.ReactElement => {
+    const { selectedIds, data } = useListContext()
+    const [showReturn, setShowReturn] = useState<boolean>(false)
+    const [selectedUser, setSelectedUser] = useState<User[] | null>(null)
+    const [update] = useUpdate<User>()
+    const notify = useNotify()
+
+    useEffect(() => {
+      const users = data.filter((user: User) => selectedIds.includes(user.id))
+      setSelectedUser(users)
+      setShowReturn(
+        users.every((user: User) => user.departedDate !== undefined)
+      )
+    }, [selectedIds, data])
+
+    const handleUserReturn = (): void => {
+      if (selectedUser !== null) {
+        selectedUser.forEach((user) => {
+          update(constants.R_USERS, {
+            id: user.id,
+            previousData: user,
+            data: {
+              departedDate: undefined,
+              active: true
+            }
+          }).catch(console.log)
+        })
+        notify('User Returned')
+      }
+    }
+
+    return (
+      <>
+        <Button
+          startIcon={<Article />}
+          sx={{ lineHeight: '1.5' }}
+          size='small'
+          onClick={handleOpen(true)}>
+          User Muster List
+        </Button>
+        {showReturn && (
           <Button
-            startIcon={<Article />}
+            startIcon={<KeyboardReturn />}
             sx={{ lineHeight: '1.5' }}
             size='small'
-            onClick={handleOpen(true)}>
-            User Muster List
+            onClick={handleUserReturn}>
+            Return
           </Button>
-        }>
+        )}
+      </>
+    )
+  }
+
+  return (
+    <List actions={<ListActions />} perPage={25} resource={cName}>
+      <Datagrid rowClick={'show'} bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
