@@ -48,8 +48,13 @@ const ItemFormToolbar = (): React.ReactElement => {
   const saveAndClone = (itemNumber: string, type: string): void => {
     notify(
       `Item ${itemNumber} has been saved. Now showing ${
-        type === 'clone' ? 'clone' : 'blank'
-      } item.`
+        type === 'clone' ? 'clone of previous' : 'blank'
+      } item.`,
+      {
+        type: 'success',
+        autoHideDuration: 0,
+        anchorOrigin: { vertical: 'top', horizontal: 'center' }
+      }
     )
   }
 
