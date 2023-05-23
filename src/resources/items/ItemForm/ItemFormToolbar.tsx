@@ -21,8 +21,12 @@ const ItemFormToolbar = (): React.ReactElement => {
   const saveHandler = (e: string): void => {
     if (clone) {
       saveAndClone(e, 'clone')
+      clone = false
     }
-    if (save) saveAndClone(e, 'save')
+    if (save) {
+      saveAndClone(e, 'save')
+      save = false
+    }
   }
 
   useEffect(() => {
