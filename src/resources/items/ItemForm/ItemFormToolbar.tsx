@@ -20,12 +20,13 @@ const ItemFormToolbar = (): React.ReactElement => {
 
   const saveHandler = (e: string): void => {
     if (clone) {
-      saveAndClone(e, 'clone')
       clone = false
+      saveAndClone(e, 'clone')
     }
     if (save) {
-      saveAndClone(e, 'save')
       save = false
+      saveAndClone(e, 'save')
+      reset()
     }
   }
 
@@ -72,10 +73,7 @@ const ItemFormToolbar = (): React.ReactElement => {
             save = true
           }}
           mutationOptions={{
-            onSuccess: () => {
-              save = true
-              reset()
-            }
+            onSuccess: () => {}
           }}
         />
       </FlexBox>
