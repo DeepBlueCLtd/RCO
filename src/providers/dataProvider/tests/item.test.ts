@@ -74,17 +74,21 @@ describe('CRUD operations on Item Resource', () => {
 
     expect(itemList.total).toBe(0)
 
-    const createdId = (
+    const created = (
       await provider.create<Item>(R_ITEMS, {
         data: generateItemForTesting()
       })
-    ).data.id
+    ).data
+    const createdId = created.id
     expect(createdId).toBeDefined()
     const createdItem = (
       await provider.getOne<Item>(R_ITEMS, { id: createdId })
     ).data
     expect(createdItem).toBeDefined()
     expect(createdId).toEqual(createdItem.id)
+    const createdRef = created.item_number
+    expect(createdRef).toBeTruthy()
+    expect(createdRef).toEqual('V01/2025/01')
   })
 
   it('should update the item', async () => {
@@ -223,6 +227,7 @@ describe('CRUD operations on Item Resource', () => {
       pagination: { page: 1, perPage: 1000 },
       filter: {}
     })
+    expect(auditListBeforeCreate.total).toBe(0)
 
     const batchList = (
       await provider.getList<Batch>(R_BATCHES, {
@@ -232,11 +237,10 @@ describe('CRUD operations on Item Resource', () => {
       })
     ).data
     const batch = batchList[0]
-    expect(auditListBeforeCreate.total).toBe(0)
 
     const createdItem = (
       await provider.create<Item>(R_ITEMS, {
-        data: generateItemForTesting({ id: 1 })
+        data: generateItemForTesting()
       })
     ).data
     const createdId = createdItem.id
@@ -246,11 +250,8 @@ describe('CRUD operations on Item Resource', () => {
         id: createdId
       })
     ).data
-    const fetchedId: number = fetchedItem.id
     const batchId: number = batch.id
-    expect(fetchedItem.item_number).toEqual(
-      `V0${batchId}/${year}/0${fetchedId}`
-    )
+    expect(fetchedItem.item_number).toEqual(`V0${batchId}/${year}/01`)
 
     const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
       sort: { field: 'id', order: 'ASC' },
