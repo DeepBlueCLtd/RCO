@@ -11,8 +11,8 @@ type Events = {
 }
 
 enum ItemFormSaveType {
-  'SAVE' = 1,
-  'CLONE' = 2
+  SAVE = 'SAVE',
+  CLONE = 'CLONE'
 }
 
 let clone = false
