@@ -5,7 +5,8 @@ import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 
-interface Events {
+// eslint-disable-next-line
+type Events = {
   save: string
 }
 
