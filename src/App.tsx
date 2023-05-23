@@ -36,6 +36,7 @@ import loadDefaultData from './utils/init-data'
 import { type FilterType } from './resources/audit/AuditList'
 import { canAccess } from './providers/authProvider/permissions'
 import { protectedRoutes } from './hooks/useCanAccess'
+import addresses from './resources/addresses'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -229,6 +230,12 @@ function App(): React.ReactElement {
           </Route>
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>
+        <Resource
+          key={constants.R_ADDRESSES}
+          icon={constants.ICON_ADDRESSES}
+          name={constants.R_ADDRESSES}
+          {...protectedRoutes(permissions, 'reference-data', addresses)}
+        />
         <Resource
           key={constants.R_PROJECTS}
           icon={constants.ICON_PROJECT}
