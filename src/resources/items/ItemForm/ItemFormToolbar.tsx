@@ -5,9 +5,10 @@ import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 
-type Events = {
+interface Events {
   save: string
 }
+
 let clone = false
 let save = false
 export const emitter = mitt<Events>()
@@ -32,14 +33,14 @@ const ItemFormToolbar = (): React.ReactElement => {
     )
   }
 
-  useEffect(() => {
-    const saveHandler = (e: string): void => {
-      if (clone === true) {
-        saveAndClone(e, 'clone')
-      }
-      if (save === true) saveAndClone(e, 'save')
+  const saveHandler = (e: string): void => {
+    if (clone) {
+      saveAndClone(e, 'clone')
     }
+    if (save) saveAndClone(e, 'save')
+  }
 
+  useEffect(() => {
     emitter.on('save', saveHandler)
     return () => {
       emitter.off('save', saveHandler)
