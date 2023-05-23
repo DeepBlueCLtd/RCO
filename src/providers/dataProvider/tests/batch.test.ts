@@ -60,16 +60,34 @@ describe('CRUD operations on Batch Resource', () => {
       filter: {}
     })
     expect(list.total).toBe(0)
-    const result = await provider.create<Batch>(R_BATCHES, {
+    const firstResult = await provider.create<Batch>(R_BATCHES, {
       data: generateDummyBatchForTesting()
     })
-    const createId = result.data.id
-    expect(createId).toBeDefined()
-    const createdBatch = await provider.getOne<Batch>(R_BATCHES, {
-      id: createId
+    const firstCreateId = firstResult.data.id
+    expect(firstCreateId).toBeDefined()
+    const firstCreatedBatch = await provider.getOne<Batch>(R_BATCHES, {
+      id: firstCreateId
     })
-    expect(createdBatch).toBeDefined()
-    expect(createId).toEqual(createdBatch.data.id)
+    expect(firstCreatedBatch).toBeDefined()
+    expect(firstCreateId).toEqual(firstCreatedBatch.data.id)
+    const firstBatchId = firstResult.data.batchNumber
+    expect(firstBatchId).toBeTruthy()
+    expect(firstBatchId).toEqual('V01/2025')
+
+    // now a second batch, to check the increment
+    const secondResult = await provider.create<Batch>(R_BATCHES, {
+      data: generateDummyBatchForTesting()
+    })
+    const secondCreateId = secondResult.data.id
+    expect(secondCreateId).toBeDefined()
+    const secondCreatedBatch = await provider.getOne<Batch>(R_BATCHES, {
+      id: secondCreateId
+    })
+    expect(secondCreatedBatch).toBeDefined()
+    expect(secondCreateId).toEqual(secondCreatedBatch.data.id)
+    const secondBatchId = secondResult.data.batchNumber
+    expect(secondBatchId).toBeTruthy()
+    expect(secondBatchId).toEqual('V02/2025')
   })
 
   it('should update the batch', async () => {
