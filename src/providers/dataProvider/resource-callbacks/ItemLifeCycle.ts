@@ -45,11 +45,9 @@ const lifeCycles = (
         minimumIntegerDigits: 2,
         useGrouping: false
       })
-
       const batchNumber: string = batch.batchNumber
       const itemNumber = `${batchNumber}/${idVal}`
-
-      await dataProvider.update<Item>(R_ITEMS, {
+      const withItemRef = await dataProvider.update<Item>(R_ITEMS, {
         id,
         previousData: data,
         data: {
@@ -61,7 +59,7 @@ const lifeCycles = (
         resource: R_ITEMS,
         dataId: id
       })
-      return record
+      return { ...record, data: withItemRef.data }
     } catch (error) {
       console.log({ error })
       return record
