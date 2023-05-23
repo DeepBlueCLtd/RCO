@@ -59,8 +59,7 @@ const filters = [
     label='Security Related'
   />,
   <DateFilter key='createdAt' source='dateTime' label='Created At' />,
-  <SourceInput source='subject' reference={constants.R_USERS}/>
-  
+  <SourceInput key='subject' source='subject' reference={constants.R_USERS} />
 ]
 
 export interface FilterType {

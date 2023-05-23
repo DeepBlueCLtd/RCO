@@ -42,7 +42,8 @@ interface Audit extends RCOResource {
   label: string
   activityDetail?: string
   securityRelated?: boolean
-  subject?:User['id']
+  // who this event relates to
+  subject?: User['id']
 }
 
 interface Platform extends RCOResource {
