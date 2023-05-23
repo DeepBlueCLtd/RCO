@@ -36,7 +36,7 @@ interface AuditProps {
   securityRelated?: boolean
   resource: string | null
   dataId: number | null
-  index?: number
+  subject?: User['id']
 }
 
 interface AuditDataArgs {
@@ -49,14 +49,16 @@ export type AuditFunctionType = ({
   activityDetail,
   securityRelated,
   resource,
-  dataId
+  dataId,
+  subject
 }: AuditProps) => Promise<void>
 
 export const auditForUpdatedChanges = async (
   record: UpdateParams<RCOResource>,
   resource: ResourceTypes,
   auditData: AuditDataArgs,
-  audit: AuditFunctionType
+  audit: AuditFunctionType,
+  subject?: User['id']
 ): Promise<UpdateParams<RCOResource>> => {
   const difference = getDifference(record.data, record.previousData)
   const dataId =
@@ -65,7 +67,8 @@ export const auditForUpdatedChanges = async (
     ...auditData,
     activityDetail: `Previous values: ${JSON.stringify(difference)}`,
     resource,
-    dataId
+    dataId,
+    subject
   })
   return record
 }
