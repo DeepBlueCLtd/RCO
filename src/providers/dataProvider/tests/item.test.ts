@@ -74,21 +74,37 @@ describe('CRUD operations on Item Resource', () => {
 
     expect(itemList.total).toBe(0)
 
-    const created = (
+    const firstCreated = (
       await provider.create<Item>(R_ITEMS, {
         data: generateItemForTesting()
       })
     ).data
-    const createdId = created.id
-    expect(createdId).toBeDefined()
-    const createdItem = (
-      await provider.getOne<Item>(R_ITEMS, { id: createdId })
+    const firstCreatedId = firstCreated.id
+    expect(firstCreatedId).toBeDefined()
+    const firstCreatedItem = (
+      await provider.getOne<Item>(R_ITEMS, { id: firstCreatedId })
     ).data
-    expect(createdItem).toBeDefined()
-    expect(createdId).toEqual(createdItem.id)
-    const createdRef = created.item_number
-    expect(createdRef).toBeTruthy()
-    expect(createdRef).toEqual('V01/2025/01')
+    expect(firstCreatedItem).toBeDefined()
+    expect(firstCreatedId).toEqual(firstCreatedItem.id)
+    const firstCreatedRef = firstCreated.item_number
+    expect(firstCreatedRef).toBeTruthy()
+    expect(firstCreatedRef).toEqual('V01/2025/01')
+
+    const secondCreated = (
+      await provider.create<Item>(R_ITEMS, {
+        data: generateItemForTesting()
+      })
+    ).data
+    const secondCreatedId = secondCreated.id
+    expect(secondCreatedId).toBeDefined()
+    const secondCreatedItem = (
+      await provider.getOne<Item>(R_ITEMS, { id: secondCreatedId })
+    ).data
+    expect(secondCreatedItem).toBeDefined()
+    expect(secondCreatedId).toEqual(secondCreatedItem.id)
+    const secondCreatedRef = secondCreated.item_number
+    expect(secondCreatedRef).toBeTruthy()
+    expect(secondCreatedRef).toEqual('V01/2025/02')
   })
 
   it('should update the item', async () => {
@@ -260,9 +276,9 @@ describe('CRUD operations on Item Resource', () => {
     })
 
     expect(auditListAfterCreate.total).toBe(1)
-    const firstAuditEntry = auditListAfterCreate.data[0]
-    expect(firstAuditEntry.activityType).toEqual(AuditType.CREATE)
-    expect(firstAuditEntry.resource).toEqual(R_ITEMS)
-    expect(firstAuditEntry.dataId).toEqual(fetchedItem.id)
+    const secondAuditEntry = auditListAfterCreate.data[0]
+    expect(secondAuditEntry.activityType).toEqual(AuditType.CREATE)
+    expect(secondAuditEntry.resource).toEqual(R_ITEMS)
+    expect(secondAuditEntry.dataId).toEqual(fetchedItem.id)
   })
 })
