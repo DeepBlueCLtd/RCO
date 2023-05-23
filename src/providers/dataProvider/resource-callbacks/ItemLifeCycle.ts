@@ -33,15 +33,21 @@ const lifeCycles = (
       const { data: batch } = await dataProvider.getOne<Batch>(R_BATCHES, {
         id: batchId
       })
-      const idCtr: number = id
-      const idVal: string = (idCtr + 1).toLocaleString('en-US', {
+
+      const items = await dataProvider.getList<Item>(R_ITEMS, {
+        filter: { batchId },
+        sort: { field: 'id', order: 'ASC' },
+        pagination: { page: 1, perPage: 1000 }
+      })
+      const idVal: string = (
+        items.total !== undefined ? items.total : 1
+      ).toLocaleString('en-US', {
         minimumIntegerDigits: 2,
         useGrouping: false
       })
       const batchNumber: string = batch.batchNumber
       const itemNumber = `${batchNumber}/${idVal}`
-
-      await dataProvider.update<Item>(R_ITEMS, {
+      const withItemRef = await dataProvider.update<Item>(R_ITEMS, {
         id,
         previousData: data,
         data: {
@@ -53,7 +59,7 @@ const lifeCycles = (
         resource: R_ITEMS,
         dataId: id
       })
-      return record
+      return { ...record, data: withItemRef.data }
     } catch (error) {
       console.log({ error })
       return record

@@ -17,14 +17,22 @@ const lifeCycles = (
   },
   beforeUpdate: async (record: UpdateParams<User>) => {
     const departed =
-      record.previousData.active && record.data.active === false
+      record.previousData.active === true && record.data.active === false
+    const returned =
+      record.previousData.departedDate !== undefined &&
+      record.data.departedDate === undefined
     // all user changes are security related
     const securityRelated = true
     return await auditForUpdatedChanges(
       record,
       R_USERS,
       {
-        type: departed ? AuditType.USER_DEPARTED : AuditType.EDIT,
+        type:
+          departed === true
+            ? AuditType.USER_DEPARTED
+            : returned === true
+            ? AuditType.USER_RETURNED
+            : AuditType.EDIT,
         securityRelated
       },
       audit,

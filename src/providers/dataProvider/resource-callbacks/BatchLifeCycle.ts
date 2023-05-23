@@ -73,7 +73,7 @@ const lifeCycles = (
       const yearVal: string = year
       const idVal: string = await generateBatchId(provider, year)
       const batchNumber = `V${idVal}/${yearVal}`
-      await dataProvider.update<Batch>(R_BATCHES, {
+      const withRef = await dataProvider.update<Batch>(R_BATCHES, {
         id,
         previousData: data,
         data: {
@@ -85,7 +85,7 @@ const lifeCycles = (
         resource: R_BATCHES,
         dataId: record.data.id
       })
-      return record
+      return { ...record, data: withRef.data }
     } catch (error) {
       return record
     }
