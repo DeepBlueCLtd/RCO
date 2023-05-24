@@ -4,7 +4,8 @@ import {
   AccountTree,
   CreditScore,
   Notes,
-  Business
+  Business,
+  LocalShipping
 } from '@mui/icons-material'
 
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
@@ -28,6 +29,7 @@ export const R_PROTECTIVE_MARKING = 'protectiveMarking'
 export const R_DEPARTMENT = 'department'
 export const R_MEDIA_TYPE = 'mediaType'
 export const R_ADDRESSES = 'addresses'
+export const R_DISPATCH = 'dispatch'
 
 export type ResourceTypes =
   | typeof R_ITEMS
@@ -54,6 +56,7 @@ export const ICON_ITEM = Save
 export const ICON_PROJECT = AccountTree
 export const ICON_LOAN = CreditScore
 export const ICON_ADDRESSES = Business
+export const ICON_DISPATCH = LocalShipping
 
 export const ICON_DETAILS = Notes
 

@@ -37,6 +37,7 @@ import { type FilterType } from './resources/audit/AuditList'
 import { canAccess } from './providers/authProvider/permissions'
 import { protectedRoutes } from './hooks/useCanAccess'
 import addresses from './resources/addresses'
+import dispatch from './resources/dispatch'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -253,6 +254,12 @@ function App(): React.ReactElement {
           icon={constants.ICON_ITEM}
           name={constants.R_ITEMS}
           {...protectedRoutes(permissions, constants.R_ITEMS, items)}
+        />
+        <Resource
+          key={constants.R_DISPATCH}
+          icon={constants.ICON_DISPATCH}
+          name={constants.R_DISPATCH}
+          {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
         />
       </Admin>
     </Suspense>
