@@ -32,12 +32,10 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
   const pageTitle = 'View Item'
 
   return (
-    <Box component='fieldset'>
-      <legend>
-        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          <constants.ICON_ITEM /> {pageTitle}
-        </Typography>
-      </legend>
+    <Box sx={{ padding: '20px' }}>
+      <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
+        <constants.ICON_ITEM /> {pageTitle}
+      </Typography>
       <Form>
         <SourceInput
           label=''
@@ -72,7 +70,10 @@ export default function ItemShow(): React.ReactElement {
         <TopToolbar sx={{ alignItems: 'center' }}>
           <TopToolbarField source='item_number' />
           {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
-          <IconButton onClick={() => { handleOpen(true) }}>
+          <IconButton
+            onClick={() => {
+              handleOpen(true)
+            }}>
             <History />
           </IconButton>
         </TopToolbar>
@@ -81,7 +82,9 @@ export default function ItemShow(): React.ReactElement {
       <ResourceHistoryModal
         filter={filter}
         open={open}
-        close={() => { handleOpen(false) }}
+        close={() => {
+          handleOpen(false)
+        }}
       />
     </Show>
   )
