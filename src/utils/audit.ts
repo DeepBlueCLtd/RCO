@@ -3,7 +3,7 @@ import { getUser } from '../providers/authProvider'
 import * as constants from '../constants'
 import { getActivityTypeLabel, type AuditType } from './activity-types'
 
-interface Props {
+export interface Props {
   type: AuditType
   activityDetail?: string
   securityRelated?: boolean

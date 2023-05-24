@@ -24,7 +24,7 @@ const schema = yup.object({
 
 const DestructionFormToolbar = (): React.ReactElement => (
   <Toolbar>
-    <SaveButton label='Crate' />
+    <SaveButton label='Create' />
   </Toolbar>
 )
 
@@ -39,7 +39,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   const getReference = (lastId: number, year: number): string => {
     const id = lastId + 1
-    return `DC/V/${id}/${year}`
+    return `DC/V/${id < 10 ? `0${id}` : id}/${year}`
   }
 
   useEffect(() => {
@@ -60,11 +60,10 @@ export default function DestructionForm(props: Props): React.ReactElement {
     }
   }, [isEdit])
 
-  const reference = getReference(lastId, year)
-
   const onSubmit = async (data: any): Promise<void> => {
     const { remarks } = data
     try {
+      const reference = getReference(lastId, year)
       await create(constants.R_DESTRUCTION, {
         data: { reference, remarks }
       })
@@ -75,6 +74,8 @@ export default function DestructionForm(props: Props): React.ReactElement {
   }
 
   if (typeof loading !== 'undefined' && loading) return <></>
+
+  const reference = getReference(lastId, year)
 
   return (
     <SimpleForm

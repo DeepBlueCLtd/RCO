@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -11,11 +12,14 @@ import FlexBox from '../../components/FlexBox'
 import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useEffect, useState } from 'react'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 interface Props {
   onClose: () => void
   successCallback: () => void
   ids: number[]
+  data: Item[]
 }
 
 const style = {
@@ -31,14 +35,15 @@ const style = {
 }
 
 export default function DestroyItems(props: Props): React.ReactElement {
-  const { onClose, successCallback, ids } = props
-
-  const [loading, setLoading] = useState(false)
+  const { onClose, successCallback, ids, data } = props
 
   const dataProvider = useDataProvider()
+  const notify = useNotify()
+  const audit = useAudit()
+
+  const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<Destruction[]>([])
 
-  const notify = useNotify()
   const [destructionId, setDestructionId] = useState<number | string>()
 
   useEffect(() => {
@@ -64,60 +69,91 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const onDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
-      const { data } = await dataProvider.getMany<Item>(constants.R_ITEMS, {
-        ids
-      })
-
       const items = data
-        .filter(({ loanedDate, loanedTo, destruction }) => {
+        .filter(({ loanedDate, loanedTo, destruction, id }) => {
           return (
+            ids.includes(id) &&
             typeof loanedTo === 'undefined' &&
             typeof loanedDate === 'undefined' &&
             typeof destruction === 'undefined'
           )
         })
-        .map((item) => item.id)
+        .map(async (item) => {
+          await audit({
+            type: AuditType.EDIT,
+            activityDetail: 'add item to destruction',
+            securityRelated: false,
+            resource: constants.R_ITEMS,
+            dataId: item.id
+          })
+          return item.id
+        })
 
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
-        ids: items,
+        ids: await Promise.all(items),
         data: {
           destruction: Number(destructionId),
           destructionDate: new Date().toISOString()
         }
       })
-      notify(`${items.length} items destroyed!`, { type: 'success' })
-      if (items.length !== ids.length) {
-        notify(`${ids.length - items.length} items not destroyed!`)
-      }
+
+      const notDestroyedItems = ids.length - items.length
+
+      notify(
+        <Alert
+          variant='filled'
+          icon={false}
+          severity={items.length === 0 ? 'info' : 'success'}>
+          <Typography variant='body1'>
+            {items.length} items destroyed!
+          </Typography>
+          {notDestroyedItems !== 0 && (
+            <Typography variant='body1'>
+              {notDestroyedItems} items not destroyed!
+            </Typography>
+          )}
+        </Alert>
+      )
       successCallback()
     }
   }
-  const label = 'Destructions'
+  const label = 'Destruction Jobs'
 
   if (typeof loading === 'boolean' && loading) return <></>
 
   return (
     <Box sx={style}>
-      <Typography variant='h6'>Destroy {ids.length} items:</Typography>
+      <Typography variant='h6'>
+        Add {ids.length} items to destruction job
+      </Typography>
       <Box>
-        <FormControl sx={{ width: '100%', margin: '25px 0' }}>
-          <InputLabel>{label}</InputLabel>
-          <Select
-            value={String(destructionId)}
-            onChange={(event) => {
-              setDestructionId(event.target.value)
-            }}
-            label={label}>
-            {items.map((item) => (
-              <MenuItem key={item.id} value={String(item.id)}>
-                {item.reference}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {items.length === 0 ? (
+          <Typography marginY={3}>
+            Please create the destruction job before destroying items
+          </Typography>
+        ) : (
+          <FormControl sx={{ width: '100%', margin: '25px 0' }}>
+            <InputLabel>{label}</InputLabel>
+            <Select
+              value={String(destructionId)}
+              onChange={(event) => {
+                setDestructionId(event.target.value)
+              }}
+              label={label}>
+              {items.map((item) => (
+                <MenuItem key={item.id} value={String(item.id)}>
+                  {item.reference}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       </Box>
       <FlexBox>
-        <Button onClick={onDestroy as any} variant='contained'>
+        <Button
+          disabled={items.length === 0}
+          onClick={onDestroy as any}
+          variant='contained'>
           Destroy
         </Button>
         <Button onClick={onClose} variant='outlined'>

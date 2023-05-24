@@ -32,6 +32,8 @@ import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
+import { RestoreFromTrash } from '@mui/icons-material'
+import DestroyRestoreItems from './DestroyRestoreItems'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -156,10 +158,30 @@ const checkIfNoneIsLoaned = (
   }
 }
 
-type ModalOpenType = 'destroy' | 'location' | ''
+type ModalOpenType = 'destroy' | 'location' | '' | 'loan' | 'destroyRemove'
 
-export const BulkActions = (): React.ReactElement => {
-  const { selectedIds, data } = useListContext()
+type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
+
+interface BulkActionsProps {
+  buttons?: PartialRecord<ModalOpenType, boolean>
+}
+
+export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
+  const { buttons } = props
+
+  const {
+    destroy = true,
+    location = true,
+    loan = true,
+    destroyRemove = false
+  } = buttons ?? {
+    destroy: true,
+    location: true,
+    loan: true,
+    destroyRemove: false
+  }
+
+  const { selectedIds, data } = useListContext<Item>()
   const [open, setOpen] = useState<ModalOpenType>('')
   const refresh = useRefresh()
   const [noneLoaned, setNoneLoaned] = useState(false)
@@ -190,43 +212,69 @@ export const BulkActions = (): React.ReactElement => {
 
   return (
     <>
-      <FlexBox>
-        <Button
-          startIcon={<DeleteSweepIcon />}
-          onClick={handleOpen('destroy')}
-          size='small'
-          variant='outlined'>
-          Destroy
-        </Button>
-      </FlexBox>
-      <FlexBox>
-        <Button
-          size='small'
-          variant='outlined'
-          onClick={handleOpen('location')}>
-          Change Location
-        </Button>
-      </FlexBox>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
+        <FlexBox>
+          {destroy ? (
+            <Button
+              startIcon={<DeleteSweepIcon />}
+              onClick={handleOpen('destroy')}
+              size='small'
+              variant='outlined'>
+              Destroy
+            </Button>
+          ) : null}
+          {destroyRemove ? (
+            <Button
+              startIcon={<RestoreFromTrash />}
+              onClick={handleOpen('destroyRemove')}
+              size='small'
+              variant='outlined'>
+              Remove
+            </Button>
+          ) : null}
+        </FlexBox>
+      ) : null}
+      {location ? (
+        <FlexBox>
+          <Button
+            size='small'
+            variant='outlined'
+            onClick={handleOpen('location')}>
+            Change Location
+          </Button>
+        </FlexBox>
+      ) : null}
+      {loan && hasAccess(constants.R_ITEMS, { write: true }) ? (
         <LoanItemsListBulkActionButtons
           noneLoaned={noneLoaned}
           allLoaned={allLoaned}
         />
       ) : null}
       <Modal open={Boolean(open)} onClose={handleClose}>
-        {open === 'location' ? (
-          <ChangeLocation
-            successCallback={handleSuccess}
-            onCancel={handleClose}
-            ids={selectedIds}
-          />
-        ) : (
-          <DestroyItems
-            ids={selectedIds}
-            onClose={handleClose}
-            successCallback={handleSuccess}
-          />
-        )}
+        <>
+          {open === 'location' && (
+            <ChangeLocation
+              successCallback={handleSuccess}
+              onCancel={handleClose}
+              ids={selectedIds}
+            />
+          )}
+          {open === 'destroy' && (
+            <DestroyItems
+              ids={selectedIds}
+              data={data}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
+          {open === 'destroyRemove' && (
+            <DestroyRestoreItems
+              ids={selectedIds}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
+        </>
       </Modal>
     </>
   )
@@ -234,6 +282,7 @@ export const BulkActions = (): React.ReactElement => {
 
 interface ItemListType extends Omit<ListProps, 'children'> {
   filter?: FilterPayload
+  bulkActionButtons?: React.ReactElement<BulkActionsProps> | false
 }
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
@@ -249,7 +298,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       {/* <ResetDateRangeFilter source='date_range' /> */}
       <DatagridConfigurable
         rowClick='show'
-        bulkActionButtons={<BulkActions />}
+        bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
         omit={omitColumns}>
         <TextField source='item_number' label='Reference' />
         <TextField source='id' />
