@@ -4,10 +4,12 @@ import {
   generatePlatform,
   generateProject,
   generateBatch,
-  generateItems
+  generateItems,
+  generateRandomDateInRange
 } from './generateData'
 import * as constants from '../constants'
 import localForage from 'localforage'
+import { DateTime } from 'luxon'
 
 export const encryptedUsers = users.map((user) => {
   const salt: string = generateSalt()
@@ -35,6 +37,23 @@ export const getActiveReferenceData = (
         active
       }
     })
+}
+
+const assignItemsToRandomActiveUser = (users: User[], items: Item[]): void => {
+  const activeUsers = users.filter((user) => user.active)
+
+  items.forEach((item) => {
+    if (Math.random() > 0.8) {
+      const randomuUser = users[Math.floor(Math.random() * activeUsers.length)]
+      item.loanedTo = randomuUser.id
+      item.loanedDate = new Date(
+        generateRandomDateInRange(
+          DateTime.now().minus({ month: 3 }).toJSDate(),
+          DateTime.now().toJSDate()
+        )
+      ).toISOString()
+    }
+  })
 }
 
 const loadDefaultData = async (userId?: number): Promise<void> => {
@@ -79,6 +98,8 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
       )
     }
   })
+
+  assignItemsToRandomActiveUser(users, items)
 
   const defaultData: RCOStore = {
     users: encryptedUsers,
