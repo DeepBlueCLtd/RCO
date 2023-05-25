@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Field<T> {
   source: keyof T
   reference?: string
+  component?: React.FC<any>
 }
 
 interface Props<T> {
@@ -60,7 +61,11 @@ interface Props<T> {
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
-  const { source, reference } = props
+  const { source, reference, component } = props
+  if (typeof component !== 'undefined') {
+    return React.createElement(component, { source })
+  }
+
   if (typeof reference !== 'undefined') {
     return (
       <SourceField

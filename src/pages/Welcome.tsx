@@ -1,9 +1,9 @@
 import React from 'react'
 import * as constants from '../constants'
-import { ICON_PROJECT, ICON_BATCH } from '../constants'
+import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton } from 'react-admin'
+import { CreateButton, DateField } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import RecentMock from '../components/RecentMock'
@@ -76,6 +76,15 @@ export default function Welcome(): React.ReactElement {
             label='New Batch'
             sx={{ width: '150px', height: '50px' }}
           />
+          <CreateButton
+            color='primary'
+            variant='contained'
+            resource={constants.R_DISPATCH}
+            disabled={!hasAccess(constants.R_DISPATCH, { write: true })}
+            icon={<ICON_DISPATCH />}
+            label='New Dispatch'
+            sx={{ width: '150px', height: '50px' }}
+          />
         </FlexBox>
       </FlexBox>
       <FlexBox className={styles.row}>
@@ -101,10 +110,15 @@ export default function Welcome(): React.ReactElement {
         />
       </FlexBox>
       <FlexBox className={styles.row}>
-        <RecentMock
+        <Recent<Dispatch>
           label='Pending Receipt Notes'
-          data={mockData.notes}
-          fields={['name', 'receiptsNumber']}
+          resource={constants.R_DISPATCH}
+          fields={[
+            { source: 'reference' },
+            { source: 'dispatchedAt', component: DateField }
+          ]}
+          filter={{ receiptReceived: undefined }}
+          onFilter
         />
         <RecentMock
           label='Hasteners Required'

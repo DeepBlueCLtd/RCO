@@ -113,6 +113,7 @@ interface Item extends ResourceWithCreation {
   loanedTo?: User['id']
   loanedDate?: string
   consecPages?: string
+  dispatched?: Dispatch['id']
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
