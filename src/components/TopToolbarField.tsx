@@ -19,15 +19,15 @@ const sx = (theme: Theme): SystemStyleObject<Theme> => {
   }
 }
 
-type Props = Omit<ShowProps, 'children'> & {
-  source: string
+type Props<T> = Omit<ShowProps, 'children'> & {
+  source: keyof T
 }
 
-export default function TopToolbarField(props: Props): ReactElement {
+export default function TopToolbarField<T>(props: Props<T>): ReactElement {
   const { source, ...rest } = props
   return (
     <Show sx={{ marginRight: 'auto' }} actions={false} {...rest}>
-      <TextField source={source} sx={sx} />
+      <TextField source={source as string} sx={sx} />
     </Show>
   )
 }

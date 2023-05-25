@@ -46,6 +46,7 @@ export type ResourceTypes =
   | typeof R_PROTECTIVE_MARKING
   | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
+  | typeof R_DISPATCH
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'

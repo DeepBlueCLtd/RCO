@@ -235,7 +235,7 @@ function App(): React.ReactElement {
           key={constants.R_ADDRESSES}
           icon={constants.ICON_ADDRESSES}
           name={constants.R_ADDRESSES}
-          {...protectedRoutes(permissions, 'reference-data', addresses)}
+          {...protectedRoutes(permissions, constants.R_ADDRESSES, addresses)}
         />
         <Resource
           key={constants.R_PROJECTS}
