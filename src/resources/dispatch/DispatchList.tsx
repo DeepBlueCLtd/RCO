@@ -6,7 +6,7 @@ export default function DispatchList(): React.ReactElement {
       <Datagrid rowClick='show'>
         <TextField source='reference' />
         <DateField source='dispatchedAt' />
-        <DateField source='toName' />
+        <TextField source='toName' />
         <TextField source='remarks' />
         <TextField source='receiptReceived' />
       </Datagrid>

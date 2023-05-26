@@ -6,7 +6,7 @@ import FlexBox from '../components/FlexBox'
 import { CreateButton, DateField } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
-import RecentMock from '../components/RecentMock'
+import HastenerSentField from '../components/HastenerSentField'
 import useCanAccess from '../hooks/useCanAccess'
 
 const useStyles = makeStyles({
@@ -31,19 +31,6 @@ const useStyles = makeStyles({
     justifyContent: 'center'
   }
 })
-
-const mockData = {
-  hasteners: [
-    { id: 1, name: '2023/02/11', hastenersNumber: 'RAC' },
-    { id: 2, name: '2023/02/15', hastenersNumber: 'AA' },
-    { id: 3, name: '2023/02/19', hastenersNumber: 'GREEN FLG' }
-  ],
-  notes: [
-    { id: 1, name: '2023/02/12', receiptsNumber: 'RAC' },
-    { id: 2, name: '2023/02/11', receiptsNumber: 'AA' },
-    { id: 3, name: '2023/02/07', receiptsNumber: 'GREEN FLG' }
-  ]
-}
 
 export default function Welcome(): React.ReactElement {
   const styles = useStyles()
@@ -115,15 +102,11 @@ export default function Welcome(): React.ReactElement {
           resource={constants.R_DISPATCH}
           fields={[
             { source: 'reference' },
-            { source: 'dispatchedAt', component: DateField }
+            { source: 'dispatchedAt', component: DateField },
+            { source: 'lastHastenerSent', component: HastenerSentField }
           ]}
           filter={{ receiptReceived: undefined }}
           onFilter
-        />
-        <RecentMock
-          label='Hasteners Required'
-          data={mockData.hasteners}
-          fields={['name', 'hastenersNumber']}
         />
       </FlexBox>
     </div>

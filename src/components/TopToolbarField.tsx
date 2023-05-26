@@ -19,15 +19,19 @@ const sx = (theme: Theme): SystemStyleObject<Theme> => {
   }
 }
 
-type Props<T> = Omit<ShowProps, 'children'> & {
+type Props<T> = PartialBy<ShowProps, 'children'> & {
   source: keyof T
 }
 
 export default function TopToolbarField<T>(props: Props<T>): ReactElement {
-  const { source, ...rest } = props
+  const { source, children, ...rest } = props
   return (
     <Show sx={{ marginRight: 'auto' }} actions={false} {...rest}>
-      <TextField source={source as string} sx={sx} />
+      {typeof children !== 'undefined' ? (
+        children
+      ) : (
+        <TextField source={source as string} sx={sx} />
+      )}
     </Show>
   )
 }
