@@ -8,7 +8,7 @@ import { SAVE_EVENT } from '../../../constants'
 
 // eslint-disable-next-line
 type Events = {
-  save: string
+  [SAVE_EVENT]: string
 }
 
 enum ItemFormSaveType {
