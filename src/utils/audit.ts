@@ -11,6 +11,7 @@ export interface Props {
   dataId: number | null
   index?: number
   label?: string
+  subject?: User['id']
 }
 /**
  * @param  {string=} activityDetail - Deprecated
@@ -22,7 +23,8 @@ export const trackEvent =
     activityDetail = '',
     securityRelated,
     resource,
-    dataId
+    dataId,
+    subject
   }: Props) => {
     try {
       const user = getUser()
@@ -36,7 +38,8 @@ export const trackEvent =
           activityDetail,
           label: getActivityTypeLabel(type),
           securityRelated:
-            securityRelated !== undefined ? securityRelated : false
+            securityRelated !== undefined ? securityRelated : false,
+          subject: subject !== undefined ? subject : undefined
         }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
           data: audit
