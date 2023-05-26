@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
+import { SAVE_EVENT } from '../../../constants'
 
 // eslint-disable-next-line
 type Events = {
@@ -36,9 +37,9 @@ const ItemFormToolbar = (): React.ReactElement => {
   }
 
   useEffect(() => {
-    emitter.on('save', saveHandler)
+    emitter.on(SAVE_EVENT, saveHandler)
     return () => {
-      emitter.off('save', saveHandler)
+      emitter.off(SAVE_EVENT, saveHandler)
     }
   }, [])
 
