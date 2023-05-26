@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   EditButton,
   Form,
@@ -24,8 +24,8 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
   const { record, isLoading } = useShowContext<Item>()
 
   useEffect(() => {
-    setRecord(record)
-  }, [])
+    if (!isLoading) setRecord(record)
+  }, [isLoading])
 
   if (isLoading !== undefined && isLoading) return <Loading />
 
@@ -54,10 +54,13 @@ export default function ItemShow(): React.ReactElement {
   const [open, setOpen] = useState(false)
   const [record, setRecord] = useState<Item | undefined>()
 
-  const filter =
-    record?.id !== undefined
-      ? { dataId: record.id, resource: constants.R_ITEMS }
-      : undefined
+  const filter = useMemo(
+    () =>
+      record?.id !== undefined
+        ? { dataId: record.id, resource: constants.R_ITEMS }
+        : undefined,
+    [record]
+  )
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)

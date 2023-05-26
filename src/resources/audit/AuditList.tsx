@@ -63,8 +63,9 @@ const filters = [
 ]
 
 export interface FilterType {
-  dataId: number
-  resource: string
+  dataId?: number
+  user?: number
+  resource?: string
 }
 
 interface AuditListProps {
