@@ -38,6 +38,7 @@ export const getActiveReferenceData = (
 }
 
 const loadDefaultData = async (userId?: number): Promise<void> => {
+  await localForage.clear()
   const user = typeof userId === 'undefined' ? users[0].id : userId
 
   const platforms = generatePlatform(10)
