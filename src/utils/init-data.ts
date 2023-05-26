@@ -10,6 +10,7 @@ import {
 import * as constants from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
+import { type DataProvider } from 'react-admin'
 
 export const encryptedUsers = users.map((user) => {
   const salt: string = generateSalt()
@@ -39,24 +40,43 @@ export const getActiveReferenceData = (
     })
 }
 
-const assignItemsToRandomActiveUser = (users: User[], items: Item[]): void => {
+const assignItemsToRandomActiveUser = async (
+  users: User[],
+  items: Item[],
+  provider: DataProvider & CustomDataProvider
+): Promise<void> => {
   const activeUsers = users.filter((user) => user.active)
+  const randomItems: Record<number, number[]> = {}
 
-  items.forEach((item) => {
+  for (const item of items) {
     if (Math.random() > 0.8) {
-      const randomuUser = users[Math.floor(Math.random() * activeUsers.length)]
-      item.loanedTo = randomuUser.id
+      const randomUser = users[Math.floor(Math.random() * activeUsers.length)]
+      item.loanedTo = randomUser.id
       item.loanedDate = new Date(
         generateRandomDateInRange(
           DateTime.now().minus({ month: 3 }).toJSDate(),
           DateTime.now().toJSDate()
         )
       ).toISOString()
+
+      if (
+        !Object.prototype.hasOwnProperty.call(randomItems, randomUser.id)
+      ) {
+        randomItems[randomUser.id] = [] as number[]
+      }
+      randomItems[randomUser.id].push(item.id)
     }
-  })
+  }
+  for (const userId in randomItems) {
+    await provider.loanItems(randomItems[userId], Number(userId))
+  }
 }
 
-const loadDefaultData = async (userId?: number): Promise<void> => {
+// items.forEach(async (item) => {})
+const loadDefaultData = async (
+  userId?: number,
+  provider?: DataProvider & CustomDataProvider
+): Promise<void> => {
   const user = typeof userId === 'undefined' ? users[0].id : userId
 
   const platforms = generatePlatform(10)
@@ -99,7 +119,8 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
     }
   })
 
-  assignItemsToRandomActiveUser(users, items)
+  if (provider !== undefined)
+    await assignItemsToRandomActiveUser(users, items, provider)
 
   const defaultData: RCOStore = {
     users: encryptedUsers,
