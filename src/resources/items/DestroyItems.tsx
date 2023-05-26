@@ -124,7 +124,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
   return (
     <Box sx={style}>
       <Typography variant='h6'>
-        Add {ids.length} items to destruction job
+        {ids.length} items added to Destruction Job
       </Typography>
       <Box>
         {items.length === 0 ? (

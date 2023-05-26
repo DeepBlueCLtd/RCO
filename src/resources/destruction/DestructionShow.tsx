@@ -9,7 +9,9 @@ import {
   useUpdate,
   useGetIdentity,
   useNotify,
-  useGetOne
+  useGetOne,
+  type UpdateParams,
+  Count
 } from 'react-admin'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -19,6 +21,7 @@ import DestructionReport from './DestructionReport'
 import ItemList, { BulkActions } from '../items/ItemList'
 import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
+import Confirm from '../../components/Confirm'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -31,12 +34,13 @@ const Finalised = (): React.ReactElement => {
 
 interface FooterProps {
   handleOpen: (open: boolean) => void
-  destroy: (updateData: any) => Promise<void>
+  destroy: (data: UpdateParams) => Promise<void>
 }
 
 const Footer = (props: FooterProps): React.ReactElement => {
   const record = useRecordContext<Destruction>()
   const { hasAccess } = useCanAccess()
+  const [open, setOpen] = useState(false)
   const hasWritePermission = hasAccess(constants.R_ITEMS, { write: true })
   const { data } = useGetIdentity()
   const { handleOpen, destroy } = props
@@ -44,31 +48,55 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const destroyed: boolean =
     !hasWritePermission || typeof record?.finalisedAt !== 'undefined'
 
+  const handleDestroy = (): void => {
+    setOpen(true)
+  }
+
+  const onConfirm = async (): Promise<void> => {
+    setOpen(false)
+    await destroy({
+      id: record.id,
+      previousData: record,
+      data: {
+        finalisedBy: data?.id,
+        finalisedAt: nowDate()
+      }
+    })
+  }
+
+  if (typeof record === 'undefined') return <></>
+
   return (
-    <FlexBox justifyContent='end' padding={2}>
-      <Button
-        variant='outlined'
-        label='Report'
-        disabled={!destroyed}
-        onClick={() => {
-          handleOpen(true)
-        }}
-      />
-      <Button
-        variant='contained'
-        label='Destroy'
-        disabled={destroyed}
-        onClick={() =>
-          destroy({
-            id: record.id,
-            data: {
-              finalisedBy: data?.id,
-              finalisedAt: nowDate()
-            }
-          }) as any
-        }
-      />
-    </FlexBox>
+    <>
+      <FlexBox justifyContent='end' padding={2}>
+        <Button
+          variant='outlined'
+          label='Report'
+          onClick={() => {
+            handleOpen(true)
+          }}
+        />
+        <Button
+          variant='contained'
+          label='Destroy'
+          disabled={destroyed}
+          onClick={handleDestroy}
+        />
+      </FlexBox>
+      <Confirm
+        open={open}
+        onClose={() => { setOpen(false) }}
+        onOk={onConfirm as any}>
+        <Typography>
+          Are you sure{' '}
+          <Count
+            filter={{ destruction: record.id }}
+            resource={constants.R_ITEMS}
+          />{' '}
+          items have been sent for destruction?
+        </Typography>
+      </Confirm>
+    </>
   )
 }
 
@@ -82,8 +110,8 @@ export default function DestructionShow(): React.ReactElement {
     setOpen(open)
   }
 
-  const destroy = async (updateData: any): Promise<void> => {
-    await update(constants.R_DESTRUCTION, updateData)
+  const destroy = async (data: UpdateParams): Promise<void> => {
+    await update(constants.R_DESTRUCTION, data)
     notify('Element destroyed', { type: 'success' })
   }
 
@@ -113,7 +141,9 @@ export default function DestructionShow(): React.ReactElement {
   )
 }
 
-interface DestructionItemListProps { id: string }
+interface DestructionItemListProps {
+  id: string
+}
 
 function DestructionItemList(
   props: DestructionItemListProps
