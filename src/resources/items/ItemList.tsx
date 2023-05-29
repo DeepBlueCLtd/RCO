@@ -14,7 +14,8 @@ import {
   AutocompleteInput,
   type SortPayload,
   useGetList,
-  type FilterPayload
+  type FilterPayload,
+  useRedirect
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -221,33 +222,72 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       {...props}>
       <ResetDateFilter source='createdAt' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
-      <DatagridConfigurable
-        rowClick='show'
-        bulkActionButtons={<BulkActions />}
-        omit={omitColumns}>
-        <TextField source='item_number' label='Reference' />
-        <TextField source='id' />
-        <TextField source='createdAt' label='Created' />
-        <TextField source='mediaType' label='Media type' />
-        <SourceField
-          link='show'
-          source='loanedTo'
-          reference={constants.R_USERS}
-          label='Loaned to'
-        />
-        <DateField showTime source='start' />
-        <DateField showTime source='end' />
-        <SourceField source='vaultLocation' reference='vaultLocation' />
-        <SourceField source='protectiveMarking' reference='protectiveMarking' />
-        <SourceField
-          link='show'
-          source='batchId'
-          reference={constants.R_BATCHES}
-          sourceField='batchNumber'
-        />
-        <TextField source='remarks' />
-        <TextField source='musterRemarks' />
-      </DatagridConfigurable>
+      <DataList />
     </List>
+  )
+}
+
+const DataList = (): React.ReactElement => {
+  const { onSelect, selectedIds } = useListContext()
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null)
+  const redirect = useRedirect()
+
+  const handleClick = (id: number): void => {
+    if (!selectedIds.includes(id)) onSelect([...selectedIds, id])
+    else onSelect(selectedIds.filter((selectedId) => selectedId !== id))
+  }
+
+  const handleRowClick = (id: number): false => {
+    if (selectedId === id) {
+      setSelectedId(null)
+    } else if (clickTimer != null) {
+      clearTimeout(clickTimer)
+      setClickTimer(null)
+      handleDoubleClick(id)
+    } else {
+      setClickTimer(
+        setTimeout(() => {
+          setClickTimer(null)
+          handleClick(id)
+        }, 200)
+      )
+    }
+    return false
+  }
+
+  const handleDoubleClick = (id: number): void => {
+    const path = `/${constants.R_ITEMS}/${id}/show`
+    redirect(path)
+  }
+
+  return (
+    <DatagridConfigurable
+      rowClick={(id) => handleRowClick(id as number)}
+      bulkActionButtons={<BulkActions />}
+      omit={omitColumns}>
+      <TextField source='item_number' label='Reference' />
+      <TextField source='id' />
+      <TextField source='createdAt' label='Created' />
+      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='loanedTo'
+        reference={constants.R_USERS}
+        label='Loaned to'
+      />
+      <DateField showTime source='start' />
+      <DateField showTime source='end' />
+      <SourceField source='vaultLocation' reference='vaultLocation' />
+      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <SourceField
+        link='show'
+        source='batchId'
+        reference={constants.R_BATCHES}
+        sourceField='batchNumber'
+      />
+      <TextField source='remarks' />
+      <TextField source='musterRemarks' />
+    </DatagridConfigurable>
   )
 }
