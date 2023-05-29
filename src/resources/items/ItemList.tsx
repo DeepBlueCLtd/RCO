@@ -14,7 +14,8 @@ import {
   AutocompleteInput,
   type SortPayload,
   useGetList,
-  type FilterPayload
+  type FilterPayload,
+  type DatagridConfigurableProps
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -143,18 +144,20 @@ const ItemActions = (): React.ReactElement => {
   )
 }
 
-const checkIfNoneIsLoaned = (
+const getItemStates = (
   selectedIds: number[],
   data: Item[]
-): [boolean, boolean] => {
+): Record<string, any> => {
   if (selectedIds.length === 0) {
-    return [false, false]
+    return [false, false, false]
   } else {
     const filteredData = data.filter((item) => selectedIds.includes(item.id))
-    return [
-      filteredData.every((f) => f.loanedTo === undefined),
-      filteredData.every((f) => f.loanedTo !== undefined)
-    ]
+    return {
+      noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
+      allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
+      anyDestructed: filteredData.some((f) => f.destruction !== undefined),
+      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined)
+    }
   }
 }
 
@@ -186,13 +189,18 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const refresh = useRefresh()
   const [noneLoaned, setNoneLoaned] = useState(false)
   const [allLoaned, setAllLoaned] = useState(false)
+  const [isDestruction, setIsDestruction] = useState(false)
+  const [isAnyLoaned, setIsAnyLoaned] = useState(false)
 
   const { hasAccess } = useCanAccess()
 
   useEffect(() => {
-    const [noneLoanedVal, allLoanedVal] = checkIfNoneIsLoaned(selectedIds, data)
+    const { noneLoanedVal, allLoanedVal, anyDestructed, anyLoaned } =
+      getItemStates(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
     setAllLoaned(allLoanedVal)
+    setIsDestruction(anyDestructed)
+    setIsAnyLoaned(anyLoaned)
   }, [selectedIds, data])
 
   const handleClose = (): void => {
@@ -212,80 +220,86 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   return (
     <>
-      {hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <FlexBox>
-          {destroy ? (
-            <Button
-              startIcon={<DeleteSweepIcon />}
-              onClick={handleOpen('destroy')}
-              size='small'
-              variant='outlined'>
-              Destroy
-            </Button>
-          ) : null}
-          {destroyRemove ? (
-            <Button
-              startIcon={<RestoreFromTrash />}
-              onClick={handleOpen('destroyRemove')}
-              size='small'
-              variant='outlined'>
-              Remove
-            </Button>
-          ) : null}
-        </FlexBox>
-      ) : null}
-      {location ? (
-        <FlexBox>
-          <Button
-            size='small'
-            variant='outlined'
-            onClick={handleOpen('location')}>
-            Change Location
-          </Button>
-        </FlexBox>
-      ) : null}
-      {loan && hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <LoanItemsListBulkActionButtons
-          noneLoaned={noneLoaned}
-          allLoaned={allLoaned}
-        />
-      ) : null}
-      <Modal open={Boolean(open)} onClose={handleClose}>
+      {!isDestruction && (
         <>
-          {open === 'location' && (
-            <ChangeLocation
-              successCallback={handleSuccess}
-              onCancel={handleClose}
-              ids={selectedIds}
+          {!isAnyLoaned && hasAccess(constants.R_ITEMS, { write: true }) ? (
+            <FlexBox>
+              {destroy ? (
+                <Button
+                  startIcon={<DeleteSweepIcon />}
+                  onClick={handleOpen('destroy')}
+                  size='small'
+                  variant='outlined'>
+                  Destroy
+                </Button>
+              ) : null}
+              {destroyRemove ? (
+                <Button
+                  startIcon={<RestoreFromTrash />}
+                  onClick={handleOpen('destroyRemove')}
+                  size='small'
+                  variant='outlined'>
+                  Remove
+                </Button>
+              ) : null}
+            </FlexBox>
+          ) : null}
+          {location ? (
+            <FlexBox>
+              <Button
+                size='small'
+                variant='outlined'
+                onClick={handleOpen('location')}>
+                Change Location
+              </Button>
+            </FlexBox>
+          ) : null}
+          {loan && hasAccess(constants.R_ITEMS, { write: true }) ? (
+            <LoanItemsListBulkActionButtons
+              noneLoaned={noneLoaned}
+              allLoaned={allLoaned}
             />
-          )}
-          {open === 'destroy' && (
-            <DestroyItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-          {open === 'destroyRemove' && (
-            <DestroyRestoreItems
-              ids={selectedIds}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
+          ) : null}
+          <Modal open={Boolean(open)} onClose={handleClose}>
+            <>
+              {open === 'location' && (
+                <ChangeLocation
+                  successCallback={handleSuccess}
+                  onCancel={handleClose}
+                  ids={selectedIds}
+                />
+              )}
+              {open === 'destroy' && (
+                <DestroyItems
+                  ids={selectedIds}
+                  data={data}
+                  onClose={handleClose}
+                  successCallback={handleSuccess}
+                />
+              )}
+              {open === 'destroyRemove' && (
+                <DestroyRestoreItems
+                  ids={selectedIds}
+                  onClose={handleClose}
+                  successCallback={handleSuccess}
+                />
+              )}
+            </>
+          </Modal>
         </>
-      </Modal>
+      )}
     </>
   )
 }
 
 interface ItemListType extends Omit<ListProps, 'children'> {
   filter?: FilterPayload
-  bulkActionButtons?: React.ReactElement<BulkActionsProps> | false
+  children?: React.ReactElement
+  datagridConfigurableProps?: DatagridConfigurableProps
 }
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
+  const { datagridConfigurableProps, children, ...rest } = props ?? {}
   return (
     <List
       hasCreate={false}
@@ -293,43 +307,56 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       resource={constants.R_ITEMS}
       filters={filters}
       filter={props !== undefined ? props.filter : undefined}
-      {...props}>
+      {...rest}>
       <ResetDateFilter source='createdAt' />
+      {typeof children !== 'undefined' ? (
+        children
+      ) : (
+        <ItemListDataTable {...datagridConfigurableProps} />
+      )}
       {/* <ResetDateRangeFilter source='date_range' /> */}
-      <DatagridConfigurable
-        rowClick='show'
-        bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
-        omit={omitColumns}>
-        <TextField source='item_number' label='Reference' />
-        <TextField source='id' />
-        <TextField source='createdAt' label='Created' />
-        <TextField source='mediaType' label='Media type' />
-        <SourceField
-          link='show'
-          source='loanedTo'
-          reference={constants.R_USERS}
-          label='Loaned to'
-        />
-        <DateField showTime source='start' />
-        <DateField showTime source='end' />
-        <SourceField source='vaultLocation' reference='vaultLocation' />
-        <SourceField source='protectiveMarking' reference='protectiveMarking' />
-        <SourceField
-          link='show'
-          source='batchId'
-          reference={constants.R_BATCHES}
-          sourceField='batchNumber'
-        />
-        <SourceField
-          link='show'
-          source='destruction'
-          reference={constants.R_DESTRUCTION}
-          sourceField='reference'
-        />
-        <DateField source='destructionDate' />
-        <TextField source='remarks' />
-        <TextField source='musterRemarks' />
-      </DatagridConfigurable>
     </List>
+  )
+}
+
+function ItemListDataTable(
+  props: DatagridConfigurableProps
+): React.ReactElement {
+  return (
+    <DatagridConfigurable
+      rowClick='show'
+      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
+      omit={props?.omit ?? omitColumns}
+      {...props}>
+      <TextField source='item_number' label='Reference' />
+      <TextField source='id' />
+      <TextField source='createdAt' label='Created' />
+      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='loanedTo'
+        reference={constants.R_USERS}
+        label='Loaned to'
+      />
+      <DateField showTime source='start' />
+      <DateField showTime source='end' />
+      <SourceField source='vaultLocation' reference='vaultLocation' />
+      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <SourceField
+        link='show'
+        source='batchId'
+        reference={constants.R_BATCHES}
+        sourceField='batchNumber'
+      />
+      <SourceField
+        link='show'
+        source='destruction'
+        reference={constants.R_DESTRUCTION}
+        sourceField='reference'
+      />
+      <DateField source='destructionDate' />
+      <TextField source='remarks' />
+      <TextField source='musterRemarks' />
+    </DatagridConfigurable>
   )
 }

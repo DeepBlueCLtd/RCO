@@ -79,12 +79,17 @@ export default function DestroyItems(props: Props): React.ReactElement {
           )
         })
         .map(async (item) => {
-          await audit({
+          const audiData = {
             type: AuditType.EDIT,
             activityDetail: 'add item to destruction',
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id
+          }
+          await audit(audiData)
+          await audit({
+            ...audiData,
+            resource: constants.R_DESTRUCTION
           })
           return item.id
         })

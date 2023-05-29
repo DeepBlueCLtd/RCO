@@ -11,7 +11,9 @@ import {
   useNotify,
   useGetOne,
   type UpdateParams,
-  Count
+  Count,
+  type DatagridConfigurableProps,
+  DatagridConfigurable
 } from 'react-admin'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -22,6 +24,7 @@ import ItemList, { BulkActions } from '../items/ItemList'
 import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
+import SourceField from '../../components/SourceField'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -85,7 +88,9 @@ const Footer = (props: FooterProps): React.ReactElement => {
       </FlexBox>
       <Confirm
         open={open}
-        onClose={() => { setOpen(false) }}
+        onClose={() => {
+          setOpen(false)
+        }}
         onOk={onConfirm as any}>
         <Typography>
           Are you sure{' '}
@@ -181,8 +186,25 @@ function DestructionItemList(
               }}
             />
           )
-        }
-      />
+        }>
+        <ItemListDataTable />
+      </ItemList>
     </Box>
+  )
+}
+
+function ItemListDataTable(
+  props: DatagridConfigurableProps
+): React.ReactElement {
+  return (
+    <DatagridConfigurable
+      rowClick='show'
+      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
+      omit={props?.omit}
+      {...props}>
+      <TextField source='item_number' label='Reference' />
+      <TextField source='mediaType' label='Media type' />
+      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+    </DatagridConfigurable>
   )
 }
