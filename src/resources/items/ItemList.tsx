@@ -233,7 +233,7 @@ const DataList = (): React.ReactElement => {
   const redirect = useRedirect()
 
   const handleClick = (id: number): void => {
-    if (!selectedIds.includes(id)) onSelect([...selectedIds, id])
+    if (selectedIds.includes(id) === false) onSelect([...selectedIds, id])
     else onSelect(selectedIds.filter((selectedId) => selectedId !== id))
   }
 
