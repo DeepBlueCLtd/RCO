@@ -21,7 +21,8 @@
     "react/react-in-jsx-scope": "off",
     "quotes": [2, "single"],
     "comma-dangle": ["error", "never"],
-    "semi": [2, "never"]
+    "semi": [2, "never"],
+    "@typescript-eslint/strict-boolean-expressions": 0
   },
   "settings": {
     "react": {

@@ -14,12 +14,11 @@ import {
   useNotify
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article } from '@mui/icons-material'
+import { Article, KeyboardReturn } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
-import { KeyboardReturn } from '@mui/icons-material'
 
 interface Props {
   name: string
@@ -71,7 +70,7 @@ export default function UserList(props: Props): React.ReactElement {
               departedDate: undefined,
               active: true
             }
-          })
+          }).catch(console.log)
         })
         notify('User Returned')
       }
@@ -86,7 +85,7 @@ export default function UserList(props: Props): React.ReactElement {
           onClick={handleOpen(true)}>
           User Muster List
         </Button>
-        {showReturn === true && (
+        {showReturn && (
           <Button
             startIcon={<KeyboardReturn />}
             sx={{ lineHeight: '1.5' }}

@@ -1,23 +1,9 @@
 import React from 'react'
-import { Create, Edit, EditButton, Show, TopToolbar } from 'react-admin'
-import useCanAccess from '../../hooks/useCanAccess'
-import * as constants from '../../constants'
-import TopToolbarField from '../../components/TopToolbarField'
+import { Create, Edit } from 'react-admin'
 
 const DispatchList = React.lazy(async () => await import('./DispatchList'))
 const DispatchForm = React.lazy(async () => await import('./DispatchForm'))
-
-const ShowActions = (): React.ReactElement => {
-  const { hasAccess } = useCanAccess()
-  return (
-    <>
-      <TopToolbar>
-        <TopToolbarField<Dispatch> source='reference' />
-        {hasAccess(constants.R_DISPATCH, { write: true }) && <EditButton />}
-      </TopToolbar>
-    </>
-  )
-}
+const DispatchShow = React.lazy(async () => await import('./DispatchShow'))
 
 const DispatchCreate = (): React.ReactElement => {
   return (
@@ -32,14 +18,6 @@ export const DispatchEdit = (): React.ReactElement => {
     <Edit>
       <DispatchForm />
     </Edit>
-  )
-}
-
-export const DispatchShow = (): React.ReactElement => {
-  return (
-    <Show actions={<ShowActions />}>
-      <DispatchForm show />
-    </Show>
   )
 }
 

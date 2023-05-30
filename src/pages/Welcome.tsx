@@ -108,6 +108,17 @@ export default function Welcome(): React.ReactElement {
           filter={{ receiptReceived: undefined }}
           onFilter
         />
+        <Recent<Dispatch>
+          label='Hasteners Required'
+          resource={constants.R_DISPATCH}
+          fields={[
+            { source: 'reference' },
+            { source: 'dispatchedAt', component: DateField },
+            { source: 'lastHastenerSent', component: HastenerSentField }
+          ]}
+          filter={{ receiptReceived: undefined }}
+          onFilter
+        />
       </FlexBox>
     </div>
   )

@@ -38,6 +38,7 @@ import { canAccess } from './providers/authProvider/permissions'
 import { protectedRoutes } from './hooks/useCanAccess'
 import addresses from './resources/addresses'
 import dispatch from './resources/dispatch'
+import destruction from './resources/destruction'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -260,6 +261,12 @@ function App(): React.ReactElement {
           icon={constants.ICON_DISPATCH}
           name={constants.R_DISPATCH}
           {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
+        />
+        <Resource
+          key={constants.R_DESTRUCTION}
+          icon={constants.ICON_DESTRUCTION}
+          name={constants.R_DESTRUCTION}
+          {...protectedRoutes(permissions, constants.R_ITEMS, destruction)}
         />
       </Admin>
     </Suspense>
