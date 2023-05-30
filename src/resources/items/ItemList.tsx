@@ -31,6 +31,7 @@ import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
 import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
+import useDoubleClick from '../../hooks/useDoubleClick'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -229,37 +230,19 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
 
 const DataList = (): React.ReactElement => {
   const { onSelect, selectedIds } = useListContext()
-  const [selectedId, setSelectedId] = useState<number | null>(null)
-  const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null)
   const redirect = useRedirect()
 
   const handleClick = (id: number): void => {
-    if (selectedIds.includes(id) === false) onSelect([...selectedIds, id])
+    if (!selectedIds.includes(id)) onSelect([...selectedIds, id])
     else onSelect(selectedIds.filter((selectedId) => selectedId !== id))
-  }
-
-  const handleRowClick = (id: number): false => {
-    if (selectedId === id) {
-      setSelectedId(null)
-    } else if (clickTimer != null) {
-      clearTimeout(clickTimer)
-      setClickTimer(null)
-      handleDoubleClick(id)
-    } else {
-      setClickTimer(
-        setTimeout(() => {
-          setClickTimer(null)
-          handleClick(id)
-        }, 200)
-      )
-    }
-    return false
   }
 
   const handleDoubleClick = (id: number): void => {
     const path = `/${constants.R_ITEMS}/${id}/show`
     redirect(path)
   }
+
+  const handleRowClick = useDoubleClick(handleClick, handleDoubleClick)
 
   return (
     <DatagridConfigurable
