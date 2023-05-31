@@ -11,7 +11,8 @@ import {
   useNotify,
   useRecordContext,
   useUpdate,
-  TextField
+  TextField,
+  useRefresh
 } from 'react-admin'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
@@ -26,6 +27,9 @@ import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
 import ItemList, { BulkActions } from '../items/ItemList'
 import SourceField from '../../components/SourceField'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
+import DispatchReport from './DispatchReport'
 
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
@@ -50,6 +54,9 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const hasWritePermission = hasAccess(constants.R_ITEMS, { write: true })
   const { handleOpen, dispatch } = props
+  const audit = useAudit()
+  const refresh = useRefresh()
+  const [update] = useUpdate()
 
   const dispatched: boolean =
     !hasWritePermission || typeof record?.dispatchedAt !== 'undefined'
@@ -71,28 +78,52 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
   }
 
+  const sendHastener = async (): Promise<void> => {
+    await update(constants.R_DISPATCH, {
+      id: record.id,
+      previousData: record,
+      data: {
+        lastHastenerSent: nowDate()
+      }
+    })
+    refresh()
+    await audit({
+      type: AuditType.EDIT,
+      activityDetail: 'Hastener sent',
+      securityRelated: false,
+      resource: constants.R_DISPATCH,
+      dataId: record.id
+    })
+  }
+
+  if (typeof record === 'undefined') return <></>
+
   return (
     <>
       <FlexBox justifyContent='end' padding={2}>
         {dispatched && !receiptReceived && (
-          <Button variant='outlined' label='Hastener' />
-        )}
-        {!dispatched && (
           <Button
             variant='outlined'
-            label='Print Note'
-            onClick={() => {
-              handleOpen(true)
-            }}
+            label='Hastener'
+            onClick={sendHastener as any}
           />
         )}
         {!dispatched && (
-          <Button
-            variant='contained'
-            label='Dispatch'
-            disabled={dispatched}
-            onClick={handleDispatch}
-          />
+          <>
+            <Button
+              variant='outlined'
+              label='Print Note'
+              onClick={() => {
+                handleOpen(true)
+              }}
+            />
+            <Button
+              variant='contained'
+              label='Dispatch'
+              disabled={dispatched}
+              onClick={handleDispatch}
+            />
+          </>
         )}
       </FlexBox>
       <Confirm
@@ -115,11 +146,14 @@ const Footer = (props: FooterProps): React.ReactElement => {
 }
 
 export default function DispatchShow(): React.ReactElement {
+  const [open, setOpen] = useState<boolean>(false)
   const [update] = useUpdate()
   const notify = useNotify()
   const { id } = useParams()
 
-  const handleOpen = (): void => {}
+  const handleOpen = (open: boolean): void => {
+    setOpen(open)
+  }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
     await update(constants.R_DISPATCH, data)
@@ -134,10 +168,13 @@ export default function DispatchShow(): React.ReactElement {
             Dispatch Show
           </Typography>
         </legend>
-        <Show actions={<ShowActions />}>
-          <DispatchForm show />
-          <Footer handleOpen={handleOpen} dispatch={dispatch} />
-        </Show>
+        <Box>
+          <DispatchReport open={open} handleOpen={handleOpen} />
+          <Show actions={<ShowActions />} component={'div'}>
+            <DispatchForm show />
+            <Footer handleOpen={handleOpen} dispatch={dispatch} />
+          </Show>
+        </Box>
       </Box>
       {typeof id !== 'undefined' && <DispatchedItemList id={id} />}
     </FlexBox>

@@ -13,6 +13,7 @@ import { Button } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
+import { useLocation } from 'react-router-dom'
 
 const BulkActions = (): React.ReactElement => {
   const { selectedIds } = useListContext<Dispatch>()
@@ -48,8 +49,14 @@ const BulkActions = (): React.ReactElement => {
 }
 
 export default function DispatchList(props: DatagridProps): React.ReactElement {
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const storeKey = searchParams.get('filter')
+    ? 'filtered-dispatch-list'
+    : 'simple-dispatch-list'
+
   return (
-    <List hasCreate>
+    <List hasCreate storeKey={storeKey}>
       <Datagrid
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>

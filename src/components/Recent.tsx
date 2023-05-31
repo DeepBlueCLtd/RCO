@@ -58,6 +58,7 @@ interface Props<T> {
   fields: Array<Field<T>>
   filter?: FilterPayload
   onFilter?: boolean
+  queryFilter?: FilterPayload
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
@@ -83,10 +84,11 @@ interface RecentCardProps {
   label?: string
   resource?: string
   onFilter?: boolean
+  queryFilter?: FilterPayload
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', onFilter, children } = props
+  const { label, resource = '', onFilter, children, queryFilter } = props
   const classes = useStyles()
 
   const { data } = useGetList<Item>(R_ITEMS, {
@@ -113,9 +115,9 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
                     pathname: resource,
                     search:
                       onFilter !== false
-                        ? `filter=${JSON.stringify({
-                            id: loaned
-                          })}`
+                        ? `filter=${JSON.stringify(
+                            queryFilter ?? { id: loaned }
+                          )}`
                         : ''
                   }}
                   className={classes.label}>
@@ -139,11 +141,16 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
     label,
     fields = [],
     filter,
-    onFilter
+    onFilter,
+    queryFilter
   } = props
 
   return (
-    <RecentCard label={label} resource={resource} onFilter={onFilter}>
+    <RecentCard
+      queryFilter={queryFilter}
+      label={label}
+      resource={resource}
+      onFilter={onFilter}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}
