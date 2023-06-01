@@ -184,13 +184,17 @@ export const BulkActions = (): React.ReactElement => {
     refresh()
   }
 
+  const canChangeLocation = hasAccess(constants.R_ITEMS, { write: true })
+
   return (
     <>
-      <FlexBox>
-        <Button size='small' variant='outlined' onClick={handleOpen}>
-          Change Location
-        </Button>
-      </FlexBox>
+      {canChangeLocation && (
+        <FlexBox>
+          <Button size='small' variant='outlined' onClick={handleOpen}>
+            Change Location
+          </Button>
+        </FlexBox>
+      )}
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <LoanItemsListBulkActionButtons
           noneLoaned={noneLoaned}
