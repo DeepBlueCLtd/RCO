@@ -12,8 +12,6 @@ import FlexBox from '../../components/FlexBox'
 import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useEffect, useState } from 'react'
-import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
 
 interface Props {
   onClose: () => void
@@ -39,7 +37,6 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const dataProvider = useDataProvider()
   const notify = useNotify()
-  const audit = useAudit()
 
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<Destruction[]>([])
@@ -70,35 +67,20 @@ export default function DestroyItems(props: Props): React.ReactElement {
   const onDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
       const items = data
-        .filter(({ loanedDate, loanedTo, destruction, id }) => {
+        .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
           return (
             ids.includes(id) &&
             typeof loanedTo === 'undefined' &&
             typeof loanedDate === 'undefined' &&
-            typeof destruction === 'undefined'
+            typeof destructionDate === 'undefined'
           )
         })
-        .map(async (item) => {
-          const audiData = {
-            type: AuditType.EDIT,
-            activityDetail: 'add item to destruction',
-            securityRelated: false,
-            resource: constants.R_ITEMS,
-            dataId: item.id
-          }
-          await audit(audiData)
-          await audit({
-            ...audiData,
-            resource: constants.R_DESTRUCTION
-          })
-          return item.id
-        })
+        .map(async (item) => item.id)
 
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids: await Promise.all(items),
         data: {
-          destruction: Number(destructionId),
-          destructionDate: new Date().toISOString()
+          destruction: Number(destructionId)
         }
       })
 

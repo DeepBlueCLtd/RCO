@@ -155,7 +155,7 @@ const getItemStates = (
     return {
       noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
       allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
-      anyDestructed: filteredData.some((f) => f.destruction !== undefined),
+      anyDestructed: filteredData.some((f) => f.destructionDate !== undefined),
       anyLoaned: filteredData.some((f) => f.loanedTo !== undefined)
     }
   }

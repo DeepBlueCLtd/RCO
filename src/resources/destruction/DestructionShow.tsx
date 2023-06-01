@@ -13,7 +13,9 @@ import {
   type UpdateParams,
   Count,
   type DatagridConfigurableProps,
-  DatagridConfigurable
+  DatagridConfigurable,
+  useUpdateMany,
+  useGetList
 } from 'react-admin'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -25,6 +27,8 @@ import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
 import SourceField from '../../components/SourceField'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -108,15 +112,52 @@ const Footer = (props: FooterProps): React.ReactElement => {
 export default function DestructionShow(): React.ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const [update] = useUpdate()
+  const [updateMany] = useUpdateMany()
   const notify = useNotify()
+  const audit = useAudit()
   const { id } = useParams()
+  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+    filter: { destruction: id }
+  })
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
   }
 
+  const DestroyAudits = async (item: Item): Promise<void> => {
+    const audiData = {
+      type: AuditType.EDIT,
+      activityDetail: 'add item to destruction',
+      securityRelated: false,
+      resource: constants.R_ITEMS,
+      dataId: item.id
+    }
+    await audit(audiData)
+    await audit({
+      ...audiData,
+      resource: constants.R_DESTRUCTION
+    })
+  }
+
   const destroy = async (data: UpdateParams): Promise<void> => {
+    const ids = itemsAdded.map((item: Item) => item.id)
     await update(constants.R_DESTRUCTION, data)
+    await updateMany(constants.R_ITEMS, {
+      ids,
+      data: {
+        destructionDate: nowDate()
+      }
+    })
+    itemsAdded
+      .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
+        return (
+          ids.includes(id) &&
+          typeof loanedTo === 'undefined' &&
+          typeof loanedDate === 'undefined' &&
+          typeof destructionDate === 'undefined'
+        )
+      })
+      .forEach(DestroyAudits as any)
     notify('Element destroyed', { type: 'success' })
   }
 
@@ -164,6 +205,19 @@ function DestructionItemList(
     return !permission || typeof data?.finalisedAt !== 'undefined'
   }, [data])
 
+  const bulkActionButtons: false | React.ReactElement = destroyed ? (
+    false
+  ) : (
+    <BulkActions
+      buttons={{
+        destroy: false,
+        location: false,
+        loan: false,
+        destroyRemove: true
+      }}
+    />
+  )
+
   return (
     <Box component='fieldset' style={{ padding: '0 15px', overflowX: 'auto' }}>
       <legend>
@@ -171,23 +225,8 @@ function DestructionItemList(
           Destruction items
         </Typography>
       </legend>
-      <ItemList
-        filter={{ destruction: id }}
-        bulkActionButtons={
-          destroyed ? (
-            false
-          ) : (
-            <BulkActions
-              buttons={{
-                destroy: false,
-                location: false,
-                loan: false,
-                destroyRemove: true
-              }}
-            />
-          )
-        }>
-        <ItemListDataTable />
+      <ItemList filter={{ destruction: id }}>
+        <ItemListDataTable bulkActionButtons={bulkActionButtons} />
       </ItemList>
     </Box>
   )
