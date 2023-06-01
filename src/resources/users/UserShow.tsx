@@ -105,10 +105,10 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   }
 
   useEffect(() => {
-    if (!isLoading) setRecord(record)
+    if (isLoading === false) setRecord(record)
   }, [isLoading])
 
-  if (isLoading !== undefined && isLoading) return <Loading />
+  if (isLoading !== undefined && isLoading === true) return <Loading />
 
   return (
     <>
@@ -213,7 +213,7 @@ export default function UserShow(): React.ReactElement {
     setOpen(open)
   }
 
-  if (isLoading) return <Loading />
+  if (isLoading === true) return <Loading />
 
   return (
     <Show
