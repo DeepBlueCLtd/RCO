@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
 import ItemList from '../items/ItemList'
@@ -16,7 +16,7 @@ import {
 } from 'react-admin'
 import { Chip, Typography, Button, Modal, IconButton } from '@mui/material'
 import { decryptPassword } from '../../utils/encryption'
-import { R_ITEMS, R_USERS } from '../../constants'
+import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
 import { Warning, History } from '@mui/icons-material'
@@ -105,10 +105,10 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   }
 
   useEffect(() => {
-    if (isLoading === false) setRecord(record)
+    if (!isLoading) setRecord(record)
   }, [isLoading])
 
-  if (isLoading !== undefined && isLoading === true) return <Loading />
+  if (isLoading !== undefined && isLoading) return <Loading />
 
   return (
     <>
@@ -192,15 +192,28 @@ export default function UserShow(): React.ReactElement {
 
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState(false)
+  const [filteredData, setFilteredData] = useState<Audit[]>([])
   const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
-  const filter = useMemo(
-    () => (record?.id !== undefined ? { user: record.id } : undefined),
-    [record]
-  )
+  const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
+
+  useEffect(() => {
+    if (data != null)
+      setFilteredData(
+        data.filter((audit) => {
+          return (
+            audit.user === record?.id ||
+            audit.subject === record?.id ||
+            audit.resource === R_USERS
+          )
+        })
+      )
+  }, [data, record, isLoading])
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
   }
+
+  if (isLoading) return <Loading />
 
   return (
     <Show
@@ -219,8 +232,9 @@ export default function UserShow(): React.ReactElement {
       }>
       <UserShowComp setRecord={setRecord} />
       <ResourceHistoryModal
-        filter={filter}
+        // filter={filter}
         open={open}
+        data={filteredData}
         close={() => {
           handleOpen(false)
         }}

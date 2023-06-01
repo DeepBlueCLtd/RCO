@@ -5,16 +5,18 @@ interface ResourceHistoryProps {
   filter?: FilterType
   open: any
   close: any
+  data?: Audit[]
 }
 
 const ResourceHistoryModal = ({
   filter,
   open,
-  close
+  close,
+  data
 }: ResourceHistoryProps): React.ReactElement => {
   return (
     <Printable open={open} onClose={close}>
-      <AuditList filter={filter} />
+      <AuditList filter={filter} data={data} />
     </Printable>
   )
 }

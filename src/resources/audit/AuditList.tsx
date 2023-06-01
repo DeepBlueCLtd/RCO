@@ -70,9 +70,11 @@ export interface FilterType {
 
 interface AuditListProps {
   filter?: FilterType
+  data?: Audit[]
 }
 export default function AuditList({
-  filter = undefined
+  filter = undefined,
+  data = undefined
 }: AuditListProps): React.ReactElement {
   return (
     <List
@@ -85,6 +87,7 @@ export default function AuditList({
       filters={filters}
       filter={filter}>
       <Datagrid
+        {...(data !== undefined ? { data } : null)}
         bulkActionButtons={false}
         sx={{
           '&  .RaDatagrid-rowCell': {
