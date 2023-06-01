@@ -203,7 +203,7 @@ export default function UserShow(): React.ReactElement {
           return (
             audit.user === record?.id ||
             audit.subject === record?.id ||
-            audit.resource === R_USERS
+            (audit.dataId === record?.id && audit.resource === R_USERS)
           )
         })
       )
