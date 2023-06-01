@@ -1,10 +1,20 @@
 import { useState } from 'react'
+import { type ResourceTypes } from '../constants'
+import { useListContext, useRedirect } from 'react-admin'
 
-const useDoubleClick = (
-  handleClick: (id: number) => void,
-  handleDoubleClick: (id: number) => void
-): ((id: number) => false) => {
+const useDoubleClick = (resource: ResourceTypes): ((id: number) => false) => {
+  const { onSelect, selectedIds } = useListContext(resource)
   const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null)
+  const redirect = useRedirect()
+  const handleClick = (id: number): void => {
+    if (!selectedIds.includes(id)) onSelect([...selectedIds, id])
+    else onSelect(selectedIds.filter((selectedId) => selectedId !== id))
+  }
+
+  const handleDoubleClick = (id: number): void => {
+    const path = `/${resource}/${id}/show`
+    redirect(path)
+  }
 
   const handleRowClick = (id: number): false => {
     if (clickTimer !== null) {

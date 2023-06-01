@@ -14,8 +14,7 @@ import {
   AutocompleteInput,
   type SortPayload,
   useGetList,
-  type FilterPayload,
-  useRedirect
+  type FilterPayload
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -233,20 +232,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
 }
 
 const DataList = (): React.ReactElement => {
-  const { onSelect, selectedIds } = useListContext()
-  const redirect = useRedirect()
-
-  const handleClick = (id: number): void => {
-    if (selectedIds.includes(id) === false) onSelect([...selectedIds, id])
-    else onSelect(selectedIds.filter((selectedId) => selectedId !== id))
-  }
-
-  const handleDoubleClick = (id: number): void => {
-    const path = `/${constants.R_ITEMS}/${id}/show`
-    redirect(path)
-  }
-
-  const handleRowClick = useDoubleClick(handleClick, handleDoubleClick)
+  const handleRowClick = useDoubleClick(constants.R_ITEMS)
 
   return (
     <DatagridConfigurable
