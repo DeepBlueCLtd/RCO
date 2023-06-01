@@ -30,6 +30,7 @@ import SourceField from '../../components/SourceField'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
+import HastenerReport from './HastenerReport'
 
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
@@ -44,7 +45,7 @@ const ShowActions = (): React.ReactElement => {
 }
 
 interface FooterProps {
-  handleOpen: (open: boolean) => void
+  handleOpen: (name: string) => void
   dispatch: (data: UpdateParams) => Promise<void>
 }
 
@@ -108,13 +109,22 @@ const Footer = (props: FooterProps): React.ReactElement => {
             onClick={sendHastener as any}
           />
         )}
+        {dispatched && (
+          <Button
+            variant='outlined'
+            label='Print Hastener'
+            onClick={() => {
+              handleOpen('hastener')
+            }}
+          />
+        )}
         {!dispatched && (
           <>
             <Button
               variant='outlined'
               label='Print Note'
               onClick={() => {
-                handleOpen(true)
+                handleOpen('dispatch')
               }}
             />
             <Button
@@ -146,13 +156,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
 }
 
 export default function DispatchShow(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<string>()
   const [update] = useUpdate()
   const notify = useNotify()
   const { id } = useParams()
 
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
+  const handleOpen = (name: string): void => {
+    setOpen(name)
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
@@ -169,7 +179,8 @@ export default function DispatchShow(): React.ReactElement {
           </Typography>
         </legend>
         <Box>
-          <DispatchReport open={open} handleOpen={handleOpen} />
+          <DispatchReport open={open === 'dispatch'} handleOpen={handleOpen} />
+          <HastenerReport open={open === 'hastener'} handleOpen={handleOpen} />
           <Show actions={<ShowActions />} component={'div'}>
             <DispatchForm show />
             <Footer handleOpen={handleOpen} dispatch={dispatch} />
