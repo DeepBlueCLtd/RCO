@@ -172,6 +172,7 @@ type ModalOpenType =
   | 'loan'
   | 'destroyRemove'
   | 'dispatch'
+  | 'isReturn'
 
 type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
 
@@ -187,13 +188,15 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     location = true,
     loan = true,
     destroyRemove = false,
-    dispatch = true
+    dispatch = true,
+    isReturn = false
   } = buttons ?? {
     destroy: true,
     location: true,
     loan: true,
     destroyRemove: false,
-    dispatch: true
+    dispatch: true,
+    isReturn: false
   }
 
   const { selectedIds, data } = useListContext<Item>()
@@ -233,6 +236,32 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     refresh()
   }
 
+  const removeFromDispatch = async (): Promise<void> => {
+    selectedIds.map(async (itemId) => {
+      const auditData = {
+        type: AuditType.EDIT,
+        activityDetail: 'Item returned',
+        securityRelated: false,
+        dataId: itemId,
+        resource: constants.R_DISPATCH
+      }
+      await audit(auditData)
+      await audit({
+        ...auditData,
+        activityDetail: 'Dispatched Item returned',
+        resource: constants.R_ITEMS
+      })
+    })
+
+    await dataProvider.updateMany<Item>(constants.R_ITEMS, {
+      ids: selectedIds,
+      data: {
+        dispatched: undefined
+      }
+    })
+    refresh()
+  }
+
   const returnDispatchedItems = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
       const auditData = {
@@ -259,6 +288,28 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     refresh()
   }
 
+  const ReturnButton = (): React.ReactElement => {
+    return (
+      <>
+        {isReturn ? (
+          <Button
+            onClick={returnDispatchedItems as any}
+            size='small'
+            variant='outlined'>
+            Return
+          </Button>
+        ) : (
+          <Button
+            onClick={removeFromDispatch as any}
+            size='small'
+            variant='outlined'>
+            Remove
+          </Button>
+        )}
+      </>
+    )
+  }
+
   return (
     <>
       {!isDestruction && (
@@ -273,12 +324,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
                   Dispatch
                 </Button>
               ) : (
-                <Button
-                  onClick={returnDispatchedItems as any}
-                  size='small'
-                  variant='outlined'>
-                  Return
-                </Button>
+                <ReturnButton />
               )}
             </FlexBox>
           ) : null}

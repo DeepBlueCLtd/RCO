@@ -26,6 +26,7 @@ export default function DispatchForm(props: Props): React.ReactElement {
     <SimpleForm
       toolbar={showForm ? false : undefined}
       resolver={yupResolver(schema)}>
+      <TextInput sx={sx} disabled={show} source='toName' />
       <SourceInput
         source='toAddress'
         filter={{ active: true }}
@@ -48,7 +49,6 @@ export default function DispatchForm(props: Props): React.ReactElement {
         </>
       )}
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
-      <TextInput sx={sx} disabled={show} source='toName' />
     </SimpleForm>
   )
 }

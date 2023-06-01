@@ -122,7 +122,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       successCallback()
     }
   }
-  const label = 'Destruction Jobs'
+  const label = 'Dispatch Jobs'
 
   if (typeof loading === 'boolean' && loading) return <></>
 

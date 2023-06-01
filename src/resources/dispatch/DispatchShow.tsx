@@ -102,13 +102,6 @@ const Footer = (props: FooterProps): React.ReactElement => {
   return (
     <>
       <FlexBox justifyContent='end' padding={2}>
-        {dispatched && !receiptReceived && (
-          <Button
-            variant='outlined'
-            label='Hastener'
-            onClick={sendHastener as any}
-          />
-        )}
         {dispatched && (
           <Button
             variant='outlined'
@@ -116,6 +109,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
             onClick={() => {
               handleOpen('hastener')
             }}
+          />
+        )}
+        {dispatched && !receiptReceived && (
+          <Button
+            variant='outlined'
+            label='Record Hastener Sent'
+            onClick={sendHastener as any}
           />
         )}
         {!dispatched && (
@@ -204,6 +204,7 @@ function DispatchedItemList(
   const { data } = useGetOne<Dispatch>(constants.R_DISPATCH, {
     id: Number(id)
   })
+  const dispatched: boolean = data?.dispatchedAt !== undefined
 
   const destroyed: boolean = useMemo(() => {
     const permission = hasAccess(constants.R_ITEMS, { write: true })
@@ -219,16 +220,19 @@ function DispatchedItemList(
         location: false,
         loan: false,
         destroyRemove: false,
-        dispatch: false
+        dispatch: false,
+        isReturn: dispatched
       }}
     />
   )
+
+  const title = dispatched ? 'Dispatched items' : 'Items for dispatch'
 
   return (
     <Box component='fieldset' style={{ padding: '0 15px', overflowX: 'auto' }}>
       <legend>
         <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Dispatched items
+          {title}
         </Typography>
       </legend>
       <ItemList filter={{ dispatched: id }}>
