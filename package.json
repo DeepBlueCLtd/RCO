@@ -33,6 +33,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "luxon": "^3.3.0",
+    "mitt": "^3.0.0",
     "preval.macro": "^5.0.0",
     "ra-data-local-forage": "^4.8.4",
     "react": "^18.2.0",
