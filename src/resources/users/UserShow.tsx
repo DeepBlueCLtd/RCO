@@ -194,10 +194,7 @@ export default function UserShow(): React.ReactElement {
   const [open, setOpen] = useState(false)
   const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
   const filter = useMemo(
-    () =>
-      record?.id !== undefined
-        ? { dataId: record.id, resource: R_USERS }
-        : undefined,
+    () => (record?.id !== undefined ? { user: record.id } : undefined),
     [record]
   )
 
