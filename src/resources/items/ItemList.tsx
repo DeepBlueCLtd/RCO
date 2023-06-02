@@ -215,6 +215,8 @@ interface ItemListType extends Omit<ListProps, 'children'> {
   filter?: FilterPayload
 }
 
+const handleRowClick = useDoubleClick(constants.R_ITEMS)
+
 export default function ItemList(props?: ItemListType): React.ReactElement {
   return (
     <List
@@ -225,42 +227,33 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       filter={props !== undefined ? props.filter : undefined}
       {...props}>
       <ResetDateFilter source='createdAt' />
-      {/* <ResetDateRangeFilter source='date_range' /> */}
-      <DataList />
+      <DatagridConfigurable
+        rowClick={(id) => handleRowClick(id as number)}
+        bulkActionButtons={<BulkActions />}
+        omit={omitColumns}>
+        <TextField source='item_number' label='Reference' />
+        <TextField source='id' />
+        <TextField source='createdAt' label='Created' />
+        <TextField source='mediaType' label='Media type' />
+        <SourceField
+          link='show'
+          source='loanedTo'
+          reference={constants.R_USERS}
+          label='Loaned to'
+        />
+        <DateField showTime source='start' />
+        <DateField showTime source='end' />
+        <SourceField source='vaultLocation' reference='vaultLocation' />
+        <SourceField source='protectiveMarking' reference='protectiveMarking' />
+        <SourceField
+          link='show'
+          source='batchId'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
+        <TextField source='remarks' />
+        <TextField source='musterRemarks' />
+      </DatagridConfigurable>
     </List>
-  )
-}
-
-const DataList = (): React.ReactElement => {
-  const handleRowClick = useDoubleClick(constants.R_ITEMS)
-
-  return (
-    <DatagridConfigurable
-      rowClick={(id) => handleRowClick(id as number)}
-      bulkActionButtons={<BulkActions />}
-      omit={omitColumns}>
-      <TextField source='item_number' label='Reference' />
-      <TextField source='id' />
-      <TextField source='createdAt' label='Created' />
-      <TextField source='mediaType' label='Media type' />
-      <SourceField
-        link='show'
-        source='loanedTo'
-        reference={constants.R_USERS}
-        label='Loaned to'
-      />
-      <DateField showTime source='start' />
-      <DateField showTime source='end' />
-      <SourceField source='vaultLocation' reference='vaultLocation' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <SourceField
-        link='show'
-        source='batchId'
-        reference={constants.R_BATCHES}
-        sourceField='batchNumber'
-      />
-      <TextField source='remarks' />
-      <TextField source='musterRemarks' />
-    </DatagridConfigurable>
   )
 }
