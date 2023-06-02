@@ -24,10 +24,10 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
   const { record, isLoading } = useShowContext<Item>()
 
   useEffect(() => {
-    if (isLoading === false) setRecord(record)
+    if (!isLoading) setRecord(record)
   }, [isLoading])
 
-  if (isLoading !== undefined && isLoading === true) return <Loading />
+  if (isLoading !== undefined && isLoading) return <Loading />
 
   const pageTitle = 'View Item'
 
