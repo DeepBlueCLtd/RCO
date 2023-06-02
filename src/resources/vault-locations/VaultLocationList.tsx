@@ -11,7 +11,7 @@ import ResourceHistoryModal from '../../components/ResourceHistory'
 export default function VaultLocationList(): React.ReactElement {
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState<boolean>()
-  const [record, setRecord] = useState<ActiveReferenceItem>()
+  const [record, setRecord] = useState<ReferenceItem>()
   const hasWriteAccess = hasAccess(constants.R_VAULT_LOCATION, { write: true })
   const filter = useMemo(
     () =>
@@ -47,7 +47,7 @@ export default function VaultLocationList(): React.ReactElement {
         />
         <FunctionField
           label='History'
-          render={(record: ActiveReferenceItem) => {
+          render={(record: ReferenceItem) => {
             return (
               <IconButton
                 onClick={(e) => {
