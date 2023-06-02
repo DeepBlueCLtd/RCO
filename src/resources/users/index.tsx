@@ -66,10 +66,10 @@ const UserShowActions = (): React.ReactElement => {
 
 const ShowUser = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-  const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
+  const hasWriteAccess = hasAccess(R_USERS, { write: true })
 
   return (
-    <Show actions={hasDeleteAccess && <UserShowActions />}>
+    <Show actions={hasWriteAccess && <UserShowActions />}>
       <UserShow />
     </Show>
   )

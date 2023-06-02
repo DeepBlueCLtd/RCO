@@ -59,9 +59,7 @@ const assignItemsToRandomActiveUser = async (
         )
       ).toISOString()
 
-      if (
-        !Object.prototype.hasOwnProperty.call(randomItems, randomUser.id)
-      ) {
+      if (!Object.prototype.hasOwnProperty.call(randomItems, randomUser.id)) {
         randomItems[randomUser.id] = [] as number[]
       }
       randomItems[randomUser.id].push(item.id)
@@ -77,6 +75,7 @@ const loadDefaultData = async (
   userId?: number,
   provider?: DataProvider & CustomDataProvider
 ): Promise<void> => {
+  await localForage.clear()
   const user = typeof userId === 'undefined' ? users[0].id : userId
 
   const platforms = generatePlatform(10)
