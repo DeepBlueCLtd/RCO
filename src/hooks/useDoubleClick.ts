@@ -7,8 +7,11 @@ const useDoubleClick = (resource: ResourceTypes): ((id: number) => false) => {
   const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null)
   const redirect = useRedirect()
   const handleClick = (id: number): void => {
-    if (!selectedIds.includes(id)) onSelect([...selectedIds, id])
-    else onSelect(selectedIds.filter((selectedId) => selectedId !== id))
+    if (selectedIds.includes(id)) {
+      onSelect(selectedIds.filter((selectedId) => selectedId !== id))
+    } else {
+      onSelect([...selectedIds, id])
+    }
   }
 
   const handleDoubleClick = (id: number): void => {
