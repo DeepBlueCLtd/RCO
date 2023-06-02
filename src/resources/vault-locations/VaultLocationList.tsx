@@ -21,10 +21,6 @@ export default function VaultLocationList(): React.ReactElement {
     [record]
   )
 
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
-
   const BulkActions = (): React.ReactElement => {
     return (
       <>
@@ -53,7 +49,7 @@ export default function VaultLocationList(): React.ReactElement {
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
-                  handleOpen(true)
+                  setOpen(true)
                 }}>
                 <History />
               </IconButton>
@@ -65,7 +61,7 @@ export default function VaultLocationList(): React.ReactElement {
         filter={filter}
         open={open}
         close={() => {
-          handleOpen(false)
+          setOpen(false)
         }}
       />
     </List>
