@@ -14,6 +14,7 @@ import SourceInput from '../../components/SourceInput'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import useCanAccess from '../../hooks/useCanAccess'
+import SourceField from '../../components/SourceField'
 
 const AuditList = lazy(async () => await import('../audit/AuditList'))
 
@@ -27,32 +28,47 @@ const ShowForm = (): React.ReactElement => {
       : undefined
   const pageTitle = 'View Item'
   return (
-    <FlexBox>
-      <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
-        <legend>
+    <>
+      <FlexBox>
+        <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
+          <legend>
+            <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+              <constants.ICON_ITEM /> {pageTitle}
+            </Typography>
+          </legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            <constants.ICON_ITEM /> {pageTitle}
+            {record?.loanedTo !== undefined && (
+              <>
+                On loan to{' '}
+                <SourceField
+                  source={'loanedTo'}
+                  reference={constants.R_USERS}
+                  link='show'
+                  textProps={{ variant: 'h5', fontWeight: '600' }}
+                />
+              </>
+            )}
           </Typography>
-        </legend>
-        <Form>
-          <SourceInput
-            label=''
-            source='createdBy'
-            inputProps={{ disabled: true, label: 'Added by' }}
-            reference={constants.R_USERS}
-          />
-          <CoreForm disabled />
-        </Form>
-      </Box>
-      <Box component='fieldset' style={{ padding: '0 15px' }}>
-        <legend>
-          <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            History
-          </Typography>
-        </legend>
-        <AuditList filter={filter} />
-      </Box>
-    </FlexBox>
+          <Form>
+            <SourceInput
+              label=''
+              source='createdBy'
+              inputProps={{ disabled: true, label: 'Added by' }}
+              reference={constants.R_USERS}
+            />
+            <CoreForm disabled />
+          </Form>
+        </Box>
+        <Box component='fieldset' style={{ padding: '0 15px' }}>
+          <legend>
+            <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+              History
+            </Typography>
+          </legend>
+          <AuditList filter={filter} />
+        </Box>
+      </FlexBox>
+    </>
   )
 }
 

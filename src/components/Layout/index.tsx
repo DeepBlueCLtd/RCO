@@ -12,7 +12,9 @@ import {
   useRedirect,
   UserMenu,
   type UserMenuProps,
-  useLogout
+  useLogout,
+  useDataProvider,
+  type DataProvider
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
@@ -49,6 +51,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const [authenticated, setAuthenticated] = useState(false)
   const logout = useLogout()
   const redirect = useRedirect()
+  const provider = useDataProvider<DataProvider & CustomDataProvider>()
 
   const [loggingPref, setLoggingPref] = useState<boolean>(
     localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
@@ -59,7 +62,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   }
 
   const handleLoadData = (): void => {
-    loadDefaultData().catch((error) => {
+    loadDefaultData(undefined, provider).catch((error) => {
       console.log({ error })
     })
   }
@@ -94,7 +97,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 
   return (
     <UserMenu {...props}>
-      {authenticated === false && (
+      {!authenticated && (
         <Button
           onClick={handleLogin}
           classes={{ root: styles.root, startIcon: styles.startIcon }}
@@ -106,7 +109,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           <Typography sx={{ textTransform: 'none' }}> Login</Typography>
         </Button>
       )}
-      {authenticated === true && <Logout onClick={handleLogOut} />}
+      {authenticated && <Logout onClick={handleLogOut} />}
       <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}
