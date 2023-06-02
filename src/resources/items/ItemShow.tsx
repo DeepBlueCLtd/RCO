@@ -29,19 +29,6 @@ const ShowForm = (): React.ReactElement => {
   const pageTitle = 'View Item'
   return (
     <>
-      <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-        {record?.loanedTo !== undefined && (
-          <>
-            On loan to{' '}
-            <SourceField
-              source={'loanedTo'}
-              reference={constants.R_USERS}
-              link='show'
-              textProps={{ variant: 'h5', fontWeight: '600' }}
-            />
-          </>
-        )}
-      </Typography>
       <FlexBox>
         <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
           <legend>
@@ -49,6 +36,19 @@ const ShowForm = (): React.ReactElement => {
               <constants.ICON_ITEM /> {pageTitle}
             </Typography>
           </legend>
+          <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+            {record?.loanedTo !== undefined && (
+              <>
+                On loan to{' '}
+                <SourceField
+                  source={'loanedTo'}
+                  reference={constants.R_USERS}
+                  link='show'
+                  textProps={{ variant: 'h5', fontWeight: '600' }}
+                />
+              </>
+            )}
+          </Typography>
           <Form>
             <SourceInput
               label=''
