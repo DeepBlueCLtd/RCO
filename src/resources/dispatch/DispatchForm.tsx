@@ -14,7 +14,7 @@ const sx = { width: '100%' }
 
 const schema = yup.object({
   toAddress: yup.number().required(),
-  remarks: yup.string().required(),
+  remarks: yup.string(),
   toName: yup.string().required()
 })
 
