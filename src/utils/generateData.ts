@@ -28,7 +28,10 @@ export function generateRandomDate(): [DateTime, DateTime] {
   return [randomStartDate, endDate]
 }
 
-function generateRandomDateInRange(startDate: Date, endDate: Date): string {
+export function generateRandomDateInRange(
+  startDate: Date,
+  endDate: Date
+): string {
   const luxonStartDate = DateTime.fromJSDate(startDate)
   const luxonEndDate = DateTime.fromJSDate(endDate)
   const rangeInMs = luxonEndDate.toMillis() - luxonStartDate.toMillis()
