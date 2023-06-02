@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { Datagrid, FunctionField, List } from 'react-admin'
+import { Datagrid, FunctionField, type Identifier, List } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -7,12 +7,25 @@ import * as constants from '../../constants'
 import { IconButton } from '@mui/material'
 import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
+import useDoubleClick from '../../hooks/useDoubleClick'
 
 export default function VaultLocationList(): React.ReactElement {
+  return (
+    <List>
+      <DataList />
+    </List>
+  )
+}
+
+const DataList = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState<boolean>()
   const [record, setRecord] = useState<ReferenceItem>()
-  const hasWriteAccess = hasAccess(constants.R_VAULT_LOCATION, { write: true })
+  const handleRowClick = useDoubleClick(constants.R_VAULT_LOCATION)
+
+  const hasWriteAccess = hasAccess(constants.R_VAULT_LOCATION, {
+    write: true
+  })
   const filter = useMemo(
     () =>
       record?.id !== undefined
@@ -30,11 +43,14 @@ export default function VaultLocationList(): React.ReactElement {
       </>
     )
   }
-
   return (
-    <List>
+    <>
       <Datagrid
-        rowClick={hasWriteAccess ? 'edit' : undefined}
+        rowClick={
+          hasWriteAccess
+            ? (id: Identifier) => handleRowClick(id as number)
+            : undefined
+        }
         bulkActionButtons={<BulkActions />}>
         <FunctionField
           style={{ cursor: 'pointer' }}
@@ -64,6 +80,6 @@ export default function VaultLocationList(): React.ReactElement {
           setOpen(false)
         }}
       />
-    </List>
+    </>
   )
 }
