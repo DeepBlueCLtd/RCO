@@ -166,7 +166,7 @@ export default function DestructionShow(): React.ReactElement {
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Destruction Show
+            Destruction Job
           </Typography>
         </legend>
         <Box>
@@ -222,7 +222,7 @@ function DestructionItemList(
     <Box component='fieldset' style={{ padding: '0 15px', overflowX: 'auto' }}>
       <legend>
         <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Destruction items
+          {destroyed ? 'Items destroyed' : 'Items to be destroyed'}
         </Typography>
       </legend>
       <ItemList filter={{ destruction: id }}>
