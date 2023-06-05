@@ -16,7 +16,8 @@ import {
   useGetList,
   type FilterPayload,
   type DatagridConfigurableProps,
-  useDataProvider
+  useDataProvider,
+  useResourceDefinition
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -414,13 +415,14 @@ interface ItemListType extends Omit<ListProps, 'children'> {
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
   const { datagridConfigurableProps, children, ...rest } = props ?? {}
+  const { options } = useResourceDefinition()
   return (
     <List
       hasCreate={false}
       actions={<ItemActions />}
       resource={constants.R_ITEMS}
       filters={filters}
-      filter={props !== undefined ? props.filter : undefined}
+      filter={props?.filter ?? options?.filter}
       {...rest}>
       <ResetDateFilter source='createdAt' />
       {typeof children !== 'undefined' ? (

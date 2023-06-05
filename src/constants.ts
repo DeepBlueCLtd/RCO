@@ -20,6 +20,7 @@ export const R_BATCHES = 'batches'
 export const R_PROJECTS = 'projects'
 export const R_PLATFORMS = 'platforms'
 export const R_ITEMS = 'items'
+export const R_ALL_ITEMS = 'allItems'
 export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
@@ -49,6 +50,7 @@ export type ResourceTypes =
   | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
+  | typeof R_ALL_ITEMS
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'

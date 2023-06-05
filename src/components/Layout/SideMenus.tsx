@@ -39,6 +39,9 @@ export const SideMenus = (): React.ReactElement => {
       {hasAccess(constants.R_ITEMS, { read: true }) && (
         <Menu.ResourceItem name={constants.R_ITEMS} />
       )}
+      {hasAccess(constants.R_ALL_ITEMS, { read: true }) && (
+        <Menu.ResourceItem name={constants.R_ALL_ITEMS} />
+      )}
       {hasAccess(constants.R_VAULT_LOCATION, { read: true }) && (
         <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
       )}
