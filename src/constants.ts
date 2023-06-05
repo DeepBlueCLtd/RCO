@@ -56,3 +56,6 @@ export const ICON_DETAILS = Notes
 
 export const APP_VERSION = 'APP_VERSION'
 export const DATA_VERSION = 'DATA_VERSION'
+
+// mitt events
+export const SAVE_EVENT = 'save'

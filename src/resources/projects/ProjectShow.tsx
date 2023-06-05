@@ -1,16 +1,20 @@
-import React from 'react'
-import { Card, CardContent, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { Card, CardContent, IconButton, Typography } from '@mui/material'
 import {
   CreateButton,
   EditButton,
   Show,
   TextField,
-  TopToolbar
+  TopToolbar,
+  useShowContext
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
+import { History } from '@mui/icons-material'
+import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
+import ResourceHistoryModal from '../../components/ResourceHistory'
 
 const ValueField = ({
   label,
@@ -26,13 +30,29 @@ const ValueField = ({
   )
 }
 
-const Actions = (): React.ReactElement => {
+const HistoryModal = ({
+  handleOpen,
+  open
+}: HistoryProps): React.ReactElement => {
+  const { record } = useShowContext<Batch>()
+  if (record === undefined) return <></>
+  const filter = { dataId: record.id, resource: constants.R_PROJECTS }
+  return (
+    <ResourceHistoryModal
+      open={open}
+      close={() => { handleOpen(false) }}
+      filter={filter}
+    />
+  )
+}
+
+const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
   const { id = '' } = useParams()
   const projectId: string = id
   const { hasAccess } = useCanAccess()
 
   return (
-    <TopToolbar>
+    <TopToolbar sx={{ alignItems: 'center' }}>
       {hasAccess(constants.R_PROJECTS, { write: true }) ? (
         <>
           <EditButton />
@@ -42,14 +62,22 @@ const Actions = (): React.ReactElement => {
           />
         </>
       ) : null}
+      <IconButton onClick={() => { handleOpen(true) }}>
+        <History />
+      </IconButton>
     </TopToolbar>
   )
 }
 
 export default function ProjectShow(): React.ReactElement {
   const pageTitle = 'View Project'
+  const [open, setOpen] = useState(false)
+
+  const handleOpen = (open: boolean): void => {
+    setOpen(open)
+  }
   return (
-    <Show actions={<Actions />}>
+    <Show actions={<Actions handleOpen={handleOpen} />}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_PROJECT /> {pageTitle}
       </Typography>
@@ -72,6 +100,7 @@ export default function ProjectShow(): React.ReactElement {
           </ValueField>
         </CardContent>
       </Card>
+      <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
   )
 }

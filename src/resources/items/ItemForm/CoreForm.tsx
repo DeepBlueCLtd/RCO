@@ -28,7 +28,7 @@ const CoreForm = (props: Props): React.ReactElement => {
 
   useEffect(() => {
     formContext?.setValue('batchId', batchId)
-  }, [batchId])
+  })
 
   const ValueField = ({
     label,
