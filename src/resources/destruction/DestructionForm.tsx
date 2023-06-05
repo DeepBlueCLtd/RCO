@@ -71,7 +71,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
         data: { reference, remarks }
       })
       notify('Element created')
-      setLastId(lastId + 1)
+      setLastId((prev) => prev + 1)
     } catch (error: any) {
       notify(error.message, { type: 'error' })
     }
