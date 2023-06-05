@@ -69,7 +69,10 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const onDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
-      const items = data
+      const { reference } = items.find(
+        (job) => job.id === parseInt(destructionId as string)
+      ) ?? { reference: undefined }
+      const itemsAdded = data
         .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
           return (
             ids.includes(id) &&
@@ -81,7 +84,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         .map(async (item) => {
           const audiData = {
             type: AuditType.EDIT,
-            activityDetail: 'add item to destruction',
+            activityDetail: `Add item ${item.item_number} to destruction`,
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id
@@ -89,14 +92,15 @@ export default function DestroyItems(props: Props): React.ReactElement {
           await audit(audiData)
           await audit({
             ...audiData,
-            resource: constants.R_DESTRUCTION
+            resource: constants.R_DESTRUCTION,
+            activityDetail: `Add item to destruction ${reference}`
           })
 
           return item.id
         })
 
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
-        ids: await Promise.all(items),
+        ids: await Promise.all(itemsAdded),
         data: {
           destruction: Number(destructionId)
         }

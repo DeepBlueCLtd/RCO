@@ -155,7 +155,7 @@ const getItemStates = (
     return {
       noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
       allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
-      anyDestructed: filteredData.some((f) => f.destructionDate !== undefined),
+      anyDestructed: filteredData.some((f) => f.destruction !== undefined),
       anyLoaned: filteredData.some((f) => f.loanedTo !== undefined)
     }
   }
@@ -220,28 +220,31 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   return (
     <>
+      {!isAnyLoaned && hasAccess(constants.R_ITEMS, { write: true }) ? (
+        <FlexBox>
+          {destroyRemove ? (
+            <Button
+              startIcon={<RestoreFromTrash />}
+              onClick={handleOpen('destroyRemove')}
+              size='small'
+              variant='outlined'>
+              Remove
+            </Button>
+          ) : null}
+        </FlexBox>
+      ) : null}
+
       {!isDestruction && (
         <>
-          {!isAnyLoaned && hasAccess(constants.R_ITEMS, { write: true }) ? (
+          {destroy ? (
             <FlexBox>
-              {destroy ? (
-                <Button
-                  startIcon={<DeleteSweepIcon />}
-                  onClick={handleOpen('destroy')}
-                  size='small'
-                  variant='outlined'>
-                  Destroy
-                </Button>
-              ) : null}
-              {destroyRemove ? (
-                <Button
-                  startIcon={<RestoreFromTrash />}
-                  onClick={handleOpen('destroyRemove')}
-                  size='small'
-                  variant='outlined'>
-                  Remove
-                </Button>
-              ) : null}
+              <Button
+                startIcon={<DeleteSweepIcon />}
+                onClick={handleOpen('destroy')}
+                size='small'
+                variant='outlined'>
+                Destroy
+              </Button>
             </FlexBox>
           ) : null}
           {location ? (
@@ -260,34 +263,36 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
               allLoaned={allLoaned}
             />
           ) : null}
-          <Modal open={Boolean(open)} onClose={handleClose}>
-            <>
-              {open === 'location' && (
-                <ChangeLocation
-                  successCallback={handleSuccess}
-                  onCancel={handleClose}
-                  ids={selectedIds}
-                />
-              )}
-              {open === 'destroy' && (
-                <DestroyItems
-                  ids={selectedIds}
-                  data={data}
-                  onClose={handleClose}
-                  successCallback={handleSuccess}
-                />
-              )}
-              {open === 'destroyRemove' && (
-                <DestroyRestoreItems
-                  ids={selectedIds}
-                  onClose={handleClose}
-                  successCallback={handleSuccess}
-                />
-              )}
-            </>
-          </Modal>
         </>
       )}
+
+      <Modal open={Boolean(open)} onClose={handleClose}>
+        <>
+          {open === 'location' && (
+            <ChangeLocation
+              successCallback={handleSuccess}
+              onCancel={handleClose}
+              ids={selectedIds}
+            />
+          )}
+          {open === 'destroy' && (
+            <DestroyItems
+              ids={selectedIds}
+              data={data}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
+          {open === 'destroyRemove' && (
+            <DestroyRestoreItems
+              ids={selectedIds}
+              data={data}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
+        </>
+      </Modal>
     </>
   )
 }

@@ -5,8 +5,11 @@ import {
   TextInput,
   Toolbar,
   useCreate,
+  useCreatePath,
   useDataProvider,
-  useNotify
+  useNotify,
+  useRedirect,
+  useUpdate
 } from 'react-admin'
 import * as constants from '../../constants'
 import DatePicker from '../../components/DatePicker'
@@ -16,26 +19,40 @@ import * as yup from 'yup'
 
 interface Props {
   isEdit?: boolean
+  disabledFields?: string[]
 }
 
 const schema = yup.object({
   remarks: yup.string().required()
 })
 
-const DestructionFormToolbar = (): React.ReactElement => (
-  <Toolbar>
-    <SaveButton label='Create' />
-  </Toolbar>
-)
+interface DestructionFormToolbarProps {
+  isEdit: boolean
+}
+
+const DestructionFormToolbar = (
+  props: DestructionFormToolbarProps
+): React.ReactElement => {
+  const { isEdit } = props
+
+  return (
+    <Toolbar>
+      <SaveButton label={isEdit ? 'Save' : 'Create'} />
+    </Toolbar>
+  )
+}
 
 export default function DestructionForm(props: Props): React.ReactElement {
-  const { isEdit = false } = props
+  const { isEdit = false, disabledFields = [] } = props
   const dataProvider = useDataProvider()
   const [create] = useCreate()
   const [loading, setLoading] = useState(!isEdit)
   const [lastId, setLastId] = useState<number>(0)
   const [year, setYear] = useState(new Date().getFullYear())
+  const createPath = useCreatePath()
+  const redirect = useRedirect()
   const notify = useNotify()
+  const [update] = useUpdate()
 
   const getReference = (lastId: number, year: number): string => {
     const id = lastId + 1
@@ -63,15 +80,32 @@ export default function DestructionForm(props: Props): React.ReactElement {
     }
   }, [isEdit])
 
+  const onSuccess = (id?: number): void => {
+    redirect(
+      createPath({
+        resource: constants.R_DESTRUCTION,
+        type: 'show',
+        id: id ?? lastId
+      })
+    )
+  }
+
   const onSubmit = async (data: any): Promise<void> => {
     const { remarks } = data
     try {
       const reference = getReference(lastId, year)
-      await create(constants.R_DESTRUCTION, {
-        data: { reference, remarks }
-      })
-      notify('Element created')
-      setLastId((prev) => prev + 1)
+      await create(
+        constants.R_DESTRUCTION,
+        {
+          data: { reference, remarks }
+        },
+        {
+          onSuccess: () => {
+            notify('Element created')
+            onSuccess()
+          }
+        }
+      )
     } catch (error: any) {
       notify(error.message, { type: 'error' })
     }
@@ -81,20 +115,45 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   const reference = getReference(lastId, year)
 
+  const updateJob = async (data: Destruction): Promise<void> => {
+    await update(
+      constants.R_DESTRUCTION,
+      {
+        id: data.id,
+        data
+      },
+      {
+        onSuccess: () => {
+          notify('Element updated')
+          onSuccess(data.id)
+        }
+      }
+    )
+  }
+  const handleSubmit = isEdit ? updateJob : onSubmit
+
   return (
     <SimpleForm
-      onSubmit={onSubmit}
-      toolbar={<DestructionFormToolbar />}
-      resolver={yupResolver(schema)}>
+      toolbar={<DestructionFormToolbar isEdit={isEdit} />}
+      resolver={yupResolver(schema)}
+      onSubmit={handleSubmit as any}>
       <DatePicker
         label='Year'
         source='year'
         variant='outlined'
         format='YYYY'
         onChange={setYear}
-        dataPickerProps={{ views: ['year'] }}
+        dataPickerProps={{
+          views: ['year'],
+          disabled: disabledFields.includes('year')
+        }}
       />
-      <TextFields fullWidth value={reference} label='Reference' />
+      <TextFields
+        fullWidth
+        value={reference}
+        label='Reference'
+        disabled={disabledFields.includes('reference')}
+      />
       <TextInput sx={{ width: '100%' }} source='remarks' />
     </SimpleForm>
   )

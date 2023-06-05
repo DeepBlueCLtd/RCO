@@ -15,7 +15,9 @@ import {
   type DatagridConfigurableProps,
   DatagridConfigurable,
   useUpdateMany,
-  useGetList
+  useGetList,
+  TopToolbar,
+  EditButton
 } from 'react-admin'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -37,6 +39,22 @@ const Finalised = (): React.ReactElement => {
     typeof record?.finalisedAt !== 'undefined' ? 'Finlised' : 'Pending'
 
   return <Typography variant='body2'>{label}</Typography>
+}
+
+const ShowActions = (): React.ReactElement => {
+  const { hasAccess } = useCanAccess()
+  const record = useRecordContext()
+  const finalised = typeof record.finalisedAt !== 'undefined'
+
+  return (
+    <>
+      <TopToolbar>
+        {hasAccess(constants.R_DESTRUCTION, { write: true }) && !finalised && (
+          <EditButton />
+        )}
+      </TopToolbar>
+    </>
+  )
 }
 
 interface FooterProps {
@@ -171,7 +189,7 @@ export default function DestructionShow(): React.ReactElement {
         </legend>
         <Box>
           <DestructionReport open={open} handleOpen={handleOpen} />
-          <Show component={'div'}>
+          <Show component={'div'} actions={<ShowActions />}>
             <SimpleShowLayout>
               <TextField source='reference' />
               <DateField source='finalisedAt' />
