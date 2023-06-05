@@ -256,7 +256,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids: selectedIds,
       data: {
-        dispatched: undefined
+        dispatchJob: undefined
       }
     })
     refresh()
@@ -282,7 +282,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids: selectedIds,
       data: {
-        dispatched: undefined
+        dispatchJob: undefined
       }
     })
     refresh()
@@ -468,13 +468,15 @@ function ItemListDataTable(
         reference={constants.R_DESTRUCTION}
         sourceField='reference'
       />
+      <DateField source='destructionDate' />
       <SourceField
         link='show'
-        source='dispatched'
+        source='dispatchJob'
         reference={constants.R_DISPATCH}
         sourceField='reference'
+        label='Dispatch Job'
       />
-      <DateField source='destructionDate' />
+      <DateField source='dispatchedDate' />
       <TextField source='remarks' />
       <TextField source='musterRemarks' />
     </DatagridConfigurable>

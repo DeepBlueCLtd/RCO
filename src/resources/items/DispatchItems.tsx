@@ -70,13 +70,13 @@ export default function DispatchItems(props: Props): React.ReactElement {
   const onDispatch = async (): Promise<void> => {
     if (typeof dispatchId !== 'undefined') {
       const items = data
-        .filter(({ loanedDate, loanedTo, destruction, dispatched, id }) => {
+        .filter(({ loanedDate, loanedTo, destruction, dispatchJob, id }) => {
           return (
             ids.includes(id) &&
             typeof loanedTo === 'undefined' &&
             typeof loanedDate === 'undefined' &&
             typeof destruction === 'undefined' &&
-            typeof dispatched === 'undefined'
+            typeof dispatchJob === 'undefined'
           )
         })
         .map(async (item) => {
@@ -98,7 +98,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids: await Promise.all(items),
         data: {
-          dispatched: Number(dispatchId)
+          dispatchJob: Number(dispatchId)
         }
       })
 

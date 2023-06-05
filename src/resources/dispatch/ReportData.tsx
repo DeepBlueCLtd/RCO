@@ -33,7 +33,7 @@ const ItemListBox = (): React.ReactElement => {
       </Typography>
       <ItemsReport
         filter={{
-          dispatched: id
+          dispatchJob: id
         }}>
         <TextField source='item_number' />
         <TextField source='mediaType' />

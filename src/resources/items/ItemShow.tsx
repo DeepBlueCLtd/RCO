@@ -13,10 +13,10 @@ import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
 import { Box, type SxProps, type Theme, Typography } from '@mui/material'
-import FlexBox from '../../components/FlexBox'
 import useCanAccess from '../../hooks/useCanAccess'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import SourceField from '../../components/SourceField'
+import FlexBox from '../../components/FlexBox'
 
 const AuditList = lazy(async () => await import('../audit/AuditList'))
 
@@ -78,7 +78,7 @@ export default function ItemShow(): React.ReactElement {
 }
 
 function DispatchedAt(): React.ReactElement {
-  const { dispatched } = useRecordContext<Item>()
+  const { dispatchJob } = useRecordContext<Item>()
 
   const dispatchedAtSx: SxProps<Theme> = (theme: Theme) => ({
     fontSize: '30px',
@@ -86,10 +86,10 @@ function DispatchedAt(): React.ReactElement {
     '& span': { fontSize: '25px' }
   })
 
-  if (typeof dispatched === 'undefined') return <></>
+  if (typeof dispatchJob === 'undefined') return <></>
 
   return (
-    <TopToolbarField<Item> source='dispatched' component='div'>
+    <TopToolbarField<Item> source='dispatchJob' component='div'>
       <FieldWithLabel
         label='Dispatched at'
         source='dispatchedAt'
@@ -97,7 +97,7 @@ function DispatchedAt(): React.ReactElement {
         component={() => (
           <SourceField
             link='show'
-            source='dispatched'
+            source='dispatchJob'
             reference={constants.R_DISPATCH}
             sourceField='dispatchedAt'
           />

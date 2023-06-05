@@ -4,6 +4,7 @@ import SourceInput from '../../components/SourceInput'
 import { R_ADDRESSES, R_USERS } from '../../constants'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import FlexBox from '../../components/FlexBox'
 
 interface Props {
   show?: boolean
@@ -42,10 +43,14 @@ export default function DispatchForm(props: Props): React.ReactElement {
             source='createdBy'
             reference={R_USERS}
           />
-          <DateInput sx={sx} disabled source='createdAt' />
-          <DateInput sx={sx} disabled source='lastHastenerSent' />
-          <DateInput sx={sx} disabled source='receiptReceived' />
-          <DateInput sx={sx} disabled source='dispatchedAt' />
+          <FlexBox>
+            <DateInput sx={sx} disabled source='createdAt' />
+            <DateInput sx={sx} disabled source='lastHastenerSent' />
+          </FlexBox>
+          <FlexBox>
+            <DateInput sx={sx} disabled source='receiptReceived' />
+            <DateInput sx={sx} disabled source='dispatchedAt' />
+          </FlexBox>
         </>
       )}
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
