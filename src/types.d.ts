@@ -118,7 +118,7 @@ interface Item extends ResourceWithCreation {
   loanedDate?: string
   consecPages?: string
   dispatchJob?: Dispatch['id']
-  dispatchedDate: string
+  dispatchedDate?: string
 
   // item destruction details
   destruction?: Destruction['id']
