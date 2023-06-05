@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   CreateButton,
   EditButton,
@@ -7,7 +7,8 @@ import {
   TopToolbar,
   FilterButton,
   SelectColumnsButton,
-  DateField
+  DateField,
+  useShowContext
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -19,18 +20,28 @@ import FieldWithLabel, {
 } from '../../components/FieldWithLabel'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
-import { Typography } from '@mui/material'
+import { IconButton, Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
+import ResourceHistoryModal from '../../components/ResourceHistory'
+import { History } from '@mui/icons-material'
 
-const ShowActions = (): React.ReactElement => {
+export interface ShowActionProps {
+  handleOpen: (open: boolean) => void
+}
+
+const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   return (
-    <>
-      <TopToolbar>
-        <TopToolbarField source='batchNumber' />
-        {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
-      </TopToolbar>
-    </>
+    <TopToolbar sx={{ alignItems: 'center' }}>
+      <TopToolbarField source='batchNumber' />
+      {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
+      <IconButton
+        onClick={() => {
+          handleOpen(true)
+        }}>
+        <History />
+      </IconButton>
+    </TopToolbar>
   )
 }
 
@@ -65,11 +76,40 @@ function StyledFieldWithLabel(props: FieldWithLabelProps): React.ReactElement {
   )
 }
 
+export interface HistoryProps {
+  handleOpen: (open: boolean) => void
+  open: boolean
+}
+
+const HistoryModal = ({
+  handleOpen,
+  open
+}: HistoryProps): React.ReactElement => {
+  const { record } = useShowContext<Batch>()
+  if (record === undefined) return <></>
+  const filter = { dataId: record.id, resource: constants.R_BATCHES }
+  return (
+    <ResourceHistoryModal
+      open={open}
+      close={() => {
+        handleOpen(false)
+      }}
+      filter={filter}
+    />
+  )
+}
+
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   const pageTitle = 'View Batch'
+  const [open, setOpen] = useState(false)
+
+  const handleOpen = (open: boolean): void => {
+    setOpen(open)
+  }
+
   return (
-    <Show actions={<ShowActions />}>
+    <Show actions={<ShowActions handleOpen={handleOpen} />}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_BATCH /> {pageTitle}
       </Typography>
@@ -150,6 +190,7 @@ export default function BatchShow(): React.ReactElement {
           />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
+      <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
   )
 }
