@@ -95,7 +95,7 @@ export default function AuditList({
             padding: '12px'
           }
         }}>
-        <SourceField source='user' reference={constants.R_USERS} />
+        <SourceField source='user' reference={constants.R_USERS} link='show' />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='label' label='Activity Type' />
         <TextField
@@ -106,7 +106,11 @@ export default function AuditList({
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
         <TextField source='dataId' label='Item' />
-        <SourceField source='subject' reference={constants.R_USERS} />
+        <SourceField
+          source='subject'
+          reference={constants.R_USERS}
+          link='show'
+        />
       </Datagrid>
     </List>
   )
