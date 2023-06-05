@@ -12,6 +12,8 @@ import FlexBox from '../../components/FlexBox'
 import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useEffect, useState } from 'react'
+import { AuditType } from '../../utils/activity-types'
+import useAudit from '../../hooks/useAudit'
 
 interface Props {
   onClose: () => void
@@ -40,6 +42,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<Destruction[]>([])
+  const audit = useAudit()
 
   const [destructionId, setDestructionId] = useState<number | string>()
 
@@ -75,7 +78,22 @@ export default function DestroyItems(props: Props): React.ReactElement {
             typeof destructionDate === 'undefined'
           )
         })
-        .map(async (item) => item.id)
+        .map(async (item) => {
+          const audiData = {
+            type: AuditType.EDIT,
+            activityDetail: 'add item to destruction',
+            securityRelated: false,
+            resource: constants.R_ITEMS,
+            dataId: item.id
+          }
+          await audit(audiData)
+          await audit({
+            ...audiData,
+            resource: constants.R_DESTRUCTION
+          })
+
+          return item.id
+        })
 
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids: await Promise.all(items),

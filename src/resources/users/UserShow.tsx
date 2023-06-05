@@ -1,21 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
 import ItemList from '../items/ItemList'
 import {
   BooleanInput,
+  EditButton,
+  Loading,
+  Show,
   SimpleForm,
   TextInput,
+  TopToolbar,
   useGetList,
   useShowContext,
   useUpdate
 } from 'react-admin'
-import { Chip, Typography, Button, Modal } from '@mui/material'
+import { Chip, Typography, Button, Modal, IconButton } from '@mui/material'
 import { decryptPassword } from '../../utils/encryption'
-import { R_ITEMS, R_USERS } from '../../constants'
+import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
-import { Warning } from '@mui/icons-material'
+import { Warning, History } from '@mui/icons-material'
+import ResourceHistoryModal from '../../components/ResourceHistory'
 
 const style = {
   position: 'absolute',
@@ -66,20 +71,22 @@ const DepartOrganisation = ({
   )
 }
 
-export default function UserShow(): React.ReactElement {
-  const { record } = useShowContext<User & { salt: string }>()
+interface UserShowCompType {
+  setRecord: React.Dispatch<React.SetStateAction<User | undefined>>
+}
+
+const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
+  const { record, isLoading } = useShowContext<User & { salt: string }>()
+  const [departOpen, setDepartOpen] = useState(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
-  const { hasAccess } = useCanAccess()
-  const [departOpen, setDepartOpen] = useState(false)
-
-  const hasWriteAccess = hasAccess(R_USERS, { write: true })
-
   const loanedItems = useGetList<Item>(R_ITEMS, {
     sort: { field: 'id', order: 'ASC' },
     pagination: { page: 1, perPage: 10 },
     filter: { loanedTo: record?.id }
   })
+  const { hasAccess } = useCanAccess()
+  const hasWriteAccess = hasAccess(R_USERS, { write: true })
 
   const handleDepartUser = (): void => {
     setDepartOpen(true)
@@ -96,6 +103,12 @@ export default function UserShow(): React.ReactElement {
       !hasWriteAccess
     )
   }
+
+  useEffect(() => {
+    if (!isLoading) setRecord(record)
+  }, [isLoading])
+
+  if (isLoading !== undefined && isLoading) return <Loading />
 
   return (
     <>
@@ -171,5 +184,61 @@ export default function UserShow(): React.ReactElement {
         <DepartOrganisation handleClose={handleDepartClose} record={record} />
       </Modal>
     </>
+  )
+}
+
+export default function UserShow(): React.ReactElement {
+  const [record, setRecord] = useState<User>()
+
+  const { hasAccess } = useCanAccess()
+  const [open, setOpen] = useState(false)
+  const [filteredData, setFilteredData] = useState<Audit[]>([])
+  const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
+  const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
+
+  useEffect(() => {
+    if (data != null)
+      setFilteredData(
+        data.filter((audit) => {
+          return (
+            audit.user === record?.id ||
+            audit.subject === record?.id ||
+            (audit.dataId === record?.id && audit.resource === R_USERS)
+          )
+        })
+      )
+  }, [data, record, isLoading])
+
+  const handleOpen = (open: boolean): void => {
+    setOpen(open)
+  }
+
+  if (isLoading) return <Loading />
+
+  return (
+    <Show
+      actions={
+        hasDeleteAccess && (
+          <TopToolbar sx={{ alignItems: 'center' }}>
+            <EditButton />
+            <IconButton
+              onClick={() => {
+                handleOpen(true)
+              }}>
+              <History />
+            </IconButton>
+          </TopToolbar>
+        )
+      }>
+      <UserShowComp setRecord={setRecord} />
+      <ResourceHistoryModal
+        // filter={filter}
+        open={open}
+        data={filteredData}
+        close={() => {
+          handleOpen(false)
+        }}
+      />
+    </Show>
   )
 }

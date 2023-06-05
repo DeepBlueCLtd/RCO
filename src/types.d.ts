@@ -1,5 +1,9 @@
 interface CustomDataProvider {
-  loanItems: (items: Array<Item['id']>, loanedTo: User['id']) => Promise<any>
+  loanItems: (
+    items: Array<Item['id']>,
+    loanedTo: User['id'],
+    date?: string
+  ) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
 }
 
@@ -99,6 +103,7 @@ interface Tape extends CoreMedia {
 }
 
 interface Item extends ResourceWithCreation {
+  destruction: undefined
   mediaType: MediaType
   start: string
   batchId: Batch['id']

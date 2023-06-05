@@ -5,7 +5,7 @@ import * as constants from '../../constants'
 export default function DestructionList(): React.ReactElement {
   return (
     <List>
-      <Datagrid rowClick='show'>
+      <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField source='reference' />
         <DateField source='createdAt' />
         <SourceField source='createdBy' reference={constants.R_USERS} />

@@ -11,14 +11,16 @@ import {
   useRecordContext,
   useListContext,
   useUpdate,
-  useNotify
+  useNotify,
+  type Identifier
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article , KeyboardReturn } from '@mui/icons-material'
+import { Article, KeyboardReturn } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
+import useDoubleClick from '../../hooks/useDoubleClick'
 
 interface Props {
   name: string
@@ -28,7 +30,6 @@ export default function UserList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
   const basePath: string = `/${cName}`
-  const [open, setOpen] = useState(false)
   const { hasAccess } = useCanAccess()
 
   const hasWriteAccess = hasAccess(constants.R_USERS, { write: true })
@@ -41,10 +42,20 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
 
+  return (
+    <List actions={<ListActions />} perPage={25} resource={cName}>
+      <DataList />
+    </List>
+  )
+}
+
+const DataList = (): React.ReactElement => {
+  const [open, setOpen] = useState(false)
+  const handleRowClick = useDoubleClick(constants.R_USERS)
+
   const handleOpen = (open: boolean) => () => {
     setOpen(open)
   }
-
   const UserActions = (): React.ReactElement => {
     const { selectedIds, data } = useListContext()
     const [showReturn, setShowReturn] = useState<boolean>(false)
@@ -97,10 +108,11 @@ export default function UserList(props: Props): React.ReactElement {
       </>
     )
   }
-
   return (
-    <List actions={<ListActions />} perPage={25} resource={cName}>
-      <Datagrid rowClick={'show'} bulkActionButtons={<UserActions />}>
+    <>
+      <Datagrid
+        rowClick={(id: Identifier) => handleRowClick(id as number)}
+        bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' />
@@ -112,7 +124,7 @@ export default function UserList(props: Props): React.ReactElement {
         </ArrayField>
       </Datagrid>
       <UserMusterList open={open} onClose={handleOpen(false)} />
-    </List>
+    </>
   )
 }
 

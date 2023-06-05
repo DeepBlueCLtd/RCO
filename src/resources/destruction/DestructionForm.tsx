@@ -51,7 +51,10 @@ export default function DestructionForm(props: Props): React.ReactElement {
           pagination: { page: 1, perPage: 1 }
         })
         .then(({ data }) => {
-          setLastId(data[0]?.id ?? 0)
+          const lastDataId = data[0]?.id
+          const id =
+            lastDataId === undefined ? 0 : lastDataId === 0 ? 1 : lastDataId
+          setLastId(id === 0 ? id : id + 1)
         })
         .catch(console.log)
         .finally(() => {
@@ -68,6 +71,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
         data: { reference, remarks }
       })
       notify('Element created')
+      setLastId(lastId + 1)
     } catch (error: any) {
       notify(error.message, { type: 'error' })
     }

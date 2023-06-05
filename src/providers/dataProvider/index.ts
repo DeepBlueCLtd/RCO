@@ -40,7 +40,7 @@ export const lifecycleCallbacks = (
 
 export const getDataProvider = async (
   loggingEnabled: boolean
-): Promise<DataProvider<string>> => {
+): Promise<CustomDataProvider & DataProvider<string>> => {
   const localForageData = await localForage.keys()
   if (localForageData.length === 0) {
     await loadDefaultData()
@@ -57,5 +57,5 @@ export const getDataProvider = async (
   return withLifecycleCallbacks(
     providerWithCustomMethods,
     lifecycleCallbacks(audit, providerWithCustomMethods)
-  )
+  ) as CustomDataProvider & DataProvider
 }
