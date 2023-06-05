@@ -33,7 +33,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const dataProvider = useDataProvider()
   const [create] = useCreate()
   const [loading, setLoading] = useState(!isEdit)
-  const [lastId, setLastId] = useState(0)
+  const [lastId, setLastId] = useState<number>(0)
   const [year, setYear] = useState(new Date().getFullYear())
   const notify = useNotify()
 
@@ -52,7 +52,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
         })
         .then(({ data }) => {
           const lastDataId = data[0]?.id
-          const id =
+          const id: number =
             lastDataId === undefined ? 0 : lastDataId === 0 ? 1 : lastDataId
           setLastId(id === 0 ? id : id + 1)
         })
