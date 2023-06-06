@@ -1,6 +1,9 @@
 import { type DataProvider } from 'react-admin'
-import { R_DEPARTMENT, type ResourceTypes } from '../../../constants'
-import { generateDepartmentForTesting } from './dummy-data'
+import { type ResourceTypes } from '../../../constants'
+import {
+  generateDepartmentForTesting,
+  type generateProtectiveMarkingAuthorityForTesting
+} from './dummy-data'
 import { common } from './common'
 
 describe('Reference item tests', () => {})
@@ -8,13 +11,15 @@ describe('Reference item tests', () => {})
 const referenceItemTests = (
   provider: DataProvider,
   resource: ResourceTypes,
-  dummyDataGenerate: typeof generateDepartmentForTesting
+  dummyDataGenerate:
+    | typeof generateDepartmentForTesting
+    | typeof generateProtectiveMarkingAuthorityForTesting
 ): Array<() => Promise<void>> => {
   const {
     checkEmptyAuditList,
     checkAuditListForFirstEntry,
     checkAuditListForSecondEntry
-  } = common(provider, R_DEPARTMENT)
+  } = common(provider, resource)
 
   return [
     async () => {
