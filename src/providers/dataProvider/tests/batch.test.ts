@@ -72,7 +72,7 @@ describe('CRUD operations on Batch Resource', () => {
     expect(firstCreateId).toEqual(firstCreatedBatch.data.id)
     const firstBatchId = firstResult.data.batchNumber
     expect(firstBatchId).toBeTruthy()
-    expect(firstBatchId).toEqual('V01/2025')
+    expect(firstBatchId).toEqual('V1/2025')
 
     // now a second batch, to check the increment
     const secondResult = await provider.create<Batch>(R_BATCHES, {
