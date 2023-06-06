@@ -104,7 +104,7 @@ describe('CRUD operations on Item Resource', () => {
     expect(secondCreatedId).toEqual(secondCreatedItem.id)
     const secondCreatedRef = secondCreated.item_number
     expect(secondCreatedRef).toBeTruthy()
-    expect(secondCreatedRef).toEqual('V01/2025/02')
+    expect(secondCreatedRef).toEqual('V01/2025/2')
   })
 
   it('should update the item', async () => {

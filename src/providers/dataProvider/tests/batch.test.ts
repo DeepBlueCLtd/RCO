@@ -87,7 +87,7 @@ describe('CRUD operations on Batch Resource', () => {
     expect(secondCreateId).toEqual(secondCreatedBatch.data.id)
     const secondBatchId = secondResult.data.batchNumber
     expect(secondBatchId).toBeTruthy()
-    expect(secondBatchId).toEqual('V02/2025')
+    expect(secondBatchId).toEqual('V2/2025')
   })
 
   it('should update the batch', async () => {
