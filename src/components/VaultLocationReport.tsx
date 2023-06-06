@@ -1,7 +1,5 @@
-import { Article } from '@mui/icons-material'
 import {
   Box,
-  Button,
   Table,
   Typography,
   TableHead,
@@ -92,12 +90,14 @@ function ProtectiveMarking(): React.ReactElement {
   )
 }
 
-type Props = PartialBy<ListProps, 'children'>
+type Props = PartialBy<ListProps, 'children'> & {
+  selectedIds: any[]
+  open: any
+  handleOpen: any
+}
 
 export default function VaultLocationReport(props: Props): ReactElement {
-  const [open, setOpen] = useState(false)
-  const { selectedIds } = useListContext()
-
+  const { selectedIds, open, handleOpen } = props
   const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
   useEffect(() => {
@@ -118,19 +118,8 @@ export default function VaultLocationReport(props: Props): ReactElement {
       .catch(console.log)
   }, [selectedIds.length])
 
-  const handleOpen = (open: boolean) => () => {
-    setOpen(open)
-  }
-
   return (
     <>
-      <Button
-        startIcon={<Article />}
-        sx={{ lineHeight: '1.5' }}
-        size='small'
-        onClick={handleOpen(true)}>
-        Location Muster List
-      </Button>
       <Printable open={open} onClose={handleOpen(false)}>
         <>
           {selectedIds.map((id, index) => {
