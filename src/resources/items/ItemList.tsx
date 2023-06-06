@@ -160,7 +160,8 @@ const getItemStates = (
       noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
       allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
       anyDestructed: filteredData.some((f) => f.destruction !== undefined),
-      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined)
+      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined),
+      anyDispatched: filteredData.some((f) => f.dispatchJob !== undefined)
     }
   }
 }
@@ -206,6 +207,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const [allLoaned, setAllLoaned] = useState(false)
   const [isDestruction, setIsDestruction] = useState(false)
   const [isAnyLoaned, setIsAnyLoaned] = useState(false)
+  const [isAnyDispatched, setIsAnyDispatched] = useState(false)
 
   const audit = useAudit()
   const dataProvider = useDataProvider()
@@ -213,12 +215,18 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
 
   useEffect(() => {
-    const { noneLoanedVal, allLoanedVal, anyDestructed, anyLoaned } =
-      getItemStates(selectedIds, data)
+    const {
+      noneLoanedVal,
+      allLoanedVal,
+      anyDestructed,
+      anyLoaned,
+      anyDispatched
+    } = getItemStates(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
     setAllLoaned(allLoanedVal)
     setIsDestruction(anyDestructed)
     setIsAnyLoaned(anyLoaned)
+    setIsAnyDispatched(anyDispatched)
   }, [selectedIds, data])
 
   const handleClose = (): void => {
@@ -312,7 +320,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   return (
     <>
-      {!isDestruction && (
+      {!isDestruction && !isAnyLoaned && !isAnyDispatched && (
         <>
           {hasAccess(constants.R_ITEMS, { write: true }) ? (
             <FlexBox>
