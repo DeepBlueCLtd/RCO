@@ -51,6 +51,12 @@ export default function ReferenceDataList({
   return (
     <List actions={<ListActions />} resource={cName}>
       <Datagrid
+        sx={{
+          '& .RaDatagrid-headerCell': {
+            fontWeight: 'bold',
+            fontSize: '16px'
+          }
+        }}
         bulkActionButtons={false}
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()

@@ -236,6 +236,12 @@ const DataList = (): React.ReactElement => {
 
   return (
     <DatagridConfigurable
+      sx={{
+        '& .RaDatagrid-headerCell': {
+          fontWeight: 'bold',
+          fontSize: '16px'
+        }
+      }}
       rowClick={(id) => handleRowClick(id as number)}
       bulkActionButtons={<BulkActions />}
       omit={omitColumns}>

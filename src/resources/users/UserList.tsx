@@ -15,7 +15,7 @@ import {
   type Identifier
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article , KeyboardReturn } from '@mui/icons-material'
+import { Article, KeyboardReturn } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -111,6 +111,12 @@ const DataList = (): React.ReactElement => {
   return (
     <>
       <Datagrid
+        sx={{
+          '& .RaDatagrid-headerCell': {
+            fontWeight: 'bold',
+            fontSize: '16px'
+          }
+        }}
         rowClick={(id: Identifier) => handleRowClick(id as number)}
         bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />

@@ -64,6 +64,12 @@ const DataList = (): React.ReactElement => {
   return (
     <>
       <Datagrid
+        sx={{
+          '& .RaDatagrid-headerCell': {
+            fontWeight: 'bold',
+            fontSize: '16px'
+          }
+        }}
         rowClick={
           hasWriteAccess
             ? (id: Identifier) => handleRowClick(id as number)
