@@ -27,7 +27,7 @@ export const generateDummyBatchForTesting = ({
     startDate: DateTime.now().toFormat('yyyy-MM-dd'),
     endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
     projectCode: '1',
-    batchNumber: `V01/${year}`,
+    batchNumber: `V1/${year}`,
     yearOfReceipt: String(year),
     department: 1,
     project: 1,
