@@ -110,7 +110,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
           icon={false}
           severity={items.length === 0 ? 'info' : 'success'}>
           <Typography variant='body1'>
-            {items.length} items dispathced!
+            {items.length} items dispatched!
           </Typography>
           {notDispatchedItems !== 0 && (
             <Typography variant='body1'>
