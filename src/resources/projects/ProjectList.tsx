@@ -46,12 +46,6 @@ export default function ProjectList(): React.ReactElement {
     <List actions={<ListActions />} perPage={25} filters={filters}>
       <ResetDateFilter source='createdAt' />
       <DatagridConfigurable
-        sx={{
-          '& .RaDatagrid-headerCell': {
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }
-        }}
         omit={omitColumns}
         rowClick='show'
         bulkActionButtons={false}>

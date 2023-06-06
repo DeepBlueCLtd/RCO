@@ -93,10 +93,6 @@ export default function AuditList({
           '&  .RaDatagrid-rowCell': {
             maxWidth: '600px',
             padding: '12px'
-          },
-          '& .RaDatagrid-headerCell': {
-            fontWeight: 'bold',
-            fontSize: '16px'
           }
         }}>
         <SourceField source='user' reference={constants.R_USERS} link='show' />

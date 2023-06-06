@@ -111,12 +111,6 @@ const DataList = (): React.ReactElement => {
   return (
     <>
       <Datagrid
-        sx={{
-          '& .RaDatagrid-headerCell': {
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }
-        }}
         rowClick={(id: Identifier) => handleRowClick(id as number)}
         bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />

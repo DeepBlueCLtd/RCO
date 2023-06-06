@@ -76,12 +76,6 @@ export default function PlatformList(props: Props): React.ReactElement {
       filters={filters}
       resource='platforms'>
       <Datagrid
-        sx={{
-          '& .RaDatagrid-headerCell': {
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }
-        }}
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
           return `${basePath}/${cID}`

@@ -128,12 +128,6 @@ export default function BatchList(): React.ReactElement {
     <List perPage={25} actions={<ListActions />} filters={filters}>
       <ResetDateFilter source='createdAt' />
       <DatagridConfigurable
-        sx={{
-          '& .RaDatagrid-headerCell': {
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }
-        }}
         omit={omitColumns}
         rowClick='show'
         bulkActionButtons={false}>
