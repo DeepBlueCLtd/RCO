@@ -1,9 +1,6 @@
 import { type DataProvider } from 'react-admin'
 import { type ResourceTypes } from '../../../constants'
-import {
-  generateDepartmentForTesting,
-  type generateProtectiveMarkingAuthorityForTesting
-} from './dummy-data'
+import { generateActiveReferenceItemForTesting } from './dummy-data'
 import { common } from './common'
 
 describe('Reference item tests', () => {})
@@ -11,9 +8,7 @@ describe('Reference item tests', () => {})
 const referenceItemTests = (
   provider: DataProvider,
   resource: ResourceTypes,
-  dummyDataGenerate:
-    | typeof generateDepartmentForTesting
-    | typeof generateProtectiveMarkingAuthorityForTesting
+  dummyDataGenerate: typeof generateActiveReferenceItemForTesting
 ): Array<() => Promise<void>> => {
   const {
     checkEmptyAuditList,
@@ -24,33 +19,35 @@ const referenceItemTests = (
   return [
     async () => {
       await checkEmptyAuditList(provider)
-      const createdDepartment = (
+      const createdActiveReferenceItem = (
         await provider.create<ActiveReferenceItem>(resource, {
-          data: dummyDataGenerate()
+          data: dummyDataGenerate(`Dummy-${(resource as string).toUpperCase()}`)
         })
       ).data
 
-      await checkAuditListForFirstEntry(createdDepartment)
+      await checkAuditListForFirstEntry(createdActiveReferenceItem)
     },
     async () => {
       await checkEmptyAuditList(provider)
-      const createdDepartment = (
+      const createdActiveReferenceItem = (
         await provider.create<ActiveReferenceItem>(resource, {
-          data: generateDepartmentForTesting()
+          data: generateActiveReferenceItemForTesting(
+            `Dummy-${(resource as string).toUpperCase()}`
+          )
         })
       ).data
-      await checkAuditListForFirstEntry(createdDepartment)
+      await checkAuditListForFirstEntry(createdActiveReferenceItem)
 
       await provider.update<ActiveReferenceItem>(resource, {
-        id: createdDepartment.id,
-        previousData: createdDepartment,
+        id: createdActiveReferenceItem.id,
+        previousData: createdActiveReferenceItem,
         data: {
-          id: createdDepartment.id,
-          name: 'dummy-department-1',
+          id: createdActiveReferenceItem.id,
+          name: `dummy-${(resource as string).toLowerCase()}`,
           active: false
         }
       })
-      await checkAuditListForSecondEntry(createdDepartment)
+      await checkAuditListForSecondEntry(createdActiveReferenceItem)
     }
   ]
 }

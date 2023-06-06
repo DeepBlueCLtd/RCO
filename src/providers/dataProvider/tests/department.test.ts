@@ -8,7 +8,7 @@ import {
 } from '../../../constants'
 import { encryptedUsers } from '../../../utils/init-data'
 import authProvider from '../../authProvider'
-import { generateDepartmentForTesting } from './dummy-data'
+import { generateActiveReferenceItemForTesting } from './dummy-data'
 import localForageDataProvider from 'ra-data-local-forage'
 import referenceItemTests from './reference-item'
 import { common, commonBeforeEach } from './common'
@@ -22,7 +22,8 @@ describe('CRUD operation on department', () => {
   let checkListAfterCreate: () => Promise<void>,
     checkListBeforeCreate: () => Promise<void>,
     createResource: (
-      dummyDataGenerate: typeof generateDepartmentForTesting
+      dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
+      resource: ResourceTypes
     ) => Promise<ActiveReferenceItem>
 
   beforeAll(async () => {
@@ -46,12 +47,15 @@ describe('CRUD operation on department', () => {
 
   it('should create a department', async () => {
     await checkListBeforeCreate()
-    await createResource(generateDepartmentForTesting)
+    await createResource(generateActiveReferenceItemForTesting, R_DEPARTMENT)
     await checkListAfterCreate()
   })
 
   it('should update the department', async () => {
-    const createdDepartment = await createResource(generateDepartmentForTesting)
+    const createdDepartment = await createResource(
+      generateActiveReferenceItemForTesting,
+      R_DEPARTMENT
+    )
 
     await provider.update<ActiveReferenceItem>(R_DEPARTMENT, {
       id: createdDepartment.id,
@@ -69,11 +73,14 @@ describe('CRUD operation on department', () => {
       })
     ).data
 
-    const shouldMatchDepartment = generateDepartmentForTesting({
-      id: createdDepartment.id,
-      name: 'dummy-department-1',
-      active: false
-    })
+    const shouldMatchDepartment = generateActiveReferenceItemForTesting(
+      'dummy-department-1',
+      {
+        id: createdDepartment.id,
+
+        active: false
+      }
+    )
     expect(fetchedDepartment).toMatchObject(shouldMatchDepartment)
   })
 
@@ -81,7 +88,7 @@ describe('CRUD operation on department', () => {
     await referenceItemTests(
       provider,
       R_DEPARTMENT,
-      generateDepartmentForTesting
+      generateActiveReferenceItemForTesting
     )[0]()
   })
 
@@ -89,7 +96,7 @@ describe('CRUD operation on department', () => {
     await referenceItemTests(
       provider,
       R_DEPARTMENT,
-      generateDepartmentForTesting
+      generateActiveReferenceItemForTesting
     )[1]()
   })
 })

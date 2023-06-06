@@ -151,17 +151,15 @@ export const generateVaultLocationForTesting = ({
 interface ActiveReferenceItemProps {
   id?: number
   active?: boolean
-  name?: string
 }
 
-export const generateDepartmentForTesting = ({
-  id,
-  active,
-  name
-}: ActiveReferenceItemProps = {}): Omit<ActiveReferenceItem, 'id'> => ({
+export const generateActiveReferenceItemForTesting = (
+  name: string,
+  { id, active }: ActiveReferenceItemProps = {}
+): Omit<ActiveReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
-  name: name ?? 'Dummy-Department-1'
+  name
 })
 
 export const clear =
@@ -178,13 +176,3 @@ export const clear =
       })
     }
   }
-
-export const generateProtectiveMarkingAuthorityForTesting = ({
-  id,
-  active,
-  name
-}: ActiveReferenceItemProps = {}): Omit<ActiveReferenceItem, 'id'> => ({
-  ...(id !== undefined ? { id } : null),
-  active: active ?? true,
-  name: name ?? 'Dummy-Protective-Marking-Authority-1'
-})

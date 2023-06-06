@@ -8,9 +8,9 @@ import {
 import localForageDataProvider from 'ra-data-local-forage'
 import authProvider from '../../authProvider'
 import { encryptedUsers } from '../../../utils/init-data'
-import { generateProtectiveMarkingAuthorityForTesting } from './dummy-data'
 import { common, commonBeforeEach } from './common'
 import referenceItemTests from './reference-item'
+import { generateActiveReferenceItemForTesting } from './dummy-data'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const TO_CLEAR: ResourceTypes[] = [R_AUDIT, R_PROTECTIVE_MARKING_AUTHORITY]
@@ -21,7 +21,8 @@ describe('CRUD operation on Protective Marking Authority Resource', () => {
   let checkListAfterCreate: () => Promise<void>,
     checkListBeforeCreate: () => Promise<void>,
     createResource: (
-      dummyDataGenerate: typeof generateProtectiveMarkingAuthorityForTesting
+      dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
+      resource: ResourceTypes
     ) => Promise<ActiveReferenceItem>
 
   beforeAll(async () => {
@@ -45,13 +46,17 @@ describe('CRUD operation on Protective Marking Authority Resource', () => {
 
   it('should create a protective marking authority', async () => {
     await checkListBeforeCreate()
-    await createResource(generateProtectiveMarkingAuthorityForTesting)
+    await createResource(
+      generateActiveReferenceItemForTesting,
+      R_PROTECTIVE_MARKING_AUTHORITY
+    )
     await checkListAfterCreate()
   })
 
   it('should update the protective marking authority', async () => {
     const createdPMA = await createResource(
-      generateProtectiveMarkingAuthorityForTesting
+      generateActiveReferenceItemForTesting,
+      R_PROTECTIVE_MARKING_AUTHORITY
     )
 
     await provider.update<ActiveReferenceItem>(R_PROTECTIVE_MARKING_AUTHORITY, {
@@ -73,11 +78,13 @@ describe('CRUD operation on Protective Marking Authority Resource', () => {
       )
     ).data
 
-    const shouldMatchPMA = generateProtectiveMarkingAuthorityForTesting({
-      id: createdPMA.id,
-      name: 'dummy-pma-1',
-      active: false
-    })
+    const shouldMatchPMA = generateActiveReferenceItemForTesting(
+      'dummy-pma-1',
+      {
+        id: createdPMA.id,
+        active: false
+      }
+    )
     expect(fetchedPMA).toMatchObject(shouldMatchPMA)
   })
 
@@ -85,7 +92,7 @@ describe('CRUD operation on Protective Marking Authority Resource', () => {
     await referenceItemTests(
       provider,
       R_PROTECTIVE_MARKING_AUTHORITY,
-      generateProtectiveMarkingAuthorityForTesting
+      generateActiveReferenceItemForTesting
     )[0]()
   })
 
@@ -93,7 +100,7 @@ describe('CRUD operation on Protective Marking Authority Resource', () => {
     await referenceItemTests(
       provider,
       R_PROTECTIVE_MARKING_AUTHORITY,
-      generateProtectiveMarkingAuthorityForTesting
+      generateActiveReferenceItemForTesting
     )[1]()
   })
 })
