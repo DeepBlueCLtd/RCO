@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   FormControl,
@@ -106,23 +105,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         }
       })
 
-      const notDestroyedItems = ids.length - items.length
-
-      notify(
-        <Alert
-          variant='filled'
-          icon={false}
-          severity={items.length === 0 ? 'info' : 'success'}>
-          <Typography variant='body1'>
-            {items.length} items destroyed!
-          </Typography>
-          {notDestroyedItems !== 0 && (
-            <Typography variant='body1'>
-              {notDestroyedItems} items not destroyed!
-            </Typography>
-          )}
-        </Alert>
-      )
+      notify(`${ids.length} items destroyed!`, { type: 'success' })
       successCallback()
     }
   }

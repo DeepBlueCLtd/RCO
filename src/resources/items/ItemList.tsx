@@ -234,7 +234,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         </FlexBox>
       ) : null}
 
-      {!isDestruction && (
+      {!isDestruction && !isAnyLoaned && (
         <>
           {destroy ? (
             <FlexBox>

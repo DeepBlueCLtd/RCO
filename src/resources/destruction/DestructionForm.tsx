@@ -70,8 +70,8 @@ export default function DestructionForm(props: Props): React.ReactElement {
         .then(({ data }) => {
           const lastDataId = data[0]?.id
           const id: number =
-            lastDataId === undefined ? 0 : lastDataId === 0 ? 1 : lastDataId
-          setLastId(id === 0 ? id : id + 1)
+            lastDataId === undefined ? 0 : lastDataId === 0 ? 1 : lastDataId + 1
+          setLastId(id)
         })
         .catch(console.log)
         .finally(() => {

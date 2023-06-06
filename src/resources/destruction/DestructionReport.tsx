@@ -264,7 +264,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
         handleOpen(false)
       }}>
       <Box padding={'20px'}>
-        <Show component={'div'}>
+        <Show component={'div'} actions={false}>
           <Typography variant='h5' textAlign='center' margin='10px'>
             <TextField source='reference' />
           </Typography>
@@ -272,7 +272,10 @@ export default function DestructionReport(props: Props): React.ReactElement {
             CERTIFICATE OF DESTRUCTION OF DOCUMENTS
           </Typography>
         </Show>
-        <Show component={'div'} resource={constants.R_DESTRUCTION}>
+        <Show
+          component={'div'}
+          actions={false}
+          resource={constants.R_DESTRUCTION}>
           <ItemsCount />
           <TablesData />
         </Show>
