@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { type Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Menu, MenuItemLink } from 'react-admin'
@@ -22,36 +22,51 @@ export const SideMenus = (): React.ReactElement => {
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
 
+  const accessStates = useMemo(() => {
+    return {
+      batchHasAccess: hasAccess(constants.R_BATCHES, { read: true }),
+      itemsHasAccess: hasAccess(constants.R_ITEMS, { read: true }),
+      vaultLocationHasAccess: hasAccess(constants.R_VAULT_LOCATION, {
+        read: true
+      }),
+      projectsHasAccess: hasAccess(constants.R_PROJECTS, { read: true }),
+      platformsHasAccess: hasAccess(constants.R_PLATFORMS, { read: true }),
+      usersHasAccess: hasAccess(constants.R_USERS, { read: true }),
+      referenceDataHasAccess: hasAccess('reference-data', { read: true }),
+      destructionHasAccess: hasAccess(constants.R_DESTRUCTION, { read: true })
+    }
+  }, [loading])
+
   if (loading) return <></>
 
   return (
     <Menu className={styles.root}>
       <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Home />} />
-      {hasAccess(constants.R_PLATFORMS, { read: true }) && (
+      {accessStates.platformsHasAccess && (
         <Menu.ResourceItem name={constants.R_PLATFORMS} />
       )}
-      {hasAccess(constants.R_PROJECTS, { read: true }) && (
+      {accessStates.projectsHasAccess && (
         <Menu.ResourceItem name={constants.R_PROJECTS} />
       )}
-      {hasAccess(constants.R_BATCHES, { read: true }) && (
+      {accessStates.batchHasAccess && (
         <Menu.ResourceItem name={constants.R_BATCHES} />
       )}
-      {hasAccess(constants.R_ITEMS, { read: true }) && (
+      {accessStates.itemsHasAccess && (
         <Menu.ResourceItem name={constants.R_ITEMS} />
       )}
-      {hasAccess(constants.R_VAULT_LOCATION, { read: true }) && (
+      {accessStates.vaultLocationHasAccess && (
         <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
       )}
-      {hasAccess(constants.R_PLATFORMS, { read: true }) && (
+      {accessStates.platformsHasAccess && (
         <Menu.ResourceItem name={constants.R_PLATFORMS} />
       )}
-      {hasAccess(constants.R_USERS, { read: true }) && (
+      {accessStates.usersHasAccess && (
         <Menu.ResourceItem name={constants.R_USERS} />
       )}
-      {hasAccess(constants.R_ITEMS, { read: true }) && (
+      {accessStates.destructionHasAccess && (
         <Menu.ResourceItem name={constants.R_DESTRUCTION} />
       )}
-      {hasAccess('reference-data', { read: true }) && (
+      {accessStates.referenceDataHasAccess && (
         <Menu.Item
           to='/reference-data'
           primaryText='Reference Data'

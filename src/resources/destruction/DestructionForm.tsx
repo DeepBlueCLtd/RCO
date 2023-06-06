@@ -68,7 +68,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
           pagination: { page: 1, perPage: 1 }
         })
         .then(({ data }) => {
-          const lastDataId = data[0]?.id
+          const lastDataId: number = data[0]?.id
           const id: number =
             lastDataId === undefined ? 0 : lastDataId === 0 ? 1 : lastDataId + 1
           setLastId(id)
