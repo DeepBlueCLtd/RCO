@@ -8,7 +8,7 @@ interface UserCanAccess {
 }
 
 export default function useCanAccess(): UserCanAccess {
-  const { permissions: data } = usePermissions()
+  const { permissions: data } = usePermissions({}, { staleTime: 0 })
   const [permissions, setPermissions] = useState<ResourcePermissions>(data)
   const getPermissions = useGetPermissions()
   const [loading, setLoading] = useState(true)

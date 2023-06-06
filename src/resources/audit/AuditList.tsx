@@ -63,15 +63,18 @@ const filters = [
 ]
 
 export interface FilterType {
-  dataId: number
-  resource: string
+  dataId?: number
+  user?: number
+  resource?: string
 }
 
 interface AuditListProps {
   filter?: FilterType
+  data?: Audit[]
 }
 export default function AuditList({
-  filter = undefined
+  filter = undefined,
+  data = undefined
 }: AuditListProps): React.ReactElement {
   return (
     <List
@@ -84,6 +87,7 @@ export default function AuditList({
       filters={filters}
       filter={filter}>
       <Datagrid
+        {...(data !== undefined ? { data } : null)}
         bulkActionButtons={false}
         sx={{
           '&  .RaDatagrid-rowCell': {
@@ -91,7 +95,7 @@ export default function AuditList({
             padding: '12px'
           }
         }}>
-        <SourceField source='user' reference={constants.R_USERS} />
+        <SourceField source='user' reference={constants.R_USERS} link='show' />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='label' label='Activity Type' />
         <TextField
@@ -102,7 +106,11 @@ export default function AuditList({
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
         <TextField source='dataId' label='Item' />
-        <SourceField source='subject' reference={constants.R_USERS} />
+        <SourceField
+          source='subject'
+          reference={constants.R_USERS}
+          link='show'
+        />
       </Datagrid>
     </List>
   )
