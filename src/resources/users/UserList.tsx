@@ -15,7 +15,7 @@ import {
   type Identifier
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article , KeyboardReturn } from '@mui/icons-material'
+import { Article, KeyboardReturn } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
