@@ -88,7 +88,7 @@ describe('CRUD operations on Item Resource', () => {
     expect(firstCreatedId).toEqual(firstCreatedItem.id)
     const firstCreatedRef = firstCreated.item_number
     expect(firstCreatedRef).toBeTruthy()
-    expect(firstCreatedRef).toEqual('V01/2025/1')
+    expect(firstCreatedRef).toEqual('V1/2025/1')
 
     const secondCreated = (
       await provider.create<Item>(R_ITEMS, {
@@ -104,7 +104,7 @@ describe('CRUD operations on Item Resource', () => {
     expect(secondCreatedId).toEqual(secondCreatedItem.id)
     const secondCreatedRef = secondCreated.item_number
     expect(secondCreatedRef).toBeTruthy()
-    expect(secondCreatedRef).toEqual('V01/2025/2')
+    expect(secondCreatedRef).toEqual('V1/2025/2')
   })
 
   it('should update the item', async () => {
