@@ -23,6 +23,16 @@ export const rcoTheme = {
           }
         }
       }
+    },
+    RaDatagrid: {
+      styleOverrides: {
+        root: {
+          '& .RaDatagrid-headerCell': {
+            fontWeight: 'bold',
+            fontSize: '16px'
+          }
+        }
+      }
     }
   }
 }

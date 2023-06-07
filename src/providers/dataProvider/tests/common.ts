@@ -1,7 +1,7 @@
 import { withLifecycleCallbacks, type DataProvider } from 'react-admin'
 import { R_AUDIT, type ResourceTypes } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
-import { clear, type generateDepartmentForTesting } from './dummy-data'
+import { clear, type generateActiveReferenceItemForTesting } from './dummy-data'
 import localForageDataProvider from 'ra-data-local-forage'
 import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
@@ -17,7 +17,8 @@ interface CommonReturnType {
     createdResource: ActiveReferenceItem
   ) => Promise<void>
   createResource: (
-    dummyDataGenerate: typeof generateDepartmentForTesting
+    dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
+    resource: ResourceTypes
   ) => Promise<ActiveReferenceItem>
   checkListBeforeCreate: () => Promise<void>
   checkListAfterCreate: () => Promise<void>
@@ -71,11 +72,12 @@ const common = (
       }
     },
     createResource: async (
-      dummyDataGenerate: typeof generateDepartmentForTesting
+      dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
+      resource: ResourceTypes
     ): Promise<ActiveReferenceItem> => {
       const createdResource = (
         await provider.create<ActiveReferenceItem>(resource, {
-          data: dummyDataGenerate()
+          data: dummyDataGenerate(`Dummy-${(resource as string).toUpperCase()}`)
         })
       ).data
 
