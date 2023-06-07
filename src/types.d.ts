@@ -103,7 +103,6 @@ interface Tape extends CoreMedia {
 }
 
 interface Item extends ResourceWithCreation {
-  destruction: undefined
   mediaType: MediaType
   start: string
   batchId: Batch['id']
