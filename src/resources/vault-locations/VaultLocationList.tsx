@@ -1,39 +1,18 @@
 import React, { useMemo, useState } from 'react'
-import {
-  Datagrid,
-  FunctionField,
-  type Identifier,
-  List,
-  useListContext
-} from 'react-admin'
+import { FunctionField, List } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
-import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
 import { Button, IconButton } from '@mui/material'
 import { Article, History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import useDoubleClick from '../../hooks/useDoubleClick'
+import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 
 export default function VaultLocationList(): React.ReactElement {
-  return (
-    <List>
-      <DataList />
-    </List>
-  )
-}
-
-const DataList = (): React.ReactElement => {
-  const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState<boolean>()
   const [openMusterList, setOpenMusterList] = useState(false)
   const [record, setRecord] = useState<ReferenceItem>()
-  const { selectedIds } = useListContext()
-  const handleRowClick = useDoubleClick(constants.R_VAULT_LOCATION)
 
-  const hasWriteAccess = hasAccess(constants.R_VAULT_LOCATION, {
-    write: true
-  })
   const filter = useMemo(
     () =>
       record?.id !== undefined
@@ -62,13 +41,9 @@ const DataList = (): React.ReactElement => {
     )
   }
   return (
-    <>
-      <Datagrid
-        rowClick={
-          hasWriteAccess
-            ? (id: Identifier) => handleRowClick(id as number)
-            : undefined
-        }
+    <List>
+      <DblClickDatagridConfigurable
+        resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
         <FunctionField
           style={{ cursor: 'pointer' }}
@@ -90,7 +65,7 @@ const DataList = (): React.ReactElement => {
             )
           }}
         />
-      </Datagrid>
+      </DblClickDatagridConfigurable>
       <ResourceHistoryModal
         filter={filter}
         open={open}
@@ -98,11 +73,7 @@ const DataList = (): React.ReactElement => {
           setOpen(false)
         }}
       />
-      <VaultLocationReport
-        open={openMusterList}
-        handleOpen={handleOpen}
-        selectedIds={selectedIds}
-      />
-    </>
+      <VaultLocationReport open={openMusterList} handleOpen={handleOpen} />
+    </List>
   )
 }
