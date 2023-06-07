@@ -36,7 +36,7 @@ const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
 
   const label =
-    typeof record?.finalisedAt !== 'undefined' ? 'Finlised' : 'Pending'
+    typeof record?.finalisedAt !== 'undefined' ? 'Finalised' : 'Pending'
 
   return <Typography variant='body2'>{label}</Typography>
 }

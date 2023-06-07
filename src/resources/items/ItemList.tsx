@@ -15,7 +15,8 @@ import {
   type SortPayload,
   useGetList,
   type FilterPayload,
-  type DatagridConfigurableProps
+  type DatagridConfigurableProps,
+  useGetMany
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -184,7 +185,10 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     destroyRemove: false
   }
 
-  const { selectedIds, data } = useListContext<Item>()
+  const { selectedIds } = useListContext<Item>()
+  const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
+    ids: selectedIds
+  })
   const [open, setOpen] = useState<ModalOpenType>('')
   const refresh = useRefresh()
   const [noneLoaned, setNoneLoaned] = useState(false)
@@ -257,14 +261,16 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
               </Button>
             </FlexBox>
           ) : null}
-          {loan && hasAccess(constants.R_ITEMS, { write: true }) ? (
-            <LoanItemsListBulkActionButtons
-              noneLoaned={noneLoaned}
-              allLoaned={allLoaned}
-            />
-          ) : null}
         </>
       )}
+      {!isDestruction &&
+      loan &&
+      hasAccess(constants.R_ITEMS, { write: true }) ? (
+        <LoanItemsListBulkActionButtons
+          noneLoaned={noneLoaned}
+          allLoaned={allLoaned}
+        />
+      ) : null}
 
       <Modal open={Boolean(open)} onClose={handleClose}>
         <>
