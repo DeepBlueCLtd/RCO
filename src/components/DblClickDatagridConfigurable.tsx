@@ -6,7 +6,7 @@ import {
 import useDoubleClick from '../hooks/useDoubleClick'
 import { type ResourceTypes } from '../constants'
 
-export default function CustomDatagridConfigurable(
+export default function DblClickDatagridConfigurable(
   props: DatagridConfigurableProps & { resource: ResourceTypes }
 ): React.ReactElement {
   const { children, resource, ...rest } = props

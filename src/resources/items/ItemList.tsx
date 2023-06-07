@@ -29,7 +29,7 @@ import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
 import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
-import CustomDatagridConfigurable from '../../components/CustomDatagridConfigurable'
+import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -226,7 +226,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       <ResetDateFilter source='createdAt' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
 
-      <CustomDatagridConfigurable
+      <DblClickDatagridConfigurable
         resource={constants.R_ITEMS}
         bulkActionButtons={<BulkActions />}
         omit={omitColumns}>
@@ -252,7 +252,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
         />
         <TextField source='remarks' />
         <TextField source='musterRemarks' />
-      </CustomDatagridConfigurable>
+      </DblClickDatagridConfigurable>
     </List>
   )
 }
