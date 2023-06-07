@@ -107,11 +107,11 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
                   to={{
                     pathname: resource,
                     search:
-                      onFilter !== false
+                      onFilter !== false && onFilter !== undefined
                         ? `filter=${JSON.stringify({
                             id: loaned
                           })}`
-                        : ''
+                        : 'filter={}&order=ASC&page=1&perPage=25&sort=createdAt'
                   }}
                   className={classes.label}>
                   {label}
