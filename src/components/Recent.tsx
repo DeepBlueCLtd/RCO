@@ -56,7 +56,6 @@ interface Props<T> {
   label?: string
   fields: Array<Field<T>>
   filter?: FilterPayload
-  onFilter?: boolean
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
@@ -77,11 +76,10 @@ interface RecentCardProps {
   children: React.ReactElement
   label?: string
   resource?: string
-  onFilter?: boolean
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', onFilter, children } = props
+  const { label, resource = '', children } = props
   const classes = useStyles()
 
   const { data } = useGetList<Item>(R_ITEMS, {
@@ -106,12 +104,18 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
                 <Link
                   to={{
                     pathname: resource,
-                    search:
-                      onFilter !== false && onFilter !== undefined
-                        ? `filter=${JSON.stringify({
+                    ...(resource === R_ITEMS
+                      ? {
+                          search: `filter=${JSON.stringify({
                             id: loaned
                           })}`
-                        : 'filter={}&order=ASC&page=1&perPage=25&sort=createdAt'
+                        }
+                      : resource === R_BATCHES
+                      ? {
+                          search:
+                            'filter={}&order=DESC&page=1&perPage=25&sort=createdAt'
+                        }
+                      : null)
                   }}
                   className={classes.label}>
                   {label}
@@ -128,17 +132,10 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
   )
 }
 export default function Recent<T>(props: Props<T>): React.ReactElement {
-  const {
-    resource,
-    itemsCount = 5,
-    label,
-    fields = [],
-    filter,
-    onFilter
-  } = props
+  const { resource, itemsCount = 5, label, fields = [], filter } = props
 
   return (
-    <RecentCard label={label} resource={resource} onFilter={onFilter}>
+    <RecentCard label={label} resource={resource}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}

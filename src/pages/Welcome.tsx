@@ -97,7 +97,6 @@ export default function Welcome(): React.ReactElement {
             { source: 'batchId', reference: constants.R_BATCHES }
           ]}
           filter={{ loanedTo_neq: undefined }}
-          onFilter
         />
       </FlexBox>
       <FlexBox className={styles.row}>
