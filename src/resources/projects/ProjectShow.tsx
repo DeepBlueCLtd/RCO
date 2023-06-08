@@ -40,7 +40,9 @@ const HistoryModal = ({
   return (
     <ResourceHistoryModal
       open={open}
-      close={() => { handleOpen(false) }}
+      close={() => {
+        handleOpen(false)
+      }}
       filter={filter}
     />
   )
@@ -62,7 +64,10 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
           />
         </>
       ) : null}
-      <IconButton onClick={() => { handleOpen(true) }}>
+      <IconButton
+        onClick={() => {
+          handleOpen(true)
+        }}>
         <History />
       </IconButton>
     </TopToolbar>

@@ -117,6 +117,10 @@ interface Item extends ResourceWithCreation {
   loanedTo?: User['id']
   loanedDate?: string
   consecPages?: string
+
+  // item destruction details
+  destruction?: Destruction['id']
+  destructionDate?: string
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -143,6 +147,16 @@ interface RCOStore {
   protectiveMarking: ActiveReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ActiveReferenceItem[]
+}
+
+interface Destruction {
+  readonly id: number
+  reference: string
+  createdAt: string
+  createdBy: User['id']
+  finalisedAt?: string
+  finalisedBy?: User['id']
+  remarks: string
 }
 
 interface ActivityType {

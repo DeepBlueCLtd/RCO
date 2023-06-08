@@ -17,7 +17,7 @@ const lifeCycles = (
   },
   beforeUpdate: async (record: UpdateParams<User>) => {
     const departed =
-      record.previousData.active === true && record.data.active === false
+      record.previousData.active && record.data.active === false
     const returned =
       record.previousData.departedDate !== undefined &&
       record.data.departedDate === undefined
@@ -28,9 +28,9 @@ const lifeCycles = (
       R_USERS,
       {
         type:
-          departed === true
+          departed
             ? AuditType.USER_DEPARTED
-            : returned === true
+            : returned
             ? AuditType.USER_RETURNED
             : AuditType.EDIT,
         securityRelated

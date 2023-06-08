@@ -15,6 +15,7 @@ import BatchLifeCycle from './resource-callbacks/BatchLifeCycle'
 import ItemLifeCycle from './resource-callbacks/ItemLifeCycle'
 import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
+import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -32,7 +33,8 @@ export const lifecycleCallbacks = (
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
     ReferenceItemLifeCycle(audit, constants.R_MEDIA_TYPE),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING_AUTHORITY),
-    ReferenceItemLifeCycle(audit, constants.R_DEPARTMENT)
+    ReferenceItemLifeCycle(audit, constants.R_DEPARTMENT),
+    DestructionLifeCycle(audit)
   ]
 }
 

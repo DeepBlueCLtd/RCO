@@ -36,6 +36,7 @@ import loadDefaultData from './utils/init-data'
 import { type FilterType } from './resources/audit/AuditList'
 import { canAccess } from './providers/authProvider/permissions'
 import { protectedRoutes } from './hooks/useCanAccess'
+import destruction from './resources/destruction'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -246,6 +247,12 @@ function App(): React.ReactElement {
           icon={constants.ICON_ITEM}
           name={constants.R_ITEMS}
           {...protectedRoutes(permissions, constants.R_ITEMS, items)}
+        />
+        <Resource
+          key={constants.R_DESTRUCTION}
+          icon={constants.ICON_DESTRUCTION}
+          name={constants.R_DESTRUCTION}
+          {...protectedRoutes(permissions, constants.R_ITEMS, destruction)}
         />
       </Admin>
     </Suspense>

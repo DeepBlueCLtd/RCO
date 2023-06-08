@@ -35,7 +35,10 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
     <TopToolbar sx={{ alignItems: 'center' }}>
       <TopToolbarField source='batchNumber' />
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
-      <IconButton onClick={() => { handleOpen(true) }}>
+      <IconButton
+        onClick={() => {
+          handleOpen(true)
+        }}>
         <History />
       </IconButton>
     </TopToolbar>
@@ -88,7 +91,9 @@ const HistoryModal = ({
   return (
     <ResourceHistoryModal
       open={open}
-      close={() => { handleOpen(false) }}
+      close={() => {
+        handleOpen(false)
+      }}
       filter={filter}
     />
   )
