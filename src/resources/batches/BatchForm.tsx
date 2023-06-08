@@ -8,7 +8,8 @@ import {
   useGetList,
   type TextInputProps,
   ReferenceInput,
-  AutocompleteInput
+  AutocompleteInput,
+  DateTimeInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -18,6 +19,7 @@ import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
+import dayjs from 'dayjs'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -25,7 +27,18 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required()
+  maximumProtectiveMarking: yup.number().required(),
+  startDate: yup.date().required(),
+  endDate: yup
+    .date()
+    .required()
+    .test(
+      'endDate',
+      'End date must be greater than start date',
+      function (value) {
+        return dayjs(value).diff(this.parent.startDate) > 0
+      }
+    )
 })
 
 const BatchForm = (props: FormProps): React.ReactElement => {
@@ -161,7 +174,20 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <FlexBox></FlexBox>
+        <FlexBox>
+          <DateTimeInput
+            sx={sx}
+            source='startDate'
+            label='Start'
+            variant='outlined'
+          />
+          <DateTimeInput
+            sx={sx}
+            source='endDate'
+            variant='outlined'
+            label='End'
+          />
+        </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>
