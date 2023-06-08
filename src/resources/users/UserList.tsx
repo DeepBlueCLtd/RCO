@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import {
   BooleanField,
   CreateButton,
-  Datagrid,
   List,
   TextField,
   TopToolbar,
@@ -11,8 +10,7 @@ import {
   useRecordContext,
   useListContext,
   useUpdate,
-  useNotify,
-  type Identifier
+  useNotify
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
 import { Article, KeyboardReturn } from '@mui/icons-material'
@@ -20,7 +18,7 @@ import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
-import useDoubleClick from '../../hooks/useDoubleClick'
+import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 
 interface Props {
   name: string
@@ -42,17 +40,7 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
 
-  return (
-    <List actions={<ListActions />} perPage={25} resource={cName}>
-      <DataList />
-    </List>
-  )
-}
-
-const DataList = (): React.ReactElement => {
   const [open, setOpen] = useState(false)
-  const handleRowClick = useDoubleClick(constants.R_USERS)
-
   const handleOpen = (open: boolean) => () => {
     setOpen(open)
   }
@@ -109,9 +97,9 @@ const DataList = (): React.ReactElement => {
     )
   }
   return (
-    <>
-      <Datagrid
-        rowClick={(id: Identifier) => handleRowClick(id as number)}
+    <List actions={<ListActions />} perPage={25} resource={cName}>
+      <DblClickDatagridConfigurable
+        resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />
         <TextField source='name' />
@@ -122,9 +110,9 @@ const DataList = (): React.ReactElement => {
             <ChipField />
           </SingleFieldList>
         </ArrayField>
-      </Datagrid>
+      </DblClickDatagridConfigurable>
       <UserMusterList open={open} onClose={handleOpen(false)} />
-    </>
+    </List>
   )
 }
 

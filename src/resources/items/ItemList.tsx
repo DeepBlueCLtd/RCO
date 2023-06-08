@@ -1,5 +1,4 @@
 import {
-  DatagridConfigurable,
   DateField,
   FilterButton,
   List,
@@ -16,7 +15,8 @@ import {
   useGetList,
   type FilterPayload,
   type DatagridConfigurableProps,
-  useDataProvider
+  useDataProvider,
+  useGetMany
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -34,11 +34,10 @@ import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
-import DispatchItems from './DispatchItems'
-import { RestoreFromTrash } from '@mui/icons-material'
 import DestroyRestoreItems from './DestroyRestoreItems'
 import { AuditType } from '../../utils/activity-types'
 import useAudit from '../../hooks/useAudit'
+import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -184,10 +183,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const { buttons } = props
 
   const {
-    destroy = true,
     location = true,
     loan = true,
-    destroyRemove = false,
     dispatch = true,
     isReturn = false
   } = buttons ?? {
@@ -199,7 +196,10 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     isReturn: false
   }
 
-  const { selectedIds, data } = useListContext<Item>()
+  const { selectedIds } = useListContext<Item>()
+  const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
+    ids: selectedIds
+  })
   const [open, setOpen] = useState<ModalOpenType>('')
   const refresh = useRefresh()
   const [noneLoaned, setNoneLoaned] = useState(false)
@@ -330,24 +330,13 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
           ) : null}
           {!isAnyLoaned && hasAccess(constants.R_ITEMS, { write: true }) ? (
             <FlexBox>
-              {destroy ? (
-                <Button
-                  startIcon={<DeleteSweepIcon />}
-                  onClick={handleOpen('destroy')}
-                  size='small'
-                  variant='outlined'>
-                  Destroy
-                </Button>
-              ) : null}
-              {destroyRemove ? (
-                <Button
-                  startIcon={<RestoreFromTrash />}
-                  onClick={handleOpen('destroyRemove')}
-                  size='small'
-                  variant='outlined'>
-                  Remove
-                </Button>
-              ) : null}
+              <Button
+                startIcon={<DeleteSweepIcon />}
+                onClick={handleOpen('destroy')}
+                size='small'
+                variant='outlined'>
+                Destroy
+              </Button>
             </FlexBox>
           ) : null}
           {location ? (
@@ -360,48 +349,44 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
               </Button>
             </FlexBox>
           ) : null}
-          {loan && hasAccess(constants.R_ITEMS, { write: true }) ? (
-            <LoanItemsListBulkActionButtons
-              noneLoaned={noneLoaned}
-              allLoaned={allLoaned}
-            />
-          ) : null}
-          <Modal open={Boolean(open)} onClose={handleClose}>
-            <>
-              {open === 'location' && (
-                <ChangeLocation
-                  successCallback={handleSuccess}
-                  onCancel={handleClose}
-                  ids={selectedIds}
-                />
-              )}
-              {open === 'destroy' && (
-                <DestroyItems
-                  ids={selectedIds}
-                  data={data}
-                  onClose={handleClose}
-                  successCallback={handleSuccess}
-                />
-              )}
-              {open === 'destroyRemove' && (
-                <DestroyRestoreItems
-                  ids={selectedIds}
-                  onClose={handleClose}
-                  successCallback={handleSuccess}
-                />
-              )}
-              {open === 'dispatch' && (
-                <DispatchItems
-                  ids={selectedIds}
-                  data={data}
-                  onClose={handleClose}
-                  successCallback={handleSuccess}
-                />
-              )}
-            </>
-          </Modal>
         </>
       )}
+      {!isDestruction &&
+      loan &&
+      hasAccess(constants.R_ITEMS, { write: true }) ? (
+        <LoanItemsListBulkActionButtons
+          noneLoaned={noneLoaned}
+          allLoaned={allLoaned}
+        />
+      ) : null}
+
+      <Modal open={Boolean(open)} onClose={handleClose}>
+        <>
+          {open === 'location' && (
+            <ChangeLocation
+              successCallback={handleSuccess}
+              onCancel={handleClose}
+              ids={selectedIds}
+            />
+          )}
+          {open === 'destroy' && (
+            <DestroyItems
+              ids={selectedIds}
+              data={data}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
+          {open === 'destroyRemove' && (
+            <DestroyRestoreItems
+              ids={selectedIds}
+              data={data}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
+        </>
+      </Modal>
     </>
   )
 }
@@ -423,60 +408,34 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       filter={props !== undefined ? props.filter : undefined}
       {...rest}>
       <ResetDateFilter source='createdAt' />
-      {typeof children !== 'undefined' ? (
-        children
-      ) : (
-        <ItemListDataTable {...datagridConfigurableProps} />
-      )}
       {/* <ResetDateRangeFilter source='date_range' /> */}
+      <DblClickDatagridConfigurable
+        resource={constants.R_ITEMS}
+        bulkActionButtons={<BulkActions />}
+        omit={omitColumns}>
+        <TextField source='item_number' label='Reference' />
+        <TextField source='id' />
+        <TextField source='createdAt' label='Created' />
+        <TextField source='mediaType' label='Media type' />
+        <SourceField
+          link='show'
+          source='loanedTo'
+          reference={constants.R_USERS}
+          label='Loaned to'
+        />
+        <DateField showTime source='start' />
+        <DateField showTime source='end' />
+        <SourceField source='vaultLocation' reference='vaultLocation' />
+        <SourceField source='protectiveMarking' reference='protectiveMarking' />
+        <SourceField
+          link='show'
+          source='batchId'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
+        <TextField source='remarks' />
+        <TextField source='musterRemarks' />
+      </DblClickDatagridConfigurable>
     </List>
-  )
-}
-
-function ItemListDataTable(
-  props: DatagridConfigurableProps
-): React.ReactElement {
-  return (
-    <DatagridConfigurable
-      rowClick='show'
-      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
-      omit={props?.omit ?? omitColumns}
-      {...props}>
-      <TextField source='item_number' label='Reference' />
-      <TextField source='id' />
-      <TextField source='createdAt' label='Created' />
-      <TextField source='mediaType' label='Media type' />
-      <SourceField
-        link='show'
-        source='loanedTo'
-        reference={constants.R_USERS}
-        label='Loaned to'
-      />
-      <DateField showTime source='start' />
-      <DateField showTime source='end' />
-      <SourceField source='vaultLocation' reference='vaultLocation' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <SourceField
-        link='show'
-        source='batchId'
-        reference={constants.R_BATCHES}
-        sourceField='batchNumber'
-      />
-      <SourceField
-        link='show'
-        source='destruction'
-        reference={constants.R_DESTRUCTION}
-        sourceField='reference'
-      />
-      <SourceField
-        link='show'
-        source='dispatched'
-        reference={constants.R_DISPATCH}
-        sourceField='reference'
-      />
-      <DateField source='destructionDate' />
-      <TextField source='remarks' />
-      <TextField source='musterRemarks' />
-    </DatagridConfigurable>
   )
 }
