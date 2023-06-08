@@ -229,6 +229,7 @@ function DestructionItemList(
     <BulkActions
       buttons={{
         destroy: false,
+        dispatch: false,
         location: false,
         loan: false,
         destroyRemove: true

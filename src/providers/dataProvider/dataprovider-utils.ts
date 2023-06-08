@@ -1,11 +1,12 @@
-import { type UpdateParams, type CreateResult } from 'ra-core'
+import { type UpdateParams, type CreateResult, type RaRecord } from 'ra-core'
 import { DateTime } from 'luxon'
 import { type AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
 import { type ResourceTypes } from '../../constants'
-import { type ResourceCallbacks } from 'react-admin'
+import { type ResourceCallbacks , type DataProvider, type GetListParams } from 'react-admin'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
+import { isNumber } from '../../utils/number'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -105,3 +106,63 @@ export const extendLifeCycle = (
   ...ReferenceItemLifeCycle(audit, resource, securityRelated),
   ...callbacks
 })
+
+const getReferenceIdFromField = (reference: string, prefix: string): number => {
+  return parseInt(reference.slice(prefix.length + 1, -5))
+}
+
+const compareVersions = (v1: string, v2: string, prefix: string): number => {
+  if (typeof v2 !== 'string') return 1
+
+  const s1 = getReferenceIdFromField(v1, prefix)
+  const s2 = getReferenceIdFromField(v2, prefix)
+
+  if (isNaN(s1) || isNaN(s2)) return NaN
+  if (s1 < s2) {
+    return -1
+  } else if (s1 > s2) {
+    return 1
+  } else {
+    return 0
+  }
+}
+
+export async function generateReference<T extends RaRecord>(
+  provider: DataProvider,
+  year: string,
+  resource: ResourceTypes,
+  fieldName: keyof T,
+  filter: GetListParams['filter'] = {
+    createdAt_gte: DateTime.now().startOf('year').toISO()
+  },
+  prefix = 'V'
+): Promise<string> {
+  if (!isNumber(year)) throw new TypeError('Year invalid')
+  const dispatch = await provider.getList<T>(resource, {
+    sort: { field: 'id', order: 'ASC' },
+    pagination: { page: 1, perPage: 1000 },
+    filter: { ...filter }
+  })
+
+  if (dispatch.data.length === 0) {
+    return `${prefix}/00/${year}`
+  }
+
+  if (dispatch.data.length === 1) {
+    return `${prefix}/01/${year}`
+  }
+
+  const greatestDispatch = dispatch.data.reduce((prev, current) =>
+    compareVersions(prev[fieldName], current[fieldName], prefix) === -1
+      ? current
+      : prev
+  )
+
+  const referenceId = (
+    getReferenceIdFromField(greatestDispatch[fieldName], prefix) + 1
+  ).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+    useGrouping: false
+  })
+  return `${prefix}/${referenceId}/${year}`
+}

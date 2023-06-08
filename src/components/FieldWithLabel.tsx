@@ -1,4 +1,4 @@
-import { type SxProps, Typography, Box } from '@mui/material'
+import { type SxProps, Typography, Box, type Theme } from '@mui/material'
 import React, { type FC, useMemo } from 'react'
 import { TextField } from 'react-admin'
 import SourceField from './SourceField'
@@ -10,7 +10,7 @@ export interface FieldWithLabelProps {
   component?: FC<any>
   separator?: string
   labelPosition?: 'left' | 'top'
-  labelStyles?: SxProps
+  labelStyles?: SxProps<Theme>
   [key: string]: any
 }
 

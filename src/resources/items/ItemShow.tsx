@@ -5,14 +5,23 @@ import {
   Loading,
   Show,
   TopToolbar,
+  useRecordContext,
   useShowContext
 } from 'react-admin'
 import CoreForm from './ItemForm/CoreForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
 import SourceInput from '../../components/SourceInput'
-import { Box, IconButton, Typography } from '@mui/material'
+import {
+  Box,
+  type SxProps,
+  type Theme,
+  Typography,
+  IconButton
+} from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
+import FieldWithLabel from '../../components/FieldWithLabel'
+import SourceField from '../../components/SourceField'
 import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 
@@ -72,6 +81,7 @@ export default function ItemShow(): React.ReactElement {
       actions={
         <TopToolbar sx={{ alignItems: 'center' }}>
           <TopToolbarField source='item_number' />
+          <DispatchedAt />
           {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
           <IconButton
             onClick={() => {
@@ -90,5 +100,36 @@ export default function ItemShow(): React.ReactElement {
         }}
       />
     </Show>
+  )
+}
+
+function DispatchedAt(): React.ReactElement {
+  const { dispatchedDate } = useRecordContext<Item>()
+
+  const dispatchedAtSx: SxProps<Theme> = (theme: Theme) => ({
+    fontSize: '30px',
+    color: theme.palette.primary.main,
+    '& span': { fontSize: '25px' }
+  })
+
+  if (typeof dispatchedDate === 'undefined') return <></>
+
+  return (
+    <TopToolbarField<Item> source='dispatchJob' component='div'>
+      <FieldWithLabel
+        label='Dispatched at'
+        source='dispatchedAt'
+        link='show'
+        component={() => (
+          <SourceField
+            link='show'
+            source='dispatchJob'
+            reference={constants.R_DISPATCH}
+            sourceField='dispatchedAt'
+          />
+        )}
+        labelStyles={dispatchedAtSx}
+      />
+    </TopToolbarField>
   )
 }

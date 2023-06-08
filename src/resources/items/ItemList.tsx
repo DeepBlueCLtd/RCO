@@ -15,7 +15,9 @@ import {
   useGetList,
   type FilterPayload,
   type DatagridConfigurableProps,
-  useGetMany
+  useDataProvider,
+  useGetMany,
+  useNotify
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -33,8 +35,11 @@ import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
+import DispatchItems from './DispatchItems'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DestroyRestoreItems from './DestroyRestoreItems'
+import { AuditType } from '../../utils/activity-types'
+import useAudit from '../../hooks/useAudit'
 import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
@@ -157,12 +162,21 @@ const getItemStates = (
       noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
       allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
       anyDestructed: filteredData.some((f) => f.destruction !== undefined),
-      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined)
+      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined),
+      anyDispatched: filteredData.some((f) => f.dispatchJob !== undefined)
     }
   }
 }
 
-type ModalOpenType = 'destroy' | 'location' | '' | 'loan' | 'destroyRemove'
+type ModalOpenType =
+  | 'destroy'
+  | 'location'
+  | ''
+  | 'loan'
+  | 'destroyRemove'
+  | 'dispatch'
+  | 'isReturn'
+  | 'dispatchRemove'
 
 type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
 
@@ -177,12 +191,18 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     destroy = true,
     location = true,
     loan = true,
-    destroyRemove = false
+    destroyRemove = false,
+    dispatchRemove = false,
+    dispatch = true,
+    isReturn = false
   } = buttons ?? {
     destroy: true,
     location: true,
     loan: true,
-    destroyRemove: false
+    destroyRemove: false,
+    dispatchRemove: false,
+    dispatch: true,
+    isReturn: false
   }
 
   const { selectedIds } = useListContext<Item>()
@@ -195,16 +215,27 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const [allLoaned, setAllLoaned] = useState(false)
   const [isDestruction, setIsDestruction] = useState(false)
   const [isAnyLoaned, setIsAnyLoaned] = useState(false)
+  const [isAnyDispatched, setIsAnyDispatched] = useState(false)
+
+  const audit = useAudit()
+  const dataProvider = useDataProvider()
+  const notify = useNotify()
 
   const { hasAccess } = useCanAccess()
 
   useEffect(() => {
-    const { noneLoanedVal, allLoanedVal, anyDestructed, anyLoaned } =
-      getItemStates(selectedIds, data)
+    const {
+      noneLoanedVal,
+      allLoanedVal,
+      anyDestructed,
+      anyLoaned,
+      anyDispatched
+    } = getItemStates(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
     setAllLoaned(allLoanedVal)
     setIsDestruction(anyDestructed)
     setIsAnyLoaned(anyLoaned)
+    setIsAnyDispatched(anyDispatched)
   }, [selectedIds, data])
 
   const handleClose = (): void => {
@@ -222,24 +253,98 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     refresh()
   }
 
+  const removeFromDispatch = async (): Promise<void> => {
+    selectedIds.map(async (itemId) => {
+      const auditData = {
+        type: AuditType.EDIT,
+        activityDetail: 'Item returned',
+        securityRelated: false,
+        dataId: itemId,
+        resource: constants.R_DISPATCH
+      }
+      await audit(auditData)
+      await audit({
+        ...auditData,
+        activityDetail: 'Dispatched Item returned',
+        resource: constants.R_ITEMS
+      })
+    })
+
+    await dataProvider.updateMany<Item>(constants.R_ITEMS, {
+      ids: selectedIds,
+      data: {
+        dispatchJob: undefined
+      }
+    })
+    notify(`${selectedIds.length} items removed from dispatch job`)
+    refresh()
+  }
+
+  const returnDispatchedItems = async (): Promise<void> => {
+    selectedIds.map(async (itemId) => {
+      const auditData = {
+        type: AuditType.EDIT,
+        activityDetail: 'Item returned',
+        securityRelated: false,
+        dataId: itemId,
+        resource: constants.R_DISPATCH
+      }
+      await audit(auditData)
+      await audit({
+        ...auditData,
+        activityDetail: 'Dispatched Item returned',
+        resource: constants.R_ITEMS
+      })
+    })
+
+    await dataProvider.updateMany<Item>(constants.R_ITEMS, {
+      ids: selectedIds,
+      data: {
+        dispatchJob: undefined,
+        dispatchedDate: undefined
+      }
+    })
+    refresh()
+  }
+
+  const ReturnButton = (): React.ReactElement => {
+    return (
+      <>
+        {isReturn ? (
+          <Button
+            onClick={returnDispatchedItems as any}
+            size='small'
+            variant='outlined'>
+            Return
+          </Button>
+        ) : (
+          <Button
+            onClick={removeFromDispatch as any}
+            size='small'
+            variant='outlined'>
+            Remove
+          </Button>
+        )}
+      </>
+    )
+  }
+
+  const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
+
   return (
     <>
-      {!isAnyLoaned && hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <FlexBox>
-          {destroyRemove ? (
-            <Button
-              startIcon={<RestoreFromTrash />}
-              onClick={handleOpen('destroyRemove')}
-              size='small'
-              variant='outlined'>
-              Remove
-            </Button>
-          ) : null}
-        </FlexBox>
-      ) : null}
-
-      {!isDestruction && !isAnyLoaned && (
+      {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
         <>
+          {dispatch ? (
+            <FlexBox>
+              <Button
+                onClick={handleOpen('dispatch')}
+                size='small'
+                variant='outlined'>
+                Dispatch
+              </Button>
+            </FlexBox>
+          ) : null}
           {destroy ? (
             <FlexBox>
               <Button
@@ -264,6 +369,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         </>
       )}
       {!isDestruction &&
+      !isAnyDispatched &&
       loan &&
       hasAccess(constants.R_ITEMS, { write: true }) ? (
         <LoanItemsListBulkActionButtons
@@ -271,6 +377,22 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
           allLoaned={allLoaned}
         />
       ) : null}
+      {!isItemNormal && (
+        <>
+          {destroyRemove ? (
+            <FlexBox>
+              <Button
+                startIcon={<RestoreFromTrash />}
+                onClick={handleOpen('destroyRemove')}
+                size='small'
+                variant='outlined'>
+                Remove
+              </Button>
+            </FlexBox>
+          ) : null}
+          {dispatchRemove ? <ReturnButton /> : null}
+        </>
+      )}
 
       <Modal open={Boolean(open)} onClose={handleClose}>
         <>
@@ -297,6 +419,14 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
               successCallback={handleSuccess}
             />
           )}
+          {open === 'dispatch' && (
+            <DispatchItems
+              ids={selectedIds}
+              data={data}
+              onClose={handleClose}
+              successCallback={handleSuccess}
+            />
+          )}
         </>
       </Modal>
     </>
@@ -307,48 +437,75 @@ interface ItemListType extends Omit<ListProps, 'children'> {
   filter?: FilterPayload
   children?: React.ReactElement
   datagridConfigurableProps?: DatagridConfigurableProps
+  filtersShown?: string[]
 }
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
-  const { datagridConfigurableProps, children, ...rest } = props ?? {}
+  const { datagridConfigurableProps, children, filtersShown, ...rest } =
+    props ?? {}
   return (
     <List
       hasCreate={false}
       actions={<ItemActions />}
       resource={constants.R_ITEMS}
-      filters={filters}
+      filters={
+        !filtersShown
+          ? filters
+          : filters.filter((f) => filtersShown.includes(f.key as string))
+      }
       filter={props !== undefined ? props.filter : undefined}
       {...rest}>
       <ResetDateFilter source='createdAt' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
-
-      <DblClickDatagridConfigurable
-        resource={constants.R_ITEMS}
-        bulkActionButtons={<BulkActions />}
-        omit={omitColumns}>
-        <TextField source='item_number' label='Reference' />
-        <TextField source='id' />
-        <TextField source='createdAt' label='Created' />
-        <TextField source='mediaType' label='Media type' />
-        <SourceField
-          link='show'
-          source='loanedTo'
-          reference={constants.R_USERS}
-          label='Loaned to'
-        />
-        <DateField showTime source='start' />
-        <DateField showTime source='end' />
-        <SourceField source='vaultLocation' reference='vaultLocation' />
-        <SourceField source='protectiveMarking' reference='protectiveMarking' />
-        <SourceField
-          link='show'
-          source='batchId'
-          reference={constants.R_BATCHES}
-          sourceField='batchNumber'
-        />
-        <TextField source='remarks' />
-        <TextField source='musterRemarks' />
-      </DblClickDatagridConfigurable>
+      {typeof children !== 'undefined' ? (
+        children
+      ) : (
+        <DblClickDatagridConfigurable
+          resource={constants.R_ITEMS}
+          bulkActionButtons={<BulkActions />}
+          omit={omitColumns}>
+          <TextField source='item_number' label='Reference' />
+          <TextField source='id' />
+          <TextField source='createdAt' label='Created' />
+          <TextField source='mediaType' label='Media type' />
+          <SourceField
+            link='show'
+            source='loanedTo'
+            reference={constants.R_USERS}
+            label='Loaned to'
+          />
+          <DateField showTime source='start' />
+          <DateField showTime source='end' />
+          <SourceField source='vaultLocation' reference='vaultLocation' />
+          <SourceField
+            source='protectiveMarking'
+            reference='protectiveMarking'
+          />
+          <SourceField
+            link='show'
+            source='batchId'
+            reference={constants.R_BATCHES}
+            sourceField='batchNumber'
+          />
+          <SourceField
+            link='show'
+            source='destruction'
+            reference={constants.R_DESTRUCTION}
+            sourceField='reference'
+          />
+          <DateField source='destructionDate' />
+          <SourceField
+            link='show'
+            source='dispatchJob'
+            reference={constants.R_DISPATCH}
+            sourceField='reference'
+            label='Dispatch Job'
+          />
+          <DateField source='dispatchedDate' />
+          <TextField source='remarks' />
+          <TextField source='musterRemarks' />
+        </DblClickDatagridConfigurable>
+      )}
     </List>
   )
 }

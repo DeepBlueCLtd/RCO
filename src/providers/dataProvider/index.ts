@@ -15,6 +15,7 @@ import BatchLifeCycle from './resource-callbacks/BatchLifeCycle'
 import ItemLifeCycle from './resource-callbacks/ItemLifeCycle'
 import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
+import DispatchLifeCycle from './resource-callbacks/DispatchLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
 
 export const lifecycleCallbacks = (
@@ -22,6 +23,7 @@ export const lifecycleCallbacks = (
   provider: DataProvider
 ): Array<ResourceCallbacks<any>> => {
   return [
+    DispatchLifeCycle(audit, provider),
     BatchLifeCycle(audit, provider),
     UserLifeCycle(audit),
     ProjectLifeCycle(audit),

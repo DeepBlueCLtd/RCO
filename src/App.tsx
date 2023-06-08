@@ -36,6 +36,8 @@ import loadDefaultData from './utils/init-data'
 import { type FilterType } from './resources/audit/AuditList'
 import { canAccess } from './providers/authProvider/permissions'
 import { protectedRoutes } from './hooks/useCanAccess'
+import addresses from './resources/addresses'
+import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
@@ -231,6 +233,12 @@ function App(): React.ReactElement {
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>
         <Resource
+          key={constants.R_ADDRESSES}
+          icon={constants.ICON_ADDRESSES}
+          name={constants.R_ADDRESSES}
+          {...protectedRoutes(permissions, constants.R_ADDRESSES, addresses)}
+        />
+        <Resource
           key={constants.R_PROJECTS}
           icon={constants.ICON_PROJECT}
           name={constants.R_PROJECTS}
@@ -247,6 +255,12 @@ function App(): React.ReactElement {
           icon={constants.ICON_ITEM}
           name={constants.R_ITEMS}
           {...protectedRoutes(permissions, constants.R_ITEMS, items)}
+        />
+        <Resource
+          key={constants.R_DISPATCH}
+          icon={constants.ICON_DISPATCH}
+          name={constants.R_DISPATCH}
+          {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
         />
         <Resource
           key={constants.R_DESTRUCTION}
