@@ -91,13 +91,13 @@ function ProtectiveMarking(): React.ReactElement {
 }
 
 type Props = PartialBy<ListProps, 'children'> & {
-  selectedIds: any[]
   open: any
   handleOpen: any
 }
 
 export default function VaultLocationReport(props: Props): ReactElement {
-  const { selectedIds, open, handleOpen } = props
+  const { open, handleOpen } = props
+  const { selectedIds } = useListContext()
   const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
   useEffect(() => {

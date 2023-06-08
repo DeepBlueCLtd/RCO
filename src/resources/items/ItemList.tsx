@@ -1,5 +1,4 @@
 import {
-  DatagridConfigurable,
   DateField,
   FilterButton,
   List,
@@ -36,6 +35,7 @@ import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DestroyRestoreItems from './DestroyRestoreItems'
+import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -320,54 +320,35 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       filter={props !== undefined ? props.filter : undefined}
       {...rest}>
       <ResetDateFilter source='createdAt' />
-      {typeof children !== 'undefined' ? (
-        children
-      ) : (
-        <ItemListDataTable {...datagridConfigurableProps} />
-      )}
       {/* <ResetDateRangeFilter source='date_range' /> */}
-    </List>
-  )
-}
 
-function ItemListDataTable(
-  props: DatagridConfigurableProps
-): React.ReactElement {
-  return (
-    <DatagridConfigurable
-      rowClick='show'
-      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
-      omit={props?.omit ?? omitColumns}
-      {...props}>
-      <TextField source='item_number' label='Reference' />
-      <TextField source='id' />
-      <TextField source='createdAt' label='Created' />
-      <TextField source='mediaType' label='Media type' />
-      <SourceField
-        link='show'
-        source='loanedTo'
-        reference={constants.R_USERS}
-        label='Loaned to'
-      />
-      <DateField showTime source='start' />
-      <DateField showTime source='end' />
-      <SourceField source='vaultLocation' reference='vaultLocation' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <SourceField
-        link='show'
-        source='batchId'
-        reference={constants.R_BATCHES}
-        sourceField='batchNumber'
-      />
-      <SourceField
-        link='show'
-        source='destruction'
-        reference={constants.R_DESTRUCTION}
-        sourceField='reference'
-      />
-      <DateField source='destructionDate' />
-      <TextField source='remarks' />
-      <TextField source='musterRemarks' />
-    </DatagridConfigurable>
+      <DblClickDatagridConfigurable
+        resource={constants.R_ITEMS}
+        bulkActionButtons={<BulkActions />}
+        omit={omitColumns}>
+        <TextField source='item_number' label='Reference' />
+        <TextField source='id' />
+        <TextField source='createdAt' label='Created' />
+        <TextField source='mediaType' label='Media type' />
+        <SourceField
+          link='show'
+          source='loanedTo'
+          reference={constants.R_USERS}
+          label='Loaned to'
+        />
+        <DateField showTime source='start' />
+        <DateField showTime source='end' />
+        <SourceField source='vaultLocation' reference='vaultLocation' />
+        <SourceField source='protectiveMarking' reference='protectiveMarking' />
+        <SourceField
+          link='show'
+          source='batchId'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
+        <TextField source='remarks' />
+        <TextField source='musterRemarks' />
+      </DblClickDatagridConfigurable>
+    </List>
   )
 }
