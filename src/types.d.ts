@@ -117,6 +117,12 @@ interface Item extends ResourceWithCreation {
   loanedTo?: User['id']
   loanedDate?: string
   consecPages?: string
+  dispatchJob?: Dispatch['id']
+  dispatchedDate?: string
+
+  // item destruction details
+  destruction?: Destruction['id']
+  destructionDate?: string
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -145,6 +151,16 @@ interface RCOStore {
   platformOriginator: ActiveReferenceItem[]
 }
 
+interface Destruction {
+  readonly id: number
+  reference: string
+  createdAt: string
+  createdBy: User['id']
+  finalisedAt?: string
+  finalisedBy?: User['id']
+  remarks: string
+}
+
 interface ActivityType {
   name: string
   label: string
@@ -166,3 +182,24 @@ interface ResourceRoutes {
 }
 
 type ResourcePermissions = Record<string, Permission>
+
+interface Address {
+  readonly id: number
+  createdAt: string
+  fullAddress: string
+  active: boolean
+  Remarks: string
+}
+
+interface Dispatch {
+  id: number
+  reference: string
+  createdAt: string
+  createdBy: User['id']
+  remarks: string
+  dispatchedAt?: string
+  toName: string
+  toAddress: Address['id']
+  receiptReceived?: string
+  lastHastenerSent?: string
+}

@@ -3,7 +3,10 @@ import {
   Layers,
   AccountTree,
   CreditScore,
-  Notes
+  Notes,
+  Business,
+  LocalShipping,
+  DeleteSweepOutlined
 } from '@mui/icons-material'
 
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
@@ -26,6 +29,9 @@ export const R_PROTECTIVE_MARKING_AUTHORITY = 'protectiveMarkingAuthority'
 export const R_PROTECTIVE_MARKING = 'protectiveMarking'
 export const R_DEPARTMENT = 'department'
 export const R_MEDIA_TYPE = 'mediaType'
+export const R_ADDRESSES = 'addresses'
+export const R_DISPATCH = 'dispatch'
+export const R_DESTRUCTION = 'destruction'
 
 export type ResourceTypes =
   | typeof R_ITEMS
@@ -42,6 +48,7 @@ export type ResourceTypes =
   | typeof R_PROTECTIVE_MARKING
   | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
+  | typeof R_DISPATCH
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
@@ -51,6 +58,9 @@ export const ICON_BATCH = Layers
 export const ICON_ITEM = Save
 export const ICON_PROJECT = AccountTree
 export const ICON_LOAN = CreditScore
+export const ICON_ADDRESSES = Business
+export const ICON_DISPATCH = LocalShipping
+export const ICON_DESTRUCTION = DeleteSweepOutlined
 
 export const ICON_DETAILS = Notes
 
