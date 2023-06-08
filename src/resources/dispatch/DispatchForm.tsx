@@ -43,6 +43,8 @@ export default function DispatchForm(props: Props): React.ReactElement {
       resolver={yupResolver(schema)}>
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>
         <TextInput sx={sx} disabled={show} source='toName' />
+      </FlexBox>
+      <FlexBox flexDirection={showForm ? 'row' : 'column'}>
         <SourceInput
           source='toAddress'
           filter={{ active: true }}
