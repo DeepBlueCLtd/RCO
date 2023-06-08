@@ -13,7 +13,11 @@ import {
   type UpdateParams,
   Count,
   type DatagridConfigurableProps,
-  DatagridConfigurable
+  DatagridConfigurable,
+  useUpdateMany,
+  useGetList,
+  TopToolbar,
+  EditButton
 } from 'react-admin'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -25,14 +29,32 @@ import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
 import SourceField from '../../components/SourceField'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
 
   const label =
-    typeof record?.finalisedAt !== 'undefined' ? 'Finlised' : 'Pending'
+    typeof record?.finalisedAt !== 'undefined' ? 'Finalised' : 'Pending'
 
   return <Typography variant='body2'>{label}</Typography>
+}
+
+const ShowActions = (): React.ReactElement => {
+  const { hasAccess } = useCanAccess()
+  const record = useRecordContext()
+  const finalised = typeof record.finalisedAt !== 'undefined'
+
+  return (
+    <>
+      <TopToolbar>
+        {hasAccess(constants.R_DESTRUCTION, { write: true }) && !finalised && (
+          <EditButton />
+        )}
+      </TopToolbar>
+    </>
+  )
 }
 
 interface FooterProps {
@@ -108,15 +130,52 @@ const Footer = (props: FooterProps): React.ReactElement => {
 export default function DestructionShow(): React.ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const [update] = useUpdate()
+  const [updateMany] = useUpdateMany()
   const notify = useNotify()
+  const audit = useAudit()
   const { id } = useParams()
+  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+    filter: { destruction: id }
+  })
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
   }
 
+  const DestroyAudits = async (item: Item): Promise<void> => {
+    const audiData = {
+      type: AuditType.EDIT,
+      activityDetail: 'add item to destruction',
+      securityRelated: false,
+      resource: constants.R_ITEMS,
+      dataId: item.id
+    }
+    await audit(audiData)
+    await audit({
+      ...audiData,
+      resource: constants.R_DESTRUCTION
+    })
+  }
+
   const destroy = async (data: UpdateParams): Promise<void> => {
+    const ids = itemsAdded.map((item: Item) => item.id)
     await update(constants.R_DESTRUCTION, data)
+    await updateMany(constants.R_ITEMS, {
+      ids,
+      data: {
+        destructionDate: nowDate()
+      }
+    })
+    itemsAdded
+      .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
+        return (
+          ids.includes(id) &&
+          typeof loanedTo === 'undefined' &&
+          typeof loanedDate === 'undefined' &&
+          typeof destructionDate === 'undefined'
+        )
+      })
+      .forEach(DestroyAudits as any)
     notify('Element destroyed', { type: 'success' })
   }
 
@@ -125,12 +184,12 @@ export default function DestructionShow(): React.ReactElement {
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Destruction Show
+            Destruction Job
           </Typography>
         </legend>
         <Box>
           <DestructionReport open={open} handleOpen={handleOpen} />
-          <Show component={'div'}>
+          <Show component={'div'} actions={<ShowActions />}>
             <SimpleShowLayout>
               <TextField source='reference' />
               <DateField source='finalisedAt' />
@@ -164,30 +223,29 @@ function DestructionItemList(
     return !permission || typeof data?.finalisedAt !== 'undefined'
   }, [data])
 
+  const bulkActionButtons: false | React.ReactElement = destroyed ? (
+    false
+  ) : (
+    <BulkActions
+      buttons={{
+        destroy: false,
+        dispatch: false,
+        location: false,
+        loan: false,
+        destroyRemove: true
+      }}
+    />
+  )
+
   return (
     <Box component='fieldset' style={{ padding: '0 15px', overflowX: 'auto' }}>
       <legend>
         <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Destruction items
+          {destroyed ? 'Items destroyed' : 'Items to be destroyed'}
         </Typography>
       </legend>
-      <ItemList
-        filter={{ destruction: id }}
-        bulkActionButtons={
-          destroyed ? (
-            false
-          ) : (
-            <BulkActions
-              buttons={{
-                destroy: false,
-                location: false,
-                loan: false,
-                destroyRemove: true
-              }}
-            />
-          )
-        }>
-        <ItemListDataTable />
+      <ItemList filter={{ destruction: id }}>
+        <ItemListDataTable bulkActionButtons={bulkActionButtons} />
       </ItemList>
     </Box>
   )

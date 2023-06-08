@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   FormControl,
@@ -12,8 +11,8 @@ import FlexBox from '../../components/FlexBox'
 import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useEffect, useState } from 'react'
-import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
+import useAudit from '../../hooks/useAudit'
 
 interface Props {
   onClose: () => void
@@ -39,10 +38,10 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const dataProvider = useDataProvider()
   const notify = useNotify()
-  const audit = useAudit()
 
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<Destruction[]>([])
+  const audit = useAudit()
 
   const [destructionId, setDestructionId] = useState<number | string>()
 
@@ -69,19 +68,22 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   const onDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
-      const items = data
-        .filter(({ loanedDate, loanedTo, destruction, id }) => {
+      const { reference, id: destructionJobId } = items.find(
+        (job) => job.id === parseInt(destructionId as string)
+      ) ?? { reference: undefined }
+      const itemsAdded = data
+        .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
           return (
             ids.includes(id) &&
             typeof loanedTo === 'undefined' &&
             typeof loanedDate === 'undefined' &&
-            typeof destruction === 'undefined'
+            typeof destructionDate === 'undefined'
           )
         })
         .map(async (item) => {
           const audiData = {
             type: AuditType.EDIT,
-            activityDetail: 'add item to destruction',
+            activityDetail: `Add item to destruction ${reference}`,
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id
@@ -89,36 +91,22 @@ export default function DestroyItems(props: Props): React.ReactElement {
           await audit(audiData)
           await audit({
             ...audiData,
-            resource: constants.R_DESTRUCTION
+            resource: constants.R_DESTRUCTION,
+            activityDetail: `Add item ${item.item_number} to destruction`,
+            dataId: destructionJobId as number
           })
+
           return item.id
         })
 
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
-        ids: await Promise.all(items),
+        ids: await Promise.all(itemsAdded),
         data: {
-          destruction: Number(destructionId),
-          destructionDate: new Date().toISOString()
+          destruction: Number(destructionId)
         }
       })
 
-      const notDestroyedItems = ids.length - items.length
-
-      notify(
-        <Alert
-          variant='filled'
-          icon={false}
-          severity={items.length === 0 ? 'info' : 'success'}>
-          <Typography variant='body1'>
-            {items.length} items destroyed!
-          </Typography>
-          {notDestroyedItems !== 0 && (
-            <Typography variant='body1'>
-              {notDestroyedItems} items not destroyed!
-            </Typography>
-          )}
-        </Alert>
-      )
+      notify(`${ids.length} items destroyed!`, { type: 'success' })
       successCallback()
     }
   }

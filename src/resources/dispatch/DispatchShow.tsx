@@ -254,7 +254,7 @@ function DispatchedItemList(
         destroy: false,
         location: false,
         loan: false,
-        destroyRemove: false,
+        dispatchRemove: true,
         dispatch: false,
         isReturn: dispatched
       }}
@@ -270,7 +270,9 @@ function DispatchedItemList(
           {title}
         </Typography>
       </legend>
-      <ItemList filter={{ dispatchJob: id }}>
+      <ItemList
+        filter={{ dispatchJob: id }}
+        filtersShown={['q', 'batchId', 'mediaType']}>
         <ItemListDataTable bulkActionButtons={bulkActionButtons} />
       </ItemList>
     </Box>
@@ -288,6 +290,7 @@ function ItemListDataTable(
       {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
+      <TextField source='consecPages' label='Consec Serial' />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
     </DatagridConfigurable>
   )

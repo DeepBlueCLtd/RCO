@@ -10,6 +10,7 @@ interface Props {
   onClose: () => void
   successCallback: () => void
   ids: number[]
+  data: Item[]
 }
 
 const style = {
@@ -25,17 +26,26 @@ const style = {
 }
 
 export default function DestroyRestoreItems(props: Props): React.ReactElement {
-  const { onClose, successCallback, ids } = props
+  const { onClose, successCallback, ids, data } = props
 
   const dataProvider = useDataProvider()
   const notify = useNotify()
   const audit = useAudit()
 
   const onRemove = async (): Promise<void> => {
-    const promisees = ids.map(async (id) => {
+    const promisees = data.map(async (item) => {
+      console.log(typeof item.destruction)
+      const { id, destruction } = item
+
+      const {
+        data: { reference }
+      } = await dataProvider.getOne<Destruction>(constants.R_DESTRUCTION, {
+        id: destruction
+      })
+
       await audit({
         type: AuditType.EDIT,
-        activityDetail: 'remove item from destruction',
+        activityDetail: `Remove item from destruction ${reference}`,
         securityRelated: false,
         resource: constants.R_ITEMS,
         dataId: id
