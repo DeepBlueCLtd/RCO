@@ -41,6 +41,44 @@ const schema = yup.object({
     )
 })
 
+const optionsText = (value: Batch): string => value.name
+const sx = { width: '100%' }
+
+interface Props {
+  reference: string
+  source: string
+  inputProps?: SelectInputProps | TextInputProps
+  active?: boolean
+}
+
+export const ConditionalReferenceInput = <T extends ReferenceItem>(
+  props: Props
+): React.ReactElement | null => {
+  const { source, reference, inputProps = {}, active } = props
+  const filter = active !== undefined && active ? { active: true } : {}
+  const { data, isLoading } = useGetList<T>(reference, {
+    filter
+  })
+  const boolIsLoading: boolean = isLoading
+  if (boolIsLoading) return null
+  if (data === undefined) return null
+  const choices = data.map((d) => ({ name: d.name, id: d.id }))
+
+  return data?.length === 1 ? (
+    <SelectInput
+      source={source}
+      disabled
+      sx={sx}
+      defaultValue={data[0].id}
+      optionText={optionsText}
+      choices={choices}
+      {...inputProps}
+    />
+  ) : (
+    <AutocompleteInput source={source} choices={choices} sx={sx} />
+  )
+}
+
 const BatchForm = (props: FormProps): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
@@ -60,44 +98,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     }
   }, [])
 
-  const optionsText = (value: Batch): string => value.name
-
-  const sx = { width: '100%' }
-
-  interface Props {
-    reference: string
-    source: string
-    inputProps?: SelectInputProps | TextInputProps
-    active?: boolean
-  }
-
-  const ConditionalReferenceInput = <T extends ReferenceItem>(
-    props: Props
-  ): React.ReactElement | null => {
-    const { source, reference, inputProps = {}, active } = props
-    const filter = active !== undefined && active ? { active: true } : {}
-    const { data, isLoading } = useGetList<T>(reference, {
-      filter
-    })
-    const boolIsLoading: boolean = isLoading
-    if (boolIsLoading) return null
-    if (data === undefined) return null
-    const choices = data.map((d) => ({ name: d.name, id: d.id }))
-
-    return data?.length === 1 ? (
-      <SelectInput
-        source={source}
-        disabled
-        sx={sx}
-        defaultValue={data[0].id}
-        optionText={optionsText}
-        choices={choices}
-        {...inputProps}
-      />
-    ) : (
-      <AutocompleteInput source={source} choices={choices} sx={sx} />
-    )
-  }
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
   return (
     <>

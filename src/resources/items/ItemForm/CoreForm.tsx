@@ -12,6 +12,7 @@ import { useEffect } from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
+import { ConditionalReferenceInput } from '../../batches/BatchForm'
 
 const sx = { width: '100%' }
 
@@ -100,13 +101,11 @@ const CoreForm = (props: Props): React.ReactElement => {
         />
       </FlexBox>
       <FlexBox>
-        <ReferenceInput source='vaultLocation' reference='vaultLocation'>
-          <AutocompleteInput
-            disabled={disabled}
-            optionText={optionsText}
-            sx={sx}
-          />
-        </ReferenceInput>
+        <ConditionalReferenceInput
+          source='vaultLocation'
+          reference='vaultLocation'
+          active
+        />
         <ReferenceInput
           source='protectiveMarking'
           reference='protectiveMarking'>
