@@ -210,7 +210,7 @@ export default function DispatchShow(): React.ReactElement {
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Dispatch Show
+            Dispatch Job
           </Typography>
         </legend>
         <Box>
@@ -254,7 +254,7 @@ function DispatchedItemList(
         destroy: false,
         location: false,
         loan: false,
-        destroyRemove: false,
+        dispatchRemove: true,
         dispatch: false,
         isReturn: dispatched
       }}
@@ -270,7 +270,9 @@ function DispatchedItemList(
           {title}
         </Typography>
       </legend>
-      <ItemList filter={{ dispatchJob: id }}>
+      <ItemList
+        filter={{ dispatchJob: id }}
+        filtersShown={['q', 'batchId', 'mediaType']}>
         <ItemListDataTable bulkActionButtons={bulkActionButtons} />
       </ItemList>
     </Box>
@@ -288,6 +290,7 @@ function ItemListDataTable(
       {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
+      <TextField source='consecPages' label='Consec Serial' />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
     </DatagridConfigurable>
   )

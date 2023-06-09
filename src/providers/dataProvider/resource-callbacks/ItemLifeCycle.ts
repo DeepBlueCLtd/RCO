@@ -43,7 +43,6 @@ const lifeCycles = (
       const idVal: string = (
         items.total !== undefined ? items.total : 1
       ).toLocaleString('en-US', {
-        minimumIntegerDigits: 2,
         useGrouping: false
       })
       const batchNumber: string = batch.batchNumber

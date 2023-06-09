@@ -104,7 +104,7 @@ export default function ItemShow(): React.ReactElement {
 }
 
 function DispatchedAt(): React.ReactElement {
-  const { dispatchJob } = useRecordContext<Item>()
+  const { dispatchedDate } = useRecordContext<Item>()
 
   const dispatchedAtSx: SxProps<Theme> = (theme: Theme) => ({
     fontSize: '30px',
@@ -112,7 +112,7 @@ function DispatchedAt(): React.ReactElement {
     '& span': { fontSize: '25px' }
   })
 
-  if (typeof dispatchJob === 'undefined') return <></>
+  if (typeof dispatchedDate === 'undefined') return <></>
 
   return (
     <TopToolbarField<Item> source='dispatchJob' component='div'>
