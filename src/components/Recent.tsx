@@ -12,7 +12,7 @@ import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import { ICON_BATCH, R_BATCHES, R_ITEMS } from '../constants'
+import { ICON_BATCH, R_BATCHES, R_DISPATCH, R_ITEMS } from '../constants'
 import SourceField from './SourceField'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -57,7 +57,6 @@ interface Props<T> {
   label?: string
   fields: Array<Field<T>>
   filter?: FilterPayload
-  onFilter?: boolean
   queryFilter?: FilterPayload
 }
 
@@ -83,12 +82,11 @@ interface RecentCardProps {
   children: React.ReactElement
   label?: string
   resource?: string
-  onFilter?: boolean
   queryFilter?: FilterPayload
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', onFilter, children, queryFilter } = props
+  const { label, resource = '', children, queryFilter } = props
   const classes = useStyles()
 
   const { data } = useGetList<Item>(R_ITEMS, {
@@ -113,12 +111,24 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
                 <Link
                   to={{
                     pathname: resource,
-                    search:
-                      onFilter !== false
-                        ? `filter=${JSON.stringify(
+                    ...(resource === R_ITEMS
+                      ? {
+                          search: `filter=${JSON.stringify({
+                            id: loaned
+                          })}`
+                        }
+                      : resource === R_BATCHES
+                      ? {
+                          search:
+                            'filter={}&order=DESC&page=1&perPage=25&sort=createdAt'
+                        }
+                      : resource === R_DISPATCH
+                      ? {
+                          search: `filter=${JSON.stringify(
                             queryFilter ?? { id: loaned }
                           )}`
-                        : ''
+                        }
+                      : null)
                   }}
                   className={classes.label}>
                   {label}
@@ -141,16 +151,11 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
     label,
     fields = [],
     filter,
-    onFilter,
     queryFilter
   } = props
 
   return (
-    <RecentCard
-      queryFilter={queryFilter}
-      label={label}
-      resource={resource}
-      onFilter={onFilter}>
+    <RecentCard queryFilter={queryFilter} label={label} resource={resource}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}
