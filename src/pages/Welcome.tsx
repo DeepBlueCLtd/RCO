@@ -3,7 +3,7 @@ import * as constants from '../constants'
 import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton, DateField } from 'react-admin'
+import { CreateButton, DateField, useGetList } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import HastenerSentField from '../components/HastenerSentField'
@@ -35,6 +35,10 @@ const useStyles = makeStyles({
 export default function Welcome(): React.ReactElement {
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
+  const { data } = useGetList<Item>(constants.R_ITEMS, {
+    sort: { field: 'id', order: 'ASC' }
+  })
+  const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
 
   if (loading) return <></>
 
@@ -83,6 +87,7 @@ export default function Welcome(): React.ReactElement {
             { source: 'platform', reference: constants.R_PLATFORMS },
             { source: 'project', reference: constants.R_PROJECTS }
           ]}
+          search='filter={}&order=DESC&page=1&perPage=25&sort=createdAt'
         />
         <Recent<Item>
           label='Recent loans'
@@ -93,6 +98,9 @@ export default function Welcome(): React.ReactElement {
             { source: 'batchId', reference: constants.R_BATCHES }
           ]}
           filter={{ loanedTo_neq: undefined }}
+          search={`filter=${JSON.stringify({
+            id: loaned
+          })}`}
         />
       </FlexBox>
       <FlexBox className={styles.row}>
@@ -105,7 +113,7 @@ export default function Welcome(): React.ReactElement {
             { source: 'lastHastenerSent', component: HastenerSentField }
           ]}
           filter={{ receiptReceived: undefined }}
-          queryFilter={{ receiptReceived: [undefined] }}
+          search={`filter=${JSON.stringify({ receiptReceived: [undefined] })}`}
         />
       </FlexBox>
     </div>
