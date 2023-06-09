@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   FormControl,
@@ -42,7 +41,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
   const audit = useAudit()
 
   const [loading, setLoading] = useState(false)
-  const [items, setItems] = useState<Destruction[]>([])
+  const [items, setItems] = useState<Dispatch[]>([])
 
   const [dispatchId, setDispatchId] = useState<number | string>()
 
@@ -68,21 +67,19 @@ export default function DispatchItems(props: Props): React.ReactElement {
   }, [])
 
   const onDispatch = async (): Promise<void> => {
+    const { reference } = items.find(
+      (job) => job.id === parseInt(dispatchId as string)
+    ) ?? {
+      reference: undefined
+    }
     if (typeof dispatchId !== 'undefined') {
       const items = data
-        .filter(({ loanedDate, loanedTo, destruction, dispatched, id }) => {
-          return (
-            ids.includes(id) &&
-            typeof loanedTo === 'undefined' &&
-            typeof loanedDate === 'undefined' &&
-            typeof destruction === 'undefined' &&
-            typeof dispatched === 'undefined'
-          )
-        })
+        .filter(({ id }) => ids.includes(id))
         .map(async (item) => {
+          const { item_number: itemNumber } = item
           const audiData = {
             type: AuditType.EDIT,
-            activityDetail: 'add item to dispatch',
+            activityDetail: `Add item ${itemNumber} to dispatch`,
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id
@@ -90,6 +87,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
           await audit(audiData)
           await audit({
             ...audiData,
+            activityDetail: `Add item to dispatch ${reference}`,
             resource: constants.R_DISPATCH
           })
           return item.id
@@ -98,27 +96,11 @@ export default function DispatchItems(props: Props): React.ReactElement {
       await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids: await Promise.all(items),
         data: {
-          dispatched: Number(dispatchId)
+          dispatchJob: Number(dispatchId)
         }
       })
 
-      const notDispatchedItems = ids.length - items.length
-
-      notify(
-        <Alert
-          variant='filled'
-          icon={false}
-          severity={items.length === 0 ? 'info' : 'success'}>
-          <Typography variant='body1'>
-            {items.length} items dispathced!
-          </Typography>
-          {notDispatchedItems !== 0 && (
-            <Typography variant='body1'>
-              {notDispatchedItems} items not dispatched!
-            </Typography>
-          )}
-        </Alert>
-      )
+      notify(`${items.length} items dispatched!`, { type: 'success' })
       successCallback()
     }
   }

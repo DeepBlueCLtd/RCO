@@ -104,7 +104,7 @@ export default function ItemShow(): React.ReactElement {
 }
 
 function DispatchedAt(): React.ReactElement {
-  const { dispatched } = useRecordContext<Item>()
+  const { dispatchedDate } = useRecordContext<Item>()
 
   const dispatchedAtSx: SxProps<Theme> = (theme: Theme) => ({
     fontSize: '30px',
@@ -112,10 +112,10 @@ function DispatchedAt(): React.ReactElement {
     '& span': { fontSize: '25px' }
   })
 
-  if (typeof dispatched === 'undefined') return <></>
+  if (typeof dispatchedDate === 'undefined') return <></>
 
   return (
-    <TopToolbarField<Item> source='dispatched' component='div'>
+    <TopToolbarField<Item> source='dispatchJob' component='div'>
       <FieldWithLabel
         label='Dispatched at'
         source='dispatchedAt'
@@ -123,7 +123,7 @@ function DispatchedAt(): React.ReactElement {
         component={() => (
           <SourceField
             link='show'
-            source='dispatched'
+            source='dispatchJob'
             reference={constants.R_DISPATCH}
             sourceField='dispatchedAt'
           />

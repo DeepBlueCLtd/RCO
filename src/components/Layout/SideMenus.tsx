@@ -33,8 +33,8 @@ export const SideMenus = (): React.ReactElement => {
       platformsHasAccess: hasAccess(constants.R_PLATFORMS, { read: true }),
       usersHasAccess: hasAccess(constants.R_USERS, { read: true }),
       referenceDataHasAccess: hasAccess('reference-data', { read: true }),
-      dispatchHasAccess: hasAccess(constants.R_DISPATCH, { read: true }),
-      destructionHasAccess: hasAccess(constants.R_DESTRUCTION, { read: true })
+      destructionHasAccess: hasAccess(constants.R_DESTRUCTION, { read: true }),
+      dispatchHasAccess: hasAccess(constants.R_DISPATCH, { read: true })
     }
   }, [loading])
 
@@ -67,7 +67,7 @@ export const SideMenus = (): React.ReactElement => {
       {accessStates.dispatchHasAccess && (
         <Menu.ResourceItem name={constants.R_DISPATCH} />
       )}
-      {accessStates.itemsHasAccess && (
+      {accessStates.destructionHasAccess && (
         <Menu.ResourceItem name={constants.R_DESTRUCTION} />
       )}
       {accessStates.referenceDataHasAccess && (

@@ -12,7 +12,9 @@ import {
   useRecordContext,
   useUpdate,
   TextField,
-  useRefresh
+  useRefresh,
+  useUpdateMany,
+  useGetList
 } from 'react-admin'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
@@ -34,11 +36,16 @@ import HastenerReport from './HastenerReport'
 
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
+  const record = useRecordContext()
+  const dispatched = typeof record.dispatchedAt !== 'undefined'
+
   return (
     <>
       <TopToolbar>
         <TopToolbarField<Dispatch> source='reference' />
-        {hasAccess(constants.R_DISPATCH, { write: true }) && <EditButton />}
+        {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
+          <EditButton />
+        )}
       </TopToolbar>
     </>
   )
@@ -145,7 +152,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
         <Typography>
           Are you sure{' '}
           <Count
-            filter={{ dispatched: record.id }}
+            filter={{ dispatchJob: record.id }}
             resource={constants.R_ITEMS}
           />{' '}
           items have been sent for dispatch?
@@ -158,15 +165,43 @@ const Footer = (props: FooterProps): React.ReactElement => {
 export default function DispatchShow(): React.ReactElement {
   const [open, setOpen] = useState<string>()
   const [update] = useUpdate()
+  const [updateMany] = useUpdateMany()
   const notify = useNotify()
+  const audit = useAudit()
   const { id } = useParams()
+  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+    filter: { dispatchJob: id }
+  })
 
   const handleOpen = (name: string): void => {
     setOpen(name)
   }
 
+  const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
+    const audiData = {
+      type: AuditType.EDIT,
+      activityDetail: 'add item to dispatch',
+      securityRelated: false,
+      resource: constants.R_ITEMS,
+      dataId: itemId
+    }
+    await audit(audiData)
+    await audit({
+      ...audiData,
+      resource: constants.R_DISPATCH
+    })
+  }
+
   const dispatch = async (data: UpdateParams): Promise<void> => {
+    const ids = itemsAdded.map((item) => item.id)
     await update(constants.R_DISPATCH, data)
+    await updateMany(constants.R_ITEMS, {
+      ids,
+      data: {
+        dispatchedDate: nowDate()
+      }
+    })
+    ids.map(dispatchAudits)
     notify('Element dispatched', { type: 'success' })
   }
 
@@ -175,7 +210,7 @@ export default function DispatchShow(): React.ReactElement {
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Dispatch Show
+            Dispatch Job
           </Typography>
         </legend>
         <Box>
@@ -219,7 +254,7 @@ function DispatchedItemList(
         destroy: false,
         location: false,
         loan: false,
-        destroyRemove: false,
+        dispatchRemove: true,
         dispatch: false,
         isReturn: dispatched
       }}
@@ -235,7 +270,9 @@ function DispatchedItemList(
           {title}
         </Typography>
       </legend>
-      <ItemList filter={{ dispatched: id }}>
+      <ItemList
+        filter={{ dispatchJob: id }}
+        filtersShown={['q', 'batchId', 'mediaType']}>
         <ItemListDataTable bulkActionButtons={bulkActionButtons} />
       </ItemList>
     </Box>
@@ -253,6 +290,7 @@ function ItemListDataTable(
       {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
+      <TextField source='consecPages' label='Consec Serial' />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
     </DatagridConfigurable>
   )
