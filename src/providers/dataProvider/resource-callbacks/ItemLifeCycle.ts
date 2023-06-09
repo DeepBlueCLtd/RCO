@@ -12,13 +12,13 @@ import {
 } from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES, R_ITEMS, SAVE_EVENT } from '../../../constants'
-import { type UpdateParams } from 'react-admin'
+import { type CreateParams, type UpdateParams } from 'react-admin'
 import { emitter } from '../../../resources/items/ItemForm/ItemFormToolbar'
 
 const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateResult<Item>) => {
+  beforeCreate: async (record: CreateParams<Item>) => {
     convertDateToISO<Item>(record.data, ['start', 'end'])
     record.data.start = new Date(record.data.start).toISOString()
     record.data.end = new Date(record.data.end).toISOString()

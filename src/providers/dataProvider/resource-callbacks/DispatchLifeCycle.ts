@@ -7,13 +7,17 @@ import {
 import { type CreateResult, type DataProvider } from 'ra-core'
 import { AuditType } from '../../../utils/activity-types'
 import { R_DISPATCH } from '../../../constants'
-import { type UpdateParams, type ResourceCallbacks } from 'react-admin'
+import {
+  type UpdateParams,
+  type ResourceCallbacks,
+  type CreateParams
+} from 'react-admin'
 
 const lifeCycles = (
   provider: DataProvider,
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateResult<Batch>) => {
+  beforeCreate: async (record: CreateParams<Batch>) => {
     const createdByAt = withCreatedByAt(record)
     return createdByAt
   },

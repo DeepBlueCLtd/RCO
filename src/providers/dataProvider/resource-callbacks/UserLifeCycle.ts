@@ -1,4 +1,3 @@
-import { type CreateResult } from 'ra-core'
 import {
   type AuditFunctionType,
   withCreatedByAt,
@@ -7,12 +6,16 @@ import {
 } from '../dataprovider-utils'
 import { R_USERS } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
-import { type ResourceCallbacks, type UpdateParams } from 'react-admin'
+import {
+  type CreateParams,
+  type ResourceCallbacks,
+  type UpdateParams
+} from 'react-admin'
 
 const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateResult<User>) => {
+  beforeCreate: async (record: CreateParams<User>) => {
     return withCreatedByAt(record)
   },
   beforeUpdate: async (record: UpdateParams<User>) => {
