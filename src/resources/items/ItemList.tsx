@@ -35,12 +35,12 @@ import DateRangePicker from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
-import DispatchItems from './DispatchItems'
-import { RestoreFromTrash } from '@mui/icons-material'
 import DestroyRestoreItems from './DestroyRestoreItems'
 import { AuditType } from '../../utils/activity-types'
 import useAudit from '../../hooks/useAudit'
 import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
+import { RestoreFromTrash } from '@mui/icons-material'
+import DispatchItems from './DispatchItems'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -188,11 +188,11 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const { buttons } = props
 
   const {
-    destroy = true,
     location = true,
     loan = true,
     destroyRemove = false,
     dispatchRemove = false,
+    destroy = true,
     dispatch = true,
     isReturn = false
   } = buttons ?? {

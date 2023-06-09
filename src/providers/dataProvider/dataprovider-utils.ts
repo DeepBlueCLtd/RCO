@@ -4,7 +4,11 @@ import { type AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
 import { type ResourceTypes } from '../../constants'
-import { type ResourceCallbacks , type DataProvider, type GetListParams } from 'react-admin'
+import {
+  type ResourceCallbacks,
+  type DataProvider,
+  type GetListParams
+} from 'react-admin'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import { isNumber } from '../../utils/number'
 
@@ -145,11 +149,11 @@ export async function generateReference<T extends RaRecord>(
   })
 
   if (dispatch.data.length === 0) {
-    return `${prefix}/00/${year}`
+    return `${prefix}/0/${year}`
   }
 
   if (dispatch.data.length === 1) {
-    return `${prefix}/01/${year}`
+    return `${prefix}/1/${year}`
   }
 
   const greatestDispatch = dispatch.data.reduce((prev, current) =>
@@ -161,7 +165,6 @@ export async function generateReference<T extends RaRecord>(
   const referenceId = (
     getReferenceIdFromField(greatestDispatch[fieldName], prefix) + 1
   ).toLocaleString('en-US', {
-    minimumIntegerDigits: 2,
     useGrouping: false
   })
   return `${prefix}/${referenceId}/${year}`
