@@ -3,10 +3,11 @@ import { type CreateResult, type ResourceCallbacks } from 'ra-core'
 import { withCreatedByAt, type AuditFunctionType } from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import { R_DESTRUCTION } from '../../../constants'
+import { type CreateParams } from 'react-admin'
 
 export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
   resource: R_DESTRUCTION,
-  beforeCreate: async (record: CreateResult<Destruction>) => {
+  beforeCreate: async (record: CreateParams<Destruction>) => {
     return withCreatedByAt(record)
   },
   afterCreate: async (record: CreateResult<Destruction>) => {
