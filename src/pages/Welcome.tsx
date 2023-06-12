@@ -87,7 +87,7 @@ export default function Welcome(): React.ReactElement {
             { source: 'platform', reference: constants.R_PLATFORMS },
             { source: 'project', reference: constants.R_PROJECTS }
           ]}
-          search='filter={}&order=DESC&page=1&perPage=25&sort=createdAt'
+          search='order=DESC&sort=createdAt'
         />
         <Recent<Item>
           label='Recent loans'
