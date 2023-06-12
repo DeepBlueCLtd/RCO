@@ -98,6 +98,19 @@ export const generateProject = (length: number, user: number): Project[] => {
   return projects
 }
 
+const getRandomDateInLast20Years = (): string[] => {
+  const randomStartDateInLast20Years = generateRandomDateInRange(
+    new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
+    new Date()
+  )
+
+  const randomEndDateInLast20Years = generateRandomDateInRange(
+    new Date(randomStartDateInLast20Years),
+    new Date()
+  )
+  return [randomStartDateInLast20Years, randomEndDateInLast20Years]
+}
+
 export const generateBatch = (
   length: number,
   platforms: number,
@@ -105,13 +118,16 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
-  user: number
+  user: number,
+  isHigh?: boolean
 ): Batch[] => {
   const batches: Batch[] = []
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
-    const [startDate, endDate] = generateRandomDate()
+
+    const [startDate, endDate] =
+      isHigh !== undefined ? getRandomDateInLast20Years() : generateRandomDate()
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),

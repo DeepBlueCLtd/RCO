@@ -130,7 +130,8 @@ const loadDefaultData = async (
     projects.length,
     organisation.length,
     protectiveMarking.length,
-    user
+    user,
+    isHigh
   )
 
   const items: Item[] = []
