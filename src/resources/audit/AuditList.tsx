@@ -69,8 +69,8 @@ const resourcesRefKey: Record<string, string> = {
   [constants.R_DESTRUCTION]: 'reference',
   [constants.R_DISPATCH]: 'reference',
   [constants.R_ADDRESSES]: 'id',
-  [constants.R_PROJECTS]: 'id',
-  [constants.R_PLATFORMS]: 'id',
+  [constants.R_PROJECTS]: 'name',
+  [constants.R_PLATFORMS]: 'name',
   [constants.R_USERS]: 'name'
 }
 
@@ -120,6 +120,7 @@ export default function AuditList({
         <FunctionField
           label='Name'
           render={(record: Audit) => {
+            console.log(record.resource)
             return (
               <>
                 {record.resource ? (
