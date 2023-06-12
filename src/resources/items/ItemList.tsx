@@ -17,7 +17,8 @@ import {
   type DatagridConfigurableProps,
   useDataProvider,
   useGetMany,
-  useNotify
+  useNotify,
+  useUnselectAll
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -443,6 +444,13 @@ interface ItemListType extends Omit<ListProps, 'children'> {
 export default function ItemList(props?: ItemListType): React.ReactElement {
   const { datagridConfigurableProps, children, filtersShown, ...rest } =
     props ?? {}
+
+  const unSelectAll = useUnselectAll(constants.R_ITEMS)
+
+  useEffect(() => {
+    unSelectAll()
+  }, [])
+
   return (
     <List
       hasCreate={false}
