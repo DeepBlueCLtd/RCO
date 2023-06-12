@@ -67,6 +67,10 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     })
   }
 
+  const handleHighVolumeLoadData = (): void => {
+    loadDefaultData(undefined, provider, true).catch(console.log)
+  }
+
   const handleLoggingPrefChange = (
     _: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
@@ -119,6 +123,18 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           </Icon>
         }>
         <Typography sx={{ textTransform: 'none' }}>Load data</Typography>
+      </Button>
+      <Button
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        onClick={handleHighVolumeLoadData}
+        startIcon={
+          <Icon>
+            <Loop sx={{ width: '20px', height: '20px' }} />
+          </Icon>
+        }>
+        <Typography sx={{ textTransform: 'none' }}>
+          Load data (high volume)
+        </Typography>
       </Button>
       <div style={{ display: 'flex' }}>
         <Switch checked={loggingPref} onChange={handleLoggingPrefChange} />
