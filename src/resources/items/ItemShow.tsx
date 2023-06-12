@@ -53,74 +53,109 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
 }
 
 const sx = (theme: Theme): SystemStyleObject<Theme> => {
-  const color: string = `${theme.palette.common.white} !important`
-
   return {
     display: 'flex',
     alignItems: 'center',
     padding: '16px',
-    background: theme.palette.primary.main,
+    background: 'white',
     justifyContent: 'center',
-    color,
+    color: theme.palette.primary.main,
     borderRadius: '5px'
   }
 }
 interface StatusTextProps {
   record: Item
 }
+
+interface ActionLinkProps {
+  actionText: string
+  linkPathname: string
+  text: string
+}
+
+const ActionLink = ({
+  actionText,
+  linkPathname,
+  text
+}: ActionLinkProps): React.ReactElement => {
+  return (
+    <Typography sx={sx} variant='h5'>
+      {actionText}
+      <Link to={{ pathname: linkPathname }}>
+        <span style={{ textDecoration: 'underline', marginLeft: '5px' }}>
+          {text}
+        </span>
+      </Link>
+    </Typography>
+  )
+}
+
 const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
   let linkPathname = ''
   let statusText = ''
   let source: keyof Item
+  let component: React.ReactElement | null = null
 
   if (record.destruction !== undefined) {
     linkPathname = `/destruction/${record.destruction}/show`
     source = 'destruction'
-    if (record.destructionDate !== undefined) {
-      statusText = `Destroyed at: ${record.destructionDate}`
-    } else {
-      statusText = 'Pending Destruction'
-    }
+    const actionText =
+      record.destructionDate !== undefined ? 'Destroyed at:' : 'Pending'
+    const dateText =
+      record.destructionDate !== undefined
+        ? record.destructionDate
+        : 'Destruction'
+    component = (
+      <ActionLink
+        actionText={actionText}
+        linkPathname={linkPathname}
+        text={dateText}
+      />
+    )
   } else if (record.dispatchJob !== undefined) {
     linkPathname = `/dispatch/${record.dispatchJob}/show`
     source = 'dispatchJob'
-    if (record.dispatchedDate !== undefined) {
-      statusText = `Dispatched at: ${record.dispatchedDate}`
-    } else {
-      statusText = 'Pending Dispatch'
-    }
+    const actionText =
+      record.dispatchedDate !== undefined ? 'Dispatched at:' : 'Pending'
+    const dateText =
+      record.dispatchedDate !== undefined ? record.dispatchedDate : 'Dispatch'
+    component = (
+      <ActionLink
+        actionText={actionText}
+        linkPathname={linkPathname}
+        text={dateText}
+      />
+    )
   } else if (record.loanedTo !== undefined) {
     source = 'loanedTo'
     statusText = 'Loaned to: '
   } else {
     return null
   }
-  return source === 'loanedTo' ? (
+
+  return (
     <TopToolbarField<Item> source={source} component='div'>
-      <Typography sx={sx} variant='h5'>
-        {statusText}
-        <SourceField
-          link='show'
-          source={source}
-          reference={constants.R_USERS}
-          sourceField={source}
-          textProps={{
-            sx: {
-              color: 'white !important',
-              fontWeight: 'bold',
-              marginLeft: '5px'
-            }
-          }}
-        />
-      </Typography>
-    </TopToolbarField>
-  ) : (
-    <TopToolbarField<Item> source={source} component='div'>
-      <Link to={{ pathname: linkPathname }}>
-        <Typography variant='h5' sx={sx}>
+      {source === 'loanedTo' ? (
+        <Typography sx={sx} variant='h5'>
           {statusText}
+          <SourceField
+            link='show'
+            source={source}
+            reference={constants.R_USERS}
+            sourceField={source}
+            textProps={{
+              sx: {
+                fontSize: '20px',
+                textDecoration: 'underline',
+                fontWeight: 'bold',
+                marginLeft: '5px'
+              }
+            }}
+          />
         </Typography>
-      </Link>
+      ) : (
+        component
+      )}
     </TopToolbarField>
   )
 }
