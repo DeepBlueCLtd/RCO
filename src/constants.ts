@@ -6,7 +6,8 @@ import {
   Notes,
   Business,
   LocalShipping,
-  DeleteSweepOutlined
+  DeleteSweepOutlined,
+  SaveAs
 } from '@mui/icons-material'
 
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
@@ -20,6 +21,7 @@ export const R_BATCHES = 'batches'
 export const R_PROJECTS = 'projects'
 export const R_PLATFORMS = 'platforms'
 export const R_ITEMS = 'items'
+export const R_ALL_ITEMS = 'allItems'
 export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
@@ -49,13 +51,15 @@ export type ResourceTypes =
   | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
+  | typeof R_ALL_ITEMS
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 
 // icons
 export const ICON_BATCH = Layers
-export const ICON_ITEM = Save
+export const ICON_ITEM = SaveAs
+export const ICON_ALL_ITEM = Save
 export const ICON_PROJECT = AccountTree
 export const ICON_LOAN = CreditScore
 export const ICON_ADDRESSES = Business

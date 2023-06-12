@@ -94,7 +94,7 @@ describe('generateBatchId', () => {
   describe('when there are no batches in the specified year', () => {
     it('should return 00', async () => {
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('00')
+      expect(result).toBe('0')
     })
   })
 
@@ -102,7 +102,7 @@ describe('generateBatchId', () => {
     it('should return 01', async () => {
       await generateBatch(id, provider, year, undefined, 1)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('01')
+      expect(result).toBe('1')
     })
   })
 
@@ -111,7 +111,7 @@ describe('generateBatchId', () => {
       await generateBatch(id++, provider, year, undefined, 1)
       await generateBatch(id, provider, year, undefined, 1)
       const result = await generateBatchId(provider, year)
-      expect(result).toBe('03')
+      expect(result).toBe('3')
     })
   })
 
@@ -151,7 +151,6 @@ describe('generateBatchId for values greater than 9', () => {
       for (let i = 0; i < batchData.data.length; i++) {
         expect(batchData.data[i].batchNumber).toBe(
           `V${i.toLocaleString('en-US', {
-            minimumIntegerDigits: 2,
             useGrouping: false
           })}/${year}`
         )
@@ -182,7 +181,6 @@ describe('generateBatchId for values greater than 9', () => {
       for (let i = 20; i < batchData1.data.length; i++) {
         expect(batchData1.data[i].batchNumber).toBe(
           `V${i.toLocaleString('en-US', {
-            minimumIntegerDigits: 2,
             useGrouping: false
           })}/${year}`
         )

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { FunctionField, List } from 'react-admin'
+import { BooleanField, FunctionField, List } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import * as constants from '../../constants'
@@ -50,6 +50,7 @@ export default function VaultLocationList(): React.ReactElement {
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
+        <BooleanField source='active' label='Active Vault Location' />
         <FunctionField
           label='History'
           render={(record: ReferenceItem) => {

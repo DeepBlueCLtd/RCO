@@ -6,7 +6,11 @@ import {
 import { type CreateResult, type DataProvider } from 'ra-core'
 import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES } from '../../../constants'
-import { type UpdateParams, type ResourceCallbacks } from 'react-admin'
+import {
+  type UpdateParams,
+  type ResourceCallbacks,
+  type CreateParams
+} from 'react-admin'
 import { isNumber } from '../../../utils/number'
 
 const compareVersions = (v1: string, v2: string): number => {
@@ -34,11 +38,11 @@ export const generateBatchId = async (
   })
 
   if (batches.data.length === 0) {
-    return '00'
+    return '0'
   }
 
   if (batches.data.length === 1) {
-    return '01'
+    return '1'
   }
   const greatestBatch = batches.data.reduce((prev, current) =>
     compareVersions(prev.batchNumber, current.batchNumber) === -1
@@ -49,7 +53,6 @@ export const generateBatchId = async (
   return (parseInt(greatestBatch.batchNumber.substring(1)) + 1).toLocaleString(
     'en-US',
     {
-      minimumIntegerDigits: 2,
       useGrouping: false
     }
   )
@@ -59,7 +62,7 @@ const lifeCycles = (
   provider: DataProvider,
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateResult<Batch>) => {
+  beforeCreate: async (record: CreateParams<Batch>) => {
     const createdByAt = withCreatedByAt(record)
     return createdByAt
   },

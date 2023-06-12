@@ -3,11 +3,12 @@ import {
   withCreatedByAt,
   extendLifeCycle
 } from '../dataprovider-utils'
-import { type ResourceCallbacks, type CreateResult } from 'ra-core'
+import { type ResourceCallbacks } from 'ra-core'
 import { R_PROJECTS } from '../../../constants'
+import { type CreateParams } from 'react-admin'
 
 const lifeCycles = (): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateResult<Project>) => {
+  beforeCreate: async (record: CreateParams<Project>) => {
     return withCreatedByAt(record)
   }
 })
