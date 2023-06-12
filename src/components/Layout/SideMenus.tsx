@@ -55,9 +55,6 @@ export const SideMenus = (): React.ReactElement => {
       {accessStates.itemsHasAccess && (
         <Menu.ResourceItem name={constants.R_ITEMS} />
       )}
-      {accessStates.itemsHasAccess && (
-        <Menu.ResourceItem name={constants.R_ALL_ITEMS} />
-      )}
       {accessStates.vaultLocationHasAccess && (
         <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
       )}
@@ -72,6 +69,9 @@ export const SideMenus = (): React.ReactElement => {
       )}
       {accessStates.destructionHasAccess && (
         <Menu.ResourceItem name={constants.R_DESTRUCTION} />
+      )}
+      {accessStates.itemsHasAccess && (
+        <Menu.ResourceItem name={constants.R_ALL_ITEMS} />
       )}
       {accessStates.referenceDataHasAccess && (
         <Menu.Item

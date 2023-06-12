@@ -6,7 +6,8 @@ import {
   Notes,
   Business,
   LocalShipping,
-  DeleteSweepOutlined
+  DeleteSweepOutlined,
+  SaveAs
 } from '@mui/icons-material'
 
 export const LOCAL_STORAGE_DB_KEY = 'rco-'
@@ -57,7 +58,8 @@ export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 
 // icons
 export const ICON_BATCH = Layers
-export const ICON_ITEM = Save
+export const ICON_ITEM = SaveAs
+export const ICON_ALL_ITEM = Save
 export const ICON_PROJECT = AccountTree
 export const ICON_LOAN = CreditScore
 export const ICON_ADDRESSES = Business

@@ -258,13 +258,14 @@ function App(): React.ReactElement {
             filter: {
               dispatchJob: undefined,
               destruction: undefined
-            }
+            },
+            label: 'Live Items'
           }}
           {...protectedRoutes(permissions, constants.R_ITEMS, items)}
         />
         <Resource
           key={constants.R_ALL_ITEMS}
-          icon={constants.ICON_ITEM}
+          icon={constants.ICON_ALL_ITEM}
           name={constants.R_ALL_ITEMS}
           options={{ label: 'All Items' }}
           {...protectedRoutes(permissions, constants.R_ALL_ITEMS, items)}
