@@ -118,7 +118,7 @@ export default function AuditList({
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
         <FunctionField
-          label='Item'
+          label='Name'
           render={(record: Audit) => {
             return (
               <>
