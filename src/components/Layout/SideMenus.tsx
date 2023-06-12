@@ -70,6 +70,9 @@ export const SideMenus = (): React.ReactElement => {
       {accessStates.destructionHasAccess && (
         <Menu.ResourceItem name={constants.R_DESTRUCTION} />
       )}
+      {accessStates.itemsHasAccess && (
+        <Menu.ResourceItem name={constants.R_ALL_ITEMS} />
+      )}
       {accessStates.referenceDataHasAccess && (
         <Menu.Item
           to='/reference-data'
