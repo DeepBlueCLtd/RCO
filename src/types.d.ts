@@ -65,7 +65,6 @@ interface Batch extends ResourceWithCreation {
   name: string
   startDate: string
   endDate: string
-  projectCode: string
   batchNumber: string
   yearOfReceipt: string
   department: ReferenceItem['id']
