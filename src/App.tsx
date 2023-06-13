@@ -256,8 +256,8 @@ function App(): React.ReactElement {
           name={constants.R_ITEMS}
           options={{
             filter: {
-              dispatchJob: undefined,
-              destruction: undefined
+              dispatchedDate: undefined,
+              destructionDate: undefined
             },
             label: 'Live Items'
           }}
