@@ -7,6 +7,7 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import { Box } from '@mui/system'
 import FlexBox from '../../components/FlexBox'
+import { FROM_ADDRESS } from '../../constants'
 
 const DispatchDetail = (): React.ReactElement => {
   return (
@@ -15,15 +16,16 @@ const DispatchDetail = (): React.ReactElement => {
         label='Serial No.'
         source='reference'
         labelStyles={{ fontSize: '1rem' }}
-        textProps={{ variant: 'h6', sx: { fontSize: '1rem', width: '50%' } }}
-      />
-      <FieldWithLabel
-        sourceField='fullAddress'
-        label='From'
-        source='toAddress'
-        reference={constants.R_ADDRESSES}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
+      <Box fontWeight='bold'>
+        <Typography fontWeight='bold'>
+          From:
+          <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
+            &nbsp;{FROM_ADDRESS}
+          </span>
+        </Typography>
+      </Box>
       <FieldWithLabel
         label='Date'
         source='createdAt'
