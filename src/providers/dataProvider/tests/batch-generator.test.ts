@@ -61,7 +61,6 @@ const generateBatch = async (
     name: `batch-${year}`,
     startDate: startDate.toString(),
     endDate: endDate.toString(),
-    projectCode: `code-${id}`,
     batchNumber: `V${batchNumber ?? id}/${year}`,
     yearOfReceipt: year,
     department: id,
