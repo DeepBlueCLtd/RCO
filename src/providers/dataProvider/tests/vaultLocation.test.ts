@@ -27,7 +27,7 @@ describe('CRUD operations vault location', () => {
     const provider = await localForageDataProvider({
       prefixLocalForageKey: TEST_STORAGE_KEY
     })
-    for (const user of encryptedUsers) {
+    for (const user of encryptedUsers()) {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
