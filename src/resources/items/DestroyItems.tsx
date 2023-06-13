@@ -135,7 +135,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
               label={label}>
               {items.map((item) => (
                 <MenuItem key={item.id} value={String(item.id)}>
-                  {item.reference}
+                  {item.remarks}
                 </MenuItem>
               ))}
             </Select>
