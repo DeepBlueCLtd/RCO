@@ -3,7 +3,7 @@ import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
 const MediaType = ['DVD', 'Tape', 'Paper']
 
-function generateRandomNumber(min: number, max: number): number {
+export function generateRandomNumber(min: number, max: number): number {
   const array = new Uint32Array(1)
   const generatedRandomNumber = window.crypto.getRandomValues(array)
   const randomNumber = generatedRandomNumber[0] / (Math.pow(2, 32) - 1)
@@ -65,10 +65,15 @@ const generateBatchId = (year: string, batch: Batch[]): string => {
   })
 }
 
-export const generatePlatform = (length: number): Platform[] => {
+export const generatePlatform = (
+  length: number,
+  isHigh?: boolean
+): Platform[] => {
   const platforms: Platform[] = []
+  const inActivePercentage = 0.2
   for (let i = 1; i <= length; i++) {
-    const isActive = i < 5 || i >= 9
+    const isActive =
+      isHigh === true ? i > length * inActivePercentage : i < 5 || i >= 9
     const newP: Omit<Platform, 'id'> = {
       name: `platform-${i}`,
       active: isActive
@@ -93,6 +98,19 @@ export const generateProject = (length: number, user: number): Project[] => {
   return projects
 }
 
+const getRandomDateInLast20Years = (): string[] => {
+  const randomStartDateInLast20Years = generateRandomDateInRange(
+    new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
+    new Date()
+  )
+
+  const randomEndDateInLast20Years = generateRandomDateInRange(
+    new Date(randomStartDateInLast20Years),
+    new Date()
+  )
+  return [randomStartDateInLast20Years, randomEndDateInLast20Years]
+}
+
 export const generateBatch = (
   length: number,
   platforms: number,
@@ -100,13 +118,16 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
-  user: number
+  user: number,
+  isHigh?: boolean
 ): Batch[] => {
   const batches: Batch[] = []
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
-    const [startDate, endDate] = generateRandomDate()
+
+    const [startDate, endDate] =
+      isHigh !== undefined ? getRandomDateInLast20Years() : generateRandomDate()
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
@@ -177,4 +198,38 @@ export const generateItems = (
     items.push(obj)
   }
   return items
+}
+
+function getRandomRole(): UserRole[] {
+  const roles: UserRole[] = ['rco-power-user', 'rco-user']
+  const minLength = 1
+  const maxLength = roles.length
+
+  const combinationLength =
+    Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength
+  const shuffledRoles = roles.sort(() => Math.random() - 0.5)
+  const selectedRoles = shuffledRoles.slice(0, combinationLength)
+
+  return selectedRoles
+}
+
+export const generateUsers = (length: number): User[] => {
+  const users: User[] = []
+  const inActivePercentage = 0.4
+  for (let i = 0; i < length; i++) {
+    const active = i > inActivePercentage * length
+    const obj: User = {
+      id: i + 1,
+      name: `user-${i + 1}`,
+      password: 'user',
+      adminRights: generateRandomNumber(0, 100) > 50,
+      active,
+      staffNumber: `d:${i + 1}`,
+      createdBy: generateRandomNumber(0, length - 1),
+      roles: getRandomRole(),
+      createdAt: nowDate()
+    }
+    users.push(obj)
+  }
+  return users
 }
