@@ -1,7 +1,6 @@
 import {
   DateField,
   FilterButton,
-  List,
   type ListProps,
   SearchInput,
   SelectColumnsButton,
@@ -42,6 +41,7 @@ import BooleanFilter from '../../components/BooleanFilter'
 import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
+import List from '../../components/ListWithLocalStore'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -434,8 +434,14 @@ interface ItemListType extends Omit<ListProps, 'children'> {
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
   const { options } = useResourceDefinition()
-  const { datagridConfigurableProps, children, filtersShown, ...rest } =
-    props ?? {}
+  const {
+    datagridConfigurableProps,
+    children,
+    storeKey = 'items-items-list',
+    filtersShown,
+    ...rest
+  } = props ?? {}
+
   return (
     <List
       hasCreate={false}
@@ -447,6 +453,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           ? filters
           : filters.filter((f) => filtersShown.includes(f.key as string))
       }
+      storeKey={storeKey}
       {...rest}>
       <ResetDateFilter source='createdAt' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
