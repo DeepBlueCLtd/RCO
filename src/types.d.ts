@@ -8,6 +8,7 @@ interface CustomDataProvider {
 }
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+type RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>
 
 type UserRole = 'rco-user' | 'rco-power-user'
 

@@ -1,29 +1,23 @@
 import { List, type ListProps } from 'react-admin'
 import useLocalStore from '../hooks/useLocalStore'
-
-export interface ListWithLocalStoreProps extends ListProps {
-  resource: string
-  storeKey: string
-}
-
 interface ListChildProps {
   storeKey: string
   resource: string
 }
 
-export const ListLocalStore = (props: ListChildProps): React.ReactElement => {
+export const ListChildStore = (props: ListChildProps): React.ReactElement => {
   const { storeKey, resource } = props
   useLocalStore(storeKey, resource)
   return <></>
 }
 
 export default function ListWithLocalStore(
-  props: ListWithLocalStoreProps
+  props: RequiredBy<ListProps, 'storeKey' | 'resource'>
 ): React.ReactElement {
   const { children, storeKey, resource } = props
   return (
     <List {...props}>
-      <ListLocalStore storeKey={storeKey} resource={resource} />
+      <ListChildStore storeKey={storeKey} resource={resource} />
       {children}
     </List>
   )
