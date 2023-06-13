@@ -113,7 +113,6 @@ export const generateBatch = (
       name: `batch-${i}`,
       startDate: startDate.toString(),
       endDate: endDate.toString(),
-      projectCode: String(generateRandomNumber(1, 1000)),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),

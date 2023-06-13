@@ -11,12 +11,12 @@ import {
   useRefresh,
   AutocompleteInput,
   type SortPayload,
-  useGetList,
   type FilterPayload,
   type DatagridConfigurableProps,
   useDataProvider,
-  useGetMany,
-  useNotify
+  useResourceDefinition,
+  useNotify,
+  useGetMany
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -24,7 +24,7 @@ import { mediaTypeOptions } from '../../utils/options'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
-import { Button, Chip, Modal } from '@mui/material'
+import { Button, Modal } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
@@ -37,6 +37,7 @@ import DestroyItems from './DestroyItems'
 import DestroyRestoreItems from './DestroyRestoreItems'
 import { AuditType } from '../../utils/activity-types'
 import useAudit from '../../hooks/useAudit'
+import BooleanFilter from '../../components/BooleanFilter'
 import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
@@ -54,35 +55,6 @@ const omitColumns: string[] = [
   'musterRemarks',
   'loanedTo'
 ]
-
-interface Props {
-  source: string
-  label: string
-}
-
-const OnLoanFilter = ({ source, label }: Props): React.ReactElement => {
-  const { setFilters, displayedFilters } = useListContext()
-  const { data } = useGetList<Item>(constants.R_ITEMS, {
-    sort: { field: 'id', order: 'ASC' }
-  })
-  useEffect(() => {
-    if (data !== undefined) {
-      const filteredIds = data
-        .filter((d) => d.loanedTo !== undefined)
-        .map((f) => f.id)
-      if (filteredIds.length > 0)
-        setFilters(
-          {
-            ...displayedFilters,
-            [source]: filteredIds
-          },
-          displayedFilters
-        )
-    }
-  }, [data])
-
-  return <Chip sx={{ marginBottom: 1 }} label={label} />
-}
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
@@ -137,7 +109,27 @@ const filters = [
   />,
   <TextInput key='remarks' source='remarks' />,
   <DateFilter source='createdAt' label='Created At' key='createdAt' />,
-  <OnLoanFilter source='id' label='On loan' key='loaned' />
+  <BooleanFilter<Item>
+    source='id'
+    label='On loan'
+    fieldName='loanedTo'
+    key='loaned'
+    resource={constants.R_ITEMS}
+  />,
+  <BooleanFilter<Item>
+    source='destruction'
+    label='Destroyed'
+    fieldName='destruction'
+    key='destruction'
+    resource={constants.R_ITEMS}
+  />,
+  <BooleanFilter<Item>
+    source='dispatchJob'
+    label='Dispatched'
+    fieldName='dispatchJob'
+    key='dispatch'
+    resource={constants.R_ITEMS}
+  />
 ]
 
 const ItemActions = (): React.ReactElement => {
@@ -441,6 +433,7 @@ interface ItemListType extends Omit<ListProps, 'children'> {
 }
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
+  const { options } = useResourceDefinition()
   const {
     datagridConfigurableProps,
     children,
@@ -454,12 +447,12 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       hasCreate={false}
       actions={<ItemActions />}
       resource={constants.R_ITEMS}
+      filter={props?.filter ?? options?.filter}
       filters={
         !filtersShown
           ? filters
           : filters.filter((f) => filtersShown.includes(f.key as string))
       }
-      filter={props !== undefined ? props.filter : undefined}
       storeKey={storeKey}
       {...rest}>
       <ResetDateFilter source='createdAt' />

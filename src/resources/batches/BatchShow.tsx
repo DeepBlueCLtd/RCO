@@ -176,7 +176,6 @@ export default function BatchShow(): React.ReactElement {
             />
           </FlexBox>
           <FlexBox>
-            <StyledFieldWithLabel label='Project Code' source='projectCode' />
             <StyledFieldWithLabel label='Created' source='createdAt' />
           </FlexBox>
         </TabbedShowLayout.Tab>
