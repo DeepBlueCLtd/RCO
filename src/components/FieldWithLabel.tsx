@@ -1,6 +1,6 @@
 import { type SxProps, Typography, Box, type Theme } from '@mui/material'
 import React, { type FC, useMemo } from 'react'
-import { TextField } from 'react-admin'
+import { type LinkToType, TextField, type TextFieldProps } from 'react-admin'
 import SourceField from './SourceField'
 
 export interface FieldWithLabelProps {
@@ -11,6 +11,9 @@ export interface FieldWithLabelProps {
   separator?: string
   labelPosition?: 'left' | 'top'
   labelStyles?: SxProps<Theme>
+  sourceField?: string
+  textProps?: TextFieldProps
+  link?: LinkToType
   [key: string]: any
 }
 
@@ -23,6 +26,9 @@ const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
     separator = ':',
     labelPosition = 'left',
     labelStyles,
+    sourceField = 'name',
+    textProps = {},
+    link = false,
     ...rest
   } = props
 
@@ -31,9 +37,17 @@ const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
       return React.createElement(component, { source, ...rest })
     }
     if (typeof reference === 'string' && reference !== '') {
-      return <SourceField source={source} reference={reference} />
+      return (
+        <SourceField
+          source={source}
+          reference={reference}
+          sourceField={sourceField}
+          textProps={textProps}
+          link={link}
+        />
+      )
     }
-    return <TextField source={source} />
+    return <TextField source={source} {...textProps} />
   }, [])
 
   const labelWithSeparator: string = `${label}${separator}`
