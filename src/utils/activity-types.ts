@@ -2,24 +2,15 @@ export enum AuditType {
   LOGIN = 'login',
   LOGOUT = 'logout',
 
-  CREATE_USER = 'create_user',
-  DELETE_USER = 'delete_user',
-  EDIT_USER = 'edit_user',
+  CREATE = 'create',
+  DELETE = 'delete',
+  EDIT = 'edit',
 
-  CREATE_PROJECT = 'create_project',
-  DELETE_PROJECT = 'delete_project',
-  EDIT_PROJECT = 'edit_project',
+  USER_DEPARTED = 'USER_DEPARTED',
+  USER_RETURNED = 'USER_RETURNED',
 
-  CREATE_BATCH = 'create_batch',
-  DELETE_BATCH = 'delete_batch',
-  EDIT_BATCH = 'edit_batch',
-
-  CREATE_ITEM = 'create_item',
-  DELETE_ITEM = 'delete_item',
-  EDIT_ITEM = 'edit_item',
-
-  ITEM_LOAN = 'item_loan',
-  ITEM_RETURN = 'item_return'
+  LOAN = 'loan',
+  RETURN = 'return'
 }
 
 const ActivityTypes = Object.values(AuditType).map((val) => {

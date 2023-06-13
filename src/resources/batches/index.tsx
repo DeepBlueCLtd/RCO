@@ -61,7 +61,7 @@ const BatchEdit = (): React.ReactElement => {
   )
 }
 
-const batches = {
+const batches: ResourceRoutes = {
   create: BatchCreate,
   edit: BatchEdit,
   list: BatchList,

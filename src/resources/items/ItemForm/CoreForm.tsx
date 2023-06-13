@@ -5,13 +5,14 @@ import {
   TextField,
   TextInput
 } from 'react-admin'
-import { mediaTypeOptions } from '../../../utils/media'
+import { mediaTypeOptions } from '../../../utils/options'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect } from 'react'
-import { Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
+import { ConditionalReferenceInput } from '../../batches/BatchForm'
 
 const sx = { width: '100%' }
 
@@ -28,7 +29,7 @@ const CoreForm = (props: Props): React.ReactElement => {
 
   useEffect(() => {
     formContext?.setValue('batchId', batchId)
-  }, [batchId])
+  })
 
   const ValueField = ({
     label,
@@ -52,6 +53,37 @@ const CoreForm = (props: Props): React.ReactElement => {
         choices={mediaTypeOptions}
         sx={sx}
       />
+      <FlexBox alignItems='flex-start'>
+        <TextInput
+          multiline
+          disabled={disabled}
+          label='Consec/Pages'
+          source='consecPages'
+          sx={sx}
+        />
+        <Card sx={{ ...sx, margin: '8px 0 20px' }}>
+          {!(disabled === true) && (
+            <CardContent sx={{ padding: '12px !important' }}>
+              Consec/Pages should contain one of the following:
+              <ul>
+                <li>
+                  The Consec/Serial reference (<strong>125/2022</strong> or
+                  similiar) for mag media, when provided.
+                </li>
+                <li>
+                  The acronym <strong>LEP</strong> if a list of effective pages
+                  is present
+                </li>
+                <li>
+                  The count of effective sheets (<strong>12</strong>), for
+                  printed materials without an LEP
+                </li>
+                <li>Blank, otherwise</li>
+              </ul>
+            </CardContent>
+          )}
+        </Card>
+      </FlexBox>
       <FlexBox>
         <DateTimeInput
           sx={sx}
@@ -69,13 +101,11 @@ const CoreForm = (props: Props): React.ReactElement => {
         />
       </FlexBox>
       <FlexBox>
-        <ReferenceInput source='vaultLocation' reference='vaultLocation'>
-          <AutocompleteInput
-            disabled={disabled}
-            optionText={optionsText}
-            sx={sx}
-          />
-        </ReferenceInput>
+        <ConditionalReferenceInput
+          source='vaultLocation'
+          reference='vaultLocation'
+          active
+        />
         <ReferenceInput
           source='protectiveMarking'
           reference='protectiveMarking'>

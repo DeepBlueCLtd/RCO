@@ -9,7 +9,8 @@ import {
   Create,
   SimpleForm,
   Toolbar,
-  SaveButton
+  SaveButton,
+  useGetMany
 } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
@@ -196,7 +197,10 @@ export default function LoanItemsListBulkActionButtons(
 ): React.ReactElement {
   const { buttons = ['loan', 'loanReturn'], noneLoaned, allLoaned } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
-  const { selectedIds, data } = useListContext<Item>()
+  const { selectedIds } = useListContext<Item>()
+  const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
+    ids: selectedIds
+  })
 
   const handleClick = (buttonType: ButtonType) => {
     return () => {

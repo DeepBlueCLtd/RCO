@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Login, Loop } from '@mui/icons-material'
 import { Box, Icon, Typography, Button, Switch } from '@mui/material'
 import { makeStyles } from '@mui/styles'
@@ -9,16 +9,19 @@ import {
   Layout,
   type LayoutProps,
   Logout,
-  useAuthState,
   useRedirect,
   UserMenu,
-  type UserMenuProps
+  type UserMenuProps,
+  useLogout,
+  useDataProvider,
+  type DataProvider
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
 import loadDefaultData from '../../utils/init-data'
 import * as constants from '../../constants'
+import { getUser } from '../../providers/authProvider'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -45,8 +48,10 @@ const useStyles = makeStyles(() => ({
 
 const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const styles = useStyles()
-  const { authenticated } = useAuthState()
+  const [authenticated, setAuthenticated] = useState(false)
+  const logout = useLogout()
   const redirect = useRedirect()
+  const provider = useDataProvider<DataProvider & CustomDataProvider>()
 
   const [loggingPref, setLoggingPref] = useState<boolean>(
     localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
@@ -57,7 +62,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   }
 
   const handleLoadData = (): void => {
-    loadDefaultData().catch((error) => {
+    loadDefaultData(undefined, provider).catch((error) => {
       console.log({ error })
     })
   }
@@ -77,9 +82,22 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     window.dispatchEvent(storageEvent)
   }
 
+  const handleLogOut = (): void => {
+    logout()
+      .then(() => {
+        redirect('/')
+      })
+      .catch(console.error)
+  }
+
+  useEffect(() => {
+    const user = getUser()
+    setAuthenticated(user !== undefined)
+  }, [])
+
   return (
     <UserMenu {...props}>
-      {authenticated === null && (
+      {!authenticated && (
         <Button
           onClick={handleLogin}
           classes={{ root: styles.root, startIcon: styles.startIcon }}
@@ -91,7 +109,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           <Typography sx={{ textTransform: 'none' }}> Login</Typography>
         </Button>
       )}
-      <Logout />
+      {authenticated && <Logout onClick={handleLogOut} />}
       <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}

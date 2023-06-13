@@ -12,6 +12,7 @@ import {
   encryptData,
   generateSalt
 } from '../../utils/encryption'
+import { getPermissionsByRoles } from './permissions'
 export const getUser = (): User | undefined => {
   const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
   const salt = localStorage.getItem(constants.SALT)
@@ -57,9 +58,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           setToken(token, salt)
           await audit({
             type: AuditType.LOGIN,
-            activityDetail: 'Logged in',
             resource: null,
-            id: null
+            dataId: null
           })
           return await Promise.resolve(data)
         } else {
@@ -72,18 +72,18 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     logout: async (): Promise<void> => {
       await audit({
         type: AuditType.LOGOUT,
-        activityDetail: 'Logged out',
         resource: null,
-        id: null
+        dataId: null
       })
       removeToken()
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
-      const token = getUser()
-      token !== undefined
-        ? await Promise.resolve()
-        : await Promise.reject(new Error('Token not found'))
+      await Promise.resolve()
+      // const token = getUser()
+      // token !== undefined
+      //   ? await Promise.resolve()
+      //   : await Promise.reject(new Error('Token not found'))
     },
     checkError: async (error): Promise<any> => {
       const status = error.status
@@ -107,13 +107,14 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       try {
         const user = getUser()
         if (user !== undefined) {
-          const isAdmin = user.adminRights
-          return await Promise.resolve(isAdmin ? 'admin' : 'user')
+          const permissions = getPermissionsByRoles(user.roles)
+          return await Promise.resolve(permissions)
         } else {
           throw new Error('You are not a registered user.')
         }
       } catch (error) {
-        await Promise.resolve()
+        const permissions = getPermissionsByRoles(['user'])
+        return await Promise.resolve(permissions)
       }
     }
   }

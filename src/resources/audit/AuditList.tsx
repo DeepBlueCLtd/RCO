@@ -15,6 +15,7 @@ import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
 import DateFilter from '../../components/DateFilter'
 import SourceField from '../../components/SourceField'
+import SourceInput from '../../components/SourceInput'
 
 interface Props {
   label: string
@@ -57,19 +58,23 @@ const filters = [
     key='securityRelated'
     label='Security Related'
   />,
-  <DateFilter key='createdAt' source='dateTime' label='Created At' />
+  <DateFilter key='createdAt' source='dateTime' label='Created At' />,
+  <SourceInput key='subject' source='subject' reference={constants.R_USERS} />
 ]
 
 export interface FilterType {
-  data_id: number
-  resource: string
+  dataId?: number
+  user?: number
+  resource?: string
 }
 
 interface AuditListProps {
   filter?: FilterType
+  data?: Audit[]
 }
 export default function AuditList({
-  filter = undefined
+  filter = undefined,
+  data = undefined
 }: AuditListProps): React.ReactElement {
   return (
     <List
@@ -81,14 +86,31 @@ export default function AuditList({
       }}
       filters={filters}
       filter={filter}>
-      <Datagrid bulkActionButtons={false}>
-        <SourceField source='user' reference={constants.R_USERS} />
+      <Datagrid
+        {...(data !== undefined ? { data } : null)}
+        bulkActionButtons={false}
+        sx={{
+          '&  .RaDatagrid-rowCell': {
+            maxWidth: '600px',
+            padding: '12px'
+          }
+        }}>
+        <SourceField source='user' reference={constants.R_USERS} link='show' />
         <DateField source='dateTime' label='Date Time' showTime />;
         <TextField source='label' label='Activity Type' />
-        <TextField source='activityDetail' label='Activity Details' />
+        <TextField
+          source='activityDetail'
+          label='Activity Details'
+          sx={{ wordBreak: 'break-all', display: 'inline-block' }}
+        />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
-        <TextField source='data_id' label='Item' />
+        <TextField source='dataId' label='Item' />
+        <SourceField
+          source='subject'
+          reference={constants.R_USERS}
+          link='show'
+        />
       </Datagrid>
     </List>
   )

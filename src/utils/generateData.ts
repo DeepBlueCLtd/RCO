@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { nowDate } from '../providers/dataProvider'
+import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
 const MediaType = ['DVD', 'Tape', 'Paper']
 
@@ -28,7 +28,10 @@ export function generateRandomDate(): [DateTime, DateTime] {
   return [randomStartDate, endDate]
 }
 
-function generateRandomDateInRange(startDate: Date, endDate: Date): string {
+export function generateRandomDateInRange(
+  startDate: Date,
+  endDate: Date
+): string {
   const luxonStartDate = DateTime.fromJSDate(startDate)
   const luxonEndDate = DateTime.fromJSDate(endDate)
   const rangeInMs = luxonEndDate.toMillis() - luxonStartDate.toMillis()
@@ -65,7 +68,11 @@ const generateBatchId = (year: string, batch: Batch[]): string => {
 export const generatePlatform = (length: number): Platform[] => {
   const platforms: Platform[] = []
   for (let i = 1; i <= length; i++) {
-    const newP: Omit<Platform, 'id'> = { name: `platform-${i}`, active: true }
+    const isActive = i < 5 || i >= 9
+    const newP: Omit<Platform, 'id'> = {
+      name: `platform-${i}`,
+      active: isActive
+    }
     platforms.push(newP as Platform)
   }
   return platforms
@@ -106,7 +113,6 @@ export const generateBatch = (
       name: `batch-${i}`,
       startDate: startDate.toString(),
       endDate: endDate.toString(),
-      projectCode: String(generateRandomNumber(1, 1000)),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
@@ -165,16 +171,7 @@ export const generateItems = (
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      magTape: {
-        minutes: i,
-        brand: `brand-${i}`,
-        mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType
-      },
-      dvd: {
-        mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
-        size: i
-      },
-      paper: `paper-${i}`,
+      consecPages: `consec-pages-${i + 1}`,
       createdBy: user
     }
     items.push(obj)

@@ -13,7 +13,8 @@ const style = {
 const buttonSx = {
   position: 'fixed',
   right: '10px',
-  top: '10px'
+  top: '10px',
+  zIndex: '9'
 }
 
 export default function Printable(
@@ -35,7 +36,7 @@ export default function Printable(
         <IconButton sx={buttonSx} onClick={handleClose}>
           <Close />
         </IconButton>
-        <Box>{children}</Box>
+        <Box sx={{ padding: '30px' }}>{children}</Box>
         <FlexBox
           className='noprint'
           marginBottom='20px'

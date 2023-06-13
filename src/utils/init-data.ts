@@ -1,40 +1,94 @@
-import { getActiveReferenceData } from '../providers/dataProvider/reference-data'
-import users from '../providers/dataProvider/users'
+import users from '../providers/dataProvider/defaults/users'
 import { generateSalt, encryptData } from './encryption'
 import {
   generatePlatform,
   generateProject,
   generateBatch,
-  generateItems
+  generateItems,
+  generateRandomDateInRange
 } from './generateData'
 import * as constants from '../constants'
 import localForage from 'localforage'
+import { DateTime } from 'luxon'
+import { type DataProvider } from 'react-admin'
 
-const loadDefaultData = async (userId?: number): Promise<void> => {
+export const encryptedUsers = users.map((user) => {
+  const salt: string = generateSalt()
+  const userPassword: string = user.password
+  const updatedUser = {
+    ...user,
+    salt,
+    password: encryptData(`${userPassword}${salt}`)
+  }
+  return updatedUser
+})
+
+export const getActiveReferenceData = (
+  nameVal: string,
+  alternateInactive = false,
+  length = 5
+): ActiveReferenceItem[] => {
+  return Array(length)
+    .fill('')
+    .map((_, index): ActiveReferenceItem => {
+      const active = alternateInactive ? index % 2 === 0 : index === 0
+      return {
+        id: index + 1,
+        name: nameVal + ':' + String(index + 1),
+        active
+      }
+    })
+}
+
+const assignItemsToRandomActiveUser = async (
+  users: User[],
+  items: Item[],
+  provider: DataProvider & CustomDataProvider
+): Promise<void> => {
+  const activeUsers = users.filter((user) => user.active)
+  const randomItems: Record<number, number[]> = {}
+
+  for (const item of items) {
+    if (Math.random() > 0.8) {
+      const randomUser = users[Math.floor(Math.random() * activeUsers.length)]
+      item.loanedTo = randomUser.id
+      item.loanedDate = new Date(
+        generateRandomDateInRange(
+          DateTime.now().minus({ month: 3 }).toJSDate(),
+          DateTime.now().toJSDate()
+        )
+      ).toISOString()
+
+      if (!Object.prototype.hasOwnProperty.call(randomItems, randomUser.id)) {
+        randomItems[randomUser.id] = [] as number[]
+      }
+      randomItems[randomUser.id].push(item.id)
+    }
+  }
+  for (const userId in randomItems) {
+    await provider.loanItems(randomItems[userId], Number(userId))
+  }
+}
+
+// items.forEach(async (item) => {})
+const loadDefaultData = async (
+  userId?: number,
+  provider?: DataProvider & CustomDataProvider
+): Promise<void> => {
+  await localForage.clear()
   const user = typeof userId === 'undefined' ? users[0].id : userId
 
   const platforms = generatePlatform(10)
   const projects = generateProject(10, user)
   const organisation = getActiveReferenceData('Organisation')
-  const department = getActiveReferenceData('Department', 5)
-  const vaultLocation = getActiveReferenceData('Vault Location')
+  const department = getActiveReferenceData('Department')
+  const vaultLocation = getActiveReferenceData('Vault Location', true)
   const mediaType = getActiveReferenceData('Media')
-  const protectiveMarking = getActiveReferenceData('Protective Marking')
+  const protectiveMarking = getActiveReferenceData('Protective Marking', true)
   const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
   )
   const platformOriginator = getActiveReferenceData('Platform Originator')
-
-  const encryptedUsers = users.map((user) => {
-    const salt: string = generateSalt()
-    const userPassword: string = user.password
-    const updatedUser = {
-      ...user,
-      salt,
-      password: encryptData(`${userPassword}${salt}`)
-    }
-    return updatedUser
-  })
 
   const batches = generateBatch(
     10,
@@ -63,6 +117,9 @@ const loadDefaultData = async (userId?: number): Promise<void> => {
       )
     }
   })
+
+  if (provider !== undefined)
+    await assignItemsToRandomActiveUser(users, items, provider)
 
   const defaultData: RCOStore = {
     users: encryptedUsers,

@@ -1,6 +1,12 @@
 import { Box, type Theme, Typography } from '@mui/material'
 import React from 'react'
-import { Datagrid, List, ResourceContext, TextField } from 'react-admin'
+import {
+  Datagrid,
+  type FilterPayload,
+  List,
+  ResourceContext,
+  TextField
+} from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
@@ -41,6 +47,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Field<T> {
   source: keyof T
   reference?: string
+  component?: React.FC<any>
 }
 
 interface Props<T> {
@@ -48,10 +55,16 @@ interface Props<T> {
   itemsCount?: number
   label?: string
   fields: Array<Field<T>>
+  filter?: FilterPayload
+  search?: string
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
-  const { source, reference } = props
+  const { source, reference, component } = props
+  if (typeof component !== 'undefined') {
+    return React.createElement(component, { source })
+  }
+
   if (typeof reference !== 'undefined') {
     return (
       <SourceField
@@ -68,11 +81,13 @@ interface RecentCardProps {
   children: React.ReactElement
   label?: string
   resource?: string
+  search?: string
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', children } = props
+  const { label, resource = '', children, search } = props
   const classes = useStyles()
+
   return (
     <Box>
       <Card variant='outlined'>
@@ -87,7 +102,12 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
             {resource === R_BATCHES ? <ICON_BATCH /> : ''}
             <Typography variant='h6'>
               {typeof label !== 'undefined' && (
-                <Link to={resource} className={classes.label}>
+                <Link
+                  to={{
+                    pathname: resource,
+                    ...(search !== undefined ? { search } : null)
+                  }}
+                  className={classes.label}>
                   {label}
                 </Link>
               )}
@@ -102,12 +122,13 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
   )
 }
 export default function Recent<T>(props: Props<T>): React.ReactElement {
-  const { resource, itemsCount = 5, label, fields = [] } = props
+  const { resource, itemsCount = 5, label, fields = [], filter, search } = props
 
   return (
-    <RecentCard label={label} resource={resource}>
+    <RecentCard label={label} resource={resource} search={search}>
       <ResourceContext.Provider value={resource}>
         <List
+          filter={filter}
           storeKey={`recent-${resource}`}
           hasCreate={false}
           actions={false}

@@ -1,5 +1,5 @@
-import { Chip } from '@mui/material'
-import React, { useEffect } from 'react'
+import { Chip, IconButton } from '@mui/material'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   BooleanField,
   CreateButton,
@@ -9,8 +9,13 @@ import {
   TextField,
   TopToolbar,
   FilterButton,
-  useListContext
+  useListContext,
+  FunctionField
 } from 'react-admin'
+import useCanAccess from '../../hooks/useCanAccess'
+import * as constants from '../../constants'
+import ResourceHistoryModal from '../../components/ResourceHistory'
+import { History } from '@mui/icons-material'
 
 interface Props {
   name: string
@@ -20,9 +25,26 @@ export default function PlatformList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
   const basePath: string = `/${cName}`
+  const { hasAccess } = useCanAccess()
+  const [open, setOpen] = useState<boolean>()
+  const [record, setRecord] = useState<ActiveReferenceItem>()
+
+  const filter = useMemo(
+    () =>
+      record?.id !== undefined
+        ? { dataId: record.id, resource: cName }
+        : undefined,
+    [record]
+  )
+
+  const handleOpen = (open: boolean): void => {
+    setOpen(open)
+  }
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
-      <CreateButton to={`${basePath}/create`} />
+      {hasAccess(constants.R_PLATFORMS, { write: true }) ? (
+        <CreateButton to={`${basePath}/create`} />
+      ) : null}
       <FilterButton />
     </TopToolbar>
   )
@@ -61,7 +83,29 @@ export default function PlatformList(props: Props): React.ReactElement {
         bulkActionButtons={false}>
         <TextField source='name' />
         <BooleanField source='active' label='Active Platform' />
+        <FunctionField
+          label='History'
+          render={(record: ActiveReferenceItem) => {
+            return (
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setRecord(record)
+                  handleOpen(true)
+                }}>
+                <History />
+              </IconButton>
+            )
+          }}
+        />
       </Datagrid>
+      <ResourceHistoryModal
+        filter={filter}
+        open={open}
+        close={() => {
+          handleOpen(false)
+        }}
+      />
     </List>
   )
 }

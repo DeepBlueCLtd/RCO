@@ -8,7 +8,8 @@ import {
   useGetList,
   type TextInputProps,
   ReferenceInput,
-  AutocompleteInput
+  AutocompleteInput,
+  DateTimeInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -18,6 +19,7 @@ import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
+import dayjs from 'dayjs'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -25,8 +27,57 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required()
+  maximumProtectiveMarking: yup.number().required(),
+  startDate: yup.date().required(),
+  endDate: yup
+    .date()
+    .required()
+    .test(
+      'endDate',
+      'End date must be greater than start date',
+      function (value) {
+        return dayjs(value).diff(this.parent.startDate) > 0
+      }
+    )
 })
+
+const optionsText = (value: Batch): string => value.name
+const sx = { width: '100%' }
+
+interface Props {
+  reference: string
+  source: string
+  inputProps?: SelectInputProps | TextInputProps
+  active?: boolean
+}
+
+export const ConditionalReferenceInput = <T extends ReferenceItem>(
+  props: Props
+): React.ReactElement | null => {
+  const { source, reference, inputProps = {}, active } = props
+  const filter = active !== undefined && active ? { active: true } : {}
+  const { data, isLoading } = useGetList<T>(reference, {
+    filter
+  })
+  const boolIsLoading: boolean = isLoading
+  if (boolIsLoading) return null
+  if (data === undefined) return null
+  const choices = data.map((d) => ({ name: d.name, id: d.id }))
+
+  return data?.length === 1 ? (
+    <SelectInput
+      source={source}
+      disabled
+      sx={sx}
+      defaultValue={data[0].id}
+      optionText={optionsText}
+      choices={choices}
+      {...inputProps}
+    />
+  ) : (
+    <AutocompleteInput source={source} choices={choices} sx={sx} />
+  )
+}
 
 const BatchForm = (props: FormProps): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
@@ -47,44 +98,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
     }
   }, [])
 
-  const optionsText = (value: Batch): string => value.name
-
-  const sx = { width: '100%' }
-
-  interface Props {
-    reference: string
-    source: string
-    inputProps?: SelectInputProps | TextInputProps
-    active?: boolean
-  }
-
-  const ConditionalReferenceInput = <T extends ReferenceItem>(
-    props: Props
-  ): React.ReactElement | null => {
-    const { source, reference, inputProps = {}, active } = props
-    const filter = active !== undefined && active ? { active: true } : {}
-    const { data, isLoading } = useGetList<T>(reference, {
-      filter
-    })
-    const boolIsLoading: boolean = isLoading
-    if (boolIsLoading) return null
-    if (data === undefined) return null
-    const choices = data.map((d) => ({ name: d.name, id: d.id }))
-
-    return data?.length === 1 ? (
-      <SelectInput
-        source={source}
-        disabled
-        sx={sx}
-        defaultValue={data[0].id}
-        optionText={optionsText}
-        choices={choices}
-        {...inputProps}
-      />
-    ) : (
-      <AutocompleteInput source={source} choices={choices} sx={sx} />
-    )
-  }
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
   return (
     <>
@@ -124,6 +137,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           />
           <ReferenceInput
             variant='outlined'
+            filter={isEdit === true ? {} : { active: true }}
             source='maximumProtectiveMarking'
             reference='protectiveMarking'>
             <AutocompleteInput optionText={optionsText} sx={sx} />
@@ -160,7 +174,20 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <FlexBox></FlexBox>
+        <FlexBox>
+          <DateTimeInput
+            sx={sx}
+            source='startDate'
+            label='Start'
+            variant='outlined'
+          />
+          <DateTimeInput
+            sx={sx}
+            source='endDate'
+            variant='outlined'
+            label='End'
+          />
+        </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
       </SimpleForm>

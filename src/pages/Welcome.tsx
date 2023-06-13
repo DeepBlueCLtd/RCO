@@ -1,12 +1,13 @@
 import React from 'react'
 import * as constants from '../constants'
-import { ICON_PROJECT, ICON_BATCH } from '../constants'
+import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton, ListButton } from 'react-admin'
+import { CreateButton, DateField, useGetList } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
-import RecentMock from '../components/RecentMock'
+import HastenerSentField from '../components/HastenerSentField'
+import useCanAccess from '../hooks/useCanAccess'
 
 const useStyles = makeStyles({
   root: {
@@ -31,26 +32,15 @@ const useStyles = makeStyles({
   }
 })
 
-const mockData = {
-  loans: [
-    { id: 1, name: 'TAPE01', loanNumber: 'MAYO' },
-    { id: 2, name: 'TAPE01', loanNumber: 'DISC/23/32 ' },
-    { id: 3, name: 'SMITH', loanNumber: 'REPORT/2/23' }
-  ],
-  hasteners: [
-    { id: 1, name: '2023/02/11', hastenersNumber: 'RAC' },
-    { id: 2, name: '2023/02/15', hastenersNumber: 'AA' },
-    { id: 3, name: '2023/02/19', hastenersNumber: 'GREEN FLG' }
-  ],
-  notes: [
-    { id: 1, name: '2023/02/12', receiptsNumber: 'RAC' },
-    { id: 2, name: '2023/02/11', receiptsNumber: 'AA' },
-    { id: 3, name: '2023/02/07', receiptsNumber: 'GREEN FLG' }
-  ]
-}
-
 export default function Welcome(): React.ReactElement {
   const styles = useStyles()
+  const { hasAccess, loading } = useCanAccess()
+  const { data } = useGetList<Item>(constants.R_ITEMS, {
+    sort: { field: 'id', order: 'ASC' }
+  })
+  const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
+
+  if (loading) return <></>
 
   return (
     <div className={styles.root}>
@@ -59,16 +49,10 @@ export default function Welcome(): React.ReactElement {
           <img src={AppIcon} height='100px' />
         </FlexBox>
         <FlexBox className={styles.headerColumn}>
-          <ListButton
-            color='primary'
-            variant='contained'
-            resource={constants.R_VAULT_LOCATION}
-            label='Vault Locations'
-            sx={{ width: '150px', height: '50px' }}
-          />
           <CreateButton
             color='primary'
             variant='contained'
+            disabled={!hasAccess(constants.R_PROJECTS, { write: true })}
             resource={constants.R_PROJECTS}
             icon={<ICON_PROJECT />}
             label='New Project'
@@ -78,8 +62,18 @@ export default function Welcome(): React.ReactElement {
             color='primary'
             variant='contained'
             resource={constants.R_BATCHES}
+            disabled={!hasAccess(constants.R_BATCHES, { write: true })}
             icon={<ICON_BATCH />}
             label='New Batch'
+            sx={{ width: '150px', height: '50px' }}
+          />
+          <CreateButton
+            color='primary'
+            variant='contained'
+            resource={constants.R_DISPATCH}
+            disabled={!hasAccess(constants.R_DISPATCH, { write: true })}
+            icon={<ICON_DISPATCH />}
+            label='New Dispatch'
             sx={{ width: '150px', height: '50px' }}
           />
         </FlexBox>
@@ -93,23 +87,33 @@ export default function Welcome(): React.ReactElement {
             { source: 'platform', reference: constants.R_PLATFORMS },
             { source: 'project', reference: constants.R_PROJECTS }
           ]}
+          search='order=DESC&sort=createdAt'
         />
-        <RecentMock
-          label='Recent Loans'
-          data={mockData.loans}
-          fields={['name', 'loanNumber']}
+        <Recent<Item>
+          label='Recent loans'
+          resource={constants.R_ITEMS}
+          fields={[
+            { source: 'loanedTo', reference: constants.R_USERS },
+            { source: 'item_number' },
+            { source: 'batchId', reference: constants.R_BATCHES }
+          ]}
+          filter={{ loanedTo_neq: undefined }}
+          search={`filter=${JSON.stringify({
+            id: loaned
+          })}`}
         />
       </FlexBox>
       <FlexBox className={styles.row}>
-        <RecentMock
+        <Recent<Dispatch>
           label='Pending Receipt Notes'
-          data={mockData.notes}
-          fields={['name', 'receiptsNumber']}
-        />
-        <RecentMock
-          label='Hasteners Required'
-          data={mockData.hasteners}
-          fields={['name', 'hastenersNumber']}
+          resource={constants.R_DISPATCH}
+          fields={[
+            { source: 'reference' },
+            { source: 'dispatchedAt', component: DateField },
+            { source: 'lastHastenerSent', component: HastenerSentField }
+          ]}
+          filter={{ receiptReceived: undefined }}
+          search={`filter=${JSON.stringify({ receiptReceived: [undefined] })}`}
         />
       </FlexBox>
     </div>

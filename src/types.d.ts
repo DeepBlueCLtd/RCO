@@ -1,55 +1,70 @@
 interface CustomDataProvider {
-  loanItems: (items: Array<Item['id']>, loanedTo: User['id']) => Promise<any>
+  loanItems: (
+    items: Array<Item['id']>,
+    loanedTo: User['id'],
+    date?: string
+  ) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
 }
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
-interface User {
+type UserRole = 'rco-user' | 'rco-power-user'
+
+/** an entity, with an id unique to that table */
+interface RCOResource {
   readonly id: number
+}
+
+/** an entity for which we track instance creation */
+interface ResourceWithCreation extends RCOResource {
+  // ISO date value
+  createdAt: string
+  createdBy: User['id']
+}
+
+interface User extends ResourceWithCreation {
   name: string
   password: string
   adminRights: boolean
   /** whether items can still be loaned to this user */
   active: boolean
+  roles: UserRole[]
+  staffNumber: string
+  departedDate?: string
 }
 
-interface Audit {
-  readonly id: number
+interface Audit extends RCOResource {
   // the user making the change
   user: User['id']
   // the type of data being reported on (opt)
   resource: string | null
   // the id of the entity being reported on (opt)
-  data_id: number | null
+  dataId: number | null
   activityType: AuditType
   dateTime: string
   label: string
   activityDetail?: string
   securityRelated?: boolean
-  index?: number
+  // who this event relates to
+  subject?: User['id']
 }
 
-interface Platform {
-  readonly id: number
+interface Platform extends RCOResource {
   name: string
   active: boolean
 }
 
-interface Project {
+interface Project extends ResourceWithCreation {
   readonly id: number
   name: string
   remarks: string
-  createdAt: string
-  createdBy: User['id']
 }
 
-interface Batch {
-  readonly id: number
+interface Batch extends ResourceWithCreation {
   name: string
   startDate: string
   endDate: string
-  projectCode: string
   batchNumber: string
   yearOfReceipt: string
   department: ReferenceItem['id']
@@ -59,15 +74,12 @@ interface Batch {
   maximumProtectiveMarking: ReferenceItem['id']
   remarks: string
   receiptNotes: string
-  createdAt: string
-  createdBy: User['id']
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
  * interface becomes more complex, introduce a type-specific interface
  */
-interface ReferenceItem {
-  readonly id: number
+interface ReferenceItem extends RCOResource {
   name: string
 }
 
@@ -89,8 +101,7 @@ interface Tape extends CoreMedia {
   brand: string
 }
 
-interface Item {
-  readonly id: number
+interface Item extends ResourceWithCreation {
   mediaType: MediaType
   start: string
   batchId: Batch['id']
@@ -99,17 +110,18 @@ interface Item {
   vaultLocation: ReferenceItem['id']
   remarks: string
   protectiveMarking: ReferenceItem['id']
-  magTape: Tape
-  dvd: DVD
-  paper: Paper
   // notes relating to how this item is mustered
   musterRemarks: string
-  // the date this item was added
-  createdAt: string
-  // who added this item
-  createdBy: User['id']
   // who this item is currently loaned to
   loanedTo?: User['id']
+  loanedDate?: string
+  consecPages?: string
+  dispatchJob?: Dispatch['id']
+  dispatchedDate?: string
+
+  // item destruction details
+  destruction?: Destruction['id']
+  destructionDate?: string
 }
 
 type MediaType = 'DVD' | 'Tape' | 'Paper'
@@ -138,7 +150,55 @@ interface RCOStore {
   platformOriginator: ActiveReferenceItem[]
 }
 
+interface Destruction {
+  readonly id: number
+  reference: string
+  createdAt: string
+  createdBy: User['id']
+  finalisedAt?: string
+  finalisedBy?: User['id']
+  remarks: string
+}
+
 interface ActivityType {
   name: string
   label: string
+}
+
+interface Permission {
+  read?: boolean
+  write?: boolean
+  delete?: boolean
+  all?: '*'
+}
+
+/** the set of routes for a resource */
+interface ResourceRoutes {
+  create?: any
+  edit?: any
+  list?: any
+  show?: any
+}
+
+type ResourcePermissions = Record<string, Permission>
+
+interface Address {
+  readonly id: number
+  createdAt: string
+  fullAddress: string
+  active: boolean
+  Remarks: string
+}
+
+interface Dispatch {
+  id: number
+  reference: string
+  createdAt: string
+  createdBy: User['id']
+  remarks: string
+  dispatchedAt?: string
+  toName: string
+  toAddress: Address['id']
+  receiptReceived?: string
+  lastHastenerSent?: string
 }

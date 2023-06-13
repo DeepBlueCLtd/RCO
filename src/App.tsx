@@ -9,7 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { AllInbox } from '@mui/icons-material'
+import { AllInbox, Groups } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 
@@ -34,6 +34,11 @@ import platforms from './resources/platforms'
 import vaultlocations from './resources/vault-locations'
 import loadDefaultData from './utils/init-data'
 import { type FilterType } from './resources/audit/AuditList'
+import { canAccess } from './providers/authProvider/permissions'
+import { protectedRoutes } from './hooks/useCanAccess'
+import addresses from './resources/addresses'
+import dispatch from './resources/dispatch'
+import destruction from './resources/destruction'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -41,6 +46,7 @@ function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
   )
+  const [permissions, setPermissions] = useState<ResourcePermissions>({})
   const [authProvider, setAuthProvider] = useState<AuthProvider | undefined>(
     undefined
   )
@@ -52,6 +58,10 @@ function App(): React.ReactElement {
           setDataProvider(provider)
           const authenticationProvider = rcoAuthProvider(provider)
           setAuthProvider(authenticationProvider)
+          authenticationProvider
+            .getPermissions({})
+            .then(setPermissions)
+            .catch(console.log)
           if (provider !== undefined && dataProvider === undefined) {
             const queryParams = new URLSearchParams(window.location.search)
             const username = queryParams.get('username')
@@ -94,6 +104,10 @@ function App(): React.ReactElement {
     const UI_VERSION = localStorage.getItem(constants.APP_VERSION)
     if (UI_VERSION !== null) {
       if (process.env.VITE_APP_VERSION !== UI_VERSION) {
+        localStorage.setItem(
+          constants.APP_VERSION,
+          process.env.VITE_APP_VERSION ?? '1'
+        )
         Object.keys(localStorage).forEach((k) => {
           if (k !== 'rco-user' && k !== 'salt') {
             localStorage.removeItem(k)
@@ -113,7 +127,7 @@ function App(): React.ReactElement {
     } else {
       localStorage.setItem(
         constants.APP_VERSION,
-        process.env.VITE_APP_VERSION ?? '1.0.0'
+        process.env.VITE_APP_VERSION ?? '1'
       )
     }
   }, [])
@@ -123,11 +137,15 @@ function App(): React.ReactElement {
     if (DATA_VERSION !== null) {
       if (process.env.VITE_DATA_VERSION !== DATA_VERSION) {
         loadDefaultData().catch(console.log)
+        localStorage.setItem(
+          constants.DATA_VERSION,
+          process.env.VITE_DATA_VERSION ?? '1'
+        )
       }
     } else {
       localStorage.setItem(
         constants.DATA_VERSION,
-        process.env.VITE_DATA_VERSION ?? '1.0.0'
+        process.env.VITE_DATA_VERSION ?? '1'
       )
     }
   }, [])
@@ -135,6 +153,11 @@ function App(): React.ReactElement {
   useEffect(handleGetProvider, [loggingPref])
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
+
+  const referenceDataPermission = {
+    read: canAccess(permissions, 'reference-data', { read: true }),
+    write: canAccess(permissions, 'reference-data', { write: true })
+  }
 
   return (
     <Suspense fallback={LoadingPage}>
@@ -145,71 +168,120 @@ function App(): React.ReactElement {
         authProvider={authProvider}
         layout={MyLayout}
         theme={rcoTheme}
-        disableTelemetry
-        requireAuth>
-        {(permissions) => {
-          return [
-            ...(permissions === 'admin'
-              ? [
-                  <Resource
-                    key={constants.R_BATCHES}
-                    icon={constants.ICON_BATCH}
-                    name={constants.R_BATCHES}
-                    {...batches}
-                  />,
-                  <Resource
-                    key={constants.R_ITEMS}
-                    icon={constants.ICON_ITEM}
-                    name={constants.R_ITEMS}
-                    {...items}
-                  />,
-                  <Resource
-                    key={constants.R_VAULT_LOCATION}
-                    name={constants.R_VAULT_LOCATION}
-                    icon={AllInbox}
-                    options={{ label: 'Vault Locations' }}
-                    {...vaultlocations}
-                  />,
-                  <CustomRoutes key='routes'>
-                    <Route path='/protectiveMarking'>
-                      {...createRoutes('protectiveMarking')}
-                    </Route>
-                    <Route path='/protectiveMarkingAuthority'>
-                      {...createRoutes('protectiveMarkingAuthority')}
-                    </Route>
-                    <Route path='/department'>
-                      {...createRoutes('department')}
-                    </Route>
-                    <Route path='/platformOriginator'>
-                      {...createRoutes('platformOriginator')}
-                    </Route>
-                    <Route path='/organisation'>
-                      {...createRoutes('organisation')}
-                    </Route>
-                    <Route path='/mediaType'>
-                      {...createRoutes('mediaType')}
-                    </Route>
-                    <Route path='/platforms'>
-                      {...createRoutes('platforms', platforms)}
-                    </Route>
-                    <Route path='/users'>
-                      {...createRoutes('users', users)}
-                    </Route>
-                    <Route path='/audit'>
-                      {...createRoutes('audit', audit)}
-                    </Route>
-                    <Route path='/reference-data' element={<ReferenceData />} />
-                  </CustomRoutes>
-                ]
-              : []),
-            <Resource
-              key={constants.R_PROJECTS}
-              icon={constants.ICON_PROJECT}
-              name={constants.R_PROJECTS}
-              {...projects}
-            />
-          ]
-        }}
+        disableTelemetry>
+        <Resource
+          key={constants.R_VAULT_LOCATION}
+          name={constants.R_VAULT_LOCATION}
+          icon={AllInbox}
+          options={{ label: 'Vault Locations' }}
+          {...protectedRoutes(
+            permissions,
+            constants.R_VAULT_LOCATION,
+            vaultlocations
+          )}
+        />
+        <Resource
+          key={constants.R_USERS}
+          name={constants.R_USERS}
+          icon={Groups}
+          {...protectedRoutes(permissions, constants.R_USERS, users)}
+        />
+        <CustomRoutes key='routes'>
+          <Route path='/protectiveMarking'>
+            {...createRoutes(
+              'protectiveMarking',
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
+          <Route path='/protectiveMarkingAuthority'>
+            {...createRoutes(
+              'protectiveMarkingAuthority',
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
+          <Route path='/department'>
+            {...createRoutes('department', undefined, referenceDataPermission)}
+          </Route>
+          <Route path='/platformOriginator'>
+            {...createRoutes(
+              'platformOriginator',
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
+          <Route path='/organisation'>
+            {...createRoutes(
+              'organisation',
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
+          <Route path='/mediaType'>
+            {...createRoutes('mediaType', undefined, referenceDataPermission)}
+          </Route>
+          <Route path='/platforms'>
+            {...createRoutes('platforms', platforms, referenceDataPermission)}
+          </Route>
+          <Route path='/users'>
+            {...createRoutes('users', users, referenceDataPermission)}
+          </Route>
+          <Route path='/audit'>
+            {...createRoutes('audit', audit, referenceDataPermission)}
+          </Route>
+          <Route path='/reference-data' element={<ReferenceData />} />
+        </CustomRoutes>
+        <Resource
+          key={constants.R_ADDRESSES}
+          icon={constants.ICON_ADDRESSES}
+          name={constants.R_ADDRESSES}
+          {...protectedRoutes(permissions, constants.R_ADDRESSES, addresses)}
+        />
+        <Resource
+          key={constants.R_PROJECTS}
+          icon={constants.ICON_PROJECT}
+          name={constants.R_PROJECTS}
+          {...protectedRoutes(permissions, constants.R_PROJECTS, projects)}
+        />
+        <Resource
+          key={constants.R_BATCHES}
+          icon={constants.ICON_BATCH}
+          name={constants.R_BATCHES}
+          {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
+        />
+        <Resource
+          key={constants.R_ITEMS}
+          icon={constants.ICON_ITEM}
+          name={constants.R_ITEMS}
+          options={{
+            filter: {
+              dispatchJob: undefined,
+              destruction: undefined
+            },
+            label: 'Live Items'
+          }}
+          {...protectedRoutes(permissions, constants.R_ITEMS, items)}
+        />
+        <Resource
+          key={constants.R_ALL_ITEMS}
+          icon={constants.ICON_ALL_ITEM}
+          name={constants.R_ALL_ITEMS}
+          options={{ label: 'All Items' }}
+          {...protectedRoutes(permissions, constants.R_ALL_ITEMS, items)}
+        />
+        <Resource
+          key={constants.R_DISPATCH}
+          icon={constants.ICON_DISPATCH}
+          name={constants.R_DISPATCH}
+          {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
+        />
+        <Resource
+          key={constants.R_DESTRUCTION}
+          icon={constants.ICON_DESTRUCTION}
+          name={constants.R_DESTRUCTION}
+          {...protectedRoutes(permissions, constants.R_ITEMS, destruction)}
+        />
       </Admin>
     </Suspense>
   )
@@ -226,7 +298,7 @@ interface Elements {
   list?: React.FunctionComponent<ElementsProps>
 }
 
-const defaultElements = {
+const defaultElements: ResourceRoutes = {
   create: ReferenceDataCreate,
   edit: ReferenceDataEdit,
   list: ReferenceDataList
@@ -234,9 +306,17 @@ const defaultElements = {
 
 const createRoutes = (
   name: string,
-  elements: Elements = defaultElements
+  elements: Elements = defaultElements,
+  permissions?: Permission
 ): React.ReactNode[] => {
   const cName: string = name
+
+  const { read, write } =
+    typeof permissions !== 'undefined'
+      ? permissions
+      : { read: false, write: false }
+
+  const routes: React.ReactElement[] = []
 
   const {
     create = ReferenceDataCreate,
@@ -244,23 +324,33 @@ const createRoutes = (
     list = ReferenceDataList
   } = elements
 
-  return [
-    <Route
-      key={`${cName}list`}
-      index
-      element={React.createElement(list, { name })}
-    />,
-    <Route
-      key={`${cName}edit`}
-      path={`/${cName}:id`}
-      element={React.createElement(edit, { name })}
-    />,
-    <Route
-      key={`${cName}create`}
-      path='create'
-      element={React.createElement(create, { name })}
-    />
-  ]
+  if (read === true) {
+    routes.push(
+      <Route
+        key={`${cName}list`}
+        index
+        element={React.createElement(list, { name })}
+      />
+    )
+  }
+  if (write === true) {
+    routes.push(
+      ...[
+        <Route
+          key={`${cName}edit`}
+          path={`/${cName}:id`}
+          element={React.createElement(edit, { name })}
+        />,
+        <Route
+          key={`${cName}create`}
+          path='create'
+          element={React.createElement(create, { name })}
+        />
+      ]
+    )
+  }
+
+  return routes
 }
 
 export default App

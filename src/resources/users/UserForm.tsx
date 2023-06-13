@@ -3,26 +3,36 @@ import {
   SimpleForm,
   TextInput,
   BooleanInput,
-  useEditContext
+  useEditContext,
+  SelectArrayInput
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { decryptPassword } from '../../utils/encryption'
 import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
+import { rolesOptions } from '../../utils/options'
+import FlexBox from '../../components/FlexBox'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: yup.string().max(8).min(4),
-  adminRights: yup.boolean()
+  password: yup.string().required(),
+  adminRights: yup.boolean(),
+  roles: yup
+    .array(yup.string().oneOf(rolesOptions.map(({ value }) => value)))
+    .min(1)
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
-  const defaultValues: Omit<User, 'id'> = {
+  const defaultValues: Omit<
+    User,
+    'id' | 'createdAt' | 'createdBy' | 'staffNumber'
+  > = {
     name: '',
     password: '',
     adminRights: false,
-    active: true
+    active: true,
+    roles: []
   }
   const { record } = useEditContext()
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
@@ -46,8 +56,21 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           else return password !== null ? password : ''
         }}
       />
-      <BooleanInput source='adminRights' />
-      <BooleanInput source='active' />
+      <FlexBox>
+        <SelectArrayInput
+          label='Roles'
+          source='roles'
+          optionValue='value'
+          optionText='label'
+          sx={{ width: '100%', flex: 1 }}
+          choices={rolesOptions}
+        />
+        <TextInput source='staffNumber' label='Staff number' sx={{ flex: 1 }} />
+      </FlexBox>
+      <FlexBox>
+        <BooleanInput source='adminRights' />
+        <BooleanInput source='active' />
+      </FlexBox>
     </SimpleForm>
   )
 }

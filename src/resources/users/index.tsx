@@ -1,13 +1,24 @@
 import React from 'react'
-import { Create, Edit, type TransformData, useRedirect } from 'react-admin'
+import { Create, Edit, type TransformData } from 'react-admin'
 import UserForm from './UserForm'
-import { encryptData, generateSalt } from '../../utils/encryption'
+import {
+  decryptPassword,
+  encryptData,
+  generateSalt
+} from '../../utils/encryption'
 
 const UserList = React.lazy(async () => await import('./UserList'))
+const UserShow = React.lazy(async () => await import('./UserShow'))
 
-const transform = (data: any): TransformData => {
+const transform = (data: any, options: any): TransformData => {
   const salt: string = generateSalt()
-  const userPassword: string = data.password
+  let userPassword
+  if (options !== undefined && data.password.length === 88) {
+    const { previousData } = options
+    userPassword = decryptPassword(previousData.password, previousData.salt)
+  } else {
+    userPassword = data.password
+  }
   const updatedData = {
     ...data,
     salt,
@@ -18,18 +29,9 @@ const transform = (data: any): TransformData => {
 
 const UserCreate = (): React.ReactElement => {
   const path: string = '/users'
-  const redirect = useRedirect()
-  const onSuccess = (): void => {
-    redirect(path)
-  }
 
   return (
-    <Create
-      resource='users'
-      transform={transform}
-      mutationOptions={{
-        onSuccess
-      }}>
+    <Create resource='users' transform={transform} redirect={path}>
       <UserForm />
     </Create>
   )
@@ -37,18 +39,9 @@ const UserCreate = (): React.ReactElement => {
 
 const UserEdit = (): React.ReactElement => {
   const path: string = '/users'
-  const redirect = useRedirect()
-  const onSuccess = (): void => {
-    redirect(path)
-  }
 
   return (
-    <Edit
-      resource='users'
-      transform={transform}
-      mutationOptions={{
-        onSuccess
-      }}>
+    <Edit resource='users' transform={transform} redirect={path}>
       <UserForm isEdit />
     </Edit>
   )
@@ -57,7 +50,8 @@ const UserEdit = (): React.ReactElement => {
 const users = {
   create: UserCreate,
   edit: UserEdit,
-  list: UserList
+  list: UserList,
+  show: UserShow
 }
 
 export default users
