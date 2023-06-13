@@ -79,7 +79,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
           const { item_number: itemNumber } = item
           const audiData = {
             type: AuditType.EDIT,
-            activityDetail: `Add item ${itemNumber} to dispatch`,
+            activityDetail: `Add item to dispatch ${reference}`,
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id
@@ -87,7 +87,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
           await audit(audiData)
           await audit({
             ...audiData,
-            activityDetail: `Add item to dispatch ${reference}`,
+            activityDetail: `Add item ${itemNumber} to dispatch`,
             resource: constants.R_DISPATCH,
             dataId: dispatchId as number
           })
