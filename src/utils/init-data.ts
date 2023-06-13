@@ -11,7 +11,7 @@ import {
 import * as constants from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
-import { type DataProvider } from 'react-admin'
+import { getDataProvider } from '../providers/dataProvider'
 
 const generatedUsers = generateUsers(200)
 
@@ -54,11 +54,10 @@ export const getActiveReferenceData = (
     })
 }
 
-const assignItemsToRandomActiveUser = async (
+const assignItemsToRandomActiveUser = (
   users: User[],
-  items: Item[],
-  provider: DataProvider & CustomDataProvider
-): Promise<void> => {
+  items: Item[]
+): Record<string, number[]> => {
   const activeUsers = users.filter((user) => user.active)
   const randomItems: Record<number, number[]> = {}
 
@@ -79,14 +78,12 @@ const assignItemsToRandomActiveUser = async (
       randomItems[randomUser.id].push(item.id)
     }
   }
-  for (const userId in randomItems) {
-    await provider.loanItems(randomItems[userId], Number(userId))
-  }
+
+  return randomItems
 }
 
 const loadDefaultData = async (
   userId?: number,
-  provider?: DataProvider & CustomDataProvider,
   isHigh?: boolean
 ): Promise<void> => {
   await localForage.clear()
@@ -136,6 +133,7 @@ const loadDefaultData = async (
 
   const items: Item[] = []
   const numItems = isHigh === true ? Math.floor(Math.random() * 55) + 6 : 10
+
   batches.forEach((batch: Batch, index: number) => {
     const project = projects.find((project) => project.id === batch.project)
     if (project !== undefined) {
@@ -151,6 +149,11 @@ const loadDefaultData = async (
       )
     }
   })
+
+  const randomItems = assignItemsToRandomActiveUser(
+    isHigh === true ? generatedUsers : users,
+    items
+  )
 
   const defaultData: RCOStore = {
     users: encryptedUsers(isHigh),
@@ -169,13 +172,23 @@ const loadDefaultData = async (
 
   // push all the default data into resources in localForage
   for (const [key, value] of Object.entries(defaultData)) {
-    localForage
-      .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
-      .catch(console.log)
+    if (key === constants.R_ITEMS) {
+      localForage
+        .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+        .then(async () => {
+          const provider = await getDataProvider(false)
+          if (provider !== undefined) {
+            for (const userId in randomItems) {
+              await provider.loanItems(randomItems[userId], Number(userId))
+            }
+          }
+        })
+        .catch(console.log)
+    } else
+      localForage
+        .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+        .catch(console.log)
   }
-
-  if (provider !== undefined)
-    await assignItemsToRandomActiveUser(generatedUsers, items, provider)
 }
 
 export default loadDefaultData

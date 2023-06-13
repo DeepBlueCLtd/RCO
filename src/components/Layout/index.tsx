@@ -12,9 +12,7 @@ import {
   useRedirect,
   UserMenu,
   type UserMenuProps,
-  useLogout,
-  useDataProvider,
-  type DataProvider
+  useLogout
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
@@ -51,7 +49,6 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const [authenticated, setAuthenticated] = useState(false)
   const logout = useLogout()
   const redirect = useRedirect()
-  const provider = useDataProvider<DataProvider & CustomDataProvider>()
 
   const [loggingPref, setLoggingPref] = useState<boolean>(
     localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
@@ -62,13 +59,13 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   }
 
   const handleLoadData = (): void => {
-    loadDefaultData(undefined, provider).catch((error) => {
+    loadDefaultData(undefined).catch((error) => {
       console.log({ error })
     })
   }
 
   const handleHighVolumeLoadData = (): void => {
-    loadDefaultData(undefined, provider, true).catch(console.log)
+    loadDefaultData(undefined, true).catch(console.log)
   }
 
   const handleLoggingPrefChange = (

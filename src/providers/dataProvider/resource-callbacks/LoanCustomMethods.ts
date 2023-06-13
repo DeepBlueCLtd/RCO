@@ -10,7 +10,7 @@ export const customMethods = (provider: DataProvider): CustomDataProvider => {
   return {
     loanItems: async (items: Array<Item['id']>, holder: number) => {
       await provider.updateMany<Item>(R_ITEMS, {
-        ids: items.filter((item) => item < 100),
+        ids: items,
         data: {
           loanedTo: holder,
           loanedDate: nowDate()
