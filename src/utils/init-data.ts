@@ -5,33 +5,47 @@ import {
   generateProject,
   generateBatch,
   generateItems,
-  generateRandomDateInRange
+  generateRandomDateInRange,
+  generateUsers
 } from './generateData'
 import * as constants from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
-import { type DataProvider } from 'react-admin'
+import { getDataProvider } from '../providers/dataProvider'
 
-export const encryptedUsers = users.map((user) => {
-  const salt: string = generateSalt()
-  const userPassword: string = user.password
-  const updatedUser = {
-    ...user,
-    salt,
-    password: encryptData(`${userPassword}${salt}`)
-  }
-  return updatedUser
-})
+const generatedUsers = generateUsers(200)
+
+export const encryptedUsers = (isHigh?: boolean): User[] => {
+  const userList = isHigh === true ? generatedUsers : users
+  const mappedUsers = userList.map((user) => {
+    const salt: string = generateSalt()
+    const userPassword: string = user.password
+    const updatedUser = {
+      ...user,
+      salt,
+      password: encryptData(`${userPassword}${salt}`)
+    }
+    return updatedUser
+  })
+  return mappedUsers
+}
 
 export const getActiveReferenceData = (
   nameVal: string,
   alternateInactive = false,
-  length = 5
+  length = 5,
+  isHigh?: boolean,
+  inActivePercentage?: number
 ): ActiveReferenceItem[] => {
   return Array(length)
     .fill('')
     .map((_, index): ActiveReferenceItem => {
-      const active = alternateInactive ? index % 2 === 0 : index === 0
+      const active =
+        isHigh === true && inActivePercentage !== undefined
+          ? index > inActivePercentage * length
+          : alternateInactive
+          ? index % 2 === 0
+          : index === 0
       return {
         id: index + 1,
         name: nameVal + ':' + String(index + 1),
@@ -40,11 +54,10 @@ export const getActiveReferenceData = (
     })
 }
 
-const assignItemsToRandomActiveUser = async (
+const assignItemsToRandomActiveUser = (
   users: User[],
-  items: Item[],
-  provider: DataProvider & CustomDataProvider
-): Promise<void> => {
+  items: Item[]
+): Record<string, number[]> => {
   const activeUsers = users.filter((user) => user.active)
   const randomItems: Record<number, number[]> = {}
 
@@ -65,43 +78,62 @@ const assignItemsToRandomActiveUser = async (
       randomItems[randomUser.id].push(item.id)
     }
   }
-  for (const userId in randomItems) {
-    await provider.loanItems(randomItems[userId], Number(userId))
-  }
+
+  return randomItems
 }
 
-// items.forEach(async (item) => {})
 const loadDefaultData = async (
   userId?: number,
-  provider?: DataProvider & CustomDataProvider
+  isHigh?: boolean
 ): Promise<void> => {
   await localForage.clear()
-  const user = typeof userId === 'undefined' ? users[0].id : userId
 
-  const platforms = generatePlatform(10)
-  const projects = generateProject(10, user)
+  const user = typeof userId === 'undefined' ? users[0].id : userId
+  const platforms = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
+  const projects = generateProject(isHigh === true ? 60 : 10, user)
+
   const organisation = getActiveReferenceData('Organisation')
+
   const department = getActiveReferenceData('Department')
-  const vaultLocation = getActiveReferenceData('Vault Location', true)
-  const mediaType = getActiveReferenceData('Media')
+
+  const vaultLocation = getActiveReferenceData(
+    'Vault Location',
+    undefined,
+    isHigh === true ? 100 : undefined,
+    isHigh,
+    5
+  )
+
+  const mediaType = getActiveReferenceData(
+    'Media',
+    undefined,
+    isHigh === true ? 50 : undefined,
+    isHigh,
+    50
+  )
+
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
+
   const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
   )
+
   const platformOriginator = getActiveReferenceData('Platform Originator')
 
   const batches = generateBatch(
-    10,
+    isHigh === true ? 500 : 10,
     platforms.length,
     department.length,
     projects.length,
     organisation.length,
     protectiveMarking.length,
-    user
+    user,
+    isHigh
   )
 
   const items: Item[] = []
-  const numItems = 10
+  const numItems = isHigh === true ? Math.floor(Math.random() * 55) + 6 : 10
+
   batches.forEach((batch: Batch, index: number) => {
     const project = projects.find((project) => project.id === batch.project)
     if (project !== undefined) {
@@ -118,11 +150,13 @@ const loadDefaultData = async (
     }
   })
 
-  if (provider !== undefined)
-    await assignItemsToRandomActiveUser(users, items, provider)
+  const randomItems = assignItemsToRandomActiveUser(
+    isHigh === true ? generatedUsers : users,
+    items
+  )
 
   const defaultData: RCOStore = {
-    users: encryptedUsers,
+    users: encryptedUsers(isHigh),
     batches,
     items,
     platforms,
@@ -138,7 +172,22 @@ const loadDefaultData = async (
 
   // push all the default data into resources in localForage
   for (const [key, value] of Object.entries(defaultData)) {
-    await localForage.setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+    if (key === constants.R_ITEMS) {
+      localForage
+        .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+        .then(async () => {
+          const provider = await getDataProvider(false)
+          if (provider !== undefined) {
+            for (const userId in randomItems) {
+              await provider.loanItems(randomItems[userId], Number(userId))
+            }
+          }
+        })
+        .catch(console.log)
+    } else
+      localForage
+        .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
+        .catch(console.log)
   }
 }
 
