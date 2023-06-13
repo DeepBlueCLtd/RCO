@@ -7,14 +7,38 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import { Box } from '@mui/system'
 import FlexBox from '../../components/FlexBox'
+import { FROM_ADDRESS } from '../../constants'
 
 const DispatchDetail = (): React.ReactElement => {
   return (
-    <Show component={'div'} actions={<></>}>
-      <FieldWithLabel label='Serial No.' source='reference' />
-      <FieldWithLabel label='From' source='createdAt' />
-      <FieldWithLabel label='Date' source='createdAt' />
-      <FieldWithLabel label='To' source='toName' />
+    <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
+      <FieldWithLabel
+        label='Serial No.'
+        source='reference'
+        labelStyles={{ fontSize: '1rem' }}
+        textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
+      />
+      <Box fontWeight='bold'>
+        <Typography fontWeight='bold'>
+          From:
+          <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
+            &nbsp;{FROM_ADDRESS}
+          </span>
+        </Typography>
+      </Box>
+      <FieldWithLabel
+        label='Date'
+        source='createdAt'
+        labelStyles={{ fontSize: '1rem' }}
+        textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
+      />
+      <FieldWithLabel
+        sourceField='fullAddress'
+        label='To'
+        source='toAddress'
+        reference={constants.R_ADDRESSES}
+        textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
+      />
     </Show>
   )
 }

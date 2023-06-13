@@ -73,3 +73,5 @@ export const DATA_VERSION = 'DATA_VERSION'
 
 // mitt events
 export const SAVE_EVENT = 'save'
+
+export const FROM_ADDRESS = 'Dept A, Building B, Sea Street, Deetown WS8 7JE'
