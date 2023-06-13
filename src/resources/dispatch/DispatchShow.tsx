@@ -271,6 +271,7 @@ function DispatchedItemList(
         </Typography>
       </legend>
       <ItemList
+        storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
         filter={{ dispatchJob: id }}
         filtersShown={['q', 'batchId', 'mediaType']}>
         <ItemListDataTable bulkActionButtons={bulkActionButtons} />

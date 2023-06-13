@@ -21,6 +21,8 @@ import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
 import { Warning, History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
+import * as constants from '../../constants'
+import { useParams } from 'react-router-dom'
 
 const style = {
   position: 'absolute',
@@ -87,6 +89,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   })
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
+  const { id } = useParams()
 
   const handleDepartUser = (): void => {
     setDepartOpen(true)
@@ -176,7 +179,10 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               {loanedHistory}
             </Typography>
           </legend>
-          <ItemList filter={{ loanedTo: record?.id }} />
+          <ItemList
+            storeKey={`${constants.R_USERS}-${id}-items-list`}
+            filter={{ loanedTo: record?.id }}
+          />
         </Box>
       </FlexBox>
 
