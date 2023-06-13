@@ -1,7 +1,6 @@
 import {
   DateField,
   FilterButton,
-  List,
   type ListProps,
   SearchInput,
   SelectColumnsButton,
@@ -17,8 +16,7 @@ import {
   type DatagridConfigurableProps,
   useDataProvider,
   useGetMany,
-  useNotify,
-  useUnselectAll
+  useNotify
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -42,6 +40,7 @@ import useAudit from '../../hooks/useAudit'
 import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
+import List from '../../components/ListWithLocalStore'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -442,14 +441,13 @@ interface ItemListType extends Omit<ListProps, 'children'> {
 }
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
-  const { datagridConfigurableProps, children, filtersShown, ...rest } =
-    props ?? {}
-
-  const unSelectAll = useUnselectAll(constants.R_ITEMS)
-
-  useEffect(() => {
-    unSelectAll()
-  }, [])
+  const {
+    datagridConfigurableProps,
+    children,
+    storeKey = 'items-items-list',
+    filtersShown,
+    ...rest
+  } = props ?? {}
 
   return (
     <List
@@ -462,6 +460,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           : filters.filter((f) => filtersShown.includes(f.key as string))
       }
       filter={props !== undefined ? props.filter : undefined}
+      storeKey={storeKey}
       {...rest}>
       <ResetDateFilter source='createdAt' />
       {/* <ResetDateRangeFilter source='date_range' /> */}

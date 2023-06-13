@@ -182,10 +182,10 @@ export default function BatchShow(): React.ReactElement {
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>
           <ItemList
+            storeKey={`${constants.R_BATCHES}-${id}-items-list`}
             empty={false}
             filter={{ batchId: id }}
             actions={<ItemActions />}
-            storeKey='batch-items-list'
             disableSyncWithLocation
           />
         </TabbedShowLayout.Tab>
