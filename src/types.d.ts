@@ -83,7 +83,11 @@ interface Batch extends ResourceWithCreation, CatTypes {
   project: Project['id']
   platform: Platform['id']
   organisation: ReferenceItem['id']
-  maximumProtectiveMarking: ReferenceItem['id']
+  protectiveMarking: ReferenceItem['id']
+  // extra protection details
+  catCode: ReferenceItem['id']
+  catHandle: ReferenceItem['id']
+  catCave: Array<ReferenceItem['id']>
   remarks: string
   receiptNotes: string
 }
@@ -123,6 +127,11 @@ interface Item extends ResourceWithCreation, CatTypes {
   vaultLocation: ReferenceItem['id']
   remarks: string
   protectiveMarking: ReferenceItem['id']
+  // extra protection details
+  catCode: ReferenceItem['id']
+  catHandle: ReferenceItem['id']
+  catCave: Array<ReferenceItem['id']>
+
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
