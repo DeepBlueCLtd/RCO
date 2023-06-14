@@ -1,4 +1,4 @@
-import { Show, TextField } from 'react-admin'
+import { Show, TextField, useResourceDefinition } from 'react-admin'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import { Typography } from '@mui/material'
 import ItemsReport from '../items/ItemsReport'
@@ -7,9 +7,11 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import { Box } from '@mui/system'
 import FlexBox from '../../components/FlexBox'
-import { FROM_ADDRESS } from '../../constants'
 
 const DispatchDetail = (): React.ReactElement => {
+  const {
+    options: { configData }
+  } = useResourceDefinition()
   return (
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
       <FieldWithLabel
@@ -22,7 +24,7 @@ const DispatchDetail = (): React.ReactElement => {
         <Typography fontWeight='bold'>
           From:
           <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-            &nbsp;{FROM_ADDRESS}
+            &nbsp;{configData.fromAddress}
           </span>
         </Typography>
       </Box>

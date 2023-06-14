@@ -9,7 +9,8 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateTimeInput
+  DateTimeInput,
+  useResourceDefinition
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -83,6 +84,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
   const { isEdit } = props
+  const {
+    options: { configData }
+  } = useResourceDefinition()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -121,6 +125,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='project'
             reference={constants.R_PROJECTS}>
             <AutocompleteInput
+              label={configData.projectName}
               optionText={optionsText}
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
