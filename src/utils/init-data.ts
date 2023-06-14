@@ -89,7 +89,9 @@ const loadDefaultData = async (
     'Protective Marking Authority'
   )
   const platformOriginator = getActiveReferenceData('Platform Originator')
-
+  const catCode = getActiveReferenceData('Cat Code', true, 8)
+  const catHandling = getActiveReferenceData('Cat Handling', true, 8)
+  const catCave = getActiveReferenceData('Cat Cave', true, 8)
   const batches = generateBatch(
     10,
     platforms.length,
@@ -133,7 +135,10 @@ const loadDefaultData = async (
     mediaType,
     protectiveMarking,
     protectiveMarkingAuthority,
-    platformOriginator
+    platformOriginator,
+    catCode,
+    catHandling,
+    catCave
   }
 
   // push all the default data into resources in localForage

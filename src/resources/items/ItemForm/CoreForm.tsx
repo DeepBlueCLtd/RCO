@@ -13,6 +13,7 @@ import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 import { ConditionalReferenceInput } from '../../batches/BatchForm'
+import ProtectionBlockInputs from '../../../components/ProtectionBlockInputs'
 
 const sx = { width: '100%' }
 
@@ -84,6 +85,7 @@ const CoreForm = (props: Props): React.ReactElement => {
           )}
         </Card>
       </FlexBox>
+      <ProtectionBlockInputs disabled={disabled} />
       <FlexBox>
         <DateTimeInput
           sx={sx}

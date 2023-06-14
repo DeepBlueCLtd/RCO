@@ -23,6 +23,12 @@ interface ResourceWithCreation extends RCOResource {
   createdBy: User['id']
 }
 
+interface CatTypes {
+  catCode?: ReferenceItem['id']
+  catHandling?: ReferenceItem['id']
+  catCave?: Array<ReferenceItem['id']>
+}
+
 interface User extends ResourceWithCreation {
   name: string
   password: string
@@ -61,7 +67,7 @@ interface Project extends ResourceWithCreation {
   remarks: string
 }
 
-interface Batch extends ResourceWithCreation {
+interface Batch extends ResourceWithCreation, CatTypes {
   name: string
   startDate: string
   endDate: string
@@ -101,7 +107,7 @@ interface Tape extends CoreMedia {
   brand: string
 }
 
-interface Item extends ResourceWithCreation {
+interface Item extends ResourceWithCreation, CatTypes {
   mediaType: MediaType
   start: string
   batchId: Batch['id']
@@ -148,6 +154,9 @@ interface RCOStore {
   protectiveMarking: ActiveReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ActiveReferenceItem[]
+  catCode: ActiveReferenceItem[]
+  catHandling: ActiveReferenceItem[]
+  catCave: ActiveReferenceItem[]
 }
 
 interface Destruction {
