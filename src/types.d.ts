@@ -84,10 +84,10 @@ interface Batch extends ResourceWithCreation, CatTypes {
   platform: Platform['id']
   organisation: ReferenceItem['id']
   protectiveMarking: ReferenceItem['id']
-  // extra protection details
-  catCode: ReferenceItem['id']
-  catHandle: ReferenceItem['id']
-  catCave: Array<ReferenceItem['id']>
+  // extra protection details. All are optional
+  catCode: ReferenceItem['id'] | undefined
+  catHandle: ReferenceItem['id'] | undefined
+  catCave: Array<ReferenceItem['id']> | undefined
   remarks: string
   receiptNotes: string
 }
@@ -116,9 +116,9 @@ interface Item extends ResourceWithCreation, CatTypes {
   remarks: string
   protectiveMarking: ReferenceItem['id']
   // extra protection details
-  catCode: ReferenceItem['id']
-  catHandle: ReferenceItem['id']
-  catCave: Array<ReferenceItem['id']>
+  catCode: ReferenceItem['id'] | undefined
+  catHandle: ReferenceItem['id'] | undefined
+  catCave: Array<ReferenceItem['id']> | undefined
 
   // notes relating to how this item is mustered
   musterRemarks: string

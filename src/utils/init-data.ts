@@ -156,6 +156,9 @@ const loadDefaultData = async (
     projects.length,
     organisation.length,
     protectiveMarking.length,
+    catCode.length,
+    catHandling.length,
+    catCave.length,
     user,
     isHigh
   )
@@ -173,6 +176,9 @@ const loadDefaultData = async (
           batches[index],
           vaultLocation.length,
           protectiveMarking.length,
+          catCode.length,
+          catHandling.length,
+          catCave.length,
           user
         )
       )
