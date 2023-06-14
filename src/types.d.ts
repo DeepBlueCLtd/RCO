@@ -105,18 +105,6 @@ interface ActiveReferenceItem extends ReferenceItem {
   active: boolean
 }
 
-interface CoreMedia {
-  readonly mediaType: MediaType
-}
-interface DVD extends CoreMedia {
-  size: number
-}
-
-interface Tape extends CoreMedia {
-  minutes: number
-  brand: string
-}
-
 interface Item extends ResourceWithCreation, CatTypes {
   mediaType: MediaType
   start: string
