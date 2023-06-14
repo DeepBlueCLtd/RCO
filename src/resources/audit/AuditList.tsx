@@ -9,7 +9,8 @@ import {
   NumberInput,
   useListContext,
   AutocompleteArrayInput,
-  TextInput
+  TextInput,
+  FunctionField
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -62,6 +63,17 @@ const filters = [
   <SourceInput key='subject' source='subject' reference={constants.R_USERS} />
 ]
 
+const resourcesRefKey: Record<string, string> = {
+  [constants.R_BATCHES]: 'batchNumber',
+  [constants.R_ITEMS]: 'item_number',
+  [constants.R_DESTRUCTION]: 'reference',
+  [constants.R_DISPATCH]: 'reference',
+  [constants.R_ADDRESSES]: 'id',
+  [constants.R_PROJECTS]: 'name',
+  [constants.R_PLATFORMS]: 'name',
+  [constants.R_USERS]: 'name'
+}
+
 export interface FilterType {
   dataId?: number
   user?: number
@@ -105,7 +117,26 @@ export default function AuditList({
         />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
-        <TextField source='dataId' label='Item' />
+        <FunctionField
+          label='Name'
+          render={(record: Audit) => {
+            console.log(record.resource)
+            return (
+              <>
+                {record.resource ? (
+                  <SourceField
+                    source='dataId'
+                    reference={record.resource}
+                    sourceField={resourcesRefKey[record.resource]}
+                    link='show'
+                  />
+                ) : (
+                  <TextField source='dataId' label='Item' />
+                )}
+              </>
+            )
+          }}
+        />
         <SourceField
           source='subject'
           reference={constants.R_USERS}

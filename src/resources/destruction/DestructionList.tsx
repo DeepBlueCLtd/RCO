@@ -50,6 +50,7 @@ export default function DestructionList(): React.ReactElement {
             )
           }}
         />
+        <TextField source='remarks' />
       </Datagrid>
       <ResourceHistoryModal
         filter={filter}

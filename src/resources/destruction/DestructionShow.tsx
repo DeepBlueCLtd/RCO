@@ -244,7 +244,9 @@ function DestructionItemList(
           {destroyed ? 'Items destroyed' : 'Items to be destroyed'}
         </Typography>
       </legend>
-      <ItemList filter={{ destruction: id }}>
+      <ItemList
+        storeKey={`${constants.R_DESTRUCTION}-${id}-items-list`}
+        filter={{ destruction: id }}>
         <ItemListDataTable bulkActionButtons={bulkActionButtons} />
       </ItemList>
     </Box>
