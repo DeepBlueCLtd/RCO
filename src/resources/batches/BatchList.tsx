@@ -13,8 +13,7 @@ import {
   useGetList,
   useGetMany,
   DateField,
-  type SortPayload,
-  useResourceDefinition
+  type SortPayload
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -23,6 +22,7 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
+import { useConfigData } from '../../utils/useConfigData'
 
 const ListActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
@@ -78,9 +78,8 @@ const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
 }
 
 export default function BatchList(): React.ReactElement {
-  const {
-    options: { configData }
-  } = useResourceDefinition()
+  const configData = useConfigData()
+
   const filters = [
     <SearchInput source='q' key='q' alwaysOn />,
     <CreatedByMeFilter
@@ -123,8 +122,8 @@ export default function BatchList(): React.ReactElement {
       variant='outlined'
       reference={constants.R_PROJECTS}
       source='project'
-      label={configData.projectName}
-      key='projects'
+      label={configData?.projectName}
+      key={configData?.projectsName}
     />,
     <DateFilter key='createdAt' source='createdAt' label='Created At' />
   ]
