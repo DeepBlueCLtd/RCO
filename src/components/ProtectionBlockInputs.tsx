@@ -1,38 +1,21 @@
-import { RadioButtonGroupInput, useGetList } from 'react-admin'
 import FlexBox from './FlexBox'
 import * as constants from '../constants'
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import SourceInput from './SourceInput'
+import { AutocompleteArrayInput, ReferenceArrayInput } from 'react-admin'
 
 interface Props {
   disabled?: boolean
+  markingSource: string
 }
 
 export default function ProtectionBlockInputs(
   props: Props
 ): React.ReactElement {
-  const { disabled } = props
+  const { disabled, markingSource } = props
 
-  const options = {
-    filter: { active: true },
-    pagination: { page: 1, perPage: 5 }
-  }
-
-  const { data: catCodesData = [] } = useGetList(constants.R_CAT_CODE, options)
-  const { data: protectiveMarkingData = [] } = useGetList(
-    constants.R_PROTECTIVE_MARKING,
-    options
-  )
-  const { data: catHandlingData = [] } = useGetList(
-    constants.R_CAT_HANDLING,
-    options
-  )
-
-  const radioButtonOptions = {
-    row: false,
-    parse: parseInt,
-    disabled
-  }
+  const inputProps = { disabled }
 
   return (
     <Box
@@ -48,22 +31,29 @@ export default function ProtectionBlockInputs(
           Protection
         </Typography>
       </legend>
-      <FlexBox justifyContent={'space-between'}>
-        <RadioButtonGroupInput
+      <FlexBox>
+        <SourceInput
           source='catCode'
-          choices={catCodesData}
-          {...radioButtonOptions}
+          reference={constants.R_CAT_CODE}
+          inputProps={inputProps}
         />
-        <RadioButtonGroupInput
-          source='protectiveMarking'
-          choices={protectiveMarkingData}
-          {...radioButtonOptions}
+        <SourceInput
+          source={markingSource}
+          reference={constants.R_PROTECTIVE_MARKING}
+          inputProps={inputProps}
         />
-        <RadioButtonGroupInput
+        <SourceInput
           source='catHandling'
-          choices={catHandlingData}
-          {...radioButtonOptions}
+          reference={constants.R_CAT_HANDLING}
+          inputProps={inputProps}
         />
+        <ReferenceArrayInput source='catCave' reference={constants.R_CAT_CAVE}>
+          <AutocompleteArrayInput
+            sx={{ width: '100%' }}
+            optionText={(item: ReferenceItem) => item.name}
+            {...inputProps}
+          />
+        </ReferenceArrayInput>
       </FlexBox>
     </Box>
   )
