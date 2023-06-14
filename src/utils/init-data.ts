@@ -54,6 +54,32 @@ export const getActiveReferenceData = (
     })
 }
 
+export const getAddresses = (
+  alternateInactive = true,
+  length = 5,
+  isHigh?: boolean,
+  inActivePercentage?: number
+): Address[] => {
+  return Array(length)
+    .fill('')
+    .map((_, index): Address => {
+      const active =
+        isHigh === true && inActivePercentage !== undefined
+          ? index > inActivePercentage * length
+          : alternateInactive
+          ? index % 2 === 0
+          : index === 0
+      const ctr = index + 1
+      return {
+        id: index + 1,
+        fullAddress: `${ctr} Some St, Some Town, Some County, DD${ctr} ${ctr}EF`,
+        createdAt: DateTime.now().toISO() ?? '',
+        Remarks: '',
+        active
+      }
+    })
+}
+
 const assignItemsToRandomActiveUser = (
   users: User[],
   items: Item[]
@@ -113,6 +139,7 @@ const loadDefaultData = async (
   )
 
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
+  const addresses = getAddresses()
 
   const protectiveMarkingAuthority = getActiveReferenceData(
     'Protective Marking Authority'
@@ -155,6 +182,21 @@ const loadDefaultData = async (
     items
   )
 
+  const audits: Audit[] = []
+  const dispatches: Dispatch[] = []
+  const destructions: Destruction[] = []
+
+  const configDataItem: ConfigData = {
+    projectName: 'Project',
+    projectsName: 'Projects',
+    fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP',
+    protectionName: 'Protection',
+    cat_code: 'Cat-Code',
+    cat_handle: 'Cat-Handle',
+    cat_cave: 'Cat-Cave'
+  }
+  const configData: ConfigData[] = [configDataItem]
+
   const defaultData: RCOStore = {
     users: encryptedUsers(isHigh),
     batches,
@@ -167,7 +209,12 @@ const loadDefaultData = async (
     mediaType,
     protectiveMarking,
     protectiveMarkingAuthority,
-    platformOriginator
+    platformOriginator,
+    audits,
+    destructions,
+    dispatches,
+    addresses,
+    configData
   }
 
   // push all the default data into resources in localForage
