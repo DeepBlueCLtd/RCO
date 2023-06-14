@@ -38,14 +38,19 @@ interface User extends ResourceWithCreation {
 interface Audit extends RCOResource {
   // the user making the change
   user: User['id']
+  // when this happened
+  dateTime: string
   // the type of data being reported on (opt)
   resource: string | null
   // the id of the entity being reported on (opt)
   dataId: number | null
+  // what kind of change was made (computer-friendly)
   activityType: AuditType
-  dateTime: string
+  // what kind of change was made (human-friendly)
   label: string
+  // summary of change
   activityDetail?: string
+  /** should this audit entry be included in security review? */
   securityRelated?: boolean
   // who this event relates to
   subject?: User['id']
@@ -90,37 +95,25 @@ interface ActiveReferenceItem extends ReferenceItem {
   active: boolean
 }
 
-interface CoreMedia {
-  readonly mediaType: MediaType
-}
-interface DVD extends CoreMedia {
-  size: number
-}
-
-interface Tape extends CoreMedia {
-  minutes: number
-  brand: string
-}
-
 interface Item extends ResourceWithCreation {
   mediaType: MediaType
   start: string
   batchId: Batch['id']
   item_number: string
+  consecPages?: string
   end: string
   vaultLocation: ReferenceItem['id']
   remarks: string
   protectiveMarking: ReferenceItem['id']
   // notes relating to how this item is mustered
   musterRemarks: string
-  // who this item is currently loaned to
+  // loan details
   loanedTo?: User['id']
   loanedDate?: string
-  consecPages?: string
+  // dispatch details
   dispatchJob?: Dispatch['id']
   dispatchedDate?: string
-
-  // item destruction details
+  // destruction details
   destruction?: Destruction['id']
   destructionDate?: string
 }
@@ -138,10 +131,14 @@ interface FormProps {
 
 interface RCOStore {
   users: User[]
-  batches: Batch[]
-  items: Item[]
+  audits: Audit[]
   platforms: Platform[]
   projects: Project[]
+  batches: Batch[]
+  items: Item[]
+  destructions: Destruction[]
+  dispatches: Dispatch[]
+  addresses: Address[]
   organisation: ActiveReferenceItem[]
   department: ActiveReferenceItem[]
   vaultLocation: ActiveReferenceItem[]
@@ -149,6 +146,7 @@ interface RCOStore {
   protectiveMarking: ActiveReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ActiveReferenceItem[]
+  configData: ConfigData[]
 }
 
 interface Destruction {
@@ -202,4 +200,36 @@ interface Dispatch {
   toAddress: Address['id']
   receiptReceived?: string
   lastHastenerSent?: string
+}
+
+/** per instance config data. It just intended to be one row deep */
+interface ConfigData {
+  /** singular name for project resource
+   * test value: `Project`
+   */
+  projectName: string
+  /** plural name for project resource
+   * test value: `Projects`
+   */
+  projectsName: string
+  /** fixed address
+   * test value: `Some Dept, Some Org, Some Street, Some Town, Some Zip`
+   */
+  fromAddress: string
+  /** label for group of controls that record item releasability
+   * test value: `Protection`
+   */
+  protectionName: string
+  /** label for cat-code element
+   * test value: `Cat-Code`
+   */
+  cat_code: string
+  /** label for cat-handle element
+   * test value: `Cat-Handle`
+   */
+  cat_handle: string
+  /** label for cat-cave element
+   * test value: `Cat-Cave`
+   */
+  cat_cave: string
 }
