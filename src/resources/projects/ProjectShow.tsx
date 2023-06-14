@@ -16,7 +16,7 @@ import { History } from '@mui/icons-material'
 import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 
-const ValueField = ({
+export const ValueField = ({
   label,
   children
 }: {
