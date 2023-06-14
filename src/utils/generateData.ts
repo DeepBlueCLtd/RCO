@@ -140,7 +140,7 @@ export const generateBatch = (
       project: generateRandomNumber(1, projects - 1),
       platform: generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
-      maximumProtectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
+      protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
       createdBy: user

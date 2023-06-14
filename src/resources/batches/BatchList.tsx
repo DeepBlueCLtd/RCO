@@ -38,7 +38,7 @@ const ListActions = (): React.ReactElement => {
 
 const omitColumns: string[] = [
   'protectiveMarkingAuthority',
-  'maximumProtectiveMarking',
+  'protectiveMarking',
   'department',
   'remarks',
   'id',
@@ -148,7 +148,7 @@ export default function BatchList(): React.ReactElement {
         />
         <SourceField source='organisation' label='Organisation' />
         <SourceField
-          source='maximumProtectiveMarking'
+          source='protectiveMarking'
           reference='protectiveMarking'
           label='Maximum protective marking'
         />

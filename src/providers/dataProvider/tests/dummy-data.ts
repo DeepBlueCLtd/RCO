@@ -32,7 +32,7 @@ export const generateDummyBatchForTesting = ({
     project: 1,
     platform: 1,
     organisation: 1,
-    maximumProtectiveMarking: 1,
+    protectiveMarking: 1,
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1'
   }

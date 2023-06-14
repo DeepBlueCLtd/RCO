@@ -172,7 +172,7 @@ export default function BatchShow(): React.ReactElement {
             />
             <StyledFieldWithLabel
               label='Maximum Protective Marking'
-              source='maximumProtectiveMarking'
+              source='protectiveMarking'
               reference='protectiveMarking'
             />
           </FlexBox>
