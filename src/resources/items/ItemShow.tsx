@@ -53,14 +53,16 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
 }
 
 const sx = (theme: Theme): SystemStyleObject<Theme> => {
+  const color = theme.palette.primary.main
   return {
     display: 'flex',
     alignItems: 'center',
     padding: '16px',
     background: 'white',
     justifyContent: 'center',
-    color: theme.palette.primary.main,
-    borderRadius: '5px'
+    color,
+    borderRadius: '5px',
+    border: '2px solid'
   }
 }
 interface StatusTextProps {
