@@ -37,7 +37,7 @@
     "preval.macro": "^5.0.0",
     "ra-data-local-forage": "^4.8.4",
     "react": "^18.2.0",
-    "react-admin": "^4.8.3",
+    "react-admin": "^4.11.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.9.0",
     "vite": "^4.2.0",
