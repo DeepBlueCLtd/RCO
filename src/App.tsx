@@ -39,6 +39,7 @@ import { protectedRoutes } from './hooks/useCanAccess'
 import addresses from './resources/addresses'
 import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
+import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -319,12 +320,14 @@ interface Elements {
   create?: React.FunctionComponent<ElementsProps>
   edit?: React.FunctionComponent<ElementsProps>
   list?: React.FunctionComponent<ElementsProps>
+  show?: React.FunctionComponent<ElementsProps>
 }
 
 const defaultElements: ResourceRoutes = {
   create: ReferenceDataCreate,
   edit: ReferenceDataEdit,
-  list: ReferenceDataList
+  list: ReferenceDataList,
+  show: ReferenceDataShow
 }
 
 const createRoutes = (
@@ -333,7 +336,6 @@ const createRoutes = (
   permissions?: Permission
 ): React.ReactNode[] => {
   const cName: string = name
-
   const { read, write } =
     typeof permissions !== 'undefined'
       ? permissions
@@ -344,16 +346,24 @@ const createRoutes = (
   const {
     create = ReferenceDataCreate,
     edit = ReferenceDataEdit,
-    list = ReferenceDataList
+    list = ReferenceDataList,
+    show = ReferenceDataShow
   } = elements
 
   if (read === true) {
     routes.push(
-      <Route
-        key={`${cName}list`}
-        index
-        element={React.createElement(list, { name })}
-      />
+      ...[
+        <Route
+          key={`${cName}list`}
+          index
+          element={React.createElement(list, { name })}
+        />,
+        <Route
+          key={`${cName}show`}
+          path={`/${cName}:id/show`}
+          element={React.createElement(show, { name })}
+        />
+      ]
     )
   }
   if (write === true) {
