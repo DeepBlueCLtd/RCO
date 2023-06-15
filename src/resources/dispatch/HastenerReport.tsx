@@ -22,6 +22,7 @@ interface Props {
 }
 export default function HastenerReport(props: Props): React.ReactElement {
   const { open, handleOpen } = props
+  const title = 'Hastener Receipt Note'
 
   return (
     <Printable
@@ -30,7 +31,7 @@ export default function HastenerReport(props: Props): React.ReactElement {
         handleOpen('')
       }}>
       <Box>
-        <ReportData />
+        <ReportData title={title} />
         <Show component={'div'} actions={<></>}>
           <BottomText />
         </Show>
