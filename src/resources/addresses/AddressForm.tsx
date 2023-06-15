@@ -24,7 +24,7 @@ export default function AddressForm(props: Props): React.ReactElement {
       resource={R_ADDRESSES}
       toolbar={showForm ? false : undefined}>
       <TextInput sx={sx} disabled={show} multiline source='fullAddress' />
-      <BooleanInput disabled={show} source='active' />
+      <BooleanInput disabled={show} defaultValue={true} source='active' />
       {showForm && (
         <DateInput sx={sx} disabled={show} multiline source='createdAt' />
       )}

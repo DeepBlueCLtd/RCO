@@ -25,7 +25,7 @@ const PlatformForm = (): React.ReactElement => {
       resolver={yupResolver(schema)}
       toolbar={<EditToolBar />}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <BooleanInput source='active' />
+      <BooleanInput defaultValue={true} source='active' />
     </SimpleForm>
   )
 }
