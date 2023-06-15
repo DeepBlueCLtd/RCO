@@ -16,25 +16,24 @@ export const DATETIME_FORMAT = 'dd/MMM/yyyy HH:mm'
 export const TOKEN_KEY = 'rco-user'
 export const SALT = 'salt'
 // major table/resource names
-export const R_USERS = 'users'
-export const R_BATCHES = 'batches'
-export const R_PROJECTS = 'projects'
-export const R_PLATFORMS = 'platforms'
-export const R_ITEMS = 'items'
+export const R_USERS = 'user'
+export const R_BATCHES = 'batch'
+export const R_PROJECTS = 'project'
+export const R_PLATFORMS = 'platform'
+export const R_ITEMS = 'item'
 export const R_ALL_ITEMS = 'allItems'
 export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
-export const R_LOANS = 'loans'
+export const R_LOANS = 'loan'
 export const R_PLATFORM_ORIGINATOR = 'platformOriginator'
-export const R_PROTECTIVE_MARKING_AUTHORITY = 'protectiveMarkingAuthority'
 export const R_PROTECTIVE_MARKING = 'protectiveMarking'
 export const R_CAT_CODE = 'catCode'
 export const R_CAT_HANDLING = 'catHandling'
 export const R_CAT_CAVE = 'catCave'
 export const R_DEPARTMENT = 'department'
 export const R_MEDIA_TYPE = 'mediaType'
-export const R_ADDRESSES = 'addresses'
+export const R_ADDRESSES = 'address'
 export const R_DISPATCH = 'dispatch'
 export const R_DESTRUCTION = 'destruction'
 export const R_CONFIG = 'configData'
@@ -55,7 +54,6 @@ export type ResourceTypes =
   | typeof R_CAT_CODE
   | typeof R_CAT_HANDLING
   | typeof R_CAT_CAVE
-  | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
   | typeof R_ALL_ITEMS

@@ -39,7 +39,7 @@ const SecurityRelatedFilter = ({
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
 const filters = [
   <DateTimeInput
-    key='start'
+    key='startDate'
     source='dateTime_gte'
     label='After'
     alwaysOn={true}

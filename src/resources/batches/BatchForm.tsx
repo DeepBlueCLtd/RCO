@@ -43,7 +43,7 @@ const schema = yup.object({
     )
 })
 
-const optionsText = (value: Batch): string => value.name
+const optionsText = (value: Batch): string => value.batchNumber
 const sx = { width: '100%' }
 
 interface Props {
@@ -53,7 +53,7 @@ interface Props {
   active?: boolean
 }
 
-export const ConditionalReferenceInput = <T extends ReferenceItem>(
+export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
   const { source, reference, inputProps = {}, active } = props

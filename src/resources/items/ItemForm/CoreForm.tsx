@@ -90,14 +90,14 @@ const CoreForm = (props: Props): React.ReactElement => {
         <DateTimeInput
           sx={sx}
           disabled={disabled}
-          source='start'
+          source='startDate'
           label='Start'
           variant='outlined'
         />
         <DateTimeInput
           sx={sx}
           disabled={disabled}
-          source='end'
+          source='endDate'
           variant='outlined'
           label='End'
         />

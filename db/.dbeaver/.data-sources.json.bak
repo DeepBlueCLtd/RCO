@@ -1,0 +1,29 @@
+{
+	"folders": {},
+	"connections": {
+		"sqlite_jdbc-188bf16d667-6c38fb7c76f27f76": {
+			"provider": "sqlite",
+			"driver": "sqlite_jdbc",
+			"name": "RCO2",
+			"save-password": true,
+			"configuration": {
+				"database": "/Users/ian/git/RCO/db/RCO2",
+				"url": "jdbc:sqlite:/Users/ian/git/RCO/db/RCO2",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"auth-model": "native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"auto-close-transactions": false
+		}
+	}
+}

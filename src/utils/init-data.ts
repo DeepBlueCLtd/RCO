@@ -115,8 +115,8 @@ const loadDefaultData = async (
   await localForage.clear()
 
   const user = typeof userId === 'undefined' ? users[0].id : userId
-  const platforms = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
-  const projects = generateProject(isHigh === true ? 60 : 10, user)
+  const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
+  const project = generateProject(isHigh === true ? 60 : 10, user)
 
   const organisation = getActiveReferenceData('Organisation')
 
@@ -139,21 +139,17 @@ const loadDefaultData = async (
   )
 
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
-  const addresses = getAddresses()
-
-  const protectiveMarkingAuthority = getActiveReferenceData(
-    'Protective Marking Authority'
-  )
+  const address = getAddresses()
 
   const platformOriginator = getActiveReferenceData('Platform Originator')
   const catCode = getActiveReferenceData('Cat Code', true, 8)
   const catHandling = getActiveReferenceData('Cat Handling', true, 8)
   const catCave = getActiveReferenceData('Cat Cave', true, 8)
-  const batches = generateBatch(
+  const batch = generateBatch(
     isHigh === true ? 500 : 10,
-    platforms.length,
+    platform.length,
     department.length,
-    projects.length,
+    project.length,
     organisation.length,
     protectiveMarking.length,
     catCode.length,
@@ -163,17 +159,17 @@ const loadDefaultData = async (
     isHigh
   )
 
-  const items: Item[] = []
+  const item: Item[] = []
   const numItems = isHigh === true ? Math.floor(Math.random() * 55) + 6 : 10
 
-  batches.forEach((batch: Batch, index: number) => {
-    const project = projects.find((project) => project.id === batch.project)
-    if (project !== undefined) {
-      items.push(
+  batch.forEach((batch2: Batch, index: number) => {
+    const project3 = project.find((project2) => project2.id === batch2.project)
+    if (project3 !== undefined) {
+      item.push(
         ...generateItems(
           numItems,
           numItems * index,
-          batches[index],
+          batch[index],
           vaultLocation.length,
           protectiveMarking.length,
           catCode.length,
@@ -187,12 +183,12 @@ const loadDefaultData = async (
 
   const randomItems = assignItemsToRandomActiveUser(
     isHigh === true ? generatedUsers : users,
-    items
+    item
   )
 
-  const audits: Audit[] = []
-  const dispatches: Dispatch[] = []
-  const destructions: Destruction[] = []
+  const audit: Audit[] = []
+  const dispatche: Dispatch[] = []
+  const destruction: Destruction[] = []
 
   const configDataItem: ConfigData = {
     projectName: 'Project',
@@ -206,25 +202,24 @@ const loadDefaultData = async (
   const configData: ConfigData[] = [configDataItem]
 
   const defaultData: RCOStore = {
-    users: encryptedUsers(isHigh),
-    batches,
-    items,
-    platforms,
-    projects,
+    user: encryptedUsers(isHigh),
+    batch,
+    item,
+    platform,
+    project,
     organisation,
     department,
     vaultLocation,
     mediaType,
     protectiveMarking,
-    protectiveMarkingAuthority,
     platformOriginator,
     catCode,
     catHandling,
     catCave,
-    audits,
-    destructions,
-    dispatches,
-    addresses,
+    audit,
+    destruction,
+    dispatche,
+    address,
     configData
   }
 
