@@ -88,7 +88,7 @@ interface Audit extends RCOResource {
   // the id of the entity being reported on (opt)
   dataId: number | null
   // what kind of change was made (computer-friendly)
-  activityType: AuditType
+  activityType: AuditType // string
   // what kind of change was made (human-friendly)
   label: string
   // summary of change
