@@ -49,8 +49,8 @@ const omitColumns: string[] = [
   'id',
   'createdAt',
   'remarks',
-  'start',
-  'end',
+  'startDate',
+  'endDate',
   'vaultLocation',
   'musterRemarks',
   'loanedTo'
@@ -474,8 +474,8 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
             reference={constants.R_USERS}
             label='Loaned to'
           />
-          <DateField showTime source='start' />
-          <DateField showTime source='end' />
+          <DateField showTime source='startDate' />
+          <DateField showTime source='endDate' />
           <SourceField source='vaultLocation' reference='vaultLocation' />
           <SourceField
             source='protectiveMarking'

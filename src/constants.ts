@@ -54,7 +54,6 @@ export type ResourceTypes =
   | typeof R_CAT_CODE
   | typeof R_CAT_HANDLING
   | typeof R_CAT_CAVE
-  | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
   | typeof R_ALL_ITEMS

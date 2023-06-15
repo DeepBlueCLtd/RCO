@@ -59,11 +59,11 @@ export const generateItemForTesting = ({
   return {
     ...(id !== undefined ? { id } : null),
     mediaType: mediaType ?? 'DVD',
-    start:
+    startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()
         : DateTime.now().toFormat('yyyy-MM-dd'),
-    end:
+    endDate:
       toISO === true
         ? new Date(
             DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd')

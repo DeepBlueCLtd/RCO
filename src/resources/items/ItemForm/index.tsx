@@ -23,15 +23,15 @@ const schema = yup.object({
     .string()
     .required()
     .oneOf(mediaTypeOptions.map(({ id }) => id)),
-  start: yup.date().required(),
-  end: yup
+  startDate: yup.date().required(),
+  endDate: yup
     .date()
     .required()
     .test(
       'endDate',
       'End date must be greater than start date',
       function (value) {
-        return dayjs(value).diff(this.parent.start) > 0
+        return dayjs(value).diff(this.parent.Date) > 0
       }
     ),
   batchId: yup.number().required(),
