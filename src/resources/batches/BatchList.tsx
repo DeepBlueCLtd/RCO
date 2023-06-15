@@ -22,6 +22,7 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
+import { useConfigData } from '../../utils/useConfigData'
 
 const ListActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
@@ -76,54 +77,57 @@ const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
   return <Chip sx={{ marginBottom: '9px' }} label={label} />
 }
 
-const filters = [
-  <SearchInput source='q' key='q' alwaysOn />,
-  <CreatedByMeFilter
-    key='createdByMe'
-    source='createdBy_eq'
-    label='Created By Me'
-  />,
-  <SourceInput
-    key='createdBy'
-    source='createdBy'
-    reference={constants.R_USERS}
-  />,
-  <DatePicker
-    label='Year of receipt'
-    source='yearOfReceipt'
-    variant='outlined'
-    format='YYYY'
-    key='yearOfReceipt'
-    dataPickerProps={{ views: ['year'] }}
-  />,
-  <SourceInput
-    reference={constants.R_PLATFORMS}
-    key='platform'
-    sort={sort()}
-    source='platform_eq'
-  />,
-  <PlatformFilter
-    reference={constants.R_PLATFORMS}
-    label='Active Platforms'
-    key='activePlatforms'
-    source='platform'
-  />,
-  <SourceInput
-    variant='outlined'
-    reference={constants.R_ORGANISATION}
-    source='organisation'
-    key='organisation'
-  />,
-  <SourceInput
-    variant='outlined'
-    reference={constants.R_PROJECTS}
-    source='project'
-    key='projects'
-  />,
-  <DateFilter key='createdAt' source='createdAt' label='Created At' />
-]
-
 export default function BatchList(): React.ReactElement {
+  const configData = useConfigData()
+
+  const filters = [
+    <SearchInput source='q' key='q' alwaysOn />,
+    <CreatedByMeFilter
+      key='createdByMe'
+      source='createdBy_eq'
+      label='Created By Me'
+    />,
+    <SourceInput
+      key='createdBy'
+      source='createdBy'
+      reference={constants.R_USERS}
+    />,
+    <DatePicker
+      label='Year of receipt'
+      source='yearOfReceipt'
+      variant='outlined'
+      format='YYYY'
+      key='yearOfReceipt'
+      dataPickerProps={{ views: ['year'] }}
+    />,
+    <SourceInput
+      reference={constants.R_PLATFORMS}
+      key='platform'
+      sort={sort()}
+      source='platform_eq'
+    />,
+    <PlatformFilter
+      reference={constants.R_PLATFORMS}
+      label='Active Platforms'
+      key='activePlatforms'
+      source='platform'
+    />,
+    <SourceInput
+      variant='outlined'
+      reference={constants.R_ORGANISATION}
+      source='organisation'
+      key='organisation'
+    />,
+    <SourceInput
+      variant='outlined'
+      reference={constants.R_PROJECTS}
+      source='project'
+      label={configData?.projectName}
+      key={configData?.projectsName}
+    />,
+    <DateFilter key='createdAt' source='createdAt' label='Created At' />
+  ]
+
   return (
     <List perPage={25} actions={<ListActions />} filters={filters}>
       <ResetDateFilter source='createdAt' />
@@ -139,7 +143,7 @@ export default function BatchList(): React.ReactElement {
         <SourceField
           source='project'
           reference={constants.R_PROJECTS}
-          label='Project'
+          label={configData?.projectName}
         />
         <SourceField
           source='platform'

@@ -5,6 +5,7 @@ interface CustomDataProvider {
     date?: string
   ) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
+  getConfigData: (provider: DataProvider) => Promise<ConfigData | null>
 }
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
