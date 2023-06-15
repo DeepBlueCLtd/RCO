@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -17,27 +17,24 @@ import { mediaTypeOptions } from '../../../utils/options'
 import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
+import { DateTime } from 'luxon'
 
 const schema = yup.object({
   mediaType: yup
     .string()
     .required()
     .oneOf(mediaTypeOptions.map(({ id }) => id)),
-  start: yup.date().nullable(),
-  end: yup.date().when('start', {
-    is: (start: string) => start !== undefined,
-    then: () =>
-      yup
-        .date()
-        .test(
-          'endDate',
-          'End date must be greater than start date',
-          function (value) {
-            return dayjs(value).diff(this.parent.start) > 0
-          }
-        ),
-    otherwise: () => yup.date().nullable()
-  }),
+  start: yup.date().required(),
+  end: yup
+    .date()
+    .required()
+    .test(
+      'endDate',
+      'End date must be greater than start date',
+      function (value) {
+        return dayjs(value).diff(this.parent.start) > 0
+      }
+    ),
   batchId: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required()
@@ -71,9 +68,23 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     }
   }, [])
 
+  const { start, end } = useMemo((): { start: string; end: string } => {
+    const dateTime = DateTime.local().set({
+      hour: 0,
+      minute: 0,
+      second: 0
+    })
+    return {
+      start: dateTime.toString(),
+      end: dateTime.plus({ days: 1 }).toString()
+    }
+  }, [])
+
   const defaultValues: Partial<Item> = {
     item_number: '',
-    loanedTo: undefined
+    loanedTo: undefined,
+    start,
+    end
   }
 
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
