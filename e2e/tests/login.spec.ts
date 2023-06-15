@@ -7,10 +7,14 @@ test.describe('Login successful test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('ian')
-    await page.locator('#password').type('admin')
+    await page.getByRole('button', { name: 'Profile' }).click()
+    await page.getByRole('button', { name: 'Login' }).click()
 
-    await page.locator('button[type="submit"]').click()
+    await page.getByLabel('Username *').fill('ian')
+    await page.getByLabel('Username *').press('Tab')
+    await page.getByLabel('Password *').fill('admin')
+
+    await page.getByRole('button', { name: 'Login' }).click()
     await page.waitForLoadState()
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
@@ -23,10 +27,14 @@ test.describe('Login successful test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('jason')
-    await page.locator('#password').type('user')
+    await page.getByRole('button', { name: 'Profile' }).click()
+    await page.getByRole('button', { name: 'Login' }).click()
 
-    await page.locator('button[type="submit"]').click()
+    await page.getByLabel('Username *').fill('jason')
+    await page.getByLabel('Username *').press('Tab')
+    await page.getByLabel('Password *').fill('user')
+
+    await page.getByRole('button', { name: 'Login' }).click()
     await page.waitForLoadState()
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
@@ -41,10 +49,14 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('ian')
-    await page.locator('#password').type('password')
+    await page.getByRole('button', { name: 'Profile' }).click()
+    await page.getByRole('button', { name: 'Login' }).click()
 
-    await page.locator('button[type="submit"]').click()
+    await page.getByLabel('Username *').fill('ian')
+    await page.getByLabel('Username *').press('Tab')
+    await page.getByLabel('Password *').fill('password')
+
+    await page.getByRole('button', { name: 'Login' }).click()
     await page.waitForLoadState()
 
     await expect(
@@ -62,10 +74,14 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('jason')
-    await page.locator('#password').type('password')
+    await page.getByRole('button', { name: 'Profile' }).click()
+    await page.getByRole('button', { name: 'Login' }).click()
 
-    await page.locator('button[type="submit"]').click()
+    await page.getByLabel('Username *').fill('jason')
+    await page.getByLabel('Username *').press('Tab')
+    await page.getByLabel('Password *').fill('password')
+
+    await page.getByRole('button', { name: 'Login' }).click()
     await page.waitForLoadState()
 
     await expect(
@@ -83,10 +99,14 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('invaliduser')
-    await page.locator('#password').type('password')
+    await page.getByRole('button', { name: 'Profile' }).click()
+    await page.getByRole('button', { name: 'Login' }).click()
 
-    await page.locator('button[type="submit"]').click()
+    await page.getByLabel('Username *').fill('invaliduser')
+    await page.getByLabel('Username *').press('Tab')
+    await page.getByLabel('Password *').fill('password')
+
+    await page.getByRole('button', { name: 'Login' }).click()
     await page.waitForLoadState()
 
     await expect(
