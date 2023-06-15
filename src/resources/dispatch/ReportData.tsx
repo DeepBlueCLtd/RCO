@@ -92,6 +92,10 @@ const SignatureBox = (): React.ReactElement => {
           NAME (IN BLOCK
           LETTERS)....................................................................
         </Typography>
+        <Typography>
+          DATE
+          ....................................................................
+        </Typography>
       </FlexBox>
     </Box>
   )
