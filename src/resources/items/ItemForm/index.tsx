@@ -23,17 +23,21 @@ const schema = yup.object({
     .string()
     .required()
     .oneOf(mediaTypeOptions.map(({ id }) => id)),
-  start: yup.date().required(),
-  end: yup
-    .date()
-    .required()
-    .test(
-      'endDate',
-      'End date must be greater than start date',
-      function (value) {
-        return dayjs(value).diff(this.parent.start) > 0
-      }
-    ),
+  start: yup.date().nullable(),
+  end: yup.date().when('start', {
+    is: (start: string) => start !== undefined,
+    then: () =>
+      yup
+        .date()
+        .test(
+          'endDate',
+          'End date must be greater than start date',
+          function (value) {
+            return dayjs(value).diff(this.parent.start) > 0
+          }
+        ),
+    otherwise: () => yup.date().nullable()
+  }),
   batchId: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required()

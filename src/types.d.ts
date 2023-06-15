@@ -97,11 +97,11 @@ interface ActiveReferenceItem extends ReferenceItem {
 
 interface Item extends ResourceWithCreation {
   mediaType: MediaType
-  start: string
+  start?: string
   batchId: Batch['id']
   item_number: string
   consecPages?: string
-  end: string
+  end?: string
   vaultLocation: ReferenceItem['id']
   remarks: string
   protectiveMarking: ReferenceItem['id']
