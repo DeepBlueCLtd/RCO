@@ -43,7 +43,7 @@ const schema = yup.object({
     )
 })
 
-const optionsText = (value: Batch): string => value.name
+const optionsText = (value: Batch): string => value.batchNumber
 const sx = { width: '100%' }
 
 interface Props {

@@ -134,7 +134,6 @@ export const generateBatch = (
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
-      name: `batch-${i}`,
       startDate: startDate.toString(),
       endDate: endDate.toString(),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,

@@ -58,7 +58,6 @@ const generateBatch = async (
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
-    name: `batch-${year}`,
     startDate: startDate.toString(),
     endDate: endDate.toString(),
     batchNumber: `V${batchNumber ?? id}/${year}`,

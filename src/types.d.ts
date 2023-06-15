@@ -121,7 +121,6 @@ type VaultLocation = ActiveReferenceItem
 // type MediaType = ActiveReferenceItem
 
 interface Batch extends ResourceWithCreation {
-  name: string
   startDate: string
   endDate: string
   batchNumber: string
