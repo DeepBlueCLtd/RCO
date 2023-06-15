@@ -94,12 +94,22 @@ const SignatureBox = (): React.ReactElement => {
           NAME (IN BLOCK
           LETTERS)....................................................................
         </Typography>
+        <Typography>
+          DATE
+          ....................................................................
+        </Typography>
       </FlexBox>
     </Box>
   )
 }
 
-export default function ReportData(): React.ReactElement {
+interface ReportDataType {
+  title?: string
+}
+
+export default function ReportData({
+  title
+}: ReportDataType): React.ReactElement {
   return (
     <Box padding={'20px'}>
       <Typography
@@ -107,7 +117,7 @@ export default function ReportData(): React.ReactElement {
         variant='h6'
         align='center'
         margin='10px'>
-        RECEIPT NOTE
+        {title !== undefined ? title : 'RECEIPT NOTE'}
       </Typography>
       <DispatchDetail />
       <ItemListBox />

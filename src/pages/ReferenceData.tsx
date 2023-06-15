@@ -82,6 +82,9 @@ const rarelyUsedRoutes = [
   { path: '/platformOriginator', title: 'Platform Originator' },
   { path: '/organisation', title: 'Organisation' },
   { path: '/protectiveMarking', title: 'Protective Marking' },
+  { path: '/catCode', title: 'Cat Code' },
+  { path: '/catHandling', title: 'Cat Handling' },
+  { path: '/catCave', title: 'Cat Cave' },
   { path: '/mediaType', title: 'Media Type' },
   {
     path: '/protectiveMarkingAuthority',

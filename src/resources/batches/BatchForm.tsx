@@ -20,6 +20,7 @@ import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
 import dayjs from 'dayjs'
+import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
@@ -28,7 +29,7 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required(),
+  protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
     .date()
@@ -130,7 +131,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             />
           </ReferenceInput>
         </FlexBox>
-        <FlexBox>
+        <FlexBox marginBottom='20px'>
           <DatePicker
             label='Year of receipt'
             source='yearOfReceipt'
@@ -138,13 +139,6 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             format='YYYY'
             dataPickerProps={{ views: ['year'] }}
           />
-          <ReferenceInput
-            variant='outlined'
-            filter={isEdit === true ? {} : { active: true }}
-            source='maximumProtectiveMarking'
-            reference='protectiveMarking'>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
         </FlexBox>
         <FlexBox>
           {isEdit === undefined || !isEdit ? (
@@ -177,6 +171,10 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
+        <ProtectionBlockInputs
+          isEdit={isEdit}
+          markingSource='protectiveMarking'
+        />
         <FlexBox>
           <DateTimeInput
             sx={sx}
