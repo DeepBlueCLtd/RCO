@@ -69,7 +69,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
       </FlexBox>
       <FlexBox>
         <BooleanInput source='adminRights' />
-        <BooleanInput source='active' />
+        <BooleanInput defaultValue={true} source='active' />
       </FlexBox>
     </SimpleForm>
   )
