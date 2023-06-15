@@ -38,7 +38,6 @@ const ListActions = (): React.ReactElement => {
 }
 
 const omitColumns: string[] = [
-  'protectiveMarkingAuthority',
   'protectiveMarking',
   'department',
   'remarks',

@@ -214,13 +214,6 @@ function App(): React.ReactElement {
           <Route path='/catCave'>
             {...createRoutes('catCave', undefined, referenceDataPermission)}
           </Route>
-          <Route path='/protectiveMarkingAuthority'>
-            {...createRoutes(
-              'protectiveMarkingAuthority',
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
           <Route path='/department'>
             {...createRoutes('department', undefined, referenceDataPermission)}
           </Route>

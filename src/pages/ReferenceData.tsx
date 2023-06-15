@@ -86,10 +86,6 @@ const rarelyUsedRoutes = [
   { path: '/catHandling', title: 'Cat Handling' },
   { path: '/catCave', title: 'Cat Cave' },
   { path: '/mediaType', title: 'Media Type' },
-  {
-    path: '/protectiveMarkingAuthority',
-    title: 'Protective Marking Authority'
-  },
   { path: '/department', title: 'Department' },
   { path: '/addresses', title: 'Addresses' }
 ]
