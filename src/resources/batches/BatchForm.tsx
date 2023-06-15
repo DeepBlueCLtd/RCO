@@ -168,7 +168,10 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <ProtectionBlockInputs markingSource='protectiveMarking' />
+        <ProtectionBlockInputs
+          isEdit={isEdit}
+          markingSource='protectiveMarking'
+        />
         <FlexBox>
           <DateTimeInput
             sx={sx}

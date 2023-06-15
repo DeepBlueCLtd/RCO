@@ -8,12 +8,13 @@ import { AutocompleteArrayInput, ReferenceArrayInput } from 'react-admin'
 interface Props {
   disabled?: boolean
   markingSource: string
+  isEdit?: boolean
 }
 
 export default function ProtectionBlockInputs(
   props: Props
 ): React.ReactElement {
-  const { disabled, markingSource } = props
+  const { disabled, markingSource, isEdit } = props
 
   const inputProps = { disabled }
 
@@ -34,16 +35,19 @@ export default function ProtectionBlockInputs(
       <FlexBox>
         <SourceInput
           source='catCode'
+          filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_CAT_CODE}
           inputProps={inputProps}
         />
         <SourceInput
           source={markingSource}
+          filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PROTECTIVE_MARKING}
           inputProps={inputProps}
         />
         <SourceInput
           source='catHandling'
+          filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_CAT_HANDLING}
           inputProps={inputProps}
         />
