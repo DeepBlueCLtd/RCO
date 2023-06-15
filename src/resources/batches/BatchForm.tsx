@@ -20,6 +20,7 @@ import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
 import dayjs from 'dayjs'
+import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -83,6 +84,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
   const { isEdit } = props
+  const configData = useConfigData()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -121,6 +123,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='project'
             reference={constants.R_PROJECTS}>
             <AutocompleteInput
+              label={configData?.projectName}
               optionText={optionsText}
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}

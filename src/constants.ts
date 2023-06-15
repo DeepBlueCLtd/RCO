@@ -34,6 +34,7 @@ export const R_MEDIA_TYPE = 'mediaType'
 export const R_ADDRESSES = 'addresses'
 export const R_DISPATCH = 'dispatch'
 export const R_DESTRUCTION = 'destruction'
+export const R_CONFIG = 'configData'
 
 export type ResourceTypes =
   | typeof R_ITEMS
@@ -73,5 +74,3 @@ export const DATA_VERSION = 'DATA_VERSION'
 
 // mitt events
 export const SAVE_EVENT = 'save'
-
-export const FROM_ADDRESS = 'Dept A, Building B, Sea Street, Deetown WS8 7JE'
