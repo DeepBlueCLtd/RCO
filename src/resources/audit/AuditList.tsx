@@ -80,6 +80,17 @@ export interface FilterType {
   resource?: string
 }
 
+const referenceItems = [
+  constants.R_PLATFORMS,
+  constants.R_VAULT_LOCATION,
+  constants.R_PROTECTIVE_MARKING,
+  constants.R_PROTECTIVE_MARKING_AUTHORITY,
+  constants.R_ORGANISATION,
+  constants.R_PLATFORM_ORIGINATOR,
+  constants.R_MEDIA_TYPE,
+  constants.R_DEPARTMENT
+]
+
 interface AuditListProps {
   filter?: FilterType
   data?: Audit[]
@@ -120,15 +131,19 @@ export default function AuditList({
         <FunctionField
           label='Name'
           render={(record: Audit) => {
-            console.log(record.resource)
             return (
               <>
-                {record.resource ? (
+                {record.resource !== null ? (
                   <SourceField
                     source='dataId'
                     reference={record.resource}
                     sourceField={resourcesRefKey[record.resource]}
-                    link='show'
+                    link={(record) => {
+                      if (referenceItems.includes(record.resource)) {
+                        return `/${record.resource}/${record.dataId}/show`
+                      }
+                      return 'show'
+                    }}
                   />
                 ) : (
                   <TextField source='dataId' label='Item' />

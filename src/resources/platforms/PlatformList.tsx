@@ -4,7 +4,6 @@ import {
   BooleanField,
   CreateButton,
   Datagrid,
-  type Identifier,
   List,
   TextField,
   TopToolbar,
@@ -75,12 +74,7 @@ export default function PlatformList(props: Props): React.ReactElement {
       perPage={25}
       filters={filters}
       resource='platforms'>
-      <Datagrid
-        rowClick={(id: Identifier) => {
-          const cID: string = id.toString()
-          return `${basePath}/${cID}`
-        }}
-        bulkActionButtons={false}>
+      <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField source='name' />
         <BooleanField source='active' label='Active Platform' />
         <FunctionField

@@ -17,7 +17,7 @@ import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useConfigData } from '../../utils/useConfigData'
 
-const ValueField = ({
+export const ValueField = ({
   label,
   children
 }: {
