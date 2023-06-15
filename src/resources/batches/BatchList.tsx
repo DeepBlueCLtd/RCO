@@ -143,7 +143,7 @@ export default function BatchList(): React.ReactElement {
         <SourceField
           source='project'
           reference={constants.R_PROJECTS}
-          label='Project'
+          label={configData?.projectName}
         />
         <SourceField
           source='platform'
