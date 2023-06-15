@@ -13,7 +13,8 @@ export default function ReferenceDataForm(
 ): React.ReactElement {
   const { isEdit, name } = props
   const defaultValues = {
-    name: ''
+    name: '',
+    active: true
   }
 
   const isNotActive = (name: string): boolean => name === 'audit'

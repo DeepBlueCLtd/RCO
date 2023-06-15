@@ -129,7 +129,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
           <>
             <Button
               variant='outlined'
-              label='Print Note'
+              label='Print Receipt'
               onClick={() => {
                 handleOpen('dispatch')
               }}
