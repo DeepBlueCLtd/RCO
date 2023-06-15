@@ -146,7 +146,9 @@ const loadDefaultData = async (
   )
 
   const platformOriginator = getActiveReferenceData('Platform Originator')
-
+  const catCode = getActiveReferenceData('Cat Code', true, 8)
+  const catHandling = getActiveReferenceData('Cat Handling', true, 8)
+  const catCave = getActiveReferenceData('Cat Cave', true, 8)
   const batches = generateBatch(
     isHigh === true ? 500 : 10,
     platforms.length,
@@ -154,6 +156,9 @@ const loadDefaultData = async (
     projects.length,
     organisation.length,
     protectiveMarking.length,
+    catCode.length,
+    catHandling.length,
+    catCave.length,
     user,
     isHigh
   )
@@ -171,6 +176,9 @@ const loadDefaultData = async (
           batches[index],
           vaultLocation.length,
           protectiveMarking.length,
+          catCode.length,
+          catHandling.length,
+          catCave.length,
           user
         )
       )
@@ -210,6 +218,9 @@ const loadDefaultData = async (
     protectiveMarking,
     protectiveMarkingAuthority,
     platformOriginator,
+    catCode,
+    catHandling,
+    catCave,
     audits,
     destructions,
     dispatches,

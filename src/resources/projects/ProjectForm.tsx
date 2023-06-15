@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { ICON_PROJECT } from '../../constants'
+import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
@@ -16,8 +17,11 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
     name: '',
     remarks: ''
   }
-
-  const pageTitle = isEdit !== undefined ? 'Edit Project' : 'Add new Project'
+  const configData = useConfigData()
+  const pageTitle =
+    isEdit !== undefined
+      ? `Edit ${configData?.projectName}`
+      : `Add new ${configData?.projectName}`
 
   return (
     <SimpleForm

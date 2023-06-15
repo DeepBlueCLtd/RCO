@@ -51,6 +51,7 @@ function App(): React.ReactElement {
     undefined
   )
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
+  const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
       getDataProvider(loggingPref)
@@ -151,6 +152,16 @@ function App(): React.ReactElement {
   }, [])
 
   useEffect(handleGetProvider, [loggingPref])
+
+  useEffect(() => {
+    async function getConfigData(): Promise<void> {
+      if (dataProvider !== undefined) {
+        setConfigData(await dataProvider.configData())
+      }
+    }
+    getConfigData().catch(console.log)
+  }, [dataProvider])
+
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
 
@@ -193,6 +204,15 @@ function App(): React.ReactElement {
               undefined,
               referenceDataPermission
             )}
+          </Route>
+          <Route path='/catCode'>
+            {...createRoutes('catCode', undefined, referenceDataPermission)}
+          </Route>
+          <Route path='/catHandling'>
+            {...createRoutes('catHandling', undefined, referenceDataPermission)}
+          </Route>
+          <Route path='/catCave'>
+            {...createRoutes('catCave', undefined, referenceDataPermission)}
           </Route>
           <Route path='/protectiveMarkingAuthority'>
             {...createRoutes(
@@ -242,12 +262,14 @@ function App(): React.ReactElement {
           key={constants.R_PROJECTS}
           icon={constants.ICON_PROJECT}
           name={constants.R_PROJECTS}
+          options={{ label: configData?.projectsName }}
           {...protectedRoutes(permissions, constants.R_PROJECTS, projects)}
         />
         <Resource
           key={constants.R_BATCHES}
           icon={constants.ICON_BATCH}
           name={constants.R_BATCHES}
+          options={{ configData }}
           {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
         />
         <Resource
@@ -274,6 +296,7 @@ function App(): React.ReactElement {
           key={constants.R_DISPATCH}
           icon={constants.ICON_DISPATCH}
           name={constants.R_DISPATCH}
+          options={{ configData }}
           {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
         />
         <Resource

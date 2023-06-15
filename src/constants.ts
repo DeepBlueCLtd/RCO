@@ -29,11 +29,15 @@ export const R_LOANS = 'loans'
 export const R_PLATFORM_ORIGINATOR = 'platformOriginator'
 export const R_PROTECTIVE_MARKING_AUTHORITY = 'protectiveMarkingAuthority'
 export const R_PROTECTIVE_MARKING = 'protectiveMarking'
+export const R_CAT_CODE = 'catCode'
+export const R_CAT_HANDLING = 'catHandling'
+export const R_CAT_CAVE = 'catCave'
 export const R_DEPARTMENT = 'department'
 export const R_MEDIA_TYPE = 'mediaType'
 export const R_ADDRESSES = 'addresses'
 export const R_DISPATCH = 'dispatch'
 export const R_DESTRUCTION = 'destruction'
+export const R_CONFIG = 'configData'
 
 export type ResourceTypes =
   | typeof R_ITEMS
@@ -48,6 +52,9 @@ export type ResourceTypes =
   | typeof R_MEDIA_TYPE
   | typeof R_DEPARTMENT
   | typeof R_PROTECTIVE_MARKING
+  | typeof R_CAT_CODE
+  | typeof R_CAT_HANDLING
+  | typeof R_CAT_CAVE
   | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
@@ -73,5 +80,3 @@ export const DATA_VERSION = 'DATA_VERSION'
 
 // mitt events
 export const SAVE_EVENT = 'save'
-
-export const FROM_ADDRESS = 'Dept A, Building B, Sea Street, Deetown WS8 7JE'
