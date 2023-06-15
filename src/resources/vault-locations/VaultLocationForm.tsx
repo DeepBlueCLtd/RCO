@@ -20,7 +20,7 @@ export default function VaultLocationForm(): React.ReactElement {
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <BooleanInput source='active' />
+      <BooleanInput defaultValue={true} source='active' />
     </SimpleForm>
   )
 }

@@ -13,7 +13,8 @@ export default function ReferenceDataForm(
 ): React.ReactElement {
   const { isEdit, name } = props
   const defaultValues = {
-    name: ''
+    name: '',
+    active: true
   }
 
   const isNotActive = (name: string): boolean => name === 'audit'
@@ -25,7 +26,7 @@ export default function ReferenceDataForm(
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       {isEdit !== undefined && name !== undefined && !isNotActive(name) ? (
-        <BooleanInput source='active' />
+        <BooleanInput defaultValue={true} source='active' />
       ) : (
         ''
       )}
