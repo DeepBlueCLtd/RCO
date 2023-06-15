@@ -4,10 +4,13 @@ import { Box } from '@mui/system'
 import ItemList from '../items/ItemList'
 import {
   BooleanInput,
+  DatagridConfigurable,
+  type DatagridConfigurableProps,
   EditButton,
   Loading,
   Show,
   SimpleForm,
+  TextField,
   TextInput,
   TopToolbar,
   useGetList,
@@ -23,6 +26,7 @@ import { Warning, History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
+import SourceField from '../../components/SourceField'
 
 const style = {
   position: 'absolute',
@@ -181,8 +185,9 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
           </legend>
           <ItemList
             storeKey={`${constants.R_USERS}-${id}-items-list`}
-            filter={{ loanedTo: record?.id }}
-          />
+            filter={{ loanedTo: record?.id }}>
+            <ItemListDataTable />
+          </ItemList>
         </Box>
       </FlexBox>
 
@@ -246,5 +251,23 @@ export default function UserShow(): React.ReactElement {
         }}
       />
     </Show>
+  )
+}
+
+function ItemListDataTable(
+  props: DatagridConfigurableProps
+): React.ReactElement {
+  return (
+    <DatagridConfigurable rowClick='show' omit={props?.omit} {...props}>
+      <SourceField
+        link='show'
+        source='batchId'
+        reference={constants.R_BATCHES}
+        sourceField='batchNumber'
+      />
+      <TextField source='mediaType' label='Media type' />
+      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <TextField source='remarks' />
+    </DatagridConfigurable>
   )
 }
