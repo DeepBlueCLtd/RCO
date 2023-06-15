@@ -33,11 +33,25 @@ export const lifecycleCallbacks = (
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
     ReferenceItemLifeCycle(audit, constants.R_PLATFORM_ORIGINATOR),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
+    ReferenceItemLifeCycle(audit, constants.R_CAT_CODE),
+    ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLING),
+    ReferenceItemLifeCycle(audit, constants.R_CAT_CAVE),
     ReferenceItemLifeCycle(audit, constants.R_MEDIA_TYPE),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING_AUTHORITY),
     ReferenceItemLifeCycle(audit, constants.R_DEPARTMENT),
     DestructionLifeCycle(audit)
   ]
+}
+
+const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
+  return {
+    configData: async () => {
+      const configTable = await localForage.getItem<ConfigData[]>(
+        `${constants.LOCAL_STORAGE_DB_KEY}${constants.R_CONFIG}`
+      )
+      return configTable !== null ? configTable[0] : null
+    }
+  }
 }
 
 export const getDataProvider = async (
@@ -53,7 +67,11 @@ export const getDataProvider = async (
     loggingEnabled
   })
 
-  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
+  const providerWithCustomMethods = {
+    ...provider,
+    ...customMethods(provider),
+    ...getConfigData()
+  }
   const audit = trackEvent(providerWithCustomMethods)
 
   return withLifecycleCallbacks(

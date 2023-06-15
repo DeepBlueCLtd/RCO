@@ -118,6 +118,9 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
+  catCodes: number,
+  catHandles: number,
+  catCaves: number,
   user: number,
   isHigh?: boolean
 ): Batch[] => {
@@ -140,7 +143,10 @@ export const generateBatch = (
       project: generateRandomNumber(1, projects - 1),
       platform: generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
-      maximumProtectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
+      protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
+      catCode: generateRandomNumber(1, catCodes - 1),
+      catHandle: generateRandomNumber(1, catHandles - 1),
+      catCave: [generateRandomNumber(1, catCaves - 1)],
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
       createdBy: user
@@ -156,6 +162,9 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
+  catCodes: number,
+  catHandles: number,
+  catCaves: number,
   user: number
 ): Item[] => {
   const items: Item[] = []
@@ -192,6 +201,9 @@ export const generateItems = (
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
+      catCode: generateRandomNumber(1, catCodes - 1),
+      catHandle: generateRandomNumber(1, catHandles - 1),
+      catCave: [generateRandomNumber(1, catCaves - 1)],
       consecPages: `consec-pages-${i + 1}`,
       createdBy: user
     }

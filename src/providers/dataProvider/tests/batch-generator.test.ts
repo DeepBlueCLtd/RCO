@@ -67,7 +67,10 @@ const generateBatch = async (
     project: id,
     platform: id,
     organisation: id,
-    maximumProtectiveMarking: id,
+    protectiveMarking: id,
+    catCode: id,
+    catHandle: id,
+    catCave: [id],
     remarks: `remarks-batch-${year}`,
     receiptNotes: `Reference-${id}`,
     createdBy: user

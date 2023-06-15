@@ -5,6 +5,7 @@ interface CustomDataProvider {
     date?: string
   ) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
+  getConfigData: (provider: DataProvider) => Promise<ConfigData | null>
 }
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
@@ -22,6 +23,12 @@ interface ResourceWithCreation extends RCOResource {
   // ISO date value
   createdAt: string
   createdBy: User['id']
+}
+
+interface CatTypes {
+  catCode?: ReferenceItem['id']
+  catHandling?: ReferenceItem['id']
+  catCave?: Array<ReferenceItem['id']>
 }
 
 interface User extends ResourceWithCreation {
@@ -67,7 +74,7 @@ interface Project extends ResourceWithCreation {
   remarks: string
 }
 
-interface Batch extends ResourceWithCreation {
+interface Batch extends ResourceWithCreation, CatTypes {
   name: string
   startDate: string
   endDate: string
@@ -77,7 +84,11 @@ interface Batch extends ResourceWithCreation {
   project: Project['id']
   platform: Platform['id']
   organisation: ReferenceItem['id']
-  maximumProtectiveMarking: ReferenceItem['id']
+  protectiveMarking: ReferenceItem['id']
+  // extra protection details. All are optional
+  catCode: ReferenceItem['id'] | undefined
+  catHandle: ReferenceItem['id'] | undefined
+  catCave: Array<ReferenceItem['id']> | undefined
   remarks: string
   receiptNotes: string
 }
@@ -95,7 +106,7 @@ interface ActiveReferenceItem extends ReferenceItem {
   active: boolean
 }
 
-interface Item extends ResourceWithCreation {
+interface Item extends ResourceWithCreation, CatTypes {
   mediaType: MediaType
   start: string
   batchId: Batch['id']
@@ -105,6 +116,11 @@ interface Item extends ResourceWithCreation {
   vaultLocation: ReferenceItem['id']
   remarks: string
   protectiveMarking: ReferenceItem['id']
+  // extra protection details
+  catCode: ReferenceItem['id'] | undefined
+  catHandle: ReferenceItem['id'] | undefined
+  catCave: Array<ReferenceItem['id']> | undefined
+
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
@@ -146,6 +162,9 @@ interface RCOStore {
   protectiveMarking: ActiveReferenceItem[]
   protectiveMarkingAuthority: ActiveReferenceItem[]
   platformOriginator: ActiveReferenceItem[]
+  catCode: ActiveReferenceItem[]
+  catHandling: ActiveReferenceItem[]
+  catCave: ActiveReferenceItem[]
   configData: ConfigData[]
 }
 
