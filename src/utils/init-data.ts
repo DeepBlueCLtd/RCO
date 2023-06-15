@@ -141,11 +141,6 @@ const loadDefaultData = async (
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
   const addresses = getAddresses()
 
-  const protectiveMarkingAuthority = getActiveReferenceData(
-    'Protective Marking Authority'
-  )
-
-  const platformOriginator = getActiveReferenceData('Platform Originator')
   const catCode = getActiveReferenceData('Cat Code', true, 8)
   const catHandling = getActiveReferenceData('Cat Handling', true, 8)
   const catCave = getActiveReferenceData('Cat Cave', true, 8)
@@ -216,8 +211,6 @@ const loadDefaultData = async (
     vaultLocation,
     mediaType,
     protectiveMarking,
-    protectiveMarkingAuthority,
-    platformOriginator,
     catCode,
     catHandling,
     catCave,
