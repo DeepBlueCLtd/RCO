@@ -169,14 +169,9 @@ interface Item extends ResourceWithCreation {
 }
 
 interface RCOStore {
-  users: User[]
-  audits: Audit[]
+  // lookup tables
   platforms: Platform[]
   projects: Project[]
-  batches: Batch[]
-  items: Item[]
-  destructions: Destruction[]
-  dispatches: Dispatch[]
   addresses: Address[]
   organisation: Organisation[]
   department: Department[]
@@ -188,7 +183,15 @@ interface RCOStore {
   catCode: CatCode[]
   catHandling: CatHandle[]
   catCave: CatCave[]
+  // configuration data
   configData: ConfigData[]
+  // business tables
+  users: User[]
+  audits: Audit[]
+  batches: Batch[]
+  items: Item[]
+  destructions: Destruction[]
+  dispatches: Dispatch[]
 }
 
 interface Destruction {
