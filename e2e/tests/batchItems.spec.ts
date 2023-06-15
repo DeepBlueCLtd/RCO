@@ -77,10 +77,6 @@ test.describe('BATCH ITEMS', async () => {
     await page.getByRole('option', { name: 'DVD' }).click()
     await page.getByLabel('Consec/Pages').click()
     await page.getByLabel('Consec/Pages').fill('125/2022')
-    await page.getByLabel('Start').click()
-    await page.getByLabel('End').click()
-    await page.getByLabel('Vault location').click()
-    await page.getByRole('option', { name: 'Vault Location:5' }).click()
     await page.getByLabel('Protective marking').click()
     await page.getByRole('option', { name: 'Protective Marking:5' }).click()
     await page.getByLabel('Remarks', { exact: true }).click()
@@ -111,10 +107,37 @@ test.describe('BATCH ITEMS', async () => {
     const endDate = await page.locator('#end')
     await endDate.fill(formattedEndDate)
 
+    const mediaTypeValue = await page.locator('#mediaType').inputValue()
+    const protectiveMarketingValue = await page
+      .locator('#protectiveMarking')
+      .inputValue()
+
     await page.getByRole('button', { name: 'Save and Create' }).click()
+
     await page.getByRole('alert').textContent()
     await expect(page.getByRole('alert')).toHaveText(
       `Item ${refId}/1 has been saved. Now showing blank item.`
     )
+
+    await page.getByRole('menuitem', { name: 'Batches' }).click()
+    await page.getByPlaceholder('Search').click()
+    await page.getByPlaceholder('Search').fill(refId)
+    await page.getByRole('cell', { name: refId }).click()
+    await page.getByRole('tab', { name: 'Items' }).click()
+
+    const mediaType = await page.locator(
+      `//tbody/tr/td[3]/span[text()="${mediaTypeValue}"]`
+    )
+    await expect(mediaType).toHaveText(mediaTypeValue)
+
+    const protectiveMarking = await page.locator(
+      `//tbody/tr/td[4]/span[text()="${protectiveMarketingValue}"]`
+    )
+    await expect(protectiveMarking).toHaveText(protectiveMarketingValue)
+
+    const batchRefId = await page.locator(
+      `//tbody/tr/td[5]//span[text()="${refId}"]`
+    )
+    await expect(batchRefId).toHaveText(refId)
   })
 })
