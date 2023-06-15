@@ -96,7 +96,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
       <FlexBox justifyContent='end' padding={2}>
         <Button
           variant='outlined'
-          label='Report'
+          label='Destruction Cerificatate'
           onClick={() => {
             handleOpen(true)
           }}
