@@ -43,6 +43,17 @@ export const lifecycleCallbacks = (
   ]
 }
 
+const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
+  return {
+    configData: async () => {
+      const configTable = await localForage.getItem<ConfigData[]>(
+        `${constants.LOCAL_STORAGE_DB_KEY}${constants.R_CONFIG}`
+      )
+      return configTable !== null ? configTable[0] : null
+    }
+  }
+}
+
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
@@ -56,7 +67,11 @@ export const getDataProvider = async (
     loggingEnabled
   })
 
-  const providerWithCustomMethods = { ...provider, ...customMethods(provider) }
+  const providerWithCustomMethods = {
+    ...provider,
+    ...customMethods(provider),
+    ...getConfigData()
+  }
   const audit = trackEvent(providerWithCustomMethods)
 
   return withLifecycleCallbacks(

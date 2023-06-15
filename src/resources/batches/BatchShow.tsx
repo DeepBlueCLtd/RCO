@@ -28,6 +28,7 @@ import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
 import { Box } from '@mui/system'
+import { useConfigData } from '../../utils/useConfigData'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -120,6 +121,7 @@ export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   const pageTitle = 'View Batch'
   const [open, setOpen] = useState(false)
+  const configData = useConfigData()
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
@@ -147,7 +149,7 @@ export default function BatchShow(): React.ReactElement {
               source='yearOfReceipt'
             />
             <StyledFieldWithLabel
-              label='Project'
+              label={configData?.projectName as string}
               source='project'
               reference={constants.R_PROJECTS}
             />
