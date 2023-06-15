@@ -2,8 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e/tests',
   fullyParallel: true,
+  workers: 10,
   forbidOnly: !(process.env.CI == null),
-  retries: 0,
+  retries: process.env.CI ? 1 : 0,
   reporter: 'html',
   timeout: 60000,
   // Run your local dev server before starting the tests
