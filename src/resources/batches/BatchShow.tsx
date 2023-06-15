@@ -8,7 +8,10 @@ import {
   FilterButton,
   SelectColumnsButton,
   DateField,
-  useShowContext
+  useShowContext,
+  ReferenceArrayField,
+  SingleFieldList,
+  ChipField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -24,6 +27,7 @@ import { IconButton, Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
+import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
 
 export interface ShowActionProps {
@@ -100,6 +104,19 @@ const HistoryModal = ({
   )
 }
 
+const ReferenceArrayFieldWithLabel = (): React.ReactElement => (
+  <Box>
+    <Typography fontWeight='bold' sx={{ minWidth: '300px' }}>
+      Cat Cave
+    </Typography>
+    <ReferenceArrayField source='catCave' reference={constants.R_CAT_CAVE}>
+      <SingleFieldList>
+        <ChipField source='name' />
+      </SingleFieldList>
+    </ReferenceArrayField>
+  </Box>
+)
+
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   const pageTitle = 'View Batch'
@@ -115,7 +132,7 @@ export default function BatchShow(): React.ReactElement {
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_BATCH /> {pageTitle}
       </Typography>
-      <TabbedShowLayout>
+      <TabbedShowLayout sx={{ paddingBottom: '4px' }}>
         <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
           <FlexBox>
             <StyledFieldWithLabel label='Id' source='id' />
@@ -157,7 +174,7 @@ export default function BatchShow(): React.ReactElement {
             />
             <StyledFieldWithLabel
               label='Maximum Protective Marking'
-              source='maximumProtectiveMarking'
+              source='protectiveMarking'
               reference='protectiveMarking'
             />
           </FlexBox>
@@ -177,8 +194,21 @@ export default function BatchShow(): React.ReactElement {
               source='endDate'
             />
           </FlexBox>
-          <FlexBox>
+          <FlexBox alignItems='flex-start'>
+            <StyledFieldWithLabel
+              label='Cat Code'
+              source='catCode'
+              reference={constants.R_CAT_CODE}
+            />
+            <StyledFieldWithLabel
+              label='Cat Handling'
+              source='catHandling'
+              reference={constants.R_CAT_HANDLING}
+            />
+          </FlexBox>
+          <FlexBox alignItems='flex-start'>
             <StyledFieldWithLabel label='Created' source='createdAt' />
+            <ReferenceArrayFieldWithLabel />
           </FlexBox>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>

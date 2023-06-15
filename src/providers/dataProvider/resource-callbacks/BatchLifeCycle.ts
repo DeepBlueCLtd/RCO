@@ -96,8 +96,7 @@ const lifeCycles = (
 })
 
 const securityRelated = (record: UpdateParams<any>): boolean =>
-  record.previousData.maximumProtectiveMarking !==
-  record.data.maximumProtectiveMarking
+  record.previousData.protectiveMarking !== record.data.protectiveMarking
 
 export default (
   audit: AuditFunctionType,

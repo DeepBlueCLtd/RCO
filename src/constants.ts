@@ -29,6 +29,9 @@ export const R_LOANS = 'loans'
 export const R_PLATFORM_ORIGINATOR = 'platformOriginator'
 export const R_PROTECTIVE_MARKING_AUTHORITY = 'protectiveMarkingAuthority'
 export const R_PROTECTIVE_MARKING = 'protectiveMarking'
+export const R_CAT_CODE = 'catCode'
+export const R_CAT_HANDLING = 'catHandling'
+export const R_CAT_CAVE = 'catCave'
 export const R_DEPARTMENT = 'department'
 export const R_MEDIA_TYPE = 'mediaType'
 export const R_ADDRESSES = 'addresses'
@@ -49,6 +52,9 @@ export type ResourceTypes =
   | typeof R_MEDIA_TYPE
   | typeof R_DEPARTMENT
   | typeof R_PROTECTIVE_MARKING
+  | typeof R_CAT_CODE
+  | typeof R_CAT_HANDLING
+  | typeof R_CAT_CAVE
   | typeof R_PROTECTIVE_MARKING_AUTHORITY
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
