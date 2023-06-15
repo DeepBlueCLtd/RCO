@@ -53,7 +53,7 @@ interface Props {
   active?: boolean
 }
 
-export const ConditionalReferenceInput = <T extends ReferenceItem>(
+export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
   const { source, reference, inputProps = {}, active } = props

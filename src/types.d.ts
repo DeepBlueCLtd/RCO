@@ -13,6 +13,10 @@ type RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>
 
 type UserRole = 'rco-user' | 'rco-power-user'
 
+// ------------------------
+// -- SQL Data Types
+// ------------------------
+
 /** an entity, with an id unique to that table */
 interface RCOResource {
   readonly id: number
@@ -23,12 +27,6 @@ interface ResourceWithCreation extends RCOResource {
   // ISO date value
   createdAt: string
   createdBy: User['id']
-}
-
-interface CatTypes {
-  catCode?: ReferenceItem['id']
-  catHandling?: ReferenceItem['id']
-  catCave?: Array<ReferenceItem['id']>
 }
 
 interface User extends ResourceWithCreation {
@@ -74,21 +72,21 @@ interface Project extends ResourceWithCreation {
   remarks: string
 }
 
-interface Batch extends ResourceWithCreation, CatTypes {
+interface Batch extends ResourceWithCreation {
   name: string
   startDate: string
   endDate: string
   batchNumber: string
   yearOfReceipt: string
-  department: ReferenceItem['id']
+  department: ActiveReferenceItem['id']
   project: Project['id']
   platform: Platform['id']
-  organisation: ReferenceItem['id']
-  protectiveMarking: ReferenceItem['id']
+  organisation: ActiveReferenceItem['id']
+  protectiveMarking: ActiveReferenceItem['id']
   // extra protection details. All are optional
-  catCode: ReferenceItem['id'] | undefined
-  catHandle: ReferenceItem['id'] | undefined
-  catCave: Array<ReferenceItem['id']> | undefined
+  catCode: ActiveReferenceItem['id'] | undefined
+  catHandle: ActiveReferenceItem['id'] | undefined
+  catCave: Array<ActiveReferenceItem['id']> | undefined
   remarks: string
   receiptNotes: string
 }
@@ -96,30 +94,27 @@ interface Batch extends ResourceWithCreation, CatTypes {
 /** a generic type, used for our assorted reference data lists. Once the
  * interface becomes more complex, introduce a type-specific interface
  */
-interface ReferenceItem extends RCOResource {
-  name: string
-}
-
-interface ActiveReferenceItem extends ReferenceItem {
+interface ActiveReferenceItem extends RCOResource {
   // when false, the item should not be included in drop-downs
   // for `create` forms, though it should for `edit` forms
+  name: string
   active: boolean
 }
 
-interface Item extends ResourceWithCreation, CatTypes {
+interface Item extends ResourceWithCreation {
   mediaType: MediaType
   start: string
   batchId: Batch['id']
   item_number: string
   consecPages?: string
   end: string
-  vaultLocation: ReferenceItem['id']
+  vaultLocation: ActiveReferenceItem['id']
   remarks: string
-  protectiveMarking: ReferenceItem['id']
+  protectiveMarking: ActiveReferenceItem['id']
   // extra protection details
-  catCode: ReferenceItem['id'] | undefined
-  catHandle: ReferenceItem['id'] | undefined
-  catCave: Array<ReferenceItem['id']> | undefined
+  catCode: ActiveReferenceItem['id'] | undefined
+  catHandle: ActiveReferenceItem['id'] | undefined
+  catCave: Array<ActiveReferenceItem['id']> | undefined
 
   // notes relating to how this item is mustered
   musterRemarks: string

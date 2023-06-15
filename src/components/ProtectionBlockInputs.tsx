@@ -54,7 +54,7 @@ export default function ProtectionBlockInputs(
         <ReferenceArrayInput source='catCave' reference={constants.R_CAT_CAVE}>
           <AutocompleteArrayInput
             sx={{ width: '100%' }}
-            optionText={(item: ReferenceItem) => item.name}
+            optionText={(item: ActiveReferenceItem) => item.name}
             {...inputProps}
           />
         </ReferenceArrayInput>
