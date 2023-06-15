@@ -168,9 +168,9 @@ interface Item extends ResourceWithCreation {
 
 interface RCOStore {
   // lookup tables
-  platforms: Platform[]
-  projects: Project[]
-  addresses: Address[]
+  platform: Platform[]
+  project: Project[]
+  address: Address[]
   organisation: Organisation[]
   department: Department[]
   vaultLocation: VaultLocation[]
@@ -183,12 +183,12 @@ interface RCOStore {
   // configuration data
   configData: ConfigData[]
   // business tables
-  users: User[]
-  audits: Audit[]
-  batches: Batch[]
-  items: Item[]
-  destructions: Destruction[]
-  dispatches: Dispatch[]
+  user: User[]
+  audit: Audit[]
+  batch: Batch[]
+  item: Item[]
+  destruction: Destruction[]
+  dispatche: Dispatch[]
 }
 
 interface Destruction {
