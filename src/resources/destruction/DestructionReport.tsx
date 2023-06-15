@@ -251,7 +251,7 @@ const TablesData = (): React.ReactElement => {
 
 interface Props {
   open: boolean
-  handleOpen: (open: boolean) => void
+  handleOpen: (open: string) => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
@@ -261,7 +261,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
     <Printable
       open={open}
       onClose={() => {
-        handleOpen(false)
+        handleOpen('')
       }}>
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>
