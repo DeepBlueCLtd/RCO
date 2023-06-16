@@ -5,6 +5,7 @@ interface CustomDataProvider {
     date?: string
   ) => Promise<any>
   returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
+  getConfigData: (provider: DataProvider) => Promise<ConfigData | null>
 }
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
@@ -12,9 +13,51 @@ type RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>
 
 type UserRole = 'rco-user' | 'rco-power-user'
 
+interface Permission {
+  read?: boolean
+  write?: boolean
+  delete?: boolean
+  all?: '*'
+}
+
+/** the set of routes for a resource */
+interface ResourceRoutes {
+  create?: any
+  edit?: any
+  list?: any
+  show?: any
+}
+
+type ResourcePermissions = Record<string, Permission>
+
+/** properties common to a number of forms */
+interface FormProps {
+  /** if the form is currently in edit mode (rather than create mode),
+   * since we may display a `Delete` button when in edit mode
+   */
+  isEdit?: boolean
+  name?: string
+}
+
+// ------------------------
+// -- SQL Data Types
+// ------------------------
+
+type MediaType = 'DVD' | 'Tape' | 'Paper'
+
 /** an entity, with an id unique to that table */
 interface RCOResource {
   readonly id: number
+}
+
+/** a generic type, used for our assorted reference data lists. Once the
+ * interface becomes more complex, introduce a type-specific interface
+ */
+interface ActiveReferenceItem extends RCOResource {
+  // when false, the item should not be included in drop-downs
+  // for `create` forms, though it should for `edit` forms
+  name: string
+  active: boolean
 }
 
 /** an entity for which we track instance creation */
@@ -45,7 +88,7 @@ interface Audit extends RCOResource {
   // the id of the entity being reported on (opt)
   dataId: number | null
   // what kind of change was made (computer-friendly)
-  activityType: AuditType
+  activityType: AuditType // string
   // what kind of change was made (human-friendly)
   label: string
   // summary of change
@@ -67,44 +110,49 @@ interface Project extends ResourceWithCreation {
   remarks: string
 }
 
+type Department = ActiveReferenceItem
+type Organisation = ActiveReferenceItem
+type ProtectiveMarking = ActiveReferenceItem
+type PlatformOriginator = ActiveReferenceItem
+type CatCode = ActiveReferenceItem
+type CatHandle = ActiveReferenceItem
+type CatCave = ActiveReferenceItem
+type VaultLocation = ActiveReferenceItem
+// type MediaType = ActiveReferenceItem
+
 interface Batch extends ResourceWithCreation {
-  name: string
   startDate: string
   endDate: string
   batchNumber: string
   yearOfReceipt: string
-  department: ReferenceItem['id']
+  department: Department['id']
   project: Project['id']
   platform: Platform['id']
-  organisation: ReferenceItem['id']
-  maximumProtectiveMarking: ReferenceItem['id']
+  organisation: Organisation['id']
+  protectiveMarking: ProtectiveMarking['id']
+  // extra protection details. All are optional
+  catCode: CatCode['id'] | undefined
+  catHandle: CatHandle['id'] | undefined
+  catCave: Array<CatCave['id']> | undefined
   remarks: string
   receiptNotes: string
 }
 
-/** a generic type, used for our assorted reference data lists. Once the
- * interface becomes more complex, introduce a type-specific interface
- */
-interface ReferenceItem extends RCOResource {
-  name: string
-}
-
-interface ActiveReferenceItem extends ReferenceItem {
-  // when false, the item should not be included in drop-downs
-  // for `create` forms, though it should for `edit` forms
-  active: boolean
-}
-
 interface Item extends ResourceWithCreation {
   mediaType: MediaType
-  startDate?: string
+  startDate: string
   batchId: Batch['id']
   item_number: string
   consecPages?: string
-  endDate?: string
-  vaultLocation: ReferenceItem['id']
+  endDate: string
+  vaultLocation: VaultLocation['id']
   remarks: string
-  protectiveMarking: ReferenceItem['id']
+  protectiveMarking: ProtectiveMarking['id']
+  // extra protection details. All are optional
+  catCode: CatCode['id'] | undefined
+  catHandle: CatHandle['id'] | undefined
+  catCave: Array<CatCave['id']> | undefined
+
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
@@ -118,35 +166,29 @@ interface Item extends ResourceWithCreation {
   destructionDate?: string
 }
 
-type MediaType = 'DVD' | 'Tape' | 'Paper'
-
-/** properties common to a number of forms */
-interface FormProps {
-  /** if the form is currently in edit mode (rather than create mode),
-   * since we may display a `Delete` button when in edit mode
-   */
-  isEdit?: boolean
-  name?: string
-}
-
 interface RCOStore {
-  users: User[]
-  audits: Audit[]
-  platforms: Platform[]
-  projects: Project[]
-  batches: Batch[]
-  items: Item[]
-  destructions: Destruction[]
-  dispatches: Dispatch[]
-  addresses: Address[]
-  organisation: ActiveReferenceItem[]
-  department: ActiveReferenceItem[]
-  vaultLocation: ActiveReferenceItem[]
+  // lookup tables
+  platform: Platform[]
+  project: Project[]
+  address: Address[]
+  organisation: Organisation[]
+  department: Department[]
+  vaultLocation: VaultLocation[]
   mediaType: ActiveReferenceItem[]
-  protectiveMarking: ActiveReferenceItem[]
-  protectiveMarkingAuthority: ActiveReferenceItem[]
-  platformOriginator: ActiveReferenceItem[]
+  protectiveMarking: ProtectiveMarking[]
+  platformOriginator: PlatformOriginator[]
+  catCode: CatCode[]
+  catHandling: CatHandle[]
+  catCave: CatCave[]
+  // configuration data
   configData: ConfigData[]
+  // business tables
+  user: User[]
+  audit: Audit[]
+  batch: Batch[]
+  item: Item[]
+  destruction: Destruction[]
+  dispatche: Dispatch[]
 }
 
 interface Destruction {
@@ -163,23 +205,6 @@ interface ActivityType {
   name: string
   label: string
 }
-
-interface Permission {
-  read?: boolean
-  write?: boolean
-  delete?: boolean
-  all?: '*'
-}
-
-/** the set of routes for a resource */
-interface ResourceRoutes {
-  create?: any
-  edit?: any
-  list?: any
-  show?: any
-}
-
-type ResourcePermissions = Record<string, Permission>
 
 interface Address {
   readonly id: number
@@ -202,7 +227,7 @@ interface Dispatch {
   lastHastenerSent?: string
 }
 
-/** per instance config data. It just intended to be one row deep */
+/** per instance config data. It is just intended to be one row deep */
 interface ConfigData {
   /** singular name for project resource
    * test value: `Project`

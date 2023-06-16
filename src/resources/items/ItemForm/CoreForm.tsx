@@ -1,7 +1,6 @@
 import {
   AutocompleteInput,
   DateTimeInput,
-  ReferenceInput,
   TextField,
   TextInput
 } from 'react-admin'
@@ -13,6 +12,7 @@ import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 import { ConditionalReferenceInput } from '../../batches/BatchForm'
+import ProtectionBlockInputs from '../../../components/ProtectionBlockInputs'
 
 const sx = { width: '100%' }
 
@@ -20,8 +20,6 @@ interface Props {
   batchId?: number
   disabled?: boolean
 }
-
-const optionsText = (item: ReferenceItem): string => item.name
 
 const CoreForm = (props: Props): React.ReactElement => {
   const { batchId, disabled } = props
@@ -84,6 +82,10 @@ const CoreForm = (props: Props): React.ReactElement => {
           )}
         </Card>
       </FlexBox>
+      <ProtectionBlockInputs
+        disabled={disabled}
+        markingSource='protectiveMarking'
+      />
       <FlexBox>
         <DateTimeInput
           sx={sx}
@@ -106,15 +108,6 @@ const CoreForm = (props: Props): React.ReactElement => {
           reference='vaultLocation'
           active
         />
-        <ReferenceInput
-          source='protectiveMarking'
-          reference='protectiveMarking'>
-          <AutocompleteInput
-            disabled={disabled}
-            optionText={optionsText}
-            sx={sx}
-          />
-        </ReferenceInput>
       </FlexBox>
       <FlexBox>
         <TextInput multiline disabled={disabled} source='remarks' sx={sx} />

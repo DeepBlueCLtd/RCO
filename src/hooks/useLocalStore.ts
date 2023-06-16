@@ -11,7 +11,9 @@ const useLocalStore = (storeKey: string, resource: string): void => {
   useEffect(() => {
     unSelectAll()
     onSelect(value)
-    return () => { unSelectAll() }
+    return () => {
+      unSelectAll()
+    }
   }, [])
 
   useEffect(() => {

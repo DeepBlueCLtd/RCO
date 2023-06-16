@@ -13,7 +13,8 @@ export default function AddressForm(props: Props): React.ReactElement {
   const { show } = props
 
   const defaultValues: Partial<Address> = {
-    createdAt: DateTime.now().toISO() ?? undefined
+    createdAt: DateTime.now().toISO() ?? undefined,
+    active: true
   }
   const showForm = typeof show !== 'undefined' && show
 
