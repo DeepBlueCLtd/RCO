@@ -38,8 +38,8 @@ export default function DatagridConfigurableWithShow(
     <DatagridConfigurable
       rowClick={(id) => handleRowClick(id as number)}
       {...rest}>
-      {children}
       <ShowButton component={PreviewButton} />
+      {children}
     </DatagridConfigurable>
   )
 }
