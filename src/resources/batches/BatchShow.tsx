@@ -204,12 +204,7 @@ function ItemListDataTable(
 ): React.ReactElement {
   return (
     <DatagridConfigurable rowClick='show' omit={props?.omit} {...props}>
-      <SourceField
-        link='show'
-        source='batchId'
-        reference={constants.R_BATCHES}
-        sourceField='batchNumber'
-      />
+      <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
       <TextField source='remarks' />
