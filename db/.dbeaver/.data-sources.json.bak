@@ -1,29 +1,43 @@
 {
-	"folders": {},
-	"connections": {
-		"sqlite_jdbc-188bf16d667-6c38fb7c76f27f76": {
-			"provider": "sqlite",
-			"driver": "sqlite_jdbc",
-			"name": "RCO2",
-			"save-password": true,
-			"configuration": {
-				"database": "/Users/ian/git/RCO/db/RCO2",
-				"url": "jdbc:sqlite:/Users/ian/git/RCO/db/RCO2",
-				"configurationType": "MANUAL",
-				"type": "dev",
-				"auth-model": "native"
-			}
-		}
-	},
-	"connection-types": {
-		"dev": {
-			"name": "Development",
-			"color": "255,255,255",
-			"description": "Regular development database",
-			"auto-commit": true,
-			"confirm-execute": false,
-			"confirm-data-change": false,
-			"auto-close-transactions": false
-		}
-	}
+  "folders": {},
+  "connections": {
+    "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76": {
+      "provider": "sqlite-ee",
+      "driver": "sqlite_ee",
+      "original-provider": "sqlite",
+      "original-driver": "sqlite_jdbc",
+      "name": "RCO2",
+      "save-password": true,
+      "configuration": {
+        "database": "/Users/ian/git/RCO/db/RCO2.sqlite",
+        "url": "jdbc:sqlite:/Users/ian/git/RCO/db/RCO2.sqlite",
+        "configurationType": "MANUAL",
+        "type": "dev",
+        "properties": {
+          "sqlite-remote-enabled": "false"
+        },
+        "auth-model": "native"
+      }
+    }
+  },
+  "virtual-models": {
+    "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76": {
+      "@properties": {
+        "erd.diagram.state": {
+          "serialized": "\u003cdiagram version\u003d\"1\" name\u003d\"empty\" time\u003d\"202306151628\"\u003e\u003centities\u003e\u003cdata-source id\u003d\"sqlite_jdbc-188bf16d667-6c38fb7c76f27f76\"\u003e\u003centity id\u003d\"1\" name\u003d\"address\" fq-name\u003d\"address\" order\u003d\"0\" x\u003d\"1140\" y\u003d\"960\"/\u003e\u003centity id\u003d\"2\" name\u003d\"audit\" fq-name\u003d\"audit\" order\u003d\"1\" x\u003d\"287\" y\u003d\"202\"/\u003e\u003centity id\u003d\"3\" name\u003d\"batch\" fq-name\u003d\"batch\" order\u003d\"2\" x\u003d\"241\" y\u003d\"552\"/\u003e\u003centity id\u003d\"4\" name\u003d\"catCave\" fq-name\u003d\"catCave\" order\u003d\"3\" x\u003d\"680\" y\u003d\"1120\"/\u003e\u003centity id\u003d\"5\" name\u003d\"catCode\" fq-name\u003d\"catCode\" order\u003d\"4\" x\u003d\"200\" y\u003d\"1120\"/\u003e\u003centity id\u003d\"6\" name\u003d\"catHandle\" fq-name\u003d\"catHandle\" order\u003d\"5\" x\u003d\"520\" y\u003d\"1120\"/\u003e\u003centity id\u003d\"7\" name\u003d\"department\" fq-name\u003d\"department\" order\u003d\"6\" x\u003d\"60\" y\u003d\"900\"/\u003e\u003centity id\u003d\"8\" name\u003d\"destruction\" fq-name\u003d\"destruction\" order\u003d\"7\" x\u003d\"900\" y\u003d\"440\"/\u003e\u003centity id\u003d\"9\" name\u003d\"dispatch\" fq-name\u003d\"\u0026quot;dispatch\u0026quot;\" order\u003d\"8\" x\u003d\"880\" y\u003d\"920\"/\u003e\u003centity id\u003d\"10\" name\u003d\"item\" fq-name\u003d\"item\" order\u003d\"9\" x\u003d\"552\" y\u003d\"525\"/\u003e\u003centity id\u003d\"11\" name\u003d\"mediaType\" fq-name\u003d\"mediaType\" order\u003d\"10\" x\u003d\"900\" y\u003d\"640\"/\u003e\u003centity id\u003d\"12\" name\u003d\"organisation\" fq-name\u003d\"organisation\" order\u003d\"11\" x\u003d\"40\" y\u003d\"780\"/\u003e\u003centity id\u003d\"13\" name\u003d\"platform\" fq-name\u003d\"platform\" order\u003d\"12\" x\u003d\"60\" y\u003d\"660\"/\u003e\u003centity id\u003d\"14\" name\u003d\"project\" fq-name\u003d\"project\" order\u003d\"13\" x\u003d\"20\" y\u003d\"500\"/\u003e\u003centity id\u003d\"15\" name\u003d\"protectiveMarking\" fq-name\u003d\"protectiveMarking\" order\u003d\"14\" x\u003d\"360\" y\u003d\"1120\"/\u003e\u003centity id\u003d\"16\" name\u003d\"user\" fq-name\u003d\"\u0026quot;user\u0026quot;\" order\u003d\"15\" x\u003d\"560\" y\u003d\"213\"/\u003e\u003centity id\u003d\"17\" name\u003d\"vaultLocation\" fq-name\u003d\"vaultLocation\" order\u003d\"16\" x\u003d\"900\" y\u003d\"780\"/\u003e\u003c/data-source\u003e\u003c/entities\u003e\u003crelations\u003e\u003crelation name\u003d\"FK_dispatch_address\" fq-name\u003d\"\u0026quot;dispatch\u0026quot;.FK_dispatch_address\" type\u003d\"fk\" pk-ref\u003d\"1\" fk-ref\u003d\"9\"/\u003e\u003crelation name\u003d\"FK_item_batch\" fq-name\u003d\"item.FK_item_batch\" type\u003d\"fk\" pk-ref\u003d\"3\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_batch_catCode\" fq-name\u003d\"batch.FK_batch_catCode\" type\u003d\"fk\" pk-ref\u003d\"5\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_item_catCode_2\" fq-name\u003d\"item.FK_item_catCode_2\" type\u003d\"fk\" pk-ref\u003d\"5\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_batch_catHandle_2\" fq-name\u003d\"batch.FK_batch_catHandle_2\" type\u003d\"fk\" pk-ref\u003d\"6\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_item_catHandle_3\" fq-name\u003d\"item.FK_item_catHandle_3\" type\u003d\"fk\" pk-ref\u003d\"6\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_batch_department_3\" fq-name\u003d\"batch.FK_batch_department_3\" type\u003d\"fk\" pk-ref\u003d\"7\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_item_destruction_4\" fq-name\u003d\"item.FK_item_destruction_4\" type\u003d\"fk\" pk-ref\u003d\"8\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_item_dispatch_5\" fq-name\u003d\"item.FK_item_dispatch_5\" type\u003d\"fk\" pk-ref\u003d\"9\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_item_mediaType_6\" fq-name\u003d\"item.FK_item_mediaType_6\" type\u003d\"fk\" pk-ref\u003d\"11\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_batch_organisation_4\" fq-name\u003d\"batch.FK_batch_organisation_4\" type\u003d\"fk\" pk-ref\u003d\"12\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_batch_platform_5\" fq-name\u003d\"batch.FK_batch_platform_5\" type\u003d\"fk\" pk-ref\u003d\"13\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_batch_project_6\" fq-name\u003d\"batch.FK_batch_project_6\" type\u003d\"fk\" pk-ref\u003d\"14\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_batch_protectiveMarking_7\" fq-name\u003d\"batch.FK_batch_protectiveMarking_7\" type\u003d\"fk\" pk-ref\u003d\"15\" fk-ref\u003d\"3\"/\u003e\u003crelation name\u003d\"FK_item_protectiveMarking_7\" fq-name\u003d\"item.FK_item_protectiveMarking_7\" type\u003d\"fk\" pk-ref\u003d\"15\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_audit_user_2\" fq-name\u003d\"audit.FK_audit_user_2\" type\u003d\"fk\" pk-ref\u003d\"16\" fk-ref\u003d\"2\"/\u003e\u003crelation name\u003d\"FK_audit_user_3\" fq-name\u003d\"audit.FK_audit_user_3\" type\u003d\"fk\" pk-ref\u003d\"16\" fk-ref\u003d\"2\"/\u003e\u003crelation name\u003d\"FK_destruction_user\" fq-name\u003d\"destruction.FK_destruction_user\" type\u003d\"fk\" pk-ref\u003d\"16\" fk-ref\u003d\"8\"/\u003e\u003crelation name\u003d\"FK_item_user_9\" fq-name\u003d\"item.FK_item_user_9\" type\u003d\"fk\" pk-ref\u003d\"16\" fk-ref\u003d\"10\"/\u003e\u003crelation name\u003d\"FK_item_vaultLocation_10\" fq-name\u003d\"item.FK_item_vaultLocation_10\" type\u003d\"fk\" pk-ref\u003d\"17\" fk-ref\u003d\"10\"/\u003e\u003c/relations\u003e\u003c/diagram\u003e"
+        }
+      }
+    }
+  },
+  "connection-types": {
+    "dev": {
+      "name": "Development",
+      "color": "255,255,255",
+      "description": "Regular development database",
+      "auto-commit": true,
+      "confirm-execute": false,
+      "confirm-data-change": false,
+      "auto-close-transactions": false
+    }
+  }
 }
