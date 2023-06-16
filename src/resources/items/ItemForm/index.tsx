@@ -24,15 +24,15 @@ const schema = yup.object({
     .string()
     .required()
     .oneOf(mediaTypeOptions.map(({ id }) => id)),
-  start: yup.date().required(),
-  end: yup
+  startDate: yup.date().required(),
+  endDate: yup
     .date()
     .required()
     .test(
       'endDate',
       'End date must be greater than start date',
       function (value) {
-        return dayjs(value).diff(this.parent.start) > 0
+        return dayjs(value).diff(this.parent.startDate) > 0
       }
     ),
   batchId: yup.number().required(),
@@ -68,23 +68,26 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     }
   }, [])
 
-  const { start, end } = useMemo((): { start: string; end: string } => {
+  const { startDate, endDate } = useMemo((): {
+    startDate: string
+    endDate: string
+  } => {
     const dateTime = DateTime.local().set({
       hour: 0,
       minute: 0,
       second: 0
     })
     return {
-      start: dateTime.toString(),
-      end: dateTime.plus({ days: 1 }).toString()
+      startDate: dateTime.toString(),
+      endDate: dateTime.plus({ days: 1 }).toString()
     }
   }, [])
 
   const defaultValues: Partial<Item> = {
     item_number: '',
     loanedTo: undefined,
-    start,
-    end
+    startDate,
+    endDate
   }
 
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'

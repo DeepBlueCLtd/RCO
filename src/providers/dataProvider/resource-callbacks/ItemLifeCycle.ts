@@ -19,7 +19,7 @@ const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
   beforeCreate: async (record: CreateParams<Item>) => {
-    const fields: Array<keyof Item> = ['start', 'end']
+    const fields: Array<keyof Item> = ['startDate', 'endDate']
     convertDateToISO<Item>(record.data, fields)
     return withCreatedByAt(record)
   },
