@@ -3,6 +3,7 @@ import { BooleanInput, SimpleForm, TextInput } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
+import * as constants from '../../constants'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -17,7 +18,7 @@ export default function ReferenceDataForm(
     active: true
   }
 
-  const isNotActive = (name: string): boolean => name === 'audit'
+  const isNotActive = (name: string): boolean => name === constants.R_AUDIT
 
   return (
     <SimpleForm

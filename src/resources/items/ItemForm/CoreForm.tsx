@@ -13,6 +13,7 @@ import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 import { ConditionalReferenceInput } from '../../batches/BatchForm'
 import ProtectionBlockInputs from '../../../components/ProtectionBlockInputs'
+import * as constants from '../../../constants'
 
 const sx = { width: '100%' }
 
@@ -105,7 +106,7 @@ const CoreForm = (props: Props): React.ReactElement => {
       <FlexBox>
         <ConditionalReferenceInput
           source='vaultLocation'
-          reference='vaultLocation'
+          reference={constants.R_VAULT_LOCATION}
           active
         />
       </FlexBox>

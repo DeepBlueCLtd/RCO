@@ -101,7 +101,7 @@ export default function AuditList({
   return (
     <List
       perPage={25}
-      resource='audit'
+      resource={constants.R_AUDIT}
       sort={{
         field: 'dateTime',
         order: 'DESC'
