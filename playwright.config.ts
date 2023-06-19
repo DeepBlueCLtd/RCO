@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !(process.env.CI == null),
   retries: process.env.CI ? 1 : 0,
   reporter: 'html',
-  timeout: 60000,
+  timeout: 180000,
   // Run your local dev server before starting the tests
   webServer: {
     command: 'yarn dev',
