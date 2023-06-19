@@ -117,7 +117,7 @@ describe('CRUD operations on Item Resource', () => {
       id: createdId,
       previousData: createdItem,
       data: {
-        mediaType: 'Paper',
+        mediaType: 1,
         remarks: 'dummy-remarks-1',
         createdAt: DateTime.now().toFormat('yyyy-MM-dd')
       }
