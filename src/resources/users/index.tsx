@@ -6,6 +6,7 @@ import {
   encryptData,
   generateSalt
 } from '../../utils/encryption'
+import * as constants from '../../constants'
 
 const UserList = React.lazy(async () => await import('./UserList'))
 const UserShow = React.lazy(async () => await import('./UserShow'))
@@ -28,20 +29,20 @@ const transform = (data: any, options: any): TransformData => {
 }
 
 const UserCreate = (): React.ReactElement => {
-  const path: string = '/users'
+  const path: string = `/${constants.R_USERS}`
 
   return (
-    <Create resource='users' transform={transform} redirect={path}>
+    <Create resource={constants.R_USERS} transform={transform} redirect={path}>
       <UserForm />
     </Create>
   )
 }
 
 const UserEdit = (): React.ReactElement => {
-  const path: string = '/users'
+  const path: string = `/${constants.R_USERS}`
 
   return (
-    <Edit resource='users' transform={transform} redirect={path}>
+    <Edit resource={constants.R_USERS} transform={transform} redirect={path}>
       <UserForm isEdit />
     </Edit>
   )

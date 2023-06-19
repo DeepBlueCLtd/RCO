@@ -115,7 +115,7 @@ export default function BatchList(): React.ReactElement {
       variant='outlined'
       reference={constants.R_ORGANISATION}
       source='organisation'
-      key='organisation'
+      key={constants.R_ORGANISATION}
     />,
     <SourceInput
       variant='outlined'
@@ -152,7 +152,7 @@ export default function BatchList(): React.ReactElement {
         <SourceField source='organisation' label='Organisation' />
         <SourceField
           source='protectiveMarking'
-          reference='protectiveMarking'
+          reference={constants.R_PROTECTIVE_MARKING}
           label='Maximum protective marking'
         />
         <TextField source='remarks' />
