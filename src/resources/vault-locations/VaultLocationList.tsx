@@ -6,12 +6,12 @@ import * as constants from '../../constants'
 import { Button, IconButton } from '@mui/material'
 import { Article, History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
+import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 
 export default function VaultLocationList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>()
   const [openMusterList, setOpenMusterList] = useState(false)
-  const [record, setRecord] = useState<ReferenceItem>()
+  const [record, setRecord] = useState<ActiveReferenceItem>()
 
   const filter = useMemo(
     () =>
@@ -42,7 +42,7 @@ export default function VaultLocationList(): React.ReactElement {
   }
   return (
     <List>
-      <DblClickDatagridConfigurable
+      <DatagridConfigurableWithShow
         resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
         <FunctionField
@@ -53,7 +53,7 @@ export default function VaultLocationList(): React.ReactElement {
         <BooleanField source='active' label='Active Vault Location' />
         <FunctionField
           label='History'
-          render={(record: ReferenceItem) => {
+          render={(record: ActiveReferenceItem) => {
             return (
               <IconButton
                 onClick={(e) => {
@@ -66,7 +66,7 @@ export default function VaultLocationList(): React.ReactElement {
             )
           }}
         />
-      </DblClickDatagridConfigurable>
+      </DatagridConfigurableWithShow>
       <ResourceHistoryModal
         filter={filter}
         open={open}

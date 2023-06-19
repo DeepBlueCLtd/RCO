@@ -17,6 +17,7 @@ import * as constants from '../../constants'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   open: boolean
@@ -55,6 +56,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
   const { open, onClose } = props
   const { selectedIds } = useListContext()
   const userIds: number[] = selectedIds
+  const configData = useConfigData()
 
   return (
     <Printable open={open} onClose={onClose}>
@@ -96,9 +98,11 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   <TextField source='mediaType' label='Media type' />
                   <SourceField
                     source='protectiveMarking'
-                    reference='protectiveMarking'
+                    reference={constants.R_PROTECTIVE_MARKING}
                   />
-                  <CompositeField label='Project & Platform' />
+                  <CompositeField
+                    label={`${configData?.projectName} & Platform`}
+                  />
                   <DateField source='loanedDate' label='Loaned Date' />
                   <TextField source='consecPages' label='Consec/Pages' />
                 </ItemsReport>

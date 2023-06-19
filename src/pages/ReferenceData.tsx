@@ -74,7 +74,7 @@ const CardWithNavigation = (
 }
 
 const mainReferenceRoutes = [
-  { path: '/platforms', title: 'Platforms' },
+  { path: '/platform', title: 'Platforms' },
   { path: '/audit', title: 'Audit Log' }
 ]
 
@@ -82,13 +82,12 @@ const rarelyUsedRoutes = [
   { path: '/platformOriginator', title: 'Platform Originator' },
   { path: '/organisation', title: 'Organisation' },
   { path: '/protectiveMarking', title: 'Protective Marking' },
+  { path: '/catCode', title: 'Cat Code' },
+  { path: '/catHandling', title: 'Cat Handling' },
+  { path: '/catCave', title: 'Cat Cave' },
   { path: '/mediaType', title: 'Media Type' },
-  {
-    path: '/protectiveMarkingAuthority',
-    title: 'Protective Marking Authority'
-  },
   { path: '/department', title: 'Department' },
-  { path: '/addresses', title: 'Addresses' }
+  { path: '/address', title: 'Addresses' }
 ]
 
 export default function ReferenceData(): React.ReactElement {

@@ -39,6 +39,7 @@ import { protectedRoutes } from './hooks/useCanAccess'
 import addresses from './resources/addresses'
 import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
+import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -51,6 +52,7 @@ function App(): React.ReactElement {
     undefined
   )
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
+  const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
       getDataProvider(loggingPref)
@@ -151,6 +153,16 @@ function App(): React.ReactElement {
   }, [])
 
   useEffect(handleGetProvider, [loggingPref])
+
+  useEffect(() => {
+    async function getConfigData(): Promise<void> {
+      if (dataProvider !== undefined) {
+        setConfigData(await dataProvider.configData())
+      }
+    }
+    getConfigData().catch(console.log)
+  }, [dataProvider])
+
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
 
@@ -189,46 +201,72 @@ function App(): React.ReactElement {
         <CustomRoutes key='routes'>
           <Route path='/protectiveMarking'>
             {...createRoutes(
-              'protectiveMarking',
+              constants.R_PROTECTIVE_MARKING,
               undefined,
               referenceDataPermission
             )}
           </Route>
-          <Route path='/protectiveMarkingAuthority'>
+          <Route path='/catCode'>
             {...createRoutes(
-              'protectiveMarkingAuthority',
+              constants.R_CAT_CODE,
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
+          <Route path='/catHandling'>
+            {...createRoutes(
+              constants.R_CAT_HANDLING,
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
+          <Route path='/catCave'>
+            {...createRoutes(
+              constants.R_CAT_CAVE,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/department'>
-            {...createRoutes('department', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_DEPARTMENT,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/platformOriginator'>
             {...createRoutes(
-              'platformOriginator',
+              constants.R_PLATFORM_ORIGINATOR,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/organisation'>
             {...createRoutes(
-              'organisation',
+              constants.R_ORGANISATION,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/mediaType'>
-            {...createRoutes('mediaType', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_MEDIA_TYPE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
-          <Route path='/platforms'>
-            {...createRoutes('platforms', platforms, referenceDataPermission)}
+          <Route path='/platform'>
+            {...createRoutes(
+              constants.R_PLATFORMS,
+              platforms,
+              referenceDataPermission
+            )}
           </Route>
-          <Route path='/users'>
-            {...createRoutes('users', users, referenceDataPermission)}
+          <Route path='/user'>
+            {...createRoutes(constants.R_USERS, users, referenceDataPermission)}
           </Route>
           <Route path='/audit'>
-            {...createRoutes('audit', audit, referenceDataPermission)}
+            {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
           </Route>
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>
@@ -242,12 +280,14 @@ function App(): React.ReactElement {
           key={constants.R_PROJECTS}
           icon={constants.ICON_PROJECT}
           name={constants.R_PROJECTS}
+          options={{ label: configData?.projectsName }}
           {...protectedRoutes(permissions, constants.R_PROJECTS, projects)}
         />
         <Resource
           key={constants.R_BATCHES}
           icon={constants.ICON_BATCH}
           name={constants.R_BATCHES}
+          options={{ configData }}
           {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
         />
         <Resource
@@ -274,6 +314,7 @@ function App(): React.ReactElement {
           key={constants.R_DISPATCH}
           icon={constants.ICON_DISPATCH}
           name={constants.R_DISPATCH}
+          options={{ configData }}
           {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
         />
         <Resource
@@ -296,12 +337,14 @@ interface Elements {
   create?: React.FunctionComponent<ElementsProps>
   edit?: React.FunctionComponent<ElementsProps>
   list?: React.FunctionComponent<ElementsProps>
+  show?: React.FunctionComponent<ElementsProps>
 }
 
 const defaultElements: ResourceRoutes = {
   create: ReferenceDataCreate,
   edit: ReferenceDataEdit,
-  list: ReferenceDataList
+  list: ReferenceDataList,
+  show: ReferenceDataShow
 }
 
 const createRoutes = (
@@ -310,7 +353,6 @@ const createRoutes = (
   permissions?: Permission
 ): React.ReactNode[] => {
   const cName: string = name
-
   const { read, write } =
     typeof permissions !== 'undefined'
       ? permissions
@@ -321,16 +363,24 @@ const createRoutes = (
   const {
     create = ReferenceDataCreate,
     edit = ReferenceDataEdit,
-    list = ReferenceDataList
+    list = ReferenceDataList,
+    show = ReferenceDataShow
   } = elements
 
   if (read === true) {
     routes.push(
-      <Route
-        key={`${cName}list`}
-        index
-        element={React.createElement(list, { name })}
-      />
+      ...[
+        <Route
+          key={`${cName}list`}
+          index
+          element={React.createElement(list, { name })}
+        />,
+        <Route
+          key={`${cName}show`}
+          path={`/${cName}:id/show`}
+          element={React.createElement(show, { name })}
+        />
+      ]
     )
   }
   if (write === true) {

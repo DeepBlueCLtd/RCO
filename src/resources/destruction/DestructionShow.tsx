@@ -109,7 +109,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
       <FlexBox justifyContent='end' padding={2}>
         <Button
           variant='outlined'
-          label='Report'
+          label='Destruction Certificate'
           onClick={() => {
             handleOpen('report')
           }}
@@ -291,7 +291,10 @@ function ItemListDataTable(
       {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <SourceField
+        source='protectiveMarking'
+        reference={constants.R_PROTECTIVE_MARKING}
+      />
     </DatagridConfigurable>
   )
 }

@@ -1,7 +1,6 @@
 import {
   AutocompleteInput,
   DateTimeInput,
-  ReferenceInput,
   TextField,
   TextInput
 } from 'react-admin'
@@ -13,6 +12,8 @@ import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 import { ConditionalReferenceInput } from '../../batches/BatchForm'
+import ProtectionBlockInputs from '../../../components/ProtectionBlockInputs'
+import * as constants from '../../../constants'
 
 const sx = { width: '100%' }
 
@@ -20,8 +21,6 @@ interface Props {
   batchId?: number
   disabled?: boolean
 }
-
-const optionsText = (item: ReferenceItem): string => item.name
 
 const CoreForm = (props: Props): React.ReactElement => {
   const { batchId, disabled } = props
@@ -84,18 +83,22 @@ const CoreForm = (props: Props): React.ReactElement => {
           )}
         </Card>
       </FlexBox>
+      <ProtectionBlockInputs
+        disabled={disabled}
+        markingSource='protectiveMarking'
+      />
       <FlexBox>
         <DateTimeInput
           sx={sx}
           disabled={disabled}
-          source='start'
+          source='startDate'
           label='Start'
           variant='outlined'
         />
         <DateTimeInput
           sx={sx}
           disabled={disabled}
-          source='end'
+          source='endDate'
           variant='outlined'
           label='End'
         />
@@ -103,18 +106,9 @@ const CoreForm = (props: Props): React.ReactElement => {
       <FlexBox>
         <ConditionalReferenceInput
           source='vaultLocation'
-          reference='vaultLocation'
+          reference={constants.R_VAULT_LOCATION}
           active
         />
-        <ReferenceInput
-          source='protectiveMarking'
-          reference='protectiveMarking'>
-          <AutocompleteInput
-            disabled={disabled}
-            optionText={optionsText}
-            sx={sx}
-          />
-        </ReferenceInput>
       </FlexBox>
       <FlexBox>
         <TextInput multiline disabled={disabled} source='remarks' sx={sx} />

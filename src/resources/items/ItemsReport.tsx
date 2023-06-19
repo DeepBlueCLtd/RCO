@@ -138,7 +138,7 @@ const referenceFields: RefFieldType[] = [
   },
   {
     name: 'protectiveMarking',
-    resource: 'protectiveMarking',
+    resource: constants.R_PROTECTIVE_MARKING,
     source: 'name',
     label: 'Protective Marking'
   },
@@ -157,12 +157,12 @@ const fields: FieldType[] = [
     type: 'text'
   },
   {
-    name: 'start',
+    name: 'startDate',
     label: 'Start',
     type: 'date'
   },
   {
-    name: 'end',
+    name: 'endDate',
     label: 'End',
     type: 'date'
   },

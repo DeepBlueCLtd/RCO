@@ -22,7 +22,7 @@ import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 
-type ReferenceItemById = Record<number, ReferenceItem>
+type ReferenceItemById = Record<number, ActiveReferenceItem>
 interface Result {
   name: string
   count: number
@@ -44,9 +44,12 @@ function ProtectiveMarking(): React.ReactElement {
       }
     })
     const { data: protectiveMarkings } =
-      await dataProvider.getMany<ReferenceItem>('protectiveMarking', {
-        ids: Object.keys(items)
-      })
+      await dataProvider.getMany<ActiveReferenceItem>(
+        constants.R_PROTECTIVE_MARKING,
+        {
+          ids: Object.keys(items)
+        }
+      )
 
     const protectiveMarkingById: ReferenceItemById = {}
 
@@ -102,7 +105,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
   const dataProvider = useDataProvider()
   useEffect(() => {
     dataProvider
-      .getList<ReferenceItem>(constants.R_VAULT_LOCATION, {
+      .getList<ActiveReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: { id: selectedIds }
@@ -153,7 +156,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     <TextField source='consecPages' label='Consec/Pages' />
                     <SourceField
                       source='protectiveMarking'
-                      reference='protectiveMarking'
+                      reference={constants.R_PROTECTIVE_MARKING}
                     />
                     <TextField source='musterRemarks' label='Muster remarks' />
                   </ItemsReport>

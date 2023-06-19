@@ -8,7 +8,10 @@ import {
   FilterButton,
   SelectColumnsButton,
   DateField,
-  useShowContext
+  useShowContext,
+  ReferenceArrayField,
+  SingleFieldList,
+  ChipField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -24,6 +27,8 @@ import { IconButton, Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
+import { Box } from '@mui/system'
+import { useConfigData } from '../../utils/useConfigData'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -53,7 +58,10 @@ const ItemActions = (): React.ReactElement => {
   return (
     <TopToolbar>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
+        <CreateButton
+          label='ADD ITEM'
+          to={`/${constants.R_ITEMS}/create?batch=${batchId}`}
+        />
       ) : null}
       <ItemAssetReport
         storeKey='batch-items-report'
@@ -99,10 +107,24 @@ const HistoryModal = ({
   )
 }
 
+const ReferenceArrayFieldWithLabel = (): React.ReactElement => (
+  <Box>
+    <Typography fontWeight='bold' sx={{ minWidth: '300px' }}>
+      Cat Cave
+    </Typography>
+    <ReferenceArrayField source='catCave' reference={constants.R_CAT_CAVE}>
+      <SingleFieldList>
+        <ChipField source='name' />
+      </SingleFieldList>
+    </ReferenceArrayField>
+  </Box>
+)
+
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   const pageTitle = 'View Batch'
   const [open, setOpen] = useState(false)
+  const configData = useConfigData()
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
@@ -113,7 +135,7 @@ export default function BatchShow(): React.ReactElement {
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_BATCH /> {pageTitle}
       </Typography>
-      <TabbedShowLayout>
+      <TabbedShowLayout sx={{ paddingBottom: '4px' }}>
         <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
           <FlexBox>
             <StyledFieldWithLabel label='Id' source='id' />
@@ -130,33 +152,33 @@ export default function BatchShow(): React.ReactElement {
               source='yearOfReceipt'
             />
             <StyledFieldWithLabel
-              label='Project'
+              label={configData?.projectName as string}
               source='project'
               reference={constants.R_PROJECTS}
             />
           </FlexBox>
           <FlexBox>
             <StyledFieldWithLabel
-              source='platform'
+              source={constants.R_PLATFORMS}
               label='Platform'
               reference={constants.R_PLATFORMS}
             />
             <StyledFieldWithLabel
-              source='organisation'
+              source={constants.R_ORGANISATION}
               label='Organisation'
-              reference='organisation'
+              reference={constants.R_ORGANISATION}
             />
           </FlexBox>
           <FlexBox>
             <StyledFieldWithLabel
               label='Department'
-              source='department'
-              reference='department'
+              source={constants.R_DEPARTMENT}
+              reference={constants.R_DEPARTMENT}
             />
             <StyledFieldWithLabel
               label='Maximum Protective Marking'
-              source='maximumProtectiveMarking'
-              reference='protectiveMarking'
+              source={constants.R_PROTECTIVE_MARKING}
+              reference={constants.R_PROTECTIVE_MARKING}
             />
           </FlexBox>
           <FlexBox>
@@ -175,8 +197,21 @@ export default function BatchShow(): React.ReactElement {
               source='endDate'
             />
           </FlexBox>
-          <FlexBox>
+          <FlexBox alignItems='flex-start'>
+            <StyledFieldWithLabel
+              label='Cat Code'
+              source={constants.R_CAT_CODE}
+              reference={constants.R_CAT_CODE}
+            />
+            <StyledFieldWithLabel
+              label='Cat Handling'
+              source={constants.R_CAT_HANDLING}
+              reference={constants.R_CAT_HANDLING}
+            />
+          </FlexBox>
+          <FlexBox alignItems='flex-start'>
             <StyledFieldWithLabel label='Created' source='createdAt' />
+            <ReferenceArrayFieldWithLabel />
           </FlexBox>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>

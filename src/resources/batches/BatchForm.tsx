@@ -20,6 +20,8 @@ import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
 import dayjs from 'dayjs'
+import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
+import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -27,7 +29,7 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
-  maximumProtectiveMarking: yup.number().required(),
+  protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
     .date()
@@ -41,7 +43,6 @@ const schema = yup.object({
     )
 })
 
-const optionsText = (value: Batch): string => value.name
 const sx = { width: '100%' }
 
 interface Props {
@@ -51,7 +52,7 @@ interface Props {
   active?: boolean
 }
 
-export const ConditionalReferenceInput = <T extends ReferenceItem>(
+export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
   const { source, reference, inputProps = {}, active } = props
@@ -70,7 +71,7 @@ export const ConditionalReferenceInput = <T extends ReferenceItem>(
       disabled
       sx={sx}
       defaultValue={data[0].id}
-      optionText={optionsText}
+      optionText='name'
       choices={choices}
       {...inputProps}
     />
@@ -83,6 +84,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
   const { isEdit } = props
+  const configData = useConfigData()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -114,20 +116,21 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='platform'
             filter={isEdit === true ? {} : { active: true }}
             reference={constants.R_PLATFORMS}>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText='name' sx={sx} />
           </ReferenceInput>
           <ReferenceInput
             variant='outlined'
             source='project'
             reference={constants.R_PROJECTS}>
             <AutocompleteInput
-              optionText={optionsText}
+              label={configData?.projectName}
+              optionText='name'
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
             />
           </ReferenceInput>
         </FlexBox>
-        <FlexBox>
+        <FlexBox marginBottom='20px'>
           <DatePicker
             label='Year of receipt'
             source='yearOfReceipt'
@@ -135,25 +138,18 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             format='YYYY'
             dataPickerProps={{ views: ['year'] }}
           />
-          <ReferenceInput
-            variant='outlined'
-            filter={isEdit === true ? {} : { active: true }}
-            source='maximumProtectiveMarking'
-            reference='protectiveMarking'>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
-          </ReferenceInput>
         </FlexBox>
         <FlexBox>
           {isEdit === undefined || !isEdit ? (
             <>
               <ConditionalReferenceInput
                 source='organisation'
-                reference='organisation'
+                reference={constants.R_ORGANISATION}
                 active
               />
               <ConditionalReferenceInput
                 source='department'
-                reference='department'
+                reference={constants.R_DEPARTMENT}
                 active
               />
             </>
@@ -162,18 +158,22 @@ const BatchForm = (props: FormProps): React.ReactElement => {
               <ReferenceInput
                 variant='outlined'
                 source='organisation'
-                reference='organisation'>
-                <AutocompleteInput optionText={optionsText} sx={sx} />
+                reference={constants.R_ORGANISATION}>
+                <AutocompleteInput optionText='name' sx={sx} />
               </ReferenceInput>
               <ReferenceInput
                 variant='outlined'
                 source='department'
-                reference='department'>
-                <AutocompleteInput optionText={optionsText} sx={sx} />
+                reference={constants.R_DEPARTMENT}>
+                <AutocompleteInput optionText='name' sx={sx} />
               </ReferenceInput>
             </>
           )}
         </FlexBox>
+        <ProtectionBlockInputs
+          isEdit={isEdit}
+          markingSource='protectiveMarking'
+        />
         <FlexBox>
           <DateTimeInput
             sx={sx}
