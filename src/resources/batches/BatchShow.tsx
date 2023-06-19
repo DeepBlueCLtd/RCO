@@ -190,7 +190,9 @@ export default function BatchShow(): React.ReactElement {
             filter={{ batchId: id }}
             actions={<ItemActions />}
             disableSyncWithLocation>
-            <ItemListDataTable />
+            <ItemListDataTable
+              preferenceKey={`datagrid-${constants.R_BATCHES}-${id}-items-list`}
+            />
           </ItemList>
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
@@ -203,7 +205,11 @@ function ItemListDataTable(
   props: DatagridConfigurableProps
 ): React.ReactElement {
   return (
-    <DatagridConfigurable rowClick='show' omit={props?.omit} {...props}>
+    <DatagridConfigurable
+      rowClick='show'
+      omit={props?.omit}
+      preferenceKey={props.preferenceKey}
+      {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />

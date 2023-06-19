@@ -441,7 +441,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
     filtersShown,
     ...rest
   } = props ?? {}
-
+  console.log({ storeKey, filtersShown })
   return (
     <List
       hasCreate={false}
@@ -461,6 +461,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
         children
       ) : (
         <DblClickDatagridConfigurable
+          preferenceKey={`datagrid-${storeKey}`}
           resource={constants.R_ITEMS}
           bulkActionButtons={<BulkActions />}
           omit={omitColumns}>

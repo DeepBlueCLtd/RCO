@@ -186,7 +186,9 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
           <ItemList
             storeKey={`${constants.R_USERS}-${id}-items-list`}
             filter={{ loanedTo: record?.id }}>
-            <ItemListDataTable />
+            <ItemListDataTable
+              preferenceKey={`datagrid-${constants.R_USERS}-${id}-items-list`}
+            />
           </ItemList>
         </Box>
       </FlexBox>
@@ -258,7 +260,11 @@ function ItemListDataTable(
   props: DatagridConfigurableProps
 ): React.ReactElement {
   return (
-    <DatagridConfigurable rowClick='show' omit={props?.omit} {...props}>
+    <DatagridConfigurable
+      rowClick='show'
+      omit={props?.omit}
+      preferenceKey={props.preferenceKey}
+      {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
