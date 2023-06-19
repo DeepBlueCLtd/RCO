@@ -126,7 +126,7 @@ describe('CRUD operations on Item Resource', () => {
     const shouldMatchItem = generateItemForTesting({
       id: createdId,
       remarks: 'dummy-remarks-1',
-      mediaType: 'Paper',
+      mediaType: 1,
       toISO: true
     })
 
