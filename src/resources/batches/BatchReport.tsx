@@ -4,6 +4,7 @@ import { TextField, Show, SimpleShowLayout, DateField } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import ItemsReport from '../items/ItemsReport'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   batchId: string
@@ -11,6 +12,7 @@ interface Props {
 
 export default function BatchReport(props: Props): React.ReactElement {
   const { batchId } = props
+  const configData = useConfigData()
 
   return (
     <Box padding={'20px'}>
@@ -25,7 +27,11 @@ export default function BatchReport(props: Props): React.ReactElement {
         <SimpleShowLayout>
           <TextField source='batchNumber' />
           <DateField source='createdAt' />
-          <SourceField source='project' reference={constants.R_PROJECTS} />
+          <SourceField
+            source='project'
+            reference={constants.R_PROJECTS}
+            label={configData?.projectName}
+          />
           <SourceField source='platform' reference={constants.R_PLATFORMS} />
         </SimpleShowLayout>
       </Show>

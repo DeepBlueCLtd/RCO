@@ -106,7 +106,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         }
       })
 
-      notify(`${ids.length} items destroyed!`, { type: 'success' })
+      notify(`${ids.length} items marked for destruction`, { type: 'success' })
       successCallback()
     }
   }

@@ -4,7 +4,9 @@ import { nowDate } from '../dataprovider-utils'
 import { R_ITEMS, R_USERS } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
 
-export const customMethods = (provider: DataProvider): CustomDataProvider => {
+export const customMethods = (
+  provider: DataProvider
+): Omit<CustomDataProvider, 'getConfigData'> => {
   const audit = trackEvent(provider)
 
   return {

@@ -7,9 +7,11 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import { Box } from '@mui/system'
 import FlexBox from '../../components/FlexBox'
-import { FROM_ADDRESS } from '../../constants'
+import { useConfigData } from '../../utils/useConfigData'
 
 const DispatchDetail = (): React.ReactElement => {
+  const configData = useConfigData()
+
   return (
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
       <FieldWithLabel
@@ -22,7 +24,7 @@ const DispatchDetail = (): React.ReactElement => {
         <Typography fontWeight='bold'>
           From:
           <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-            &nbsp;{FROM_ADDRESS}
+            &nbsp;{configData?.fromAddress}
           </span>
         </Typography>
       </Box>
@@ -92,12 +94,22 @@ const SignatureBox = (): React.ReactElement => {
           NAME (IN BLOCK
           LETTERS)....................................................................
         </Typography>
+        <Typography>
+          DATE
+          ....................................................................
+        </Typography>
       </FlexBox>
     </Box>
   )
 }
 
-export default function ReportData(): React.ReactElement {
+interface ReportDataType {
+  title?: string
+}
+
+export default function ReportData({
+  title
+}: ReportDataType): React.ReactElement {
   return (
     <Box padding={'20px'}>
       <Typography
@@ -105,7 +117,7 @@ export default function ReportData(): React.ReactElement {
         variant='h6'
         align='center'
         margin='10px'>
-        RECEIPT NOTE
+        {title !== undefined ? title : 'RECEIPT NOTE'}
       </Typography>
       <DispatchDetail />
       <ItemListBox />

@@ -58,7 +58,6 @@ const generateBatch = async (
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
-    name: `batch-${year}`,
     startDate: startDate.toString(),
     endDate: endDate.toString(),
     batchNumber: `V${batchNumber ?? id}/${year}`,
@@ -67,7 +66,10 @@ const generateBatch = async (
     project: id,
     platform: id,
     organisation: id,
-    maximumProtectiveMarking: id,
+    protectiveMarking: id,
+    catCode: id,
+    catHandle: id,
+    catCave: [id],
     remarks: `remarks-batch-${year}`,
     receiptNotes: `Reference-${id}`,
     createdBy: user
