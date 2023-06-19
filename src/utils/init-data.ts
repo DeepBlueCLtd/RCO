@@ -175,7 +175,8 @@ const loadDefaultData = async (
           catCode.length,
           catHandling.length,
           catCave.length,
-          user
+          user,
+          mediaType.length
         )
       )
     }

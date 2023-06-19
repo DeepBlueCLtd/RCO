@@ -9,7 +9,6 @@ import {
   TopToolbar,
   useListContext,
   useRefresh,
-  AutocompleteInput,
   type SortPayload,
   type FilterPayload,
   type DatagridConfigurableProps,
@@ -20,7 +19,6 @@ import {
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
-import { mediaTypeOptions } from '../../utils/options'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
@@ -74,10 +72,10 @@ const filters = [
     reference={constants.R_USERS}
   />,
   <TextInput source='item_number' key='item_number' label='Reference' />,
-  <AutocompleteInput
-    source='mediaType'
+  <SourceInput
     key='mediaType'
-    choices={mediaTypeOptions}
+    source='mediaType'
+    reference={constants.R_MEDIA_TYPE}
   />,
   <DateRangePicker
     startSource='end_gte'
@@ -467,7 +465,12 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <TextField source='item_number' label='Reference' />
           <TextField source='id' />
           <TextField source='createdAt' label='Created' />
-          <TextField source='mediaType' label='Media type' />
+          <SourceField
+            link='show'
+            source='mediaType'
+            reference={constants.R_MEDIA_TYPE}
+            label='Media type'
+          />
           <SourceField
             link='show'
             source='loanedTo'
