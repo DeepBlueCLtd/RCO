@@ -1,5 +1,6 @@
 import React from 'react'
 import { Create, Edit, useNotify, useRedirect } from 'react-admin'
+import * as constants from '../../constants'
 
 const DispatchList = React.lazy(async () => await import('./DispatchList'))
 const DispatchForm = React.lazy(async () => await import('./DispatchForm'))
@@ -14,7 +15,7 @@ const DispatchCreate = (): React.ReactElement => {
       mutationOptions={{
         onSuccess: (data: Dispatch) => {
           notify('“Please add items” from Items page')
-          redirect(`/dispatch/${data.id}`)
+          redirect(`/${constants.R_DISPATCH}/${data.id}`)
         }
       }}>
       <DispatchForm />
