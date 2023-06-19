@@ -54,7 +54,7 @@ export default function ReferenceDataList({
         bulkActionButtons={false}
         rowClick={(id: Identifier) => {
           const cID: string = id.toString()
-          return `/${cName}/${cID}`
+          return `/${cName}/${cID}/show`
         }}>
         <FunctionField
           style={{ cursor: 'pointer' }}

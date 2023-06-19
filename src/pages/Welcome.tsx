@@ -8,6 +8,7 @@ import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import HastenerSentField from '../components/HastenerSentField'
 import useCanAccess from '../hooks/useCanAccess'
+import { useConfigData } from '../utils/useConfigData'
 
 const useStyles = makeStyles({
   root: {
@@ -39,6 +40,7 @@ export default function Welcome(): React.ReactElement {
     sort: { field: 'id', order: 'ASC' }
   })
   const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
+  const configData = useConfigData()
 
   if (loading) return <></>
 
@@ -55,7 +57,7 @@ export default function Welcome(): React.ReactElement {
             disabled={!hasAccess(constants.R_PROJECTS, { write: true })}
             resource={constants.R_PROJECTS}
             icon={<ICON_PROJECT />}
-            label='New Project'
+            label={`New ${configData?.projectName}`}
             sx={{ width: '150px', height: '50px' }}
           />
           <CreateButton

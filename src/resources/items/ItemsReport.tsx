@@ -157,12 +157,12 @@ const fields: FieldType[] = [
     type: 'text'
   },
   {
-    name: 'start',
+    name: 'startDate',
     label: 'Start',
     type: 'date'
   },
   {
-    name: 'end',
+    name: 'endDate',
     label: 'End',
     type: 'date'
   },
