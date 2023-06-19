@@ -138,7 +138,7 @@ const referenceFields: RefFieldType[] = [
   },
   {
     name: 'protectiveMarking',
-    resource: 'protectiveMarking',
+    resource: constants.R_PROTECTIVE_MARKING,
     source: 'name',
     label: 'Protective Marking'
   },

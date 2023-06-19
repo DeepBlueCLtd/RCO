@@ -230,6 +230,7 @@ export default function UserShow(): React.ReactElement {
 
   return (
     <Show
+      resource={constants.R_USERS}
       actions={
         hasDeleteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>

@@ -62,7 +62,10 @@ const ItemActions = (): React.ReactElement => {
   return (
     <TopToolbar>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <CreateButton label='ADD ITEM' to={`/items/create?batch=${batchId}`} />
+        <CreateButton
+          label='ADD ITEM'
+          to={`/${constants.R_ITEMS}/create?batch=${batchId}`}
+        />
       ) : null}
       <ItemAssetReport
         storeKey='batch-items-report'
@@ -160,26 +163,26 @@ export default function BatchShow(): React.ReactElement {
           </FlexBox>
           <FlexBox>
             <StyledFieldWithLabel
-              source='platform'
+              source={constants.R_PLATFORMS}
               label='Platform'
               reference={constants.R_PLATFORMS}
             />
             <StyledFieldWithLabel
-              source='organisation'
+              source={constants.R_ORGANISATION}
               label='Organisation'
-              reference='organisation'
+              reference={constants.R_ORGANISATION}
             />
           </FlexBox>
           <FlexBox>
             <StyledFieldWithLabel
               label='Department'
-              source='department'
-              reference='department'
+              source={constants.R_DEPARTMENT}
+              reference={constants.R_DEPARTMENT}
             />
             <StyledFieldWithLabel
               label='Maximum Protective Marking'
-              source='protectiveMarking'
-              reference='protectiveMarking'
+              source={constants.R_PROTECTIVE_MARKING}
+              reference={constants.R_PROTECTIVE_MARKING}
             />
           </FlexBox>
           <FlexBox>
@@ -201,12 +204,12 @@ export default function BatchShow(): React.ReactElement {
           <FlexBox alignItems='flex-start'>
             <StyledFieldWithLabel
               label='Cat Code'
-              source='catCode'
+              source={constants.R_CAT_CODE}
               reference={constants.R_CAT_CODE}
             />
             <StyledFieldWithLabel
               label='Cat Handling'
-              source='catHandling'
+              source={constants.R_CAT_HANDLING}
               reference={constants.R_CAT_HANDLING}
             />
           </FlexBox>

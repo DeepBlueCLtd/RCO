@@ -201,48 +201,72 @@ function App(): React.ReactElement {
         <CustomRoutes key='routes'>
           <Route path='/protectiveMarking'>
             {...createRoutes(
-              'protectiveMarking',
+              constants.R_PROTECTIVE_MARKING,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/catCode'>
-            {...createRoutes('catCode', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_CAT_CODE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/catHandling'>
-            {...createRoutes('catHandling', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_CAT_HANDLING,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/catCave'>
-            {...createRoutes('catCave', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_CAT_CAVE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/department'>
-            {...createRoutes('department', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_DEPARTMENT,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/platformOriginator'>
             {...createRoutes(
-              'platformOriginator',
+              constants.R_PLATFORM_ORIGINATOR,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/organisation'>
             {...createRoutes(
-              'organisation',
+              constants.R_ORGANISATION,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/mediaType'>
-            {...createRoutes('mediaType', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_MEDIA_TYPE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
-          <Route path='/platforms'>
-            {...createRoutes('platforms', platforms, referenceDataPermission)}
+          <Route path='/platform'>
+            {...createRoutes(
+              constants.R_PLATFORMS,
+              platforms,
+              referenceDataPermission
+            )}
           </Route>
-          <Route path='/users'>
-            {...createRoutes('users', users, referenceDataPermission)}
+          <Route path='/user'>
+            {...createRoutes(constants.R_USERS, users, referenceDataPermission)}
           </Route>
           <Route path='/audit'>
-            {...createRoutes('audit', audit, referenceDataPermission)}
+            {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
           </Route>
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>

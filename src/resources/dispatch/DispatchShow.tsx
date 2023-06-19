@@ -296,7 +296,10 @@ function ItemListDataTable(
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
       <TextField source='consecPages' label='Consec Serial' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <SourceField
+        source='protectiveMarking'
+        reference={constants.R_PROTECTIVE_MARKING}
+      />
     </DatagridConfigurable>
   )
 }
