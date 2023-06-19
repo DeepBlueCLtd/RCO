@@ -112,7 +112,7 @@ const CoreForm = (props: Props): React.ReactElement => {
       <FlexBox>
         <ConditionalReferenceInput
           source='vaultLocation'
-          reference='vaultLocation'
+          reference={constants.R_VAULT_LOCATION}
           active
         />
       </FlexBox>

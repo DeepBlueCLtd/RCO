@@ -91,6 +91,8 @@ export const generateProjectForTesting = ({
     ...(id !== undefined ? { id } : null),
     name: name ?? 'Dummy-Project',
     remarks: 'dummy-remarks-1',
+    startDate: DateTime.now().toFormat('yyyy-MM-dd'),
+    endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
     createdBy: 1
   }
 }

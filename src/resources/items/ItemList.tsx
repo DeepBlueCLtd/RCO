@@ -90,13 +90,13 @@ const filters = [
     source='vaultLocation'
     key='vaultLocation'
     sort={sort()}
-    reference='vaultLocation'
+    reference={constants.R_VAULT_LOCATION}
   />,
   <SourceInput
     source='protectiveMarking'
     key='protectiveMarking'
     sort={sort()}
-    reference='protectiveMarking'
+    reference={constants.R_PROTECTIVE_MARKING}
   />,
   <SourceInput
     source='batchId'
@@ -479,10 +479,13 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           />
           <DateField showTime source='startDate' />
           <DateField showTime source='endDate' />
-          <SourceField source='vaultLocation' reference='vaultLocation' />
+          <SourceField
+            source='vaultLocation'
+            reference={constants.R_VAULT_LOCATION}
+          />
           <SourceField
             source='protectiveMarking'
-            reference='protectiveMarking'
+            reference={constants.R_PROTECTIVE_MARKING}
           />
           <SourceField
             link='show'

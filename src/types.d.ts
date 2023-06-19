@@ -111,6 +111,8 @@ interface Project extends ResourceWithCreation {
   readonly id: number
   name: string
   remarks: string
+  startDate: string
+  endDate: string
 }
 
 type Department = ActiveReferenceItem

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Card, CardContent, IconButton, Typography } from '@mui/material'
 import {
   CreateButton,
+  DateField,
   EditButton,
   Show,
   TextField,
@@ -98,6 +99,12 @@ export default function ProjectShow(): React.ReactElement {
           </ValueField>
           <ValueField label='Name'>
             <TextField variant='h6' source='name' />
+          </ValueField>
+          <ValueField label='Start'>
+            <DateField source='startDate' />
+          </ValueField>
+          <ValueField label='End'>
+            <DateField source='endDate' />
           </ValueField>
           <ValueField label='Remarks'>
             <TextField source='remarks' />
