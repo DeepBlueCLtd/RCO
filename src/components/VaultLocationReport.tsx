@@ -44,9 +44,12 @@ function ProtectiveMarking(): React.ReactElement {
       }
     })
     const { data: protectiveMarkings } =
-      await dataProvider.getMany<ActiveReferenceItem>('protectiveMarking', {
-        ids: Object.keys(items)
-      })
+      await dataProvider.getMany<ActiveReferenceItem>(
+        constants.R_PROTECTIVE_MARKING,
+        {
+          ids: Object.keys(items)
+        }
+      )
 
     const protectiveMarkingById: ReferenceItemById = {}
 
@@ -153,7 +156,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     <TextField source='consecPages' label='Consec/Pages' />
                     <SourceField
                       source='protectiveMarking'
-                      reference='protectiveMarking'
+                      reference={constants.R_PROTECTIVE_MARKING}
                     />
                     <TextField source='musterRemarks' label='Muster remarks' />
                   </ItemsReport>

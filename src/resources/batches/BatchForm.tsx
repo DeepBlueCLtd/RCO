@@ -43,7 +43,6 @@ const schema = yup.object({
     )
 })
 
-const optionsText = (value: Batch): string => value.batchNumber
 const sx = { width: '100%' }
 
 interface Props {
@@ -72,7 +71,7 @@ export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
       disabled
       sx={sx}
       defaultValue={data[0].id}
-      optionText={optionsText}
+      optionText='name'
       choices={choices}
       {...inputProps}
     />
@@ -117,7 +116,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='platform'
             filter={isEdit === true ? {} : { active: true }}
             reference={constants.R_PLATFORMS}>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText='name' sx={sx} />
           </ReferenceInput>
           <ReferenceInput
             variant='outlined'
@@ -125,7 +124,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             reference={constants.R_PROJECTS}>
             <AutocompleteInput
               label={configData?.projectName}
-              optionText={optionsText}
+              optionText='name'
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
             />
@@ -145,12 +144,12 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             <>
               <ConditionalReferenceInput
                 source='organisation'
-                reference='organisation'
+                reference={constants.R_ORGANISATION}
                 active
               />
               <ConditionalReferenceInput
                 source='department'
-                reference='department'
+                reference={constants.R_DEPARTMENT}
                 active
               />
             </>
@@ -159,14 +158,14 @@ const BatchForm = (props: FormProps): React.ReactElement => {
               <ReferenceInput
                 variant='outlined'
                 source='organisation'
-                reference='organisation'>
-                <AutocompleteInput optionText={optionsText} sx={sx} />
+                reference={constants.R_ORGANISATION}>
+                <AutocompleteInput optionText='name' sx={sx} />
               </ReferenceInput>
               <ReferenceInput
                 variant='outlined'
                 source='department'
-                reference='department'>
-                <AutocompleteInput optionText={optionsText} sx={sx} />
+                reference={constants.R_DEPARTMENT}>
+                <AutocompleteInput optionText='name' sx={sx} />
               </ReferenceInput>
             </>
           )}
