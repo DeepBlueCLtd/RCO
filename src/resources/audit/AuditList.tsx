@@ -39,7 +39,7 @@ const SecurityRelatedFilter = ({
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
 const filters = [
   <DateTimeInput
-    key='start'
+    key='startDate'
     source='dateTime_gte'
     label='After'
     alwaysOn={true}
@@ -79,6 +79,16 @@ export interface FilterType {
   user?: number
   resource?: string
 }
+
+const referenceItems = [
+  constants.R_PLATFORMS,
+  constants.R_VAULT_LOCATION,
+  constants.R_PROTECTIVE_MARKING,
+  constants.R_ORGANISATION,
+  constants.R_PLATFORM_ORIGINATOR,
+  constants.R_MEDIA_TYPE,
+  constants.R_DEPARTMENT
+]
 
 interface AuditListProps {
   filter?: FilterType
@@ -120,15 +130,19 @@ export default function AuditList({
         <FunctionField
           label='Name'
           render={(record: Audit) => {
-            console.log(record.resource)
             return (
               <>
-                {record.resource ? (
+                {record.resource !== null ? (
                   <SourceField
                     source='dataId'
                     reference={record.resource}
                     sourceField={resourcesRefKey[record.resource]}
-                    link='show'
+                    link={(record) => {
+                      if (referenceItems.includes(record.resource)) {
+                        return `/${record.resource}/${record.dataId}/show`
+                      }
+                      return 'show'
+                    }}
                   />
                 ) : (
                   <TextField source='dataId' label='Item' />

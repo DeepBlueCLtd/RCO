@@ -15,8 +15,9 @@ import useCanAccess from '../../hooks/useCanAccess'
 import { History } from '@mui/icons-material'
 import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
+import { useConfigData } from '../../utils/useConfigData'
 
-const ValueField = ({
+export const ValueField = ({
   label,
   children
 }: {
@@ -75,7 +76,8 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
 }
 
 export default function ProjectShow(): React.ReactElement {
-  const pageTitle = 'View Project'
+  const configData = useConfigData()
+  const pageTitle = `View ${configData?.projectName}`
   const [open, setOpen] = useState(false)
 
   const handleOpen = (open: boolean): void => {

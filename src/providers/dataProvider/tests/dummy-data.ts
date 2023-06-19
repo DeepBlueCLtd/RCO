@@ -17,13 +17,9 @@ interface Props {
   name?: string
   id?: number
 }
-export const generateDummyBatchForTesting = ({
-  name,
-  id
-}: Props = {}): NewBatch => {
+export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
   return {
     ...(id !== undefined ? { id } : null),
-    name: name ?? 'Dummy-Batch',
     startDate: DateTime.now().toFormat('yyyy-MM-dd'),
     endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
     batchNumber: `V1/${year}`,
@@ -32,7 +28,10 @@ export const generateDummyBatchForTesting = ({
     project: 1,
     platform: 1,
     organisation: 1,
-    maximumProtectiveMarking: 1,
+    protectiveMarking: 1,
+    catCode: 1,
+    catHandle: undefined,
+    catCave: [1],
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1'
   }
@@ -56,11 +55,11 @@ export const generateItemForTesting = ({
   return {
     ...(id !== undefined ? { id } : null),
     mediaType: mediaType ?? 'DVD',
-    start:
+    startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()
         : DateTime.now().toFormat('yyyy-MM-dd'),
-    end:
+    endDate:
       toISO === true
         ? new Date(
             DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd')
@@ -71,6 +70,9 @@ export const generateItemForTesting = ({
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
+    catCode: 1,
+    catHandle: undefined,
+    catCave: [1],
     consecPages: 'consec-pages-1',
     musterRemarks: 'muster-remarks-1'
   }

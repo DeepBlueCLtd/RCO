@@ -38,7 +38,7 @@ import DestroyRestoreItems from './DestroyRestoreItems'
 import { AuditType } from '../../utils/activity-types'
 import useAudit from '../../hooks/useAudit'
 import BooleanFilter from '../../components/BooleanFilter'
-import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
+import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
@@ -49,8 +49,8 @@ const omitColumns: string[] = [
   'id',
   'createdAt',
   'remarks',
-  'start',
-  'end',
+  'startDate',
+  'endDate',
   'vaultLocation',
   'musterRemarks',
   'loanedTo'
@@ -460,8 +460,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       {typeof children !== 'undefined' ? (
         children
       ) : (
-        <DblClickDatagridConfigurable
-          preferenceKey={`datagrid-${storeKey}`}
+        <DatagridConfigurableWithShow
           resource={constants.R_ITEMS}
           bulkActionButtons={<BulkActions />}
           omit={omitColumns}>
@@ -475,8 +474,8 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
             reference={constants.R_USERS}
             label='Loaned to'
           />
-          <DateField showTime source='start' />
-          <DateField showTime source='end' />
+          <DateField showTime source='startDate' />
+          <DateField showTime source='endDate' />
           <SourceField source='vaultLocation' reference='vaultLocation' />
           <SourceField
             source='protectiveMarking'
@@ -505,7 +504,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <DateField source='dispatchedDate' />
           <TextField source='remarks' />
           <TextField source='musterRemarks' />
-        </DblClickDatagridConfigurable>
+        </DatagridConfigurableWithShow>
       )}
     </List>
   )
