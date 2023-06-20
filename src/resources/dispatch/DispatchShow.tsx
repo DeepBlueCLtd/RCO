@@ -299,7 +299,10 @@ function DispatchedItemList(
         storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
         filter={{ dispatchJob: id }}
         filtersShown={['q', 'batchId', 'mediaType']}>
-        <ItemListDataTable bulkActionButtons={bulkActionButtons} />
+        <ItemListDataTable
+          preferenceKey={`datagrid-${constants.R_DISPATCH}-${id}-items-list`}
+          bulkActionButtons={bulkActionButtons}
+        />
       </ItemList>
     </Box>
   )
@@ -312,6 +315,7 @@ function ItemListDataTable(
     <DatagridConfigurable
       rowClick='show'
       bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
+      preferenceKey={props.preferenceKey}
       omit={props?.omit}
       {...props}>
       <TextField source='item_number' label='Reference' />

@@ -274,7 +274,10 @@ function DestructionItemList(
       <ItemList
         storeKey={`${constants.R_DESTRUCTION}-${id}-items-list`}
         filter={{ destruction: id }}>
-        <ItemListDataTable bulkActionButtons={bulkActionButtons} />
+        <ItemListDataTable
+          preferenceKey={`datagrid-${constants.R_DESTRUCTION}-${id}-items-list`}
+          bulkActionButtons={bulkActionButtons}
+        />
       </ItemList>
     </Box>
   )
@@ -288,6 +291,7 @@ function ItemListDataTable(
       rowClick='show'
       bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
       omit={props?.omit}
+      preferenceKey={props.preferenceKey}
       {...props}>
       <TextField source='item_number' label='Reference' />
       <TextField source='mediaType' label='Media type' />
