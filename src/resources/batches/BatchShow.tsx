@@ -11,7 +11,10 @@ import {
   useShowContext,
   ReferenceArrayField,
   SingleFieldList,
-  ChipField
+  ChipField,
+  DatagridConfigurable,
+  type DatagridConfigurableProps,
+  TextField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -29,6 +32,7 @@ import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
 import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
+import SourceField from '../../components/SourceField'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -220,11 +224,52 @@ export default function BatchShow(): React.ReactElement {
             empty={false}
             filter={{ batchId: id }}
             actions={<ItemActions />}
-            disableSyncWithLocation
-          />
+            disableSyncWithLocation>
+            <ItemListDataTable
+              preferenceKey={`datagrid-${constants.R_BATCHES}-${id}-items-list`}
+            />
+          </ItemList>
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
       <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
+  )
+}
+
+function ItemListDataTable(
+  props: DatagridConfigurableProps
+): React.ReactElement {
+  return (
+    <DatagridConfigurable
+      rowClick='show'
+      omit={props?.omit}
+      preferenceKey={props.preferenceKey}
+      {...props}>
+      <TextField source='item_number' label='Reference' />
+      <TextField source='mediaType' label='Media type' />
+      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <TextField source='remarks' />
+      <SourceField
+        link='show'
+        source='loanedTo'
+        reference={constants.R_USERS}
+        label='Loaned to'
+      />
+      <SourceField
+        link='show'
+        source='destruction'
+        reference={constants.R_DESTRUCTION}
+        sourceField='reference'
+      />
+      <DateField source='destructionDate' />
+      <SourceField
+        link='show'
+        source='dispatchJob'
+        reference={constants.R_DISPATCH}
+        sourceField='reference'
+        label='Dispatch Job'
+      />
+      <DateField source='dispatchedDate' />
+    </DatagridConfigurable>
   )
 }
