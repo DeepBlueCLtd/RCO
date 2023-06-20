@@ -57,6 +57,10 @@ export type ResourceTypes =
   | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
   | typeof R_ALL_ITEMS
+  | typeof R_DESTRUCTION
+  | typeof R_DISPATCH
+  | typeof R_ADDRESSES
+  | typeof R_CONFIG
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'

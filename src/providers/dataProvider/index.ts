@@ -44,9 +44,14 @@ export const lifecycleCallbacks = (
 
 const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
   return {
-    configData: async () => {
-      const configTable = await localForage.getItem<ConfigData[]>(
-        `${constants.LOCAL_STORAGE_DB_KEY}${constants.R_CONFIG}`
+    configData: async function (this: DataProvider) {
+      const { data: configTable } = await this.getList<ConfigData>(
+        constants.R_CONFIG,
+        {
+          sort: { field: 'id', order: 'ASC' },
+          pagination: { page: 1, perPage: 1000 },
+          filter: {}
+        }
       )
       return configTable !== null ? configTable[0] : null
     }
