@@ -37,6 +37,8 @@ export const R_ADDRESSES = 'address'
 export const R_DISPATCH = 'dispatch'
 export const R_DESTRUCTION = 'destruction'
 export const R_CONFIG = 'configData'
+export const R_ITEMS_CAT_CAVE = 'itemsCatCave'
+export const R_BATCH_CAT_CAVE = 'batchesCatCave'
 
 export type ResourceTypes =
   | typeof R_ITEMS

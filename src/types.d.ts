@@ -153,7 +153,6 @@ interface Item extends ResourceWithCreation {
   // extra protection details. All are optional
   catCode: CatCode['id'] | undefined
   catHandle: CatHandle['id'] | undefined
-  catCave: Array<CatCave['id']> | undefined
 
   // notes relating to how this item is mustered
   musterRemarks: string

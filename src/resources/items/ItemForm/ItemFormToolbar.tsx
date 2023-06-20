@@ -5,6 +5,7 @@ import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
+import useCatCaveDB from '../../../hooks/useCatCaveDB'
 
 // eslint-disable-next-line
 type Events = {
@@ -23,6 +24,7 @@ const ItemFormToolbar = (): React.ReactElement => {
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
+  const { createRecord, updateRecord } = useCatCaveDB()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -46,7 +48,7 @@ const ItemFormToolbar = (): React.ReactElement => {
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
-        <SaveButton label='Save' />
+        <SaveButton label='Save' onClick={updateRecord as any} />
       </Toolbar>
     )
   }
@@ -65,8 +67,9 @@ const ItemFormToolbar = (): React.ReactElement => {
         <SaveButton
           type='button'
           label='Save and clone'
-          onClick={() => {
+          onClick={(ev: React.MouseEvent<HTMLElement>) => {
             clone = true
+            createRecord(ev) as any
           }}
           mutationOptions={{
             onSuccess: () => {}
@@ -75,8 +78,9 @@ const ItemFormToolbar = (): React.ReactElement => {
         <SaveButton
           type='button'
           label='Save and Create'
-          onClick={() => {
+          onClick={(ev: React.MouseEvent<HTMLElement>) => {
             save = true
+            createRecord(ev) as any
           }}
           mutationOptions={{
             onSuccess: () => {}
