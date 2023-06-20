@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -17,6 +17,7 @@ import { mediaTypeOptions } from '../../../utils/options'
 import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
+import { DateTime } from 'luxon'
 
 const schema = yup.object({
   mediaType: yup
@@ -31,7 +32,7 @@ const schema = yup.object({
       'endDate',
       'End date must be greater than start date',
       function (value) {
-        return dayjs(value).diff(this.parent.Date) > 0
+        return dayjs(value).diff(this.parent.startDate) > 0
       }
     ),
   batchId: yup.number().required(),
@@ -67,9 +68,26 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     }
   }, [])
 
+  const { startDate, endDate } = useMemo((): {
+    startDate: string
+    endDate: string
+  } => {
+    const dateTime = DateTime.local().set({
+      hour: 0,
+      minute: 0,
+      second: 0
+    })
+    return {
+      startDate: dateTime.toString(),
+      endDate: dateTime.plus({ days: 1 }).toString()
+    }
+  }, [])
+
   const defaultValues: Partial<Item> = {
     item_number: '',
-    loanedTo: undefined
+    loanedTo: undefined,
+    startDate,
+    endDate
   }
 
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
