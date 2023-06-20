@@ -2,10 +2,8 @@
   "folders": {},
   "connections": {
     "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76": {
-      "provider": "sqlite-ee",
-      "driver": "sqlite_ee",
-      "original-provider": "sqlite",
-      "original-driver": "sqlite_jdbc",
+      "provider": "sqlite",
+      "driver": "sqlite_jdbc",
       "name": "RCO2",
       "save-password": true,
       "configuration": {

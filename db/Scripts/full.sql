@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS project (
        id INTEGER PRIMARY KEY,
 
        name TEXT NOT NULL,
-       remarks TEXT NOT NULL,
+       remarks,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS address(
        createdAt TEXT NOT NULL,
        fullAddress TEXT NOT NULL,
        active INTEGER NOT NULL,
-       remarks TEXT NOT NULL
+       remarks TEXT
  ) WITHOUT ROWID;
 
 --Resource table - User
@@ -113,9 +113,9 @@ CREATE TABLE IF NOT EXISTS audit (
        id INTEGER PRIMARY KEY,
 
        user INTEGER NOT NULL,
-       resource TEXT NOT NULL,
-       data INTEGER NOT NULL,
-       activityType INTEGER NOT NULL,
+       resource TEXT,
+       data INTEGER,
+       activityType INTEGER,
        dateTime TEXT NOT NULL,
        label TEXT NOT NULL,
        activityDetail TEXT,
@@ -131,20 +131,17 @@ CREATE TABLE IF NOT EXISTS audit (
 --Resource table - Batch
 CREATE TABLE IF NOT EXISTS batch (
        id INTEGER PRIMARY KEY,
-       name TEXT NOT NULL,
        startDate TEXT NOT NULL,
        endDate TEXT NOT NULL,
-       projectCode TEXT NOT NULL,
        batchNumber TEXT NOT NULL,
        yearOfReceipt TEXT NOT NULL,
-       department INT NOT NULL,
        project INT NOT NULL,
        platform INT NOT NULL,
        organisation INT NOT NULL,
+       department INT NOT NULL,
        protectiveMarking INT NOT NULL,
-       remarks TEXT NOT NULL,
-       receiptNotes TEXT NOT NULL,
-
+       remarks TEXT,
+       receiptNotes TEXT,
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
 
