@@ -44,7 +44,7 @@ const filters = [
     label='After'
     alwaysOn={true}
   />,
-  <DateTimeInput key='end' source='dateTime_lte' label='Before' />,
+  <DateTimeInput key='endDate' source='dateTime_lte' label='Before' />,
   <AutocompleteArrayInput
     source='label'
     choices={choices}

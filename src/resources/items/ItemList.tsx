@@ -441,7 +441,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
     filtersShown,
     ...rest
   } = props ?? {}
-
+  console.log({ storeKey, filtersShown })
   return (
     <List
       hasCreate={false}

@@ -9,7 +9,7 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateTimeInput
+  DateInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -175,18 +175,13 @@ const BatchForm = (props: FormProps): React.ReactElement => {
           markingSource='protectiveMarking'
         />
         <FlexBox>
-          <DateTimeInput
+          <DateInput
             sx={sx}
             source='startDate'
             label='Start'
             variant='outlined'
           />
-          <DateTimeInput
-            sx={sx}
-            source='endDate'
-            variant='outlined'
-            label='End'
-          />
+          <DateInput sx={sx} source='endDate' variant='outlined' label='End' />
         </FlexBox>
         <TextInput multiline source='remarks' variant='outlined' sx={sx} />
         <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
