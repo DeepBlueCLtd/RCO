@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS mediaType(
 ) WITHOUT ROWID;
 
 
--- Resoure table - Address
+-- Resource table - Address
 CREATE TABLE IF NOT EXISTS address(
        id INTEGER PRIMARY KEY,
 
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS batch (
 ) WITHOUT ROWID;
 
 
--- Resoure table - Destruction
+-- Resource table - Destruction
 CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
 
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS destruction(
        FOREIGN KEY (finalisedBy) REFERENCES user(id)
  ) WITHOUT ROWID;
 
--- Resoure table - Dispatch
+-- Resource table - Dispatch
 CREATE TABLE IF NOT EXISTS dispatch(
        id INTEGER PRIMARY KEY,
 
@@ -197,7 +197,7 @@ CREATE TABLE IF NOT EXISTS dispatch(
        FOREIGN KEY (address) REFERENCES address(id)
  ) WITHOUT ROWID;
 
--- Resoure table - Item
+-- Resource table - Item
 CREATE TABLE IF NOT EXISTS item(
        id INTEGER PRIMARY KEY,
        mediaType INTEGER NOT NULL,
