@@ -86,10 +86,13 @@ export const generatePlatform = (
 export const generateProject = (length: number, user: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
+    const [startDate, endDate] = generateRandomDate()
     const obj: Project = {
       id: i,
       createdAt: nowDate(),
       name: `project-${i}`,
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
       remarks: `project-remarks-${i}`,
       createdBy: user
     }

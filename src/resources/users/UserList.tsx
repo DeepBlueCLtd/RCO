@@ -18,7 +18,7 @@ import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
-import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
+import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 
 interface Props {
   name: string
@@ -98,7 +98,7 @@ export default function UserList(props: Props): React.ReactElement {
   }
   return (
     <List actions={<ListActions />} perPage={25} resource={cName}>
-      <DblClickDatagridConfigurable
+      <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />
@@ -110,7 +110,7 @@ export default function UserList(props: Props): React.ReactElement {
             <ChipField />
           </SingleFieldList>
         </ArrayField>
-      </DblClickDatagridConfigurable>
+      </DatagridConfigurableWithShow>
       <UserMusterList open={open} onClose={handleOpen(false)} />
     </List>
   )

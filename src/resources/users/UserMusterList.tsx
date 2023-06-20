@@ -98,7 +98,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   <TextField source='mediaType' label='Media type' />
                   <SourceField
                     source='protectiveMarking'
-                    reference='protectiveMarking'
+                    reference={constants.R_PROTECTIVE_MARKING}
                   />
                   <CompositeField
                     label={`${configData?.projectName} & Platform`}

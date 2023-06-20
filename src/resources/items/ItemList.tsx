@@ -38,7 +38,7 @@ import DestroyRestoreItems from './DestroyRestoreItems'
 import { AuditType } from '../../utils/activity-types'
 import useAudit from '../../hooks/useAudit'
 import BooleanFilter from '../../components/BooleanFilter'
-import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
+import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
@@ -92,13 +92,13 @@ const filters = [
     source='vaultLocation'
     key='vaultLocation'
     sort={sort()}
-    reference='vaultLocation'
+    reference={constants.R_VAULT_LOCATION}
   />,
   <SourceInput
     source='protectiveMarking'
     key='protectiveMarking'
     sort={sort()}
-    reference='protectiveMarking'
+    reference={constants.R_PROTECTIVE_MARKING}
   />,
   <SourceInput
     source='batchId'
@@ -460,7 +460,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       {typeof children !== 'undefined' ? (
         children
       ) : (
-        <DblClickDatagridConfigurable
+        <DatagridConfigurableWithShow
           resource={constants.R_ITEMS}
           bulkActionButtons={<BulkActions />}
           omit={omitColumns}>
@@ -476,10 +476,13 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           />
           <DateField showTime source='startDate' />
           <DateField showTime source='endDate' />
-          <SourceField source='vaultLocation' reference='vaultLocation' />
+          <SourceField
+            source='vaultLocation'
+            reference={constants.R_VAULT_LOCATION}
+          />
           <SourceField
             source='protectiveMarking'
-            reference='protectiveMarking'
+            reference={constants.R_PROTECTIVE_MARKING}
           />
           <SourceField
             link='show'
@@ -504,7 +507,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <DateField source='dispatchedDate' />
           <TextField source='remarks' />
           <TextField source='musterRemarks' />
-        </DblClickDatagridConfigurable>
+        </DatagridConfigurableWithShow>
       )}
     </List>
   )
