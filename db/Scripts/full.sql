@@ -10,21 +10,21 @@ CREATE TABLE IF NOT EXISTS platform(
 
 -- Meta table - catCave
 CREATE TABLE IF NOT EXISTS catCave(
-       id INTEGER PRIMARY KEY,
+       id TEXT PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
 -- Meta table - catHandling
 CREATE TABLE IF NOT EXISTS catHandle(
-       id INTEGER PRIMARY KEY,
+       id TEXT PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
 -- Meta table - catCode
 CREATE TABLE IF NOT EXISTS catCode(
-       id INTEGER PRIMARY KEY,
+       id TEXT PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
@@ -142,9 +142,6 @@ CREATE TABLE IF NOT EXISTS batch (
        platform INT NOT NULL,
        organisation INT NOT NULL,
        protectiveMarking INT NOT NULL,
-       catCode INTEGER,
-       catHandle INTEGER,
-       catCave TEXT,
        remarks TEXT NOT NULL,
        receiptNotes TEXT NOT NULL,
 
@@ -156,10 +153,38 @@ CREATE TABLE IF NOT EXISTS batch (
        FOREIGN KEY (department) REFERENCES department(id),
        FOREIGN KEY (organisation) REFERENCES organisation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
-       FOREIGN KEY (catCode) REFERENCES catCode(id),
-       FOREIGN KEY (catHandle) REFERENCES catHandle(id),
        FOREIGN KEY (createdBy) REFERENCES user(id)
 ) WITHOUT ROWID;
+
+-- DDL for Table batchCode
+
+CREATE TABLE if not exists batchCode (
+    id INTEGER PRIMARY KEY,
+    batch INTEGER NOT NULL,
+    catCode TEXT NOT NULL,
+    FOREIGN KEY (batch) REFERENCES batch(id),
+    FOREIGN KEY (catCode) REFERENCES catCode(id)
+);
+
+-- DDL for Table batchHandle
+
+CREATE TABLE if not exists batchHandle (
+    id INTEGER PRIMARY KEY,
+    batch INTEGER NOT NULL,
+    catHandle TEXT NOT NULL,
+    FOREIGN KEY (batch) REFERENCES batch(id),
+    FOREIGN KEY (catHandle) REFERENCES catHandle(id)
+);
+
+-- DDL for Table batchCaveat
+
+CREATE TABLE if not exists batchCaveat (
+    id INTEGER PRIMARY KEY,
+    batch INTEGER NOT NULL,
+    catCave TEXT NOT NULL,
+    FOREIGN KEY (batch) REFERENCES batch(id),
+    FOREIGN KEY (catCave) REFERENCES catCave(id)
+);
 
 
 -- Resource table - Destruction
@@ -209,9 +234,6 @@ CREATE TABLE IF NOT EXISTS item(
        vaultLocation INTEGER NOT NULL,
        remarks TEXT NOT NULL,
        protectiveMarking INTEGER NOT NULL,
-       catCode INTEGER,
-       catHandle INTEGER,
-       catCave TEXT, 
        musterRemarks TEXT NOT NULL,
        loanedTo INTEGER,
        loanedDate TEXT,
@@ -229,11 +251,40 @@ CREATE TABLE IF NOT EXISTS item(
        FOREIGN KEY (batch) REFERENCES batch(id),
        FOREIGN KEY (vaultLocation) REFERENCES vaultLocation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
-       FOREIGN KEY (catCode) REFERENCES catCode(id),
-       FOREIGN KEY (catHandle) REFERENCES catHandle(id),
        FOREIGN KEY (loanedTo) REFERENCES user(id),
        FOREIGN KEY (dispatchJob) REFERENCES dispatch(id),
        FOREIGN KEY (destruction) REFERENCES destruction(id),
        FOREIGN KEY (createdBy) REFERENCES user(id)
 
 ) WITHOUT ROWID;
+
+
+-- DDL for Table itemCode
+
+CREATE TABLE if not exists itemCode (
+    id INTEGER PRIMARY KEY,
+    item INTEGER NOT NULL,
+    catCode TEXT NOT NULL,
+    FOREIGN KEY (item) REFERENCES item(id),
+    FOREIGN KEY (catCode) REFERENCES catCode(id)
+);
+
+-- DDL for Table itemHandle
+
+CREATE TABLE if not exists itemHandle (
+    id INTEGER PRIMARY KEY,
+    item INTEGER NOT NULL,
+    catHandle TEXT NOT NULL,
+    FOREIGN KEY (item) REFERENCES item(id),
+    FOREIGN KEY (catHandle) REFERENCES catHandle(id)
+);
+
+-- DDL for Table ItemCaveats
+
+CREATE TABLE if not exists itemCaveat (
+    id INTEGER PRIMARY KEY,
+    item INTEGER NOT NULL,
+    catCave TEXT NOT NULL,
+    FOREIGN KEY (item) REFERENCES item(id),
+    FOREIGN KEY (catCave) REFERENCES catCave(id)
+);
