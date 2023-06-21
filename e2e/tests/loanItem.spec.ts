@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test'
 test.describe('LOAN ITEM', async () => {
   let refId: string
   let itemrefId: string
+  let mediaTypeValue: string
+  let cosecValue: string
+  let protectiveMarking: string
+  let projectName: string
 
   test.beforeEach(async ({ page }) => {
     // Navigate to site and perform login using admin
@@ -28,9 +32,31 @@ test.describe('LOAN ITEM', async () => {
     await page.getByRole('button', { name: 'Open' }).nth(1).click()
     await page.locator('#project-option-0').click()
 
-    //Select first maximmum protective marking
-    await page.getByRole('button', { name: 'Open' }).nth(2).click()
-    await page.locator('#maximumProtectiveMarking-option-0').click()
+    //Select Protection fields
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .first()
+      .click()
+    await page.getByRole('option', { name: 'Cat Code:7' }).click()
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .nth(1)
+      .click()
+    await page.getByRole('option', { name: 'Protective Marking:5' }).click()
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .nth(2)
+      .click()
+    await page.getByRole('option', { name: 'Cat Handling:7' }).click()
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .nth(3)
+      .click()
+    await page.getByRole('option', { name: 'Cat Cave:8' }).click()
 
     // Select current date and fill startDate
     const startDate = await page.locator('#startDate')
@@ -64,6 +90,10 @@ test.describe('LOAN ITEM', async () => {
 
     // Click on save button
     await page.click('button:has-text("Save")')
+    projectName = await page
+      .locator('//p[text()="Project"]/../span')
+      .innerText()
+
     refId = (await page
       .locator('//div[@id="main-content"]//span[1]//div[3]/span')
       .textContent()) as string
@@ -78,14 +108,31 @@ test.describe('LOAN ITEM', async () => {
     await page.getByRole('option', { name: 'DVD' }).click()
     await page.getByLabel('Consec/Pages').click()
     await page.getByLabel('Consec/Pages').fill('125/2022')
+
+    cosecValue = await page.locator('textarea#consecPages').inputValue()
+
+    await page.getByLabel('Cat code').click()
+    await page.getByRole('option', { name: 'Cat Code:7' }).click()
     await page.getByLabel('Protective marking').click()
     await page.getByRole('option', { name: 'Protective Marking:5' }).click()
+    await page.getByLabel('Cat handling').click()
+    await page.getByRole('option', { name: 'Cat Handling:7' }).click()
+    await page.getByLabel('Cat cave').click()
+    await page.getByRole('option', { name: 'Cat Cave:8' }).click()
+
+    await page.locator('#startDate').fill(formattedStartDate)
+    await page.locator('#endDate').fill(formattedEndDate)
+
     await page.getByLabel('Remarks', { exact: true }).click()
     await page.getByLabel('Remarks', { exact: true }).fill('Remarks')
     await page.getByLabel('Muster remarks').click()
     await page.getByLabel('Muster remarks').fill('Muster')
-    await page.locator('#start').fill(formattedStartDate)
-    await page.locator('#end').fill(formattedEndDate)
+
+    mediaTypeValue = await page.locator('input#mediaType').inputValue()
+    protectiveMarking = await page
+      .locator('input#protectiveMarking')
+      .inputValue()
+
     await page.getByRole('button', { name: 'Save and Create' }).click()
 
     await page.getByRole('alert').textContent()
@@ -97,10 +144,11 @@ test.describe('LOAN ITEM', async () => {
     await page.getByPlaceholder('Search').click()
     await page.getByPlaceholder('Search').fill(refId)
     await page.getByRole('cell', { name: refId }).click()
+
     await page.getByRole('tab', { name: 'Items' }).click()
 
     itemrefId = await page
-      .locator(`//tbody/tr/td[5]//span[text()="${refId}"]`)
+      .locator(`//tbody/tr/td[3]//span[text()="${refId}/1"]`)
       .innerText()
   })
 
@@ -112,9 +160,10 @@ test.describe('LOAN ITEM', async () => {
     await page.getByRole('tab', { name: 'Items' }).click()
     await page
       .locator(
-        `//tbody/tr/td[2]/span[contains(text(), "${refId}")]/../../td[1]//input`
+        `//tbody/tr/td[3]//span[text()="${itemrefId}"]/../../td[1]//input`
       )
       .check()
+
     await page.getByRole('button', { name: 'Loan' }).click()
     await page.getByRole('button', { name: 'Open' }).click()
     await page.getByRole('option', { name: 'jason (d-2)' }).click()
@@ -129,5 +178,21 @@ test.describe('LOAN ITEM', async () => {
       .getByRole('checkbox')
       .check()
     await page.getByRole('button', { name: 'User Muster List' }).click()
+
+    await expect(
+      page.locator(`//table//td//span[text()="${itemrefId}"]`)
+    ).toHaveText(itemrefId)
+    await expect(
+      page.locator(`//table//td//span[text()="${itemrefId}"]/../../td[2]/span`)
+    ).toHaveText(mediaTypeValue)
+    await expect(
+      page.locator(`//table//td//span[text()="${itemrefId}"]/../../td[6]/span`)
+    ).toHaveText(cosecValue)
+    await expect(
+      page.locator(`//table//td//span[text()="${itemrefId}"]/../../td[3]/span`)
+    ).toHaveText(protectiveMarking)
+    await expect(
+      page.locator(`//table//td//span[text()="${itemrefId}"]/../../td[4]/span`)
+    ).toHaveText(projectName)
   })
 })

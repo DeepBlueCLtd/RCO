@@ -26,9 +26,31 @@ test.describe('BATCH ITEMS', async () => {
     await page.getByRole('button', { name: 'Open' }).nth(1).click()
     await page.locator('#project-option-0').click()
 
-    //Select first maximmum protective marking
-    await page.getByRole('button', { name: 'Open' }).nth(2).click()
-    await page.locator('#maximumProtectiveMarking-option-0').click()
+    //Select Protection fields
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .first()
+      .click()
+    await page.getByRole('option', { name: 'Cat Code:7' }).click()
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .nth(1)
+      .click()
+    await page.getByRole('option', { name: 'Protective Marking:5' }).click()
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .nth(2)
+      .click()
+    await page.getByRole('option', { name: 'Cat Handling:7' }).click()
+    await page
+      .getByRole('group', { name: 'Protection' })
+      .getByRole('button', { name: 'Open' })
+      .nth(3)
+      .click()
+    await page.getByRole('option', { name: 'Cat Cave:8' }).click()
 
     // Select current date and fill startDate
     const startDate = await page.locator('#startDate')
@@ -60,10 +82,10 @@ test.describe('BATCH ITEMS', async () => {
     //Add notes
     await page.getByLabel('Receipt notes').fill('Testing Notes')
 
-    // Click on save button
+    // // Click on save button
     await page.click('button:has-text("Save")')
-    refId = (await page
-      .locator('//div[@id="main-content"]//span[1]//div[3]/span')
+    refId = refId = (await page
+      .locator('//p[text()="Batch Number"]/../span')
       .textContent()) as string
   })
   test('Add items in batch', async ({ page }) => {
@@ -77,15 +99,18 @@ test.describe('BATCH ITEMS', async () => {
     await page.getByRole('option', { name: 'DVD' }).click()
     await page.getByLabel('Consec/Pages').click()
     await page.getByLabel('Consec/Pages').fill('125/2022')
+
+    // cosecValue = await page.locator('textarea#consecPages').inputValue()
+
+    await page.getByLabel('Cat code').click()
+    await page.getByRole('option', { name: 'Cat Code:7' }).click()
     await page.getByLabel('Protective marking').click()
     await page.getByRole('option', { name: 'Protective Marking:5' }).click()
-    await page.getByLabel('Remarks', { exact: true }).click()
-    await page.getByLabel('Remarks', { exact: true }).fill('Remarks')
-    await page.getByLabel('Muster remarks').click()
-    await page.getByLabel('Muster remarks').fill('Muster')
+    await page.getByLabel('Cat handling').click()
+    await page.getByRole('option', { name: 'Cat Handling:7' }).click()
+    await page.getByLabel('Cat cave').click()
+    await page.getByRole('option', { name: 'Cat Cave:8' }).click()
 
-    // Select current date and fill startDate
-    const startDate = await page.locator('#start')
     const currentDate = new Date()
     const currentYear = currentDate.getFullYear()
     const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0')
@@ -93,7 +118,7 @@ test.describe('BATCH ITEMS', async () => {
     const currentHours = String(currentDate.getHours()).padStart(2, '0')
     const currentMinutes = String(currentDate.getMinutes()).padStart(2, '0')
     const formattedStartDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHours}:${currentMinutes}`
-    await startDate.fill(formattedStartDate)
+    await page.locator('#startDate').fill(formattedStartDate)
 
     // Select future date and fill endDate
     const nextDate = new Date(currentDate)
@@ -104,13 +129,17 @@ test.describe('BATCH ITEMS', async () => {
     const newHours = String(nextDate.getHours()).padStart(2, '0')
     const newMinutes = String(nextDate.getMinutes()).padStart(2, '0')
     const formattedEndDate = `${newYear}-${newMonth}-${newDay}T${newHours}:${newMinutes}`
-    const endDate = await page.locator('#end')
-    await endDate.fill(formattedEndDate)
+    await page.locator('#endDate').fill(formattedEndDate)
 
-    const mediaTypeValue = await page.locator('#mediaType').inputValue()
+    await page.getByLabel('Remarks', { exact: true }).click()
+    await page.getByLabel('Remarks', { exact: true }).fill('Remarks')
+    await page.getByLabel('Muster remarks').click()
+    await page.getByLabel('Muster remarks').fill('Muster')
     const protectiveMarketingValue = await page
-      .locator('#protectiveMarking')
+      .locator('input#protectiveMarking')
       .inputValue()
+
+    const mediaTypeValue = await page.locator('input#mediaType').inputValue()
 
     await page.getByRole('button', { name: 'Save and Create' }).click()
 
@@ -123,20 +152,30 @@ test.describe('BATCH ITEMS', async () => {
     await page.getByPlaceholder('Search').click()
     await page.getByPlaceholder('Search').fill(refId)
     await page.getByRole('cell', { name: refId }).click()
+
     await page.getByRole('tab', { name: 'Items' }).click()
 
+    await page.getByRole('menuitem', { name: 'Batches' }).click()
+    await page.getByPlaceholder('Search').click()
+    await page.getByPlaceholder('Search').fill(refId)
+    await page.getByRole('cell', { name: refId }).click()
+    await page.getByRole('tab', { name: 'Items' }).click()
+
+    await expect(
+      page.locator(`//tbody/tr/td[3]/span[text()="${refId}/1"]`)
+    ).toHaveText(`${refId}/1`)
     const mediaType = await page.locator(
-      `//tbody/tr/td[3]/span[text()="${mediaTypeValue}"]`
+      `//tbody/tr/td[4]/span[text()="${mediaTypeValue}"]`
     )
     await expect(mediaType).toHaveText(mediaTypeValue)
 
     const protectiveMarking = await page.locator(
-      `//tbody/tr/td[4]/span[text()="${protectiveMarketingValue}"]`
+      `//tbody/tr/td[5]/span[text()="${protectiveMarketingValue}"]`
     )
     await expect(protectiveMarking).toHaveText(protectiveMarketingValue)
 
     const batchRefId = await page.locator(
-      `//tbody/tr/td[5]//span[text()="${refId}"]`
+      `//tbody/tr/td[6]//span[text()="${refId}"]`
     )
     await expect(batchRefId).toHaveText(refId)
   })
