@@ -16,7 +16,7 @@ export default defineConfig({
   use: {
     // url when app started with `yarn dev`
     baseURL: 'http://localhost:5173/',
-    trace: 'on-first-retry',
+    trace: 'on',
     headless: true
   },
   /* Configure projects for major browsers */
