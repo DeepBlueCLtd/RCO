@@ -35,7 +35,7 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
 
   if (isLoading !== undefined && isLoading) return <Loading />
 
-  const pageTitle = 'Item show'
+  const pageTitle = 'View Item'
 
   return (
     <Box sx={{ padding: '20px' }}>
