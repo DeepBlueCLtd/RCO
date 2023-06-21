@@ -6,8 +6,6 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
-import localForage from 'localforage'
-import loadDefaultData from '../../utils/init-data'
 import { extendLifeCycle, type AuditFunctionType } from './dataprovider-utils'
 import UserLifeCycle from './resource-callbacks/UserLifeCycle'
 import ProjectLifeCycle from './resource-callbacks/ProjectLifeCycle'
@@ -61,11 +59,6 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
-  const localForageData = await localForage.keys()
-  if (localForageData.length === 0) {
-    await loadDefaultData()
-  }
-
   const provider = await localForageDataProvider({
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
     loggingEnabled
