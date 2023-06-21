@@ -121,9 +121,6 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
-  catCodes: number,
-  catHandles: number,
-  catCaves: number,
   user: number,
   isHigh?: boolean
 ): Batch[] => {
@@ -161,9 +158,6 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
-  catCodes: number,
-  catHandles: number,
-  catCaves: number,
   user: number
 ): Item[] => {
   const items: Item[] = []
