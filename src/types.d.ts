@@ -122,6 +122,38 @@ type CatCave = ActiveReferenceItem
 type VaultLocation = ActiveReferenceItem
 // type MediaType = ActiveReferenceItem
 
+interface ItemCode {
+  id: number
+  item: number
+  catCode: number
+}
+interface ItemCave {
+  id: number
+  item: number
+  catCave: number
+}
+interface ItemHandling {
+  id: number
+  item: number
+  catHandling: number
+}
+
+interface BatchCode {
+  id: number
+  batch: number
+  catCode: number
+}
+interface BatchCave {
+  id: number
+  batch: number
+  catCave: number
+}
+interface BatchHandling {
+  id: number
+  batch: number
+  catHandling: number
+}
+
 interface Batch extends ResourceWithCreation {
   startDate: string
   endDate: string
@@ -132,10 +164,6 @@ interface Batch extends ResourceWithCreation {
   platform: Platform['id']
   organisation: Organisation['id']
   protectiveMarking: ProtectiveMarking['id']
-  // extra protection details. All are optional
-  catCode: CatCode['id'] | undefined
-  catHandle: CatHandle['id'] | undefined
-  catCave: Array<CatCave['id']> | undefined
   remarks: string
   receiptNotes: string
 }
@@ -150,9 +178,6 @@ interface Item extends ResourceWithCreation {
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
-  // extra protection details. All are optional
-  catCode: CatCode['id'] | undefined
-  catHandle: CatHandle['id'] | undefined
 
   // notes relating to how this item is mustered
   musterRemarks: string

@@ -5,7 +5,6 @@ import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
-import useCatCaveDB from '../../../hooks/useCatCaveDB'
 
 // eslint-disable-next-line
 type Events = {
@@ -20,11 +19,16 @@ enum ItemFormSaveType {
 let clone = false
 let save = false
 export const emitter = mitt<Events>()
-const ItemFormToolbar = (): React.ReactElement => {
+
+interface Props {
+  onSuccess: (data: any) => void
+}
+
+const ItemFormToolbar = (props: Props): React.ReactElement => {
+  const { onSuccess } = props
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
-  const { createRecord, updateRecord } = useCatCaveDB()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -45,10 +49,24 @@ const ItemFormToolbar = (): React.ReactElement => {
     }
   }, [])
 
+  const transformResource = (
+    data: Record<string, any>
+  ): Record<string, any> => {
+    const { catCave, catCode, catHandling, ...rest } = data
+    return rest
+  }
+
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
-        <SaveButton label='Save' onClick={updateRecord as any} />
+        <SaveButton
+          label='Save'
+          type='button'
+          transform={transformResource}
+          mutationOptions={{
+            onSuccess
+          }}
+        />
       </Toolbar>
     )
   }
@@ -67,23 +85,23 @@ const ItemFormToolbar = (): React.ReactElement => {
         <SaveButton
           type='button'
           label='Save and clone'
-          onClick={(ev: React.MouseEvent<HTMLElement>) => {
+          onClick={() => {
             clone = true
-            createRecord(ev) as any
           }}
+          transform={transformResource}
           mutationOptions={{
-            onSuccess: () => {}
+            onSuccess
           }}
         />
         <SaveButton
           type='button'
           label='Save and Create'
-          onClick={(ev: React.MouseEvent<HTMLElement>) => {
+          onClick={() => {
             save = true
-            createRecord(ev) as any
           }}
+          transform={transformResource}
           mutationOptions={{
-            onSuccess: () => {}
+            onSuccess
           }}
         />
       </FlexBox>

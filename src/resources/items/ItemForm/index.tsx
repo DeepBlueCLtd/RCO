@@ -48,6 +48,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const { id } = useParams()
   const record = useRecordContext<Item>()
   const dataProvider = useDataProvider()
+  const [itemId, setItemId] = useState<Item['id']>()
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
@@ -121,8 +122,12 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
         defaultValues={defaultValues}
-        toolbar={<ItemFormToolbar />}>
-        <CoreForm batchId={batch?.id} />
+        toolbar={
+          <ItemFormToolbar
+            onSuccess={({ id }: { id: number }) => { setItemId(id) }}
+          />
+        }>
+        <CoreForm itemId={itemId} batchId={batch?.id} />
       </SimpleForm>
     </Box>
   )
