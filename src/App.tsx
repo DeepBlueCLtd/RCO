@@ -247,13 +247,6 @@ function App(): React.ReactElement {
               referenceDataPermission
             )}
           </Route>
-          <Route path='/platformOriginator'>
-            {...createRoutes(
-              constants.R_PLATFORM_ORIGINATOR,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
           <Route path='/organisation'>
             {...createRoutes(
               constants.R_ORGANISATION,

@@ -29,7 +29,6 @@ export const lifecycleCallbacks = (
     extendLifeCycle(constants.R_PLATFORMS, audit),
     ReferenceItemLifeCycle(audit, constants.R_VAULT_LOCATION),
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
-    ReferenceItemLifeCycle(audit, constants.R_PLATFORM_ORIGINATOR),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
     ReferenceItemLifeCycle(audit, constants.R_CAT_CODE),
     ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLING),
