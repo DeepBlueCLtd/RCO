@@ -232,7 +232,7 @@ interface Dispatch {
 }
 
 /** per instance config data. It is just intended to be one row deep */
-interface ConfigData {
+interface ConfigData extends RCOResource {
   /** singular name for project resource
    * test value: `Project`
    */

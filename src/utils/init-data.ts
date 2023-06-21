@@ -12,6 +12,7 @@ import * as constants from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
+import { type DataProvider } from 'react-admin'
 
 const generatedUsers = generateUsers(200)
 
@@ -186,6 +187,7 @@ const loadDefaultData = async (
   const destruction: Destruction[] = []
 
   const configDataItem: ConfigData = {
+    id: 0,
     projectName: 'Project',
     projectsName: 'Projects',
     fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP',
@@ -218,24 +220,49 @@ const loadDefaultData = async (
     configData
   }
 
-  // push all the default data into resources in localForage
+  const map: Record<string, constants.ResourceTypes> = {
+    user: constants.R_USERS,
+    batch: constants.R_BATCHES,
+    item: constants.R_ITEMS,
+    platform: constants.R_PLATFORMS,
+    project: constants.R_PROJECTS,
+    organisation: constants.R_ORGANISATION,
+    department: constants.R_DEPARTMENT,
+    vaultLocation: constants.R_VAULT_LOCATION,
+    mediaType: constants.R_MEDIA_TYPE,
+    protectiveMarking: constants.R_PROTECTIVE_MARKING,
+    platformOriginator: constants.R_PLATFORM_ORIGINATOR,
+    catCode: constants.R_CAT_CODE,
+    catHandling: constants.R_CAT_HANDLING,
+    catCave: constants.R_CAT_CAVE,
+    audit: constants.R_AUDIT,
+    destruction: constants.R_DESTRUCTION,
+    dispatche: constants.R_DISPATCH,
+    address: constants.R_ADDRESSES,
+    configData: constants.R_CONFIG
+  }
+
+  const dataprovider: DataProvider = await getDataProvider(false)
+
   for (const [key, value] of Object.entries(defaultData)) {
-    if (key === constants.R_ITEMS) {
-      localForage
-        .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
-        .then(async () => {
-          const provider = await getDataProvider(false)
-          if (provider !== undefined) {
-            for (const userId in randomItems) {
-              await provider.loanItems(randomItems[userId], Number(userId))
+    if (map[key] !== undefined) {
+      if (key === constants.R_ITEMS) {
+        for (const val of value) {
+          await dataprovider.create<Item>(constants.R_ITEMS, { data: val })
+        }
+        for (const userId in randomItems) {
+          await dataprovider.loanItems(randomItems[userId], Number(userId))
+        }
+      } else
+        for (const val of value) {
+          await dataprovider.create<typeof value>(
+            map[key ],
+            {
+              data: val
             }
-          }
-        })
-        .catch(console.log)
-    } else
-      localForage
-        .setItem(`${constants.LOCAL_STORAGE_DB_KEY}${key}`, value)
-        .catch(console.log)
+          )
+        }
+    }
   }
 }
 

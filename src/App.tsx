@@ -40,6 +40,7 @@ import addresses from './resources/addresses'
 import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
+import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -161,6 +162,18 @@ function App(): React.ReactElement {
       }
     }
     getConfigData().catch(console.log)
+  }, [dataProvider])
+
+  useEffect(() => {
+    const checktDefault = async (): Promise<void> => {
+      if (dataProvider !== undefined) {
+        const localForageData = await localForage.keys()
+        if (localForageData.length === 0) {
+          await loadDefaultData()
+        }
+      }
+    }
+    checktDefault().catch(console.error)
   }, [dataProvider])
 
   if (dataProvider === undefined) return LoadingPage
