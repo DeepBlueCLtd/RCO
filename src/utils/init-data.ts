@@ -130,13 +130,7 @@ const loadDefaultData = async (
     5
   )
 
-  const mediaType = getActiveReferenceData(
-    'Media',
-    undefined,
-    isHigh === true ? 50 : undefined,
-    isHigh,
-    50
-  )
+  const mediaType = getActiveReferenceData('Media', true, 30)
 
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
   const address = getAddresses()
@@ -175,7 +169,8 @@ const loadDefaultData = async (
           catCode.length,
           catHandling.length,
           catCave.length,
-          user
+          user,
+          mediaType.length
         )
       )
     }
