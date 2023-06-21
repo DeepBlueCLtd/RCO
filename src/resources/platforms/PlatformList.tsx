@@ -75,6 +75,7 @@ export default function PlatformList(props: Props): React.ReactElement {
       filters={filters}
       resource='platforms'>
       <Datagrid rowClick='show' bulkActionButtons={false}>
+        <TextField source='id' label='ID' />
         <TextField source='name' />
         <BooleanField source='active' label='Active Platform' />
         <FunctionField
