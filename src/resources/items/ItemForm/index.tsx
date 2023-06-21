@@ -13,17 +13,13 @@ import {
 import { useLocation, useParams } from 'react-router-dom'
 import { isNumber } from '../../../utils/number'
 import CoreForm from './CoreForm'
-import { mediaTypeOptions } from '../../../utils/options'
 import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 import { DateTime } from 'luxon'
 
 const schema = yup.object({
-  mediaType: yup
-    .string()
-    .required()
-    .oneOf(mediaTypeOptions.map(({ id }) => id)),
+  mediaType: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
     .date()
