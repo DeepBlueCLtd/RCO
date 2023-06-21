@@ -118,7 +118,6 @@ interface Project extends ResourceWithCreation {
 type Department = ActiveReferenceItem
 type Organisation = ActiveReferenceItem
 type ProtectiveMarking = ActiveReferenceItem
-type PlatformOriginator = ActiveReferenceItem
 type CatCode = ActiveReferenceItem
 type CatHandle = ActiveReferenceItem
 type CatCave = ActiveReferenceItem
@@ -180,7 +179,6 @@ interface RCOStore {
   vaultLocation: VaultLocation[]
   mediaType: ActiveReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
-  platformOriginator: PlatformOriginator[]
   catCode: CatCode[]
   catHandling: CatHandle[]
   catCave: CatCave[]

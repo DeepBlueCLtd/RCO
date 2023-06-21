@@ -136,7 +136,6 @@ const loadDefaultData = async (
   const protectiveMarking = getActiveReferenceData('Protective Marking', true)
   const address = getAddresses()
 
-  const platformOriginator = getActiveReferenceData('Platform Originator')
   const catCode = getActiveReferenceData('Cat Code', true, 8)
   const catHandling = getActiveReferenceData('Cat Handling', true, 8)
   const catCave = getActiveReferenceData('Cat Cave', true, 8)
@@ -209,7 +208,6 @@ const loadDefaultData = async (
     vaultLocation,
     mediaType,
     protectiveMarking,
-    platformOriginator,
     catCode,
     catHandling,
     catCave,
@@ -231,7 +229,6 @@ const loadDefaultData = async (
     vaultLocation: constants.R_VAULT_LOCATION,
     mediaType: constants.R_MEDIA_TYPE,
     protectiveMarking: constants.R_PROTECTIVE_MARKING,
-    platformOriginator: constants.R_PLATFORM_ORIGINATOR,
     catCode: constants.R_CAT_CODE,
     catHandling: constants.R_CAT_HANDLING,
     catCave: constants.R_CAT_CAVE,
@@ -255,12 +252,9 @@ const loadDefaultData = async (
         }
       } else
         for (const val of value) {
-          await dataprovider.create<typeof value>(
-            map[key ],
-            {
-              data: val
-            }
-          )
+          await dataprovider.create<typeof value>(map[key], {
+            data: val
+          })
         }
     }
   }

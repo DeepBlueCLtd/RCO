@@ -79,7 +79,6 @@ const mainReferenceRoutes = [
 ]
 
 const rarelyUsedRoutes = [
-  { path: '/platformOriginator', title: 'Platform Originator' },
   { path: '/organisation', title: 'Organisation' },
   { path: '/protectiveMarking', title: 'Protective Marking' },
   { path: '/catCode', title: 'Cat Code' },
