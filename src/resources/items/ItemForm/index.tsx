@@ -13,17 +13,13 @@ import {
 import { useLocation, useParams } from 'react-router-dom'
 import { isNumber } from '../../../utils/number'
 import CoreForm from './CoreForm'
-import { mediaTypeOptions } from '../../../utils/options'
 import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 import { DateTime } from 'luxon'
 
 const schema = yup.object({
-  mediaType: yup
-    .string()
-    .required()
-    .oneOf(mediaTypeOptions.map(({ id }) => id)),
+  mediaType: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
     .date()
@@ -124,7 +120,9 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         defaultValues={defaultValues}
         toolbar={
           <ItemFormToolbar
-            onSuccess={({ id }: { id: number }) => { setItemId(id) }}
+            onSuccess={({ id }: { id: number }) => {
+              setItemId(id)
+            }}
           />
         }>
         <CoreForm itemId={itemId} batchId={batch?.id} />

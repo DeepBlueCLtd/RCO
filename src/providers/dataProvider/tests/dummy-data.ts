@@ -37,7 +37,7 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
 interface ItemProps {
   id?: number
   remarks?: string
-  mediaType?: MediaType
+  mediaType?: MediaType['id']
   toISO?: boolean
   batchId?: number
 }
@@ -51,7 +51,7 @@ export const generateItemForTesting = ({
 }: ItemProps = {}): NewItem => {
   return {
     ...(id !== undefined ? { id } : null),
-    mediaType: mediaType ?? 'DVD',
+    mediaType: mediaType ?? 1,
     startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()

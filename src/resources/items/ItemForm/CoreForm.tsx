@@ -2,12 +2,12 @@ import {
   AutocompleteInput,
   DateTimeInput,
   TextField,
-  TextInput
+  TextInput,
+  useGetList
 } from 'react-admin'
-import { mediaTypeOptions } from '../../../utils/options'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
@@ -26,10 +26,16 @@ interface Props {
 const CoreForm = (props: Props): React.ReactElement => {
   const { batchId, disabled, itemId } = props
   const formContext = useFormContext()
+  const [mediaTypes, setMediaTypes] = useState<any[]>([])
+  const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
 
   useEffect(() => {
     formContext?.setValue('batchId', batchId)
   })
+
+  useEffect(() => {
+    setMediaTypes(data)
+  }, [data])
 
   const ValueField = ({
     label,
@@ -50,7 +56,7 @@ const CoreForm = (props: Props): React.ReactElement => {
       <AutocompleteInput
         disabled={disabled}
         source='mediaType'
-        choices={mediaTypeOptions}
+        choices={mediaTypes.filter((item: Record<string, any>) => item.active)}
         sx={sx}
       />
       <FlexBox alignItems='flex-start'>

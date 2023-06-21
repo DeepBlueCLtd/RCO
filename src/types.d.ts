@@ -43,7 +43,10 @@ interface FormProps {
 // -- SQL Data Types
 // ------------------------
 
-type MediaType = 'DVD' | 'Tape' | 'Paper'
+interface MediaType extends RCOResource {
+  name: string
+  active: boolean
+}
 
 /** an entity, with an id unique to that table */
 interface RCOResource {
@@ -115,12 +118,10 @@ interface Project extends ResourceWithCreation {
 type Department = ActiveReferenceItem
 type Organisation = ActiveReferenceItem
 type ProtectiveMarking = ActiveReferenceItem
-type PlatformOriginator = ActiveReferenceItem
 type CatCode = ActiveReferenceItem
 type CatHandle = ActiveReferenceItem
 type CatCave = ActiveReferenceItem
 type VaultLocation = ActiveReferenceItem
-// type MediaType = ActiveReferenceItem
 
 interface ItemCode {
   id: number
@@ -169,7 +170,7 @@ interface Batch extends ResourceWithCreation {
 }
 
 interface Item extends ResourceWithCreation {
-  mediaType: MediaType
+  mediaType: MediaType['id']
   startDate: string
   batchId: Batch['id']
   item_number: string
@@ -202,7 +203,6 @@ interface RCOStore {
   vaultLocation: VaultLocation[]
   mediaType: ActiveReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
-  platformOriginator: PlatformOriginator[]
   catCode: CatCode[]
   catHandling: CatHandle[]
   catCave: CatCave[]
@@ -254,7 +254,7 @@ interface Dispatch {
 }
 
 /** per instance config data. It is just intended to be one row deep */
-interface ConfigData {
+interface ConfigData extends RCOResource {
   /** singular name for project resource
    * test value: `Project`
    */

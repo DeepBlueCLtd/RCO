@@ -1,8 +1,6 @@
 import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
-const MediaType = ['DVD', 'Tape', 'Paper']
-
 export function generateRandomNumber(min: number, max: number): number {
   const array = new Uint32Array(1)
   const generatedRandomNumber = window.crypto.getRandomValues(array)
@@ -158,7 +156,8 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
-  user: number
+  user: number,
+  mediaType: number
 ): Item[] => {
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
@@ -185,7 +184,7 @@ export const generateItems = (
     const obj: Item = {
       id: offset + i,
       createdAt: nowDate(),
-      mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
+      mediaType: generateRandomNumber(1, mediaType - 1),
       startDate,
       batchId: batch.id,
       item_number: `${batchNumber}/${itemReference}`,

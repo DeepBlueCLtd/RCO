@@ -1,23 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
+  DateInput,
   EditButton,
   Form,
   Link,
   Loading,
   Show,
+  TextInput,
   TopToolbar,
   useShowContext
 } from 'react-admin'
-import CoreForm from './ItemForm/CoreForm'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
-import SourceInput from '../../components/SourceInput'
 import { Box, Typography, IconButton, type Theme } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import SourceField from '../../components/SourceField'
 import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type SystemStyleObject } from '@mui/system'
+import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
+import FlexBox from '../../components/FlexBox'
+import SourceInput from '../../components/SourceInput'
 
 interface ShowFormProps {
   setRecord: React.Dispatch<React.SetStateAction<Item | undefined>>
@@ -40,14 +43,138 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
         <constants.ICON_ITEM /> {pageTitle}
       </Typography>
       <Form>
-        <SourceInput
-          label=''
-          source='createdBy'
-          inputProps={{ disabled: true, label: 'Added by' }}
-          reference={constants.R_USERS}
+        <Details />
+        <Location />
+        <ProtectionBlockInputs
+          disabled={true}
+          markingSource='protectiveMarking'
         />
-        <CoreForm disabled />
+        <Remarks />
+        <Created />
       </Form>
+    </Box>
+  )
+}
+
+const Details = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Details
+        </Typography>
+      </legend>
+      <FlexBox>
+        <SourceInput
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          inputProps={{ sx, disabled: true }}
+        />
+        <TextInput label='Consec/Pages' source='consecPages' sx={sx} disabled />
+        <DateInput source='startDate' label='Start' sx={sx} disabled />
+        <DateInput source='endDate' label='End' sx={sx} disabled />
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Location = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Location
+        </Typography>
+      </legend>
+      <FlexBox>
+        <SourceInput
+          source='vaultLocation'
+          reference={constants.R_VAULT_LOCATION}
+          label='Vault location'
+          inputProps={{ sx, disabled: true }}
+        />
+        <TextInput
+          label='Muster remarks'
+          source='musterRemarks'
+          sx={sx}
+          disabled
+        />
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Remarks = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Remarks
+        </Typography>
+      </legend>
+      <FlexBox>
+        <TextInput source='remarks' sx={sx} disabled />
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Created = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Created
+        </Typography>
+      </legend>
+      <FlexBox>
+        <DateInput source='createdAt' sx={sx} disabled />
+        <SourceInput
+          source='createdBy'
+          reference={constants.R_USERS}
+          inputProps={{ sx, disabled: true }}
+        />
+      </FlexBox>
     </Box>
   )
 }
