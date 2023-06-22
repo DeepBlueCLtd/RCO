@@ -9,9 +9,6 @@ import {
   SelectColumnsButton,
   DateField,
   useShowContext,
-  ReferenceArrayField,
-  SingleFieldList,
-  ChipField,
   DatagridConfigurable,
   type DatagridConfigurableProps,
   TextField
@@ -30,9 +27,9 @@ import { IconButton, Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
-import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
 import SourceField from '../../components/SourceField'
+import RefTableFieldWithLabel from '../../components/RefTableFieldWithLabel'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -110,19 +107,6 @@ const HistoryModal = ({
     />
   )
 }
-
-const ReferenceArrayFieldWithLabel = (): React.ReactElement => (
-  <Box>
-    <Typography fontWeight='bold' sx={{ minWidth: '300px' }}>
-      Cat Cave
-    </Typography>
-    <ReferenceArrayField source='catCave' reference={constants.R_CAT_CAVE}>
-      <SingleFieldList>
-        <ChipField source='name' />
-      </SingleFieldList>
-    </ReferenceArrayField>
-  </Box>
-)
 
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
@@ -202,20 +186,28 @@ export default function BatchShow(): React.ReactElement {
             />
           </FlexBox>
           <FlexBox alignItems='flex-start'>
-            <StyledFieldWithLabel
+            <RefTableFieldWithLabel<BatchCode, CatCode>
               label='Cat Code'
-              source={constants.R_CAT_CODE}
+              labelField='catCode'
               reference={constants.R_CAT_CODE}
+              resourceTable={constants.R_BATCH_CODE}
             />
-            <StyledFieldWithLabel
+            <RefTableFieldWithLabel<BatchHandling, CatHandle>
               label='Cat Handling'
-              source={constants.R_CAT_HANDLING}
+              labelField='catHandling'
               reference={constants.R_CAT_HANDLING}
+              resourceTable={constants.R_BATCH_HANDLE}
             />
           </FlexBox>
           <FlexBox alignItems='flex-start'>
             <StyledFieldWithLabel label='Created' source='createdAt' />
-            <ReferenceArrayFieldWithLabel />
+            <RefTableFieldWithLabel<BatchCave, CatCave>
+              label='Cat Cave'
+              reference={constants.R_CAT_CAVE}
+              resourceTable={constants.R_BATCH_CAVE}
+              multiple={true}
+              labelField='catCave'
+            />
           </FlexBox>
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>

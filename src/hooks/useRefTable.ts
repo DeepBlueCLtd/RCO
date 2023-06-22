@@ -32,24 +32,28 @@ export default function useRefTable(
           (item: Record<string, any>) => item.id
         )
         deleteMany(refTable, { ids: idsToDelete })
-          .then(() => { createRecord(id, data) })
+          .then(() => {
+            createRecord(id, data)
+          })
           .catch(console.log)
       })
       .catch(console.log)
   }
 
   const createRecord = (id: number, data?: number[]): void => {
-    const promiseArray = data?.map(async (sId: number) => {
-      return await create(refTable, {
-        data: {
-          [source]: sId,
-          [resource]: id
-        }
+    try {
+      data?.map(async (sId: number) => {
+        return create(refTable, {
+          data: {
+            [source]: sId,
+            [resource]: id
+          }
+        })
       })
-    })
-    Promise.allSettled(promiseArray ?? [])
-      .then(() => { redirect(`/${resource}`) })
-      .catch(console.log)
+      redirect(`/${resource}`)
+    } catch (error: any) {
+      console.log(error)
+    }
   }
 
   return {

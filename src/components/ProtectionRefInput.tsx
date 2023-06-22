@@ -1,12 +1,15 @@
 import {
+  Chip,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
   type SelectChangeEvent,
-  type SelectProps
+  type SelectProps,
+  Typography
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import useRefTable from '../hooks/useRefTable'
 import {
@@ -15,6 +18,7 @@ import {
   useRecordContext,
   useResourceContext
 } from 'react-admin'
+import { Box, SxProps } from '@mui/system'
 
 interface Props<T, RefTable> {
   reference: string
@@ -23,7 +27,10 @@ interface Props<T, RefTable> {
   itemId?: number
   label: string
   labelField: keyof T
+  sx?: SxProps
 }
+
+type SelectedIdType = number | number[]
 
 export default function ProtectionRefInput<
   T extends RaRecord,
@@ -37,13 +44,15 @@ export default function ProtectionRefInput<
     label,
     multiple,
     labelField,
+    sx,
     ...rest
   } = props
   const [data, setData] = useState<number[] | number>([])
   const record = useRecordContext()
   const resource = useResourceContext()
   const {
-    formState: { isSubmitted }
+    formState: { isSubmitted, isSubmitting, errors },
+    setValue
   } = useFormContext()
 
   const { createRecord, updateRecord } = useRefTable(
@@ -54,6 +63,14 @@ export default function ProtectionRefInput<
 
   const { data: options = [] } = useGetList<T>(reference)
 
+  const labelById = useMemo(() => {
+    const results: Record<number, T> = {}
+    options.forEach((option) => {
+      results[option.id] = option
+    })
+    return results
+  }, [options])
+
   const { data: selectedItems = [] } = useGetList<RefTable>(refTable, {
     filter: {
       [resource]: record?.id
@@ -61,7 +78,9 @@ export default function ProtectionRefInput<
   })
 
   const handleChange = (ev: SelectChangeEvent<typeof data>): void => {
-    setData(ev.target.value as number | number[])
+    const value = ev.target.value as SelectedIdType
+    setData(value)
+    setValue(source as string, value)
   }
 
   useEffect(() => {
@@ -80,16 +99,45 @@ export default function ProtectionRefInput<
         createRecord(id, selectedData)
       }
     }
-  }, [isSubmitted])
+  }, [isSubmitted, isSubmitting])
+
+  const getLabelById = (id: number): string | undefined =>
+    labelById[id]?.[labelField]
+
+  const error: string = (errors[source as string]?.message as string) ?? ''
+
+  const RenderValue = ({ selected }: SelectedIdType) => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 0.5
+        }}>
+        {typeof selected !== 'number' ? (
+          selected.map((value: number) => (
+            <Chip key={value} label={getLabelById(value)} />
+          ))
+        ) : (
+          <Typography key={selected}>{getLabelById(selected)}</Typography>
+        )}
+      </Box>
+    )
+  }
+
   return (
-    <FormControl variant='filled' sx={{ width: '100%', padding: 0 }}>
+    <FormControl
+      variant='filled'
+      sx={{ width: '100%', padding: 0, ...sx }}
+      error={Boolean(error)}>
       <InputLabel id={rest.id}>{label}</InputLabel>
       <Select<typeof data>
         {...rest}
         defaultValue={rest.defaultValue as typeof data}
         multiple={multiple}
         value={data}
-        onChange={handleChange}>
+        onChange={handleChange}
+        renderValue={(selected) => <RenderValue selected={selected} />}>
         {options.map((item: T) => {
           const { id } = item
           return (
@@ -99,6 +147,7 @@ export default function ProtectionRefInput<
           )
         })}
       </Select>
+      {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   )
 }

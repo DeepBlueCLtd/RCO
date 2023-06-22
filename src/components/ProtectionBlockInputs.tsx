@@ -52,6 +52,13 @@ export default function ProtectionBlockInputs<
           label='Cat code'
           {...protectionInputProps}
           multiple={false}
+          sx={{ width: '20%' }}
+        />
+        <SourceInput
+          source={markingSource}
+          filter={isEdit === true ? {} : { active: true }}
+          reference={constants.R_PROTECTIVE_MARKING}
+          inputProps={{ ...inputProps, sx: { width: '20%' } }}
         />
         <ProtectionRefInput<CatHandle, TCatHandle>
           reference={constants.R_CAT_HANDLING}
@@ -62,12 +69,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           {...protectionInputProps}
           multiple={false}
-        />
-        <SourceInput
-          source={markingSource}
-          filter={isEdit === true ? {} : { active: true }}
-          reference={constants.R_PROTECTIVE_MARKING}
-          inputProps={inputProps}
+          sx={{ width: '30%' }}
         />
         <ProtectionRefInput<CatCave, TCatCave>
           reference={constants.R_CAT_CAVE}
@@ -77,6 +79,7 @@ export default function ProtectionBlockInputs<
           itemId={id}
           label='Cat cave'
           {...protectionInputProps}
+          sx={{ width: '30%' }}
         />
       </FlexBox>
     </Box>
