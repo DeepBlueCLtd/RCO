@@ -1,8 +1,8 @@
-import { RaRecord, useGetList, useResourceContext } from 'react-admin'
+import { type RaRecord, useGetList, useResourceContext } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import { Typography, Box, Chip } from '@mui/material'
 
-interface RefTableFieldWithLabelProps<T extends RaRecord, ResourceType> {
+interface RefTableFieldWithLabelProps<T extends RaRecord> {
   label: string
   reference: string
   resourceTable: string

@@ -18,7 +18,7 @@ import {
   useRecordContext,
   useResourceContext
 } from 'react-admin'
-import { Box, SxProps } from '@mui/system'
+import { Box, type SxProps } from '@mui/system'
 
 interface Props<T, RefTable> {
   reference: string
@@ -106,7 +106,7 @@ export default function ProtectionRefInput<
 
   const error: string = (errors[source as string]?.message as string) ?? ''
 
-  const RenderValue = ({ selected }: SelectedIdType) => {
+  const RenderValue = ({ selected }: SelectedIdType): React.ReactElement => {
     return (
       <Box
         sx={{
