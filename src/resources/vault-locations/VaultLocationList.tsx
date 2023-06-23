@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { BooleanField, FunctionField, List } from 'react-admin'
+import { BooleanField, FunctionField, List, TextField } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import * as constants from '../../constants'
@@ -45,6 +45,7 @@ export default function VaultLocationList(): React.ReactElement {
       <DatagridConfigurableWithShow
         resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
+        <TextField source='id' label='ID' />
         <FunctionField
           style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}

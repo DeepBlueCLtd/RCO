@@ -26,7 +26,6 @@ export const R_AUDIT = 'audit'
 export const R_VAULT_LOCATION = 'vaultLocation'
 export const R_ORGANISATION = 'organisation'
 export const R_LOANS = 'loan'
-export const R_PLATFORM_ORIGINATOR = 'platformOriginator'
 export const R_PROTECTIVE_MARKING = 'protectiveMarking'
 export const R_CAT_CODE = 'catCode'
 export const R_CAT_HANDLING = 'catHandling'
@@ -54,9 +53,12 @@ export type ResourceTypes =
   | typeof R_CAT_CODE
   | typeof R_CAT_HANDLING
   | typeof R_CAT_CAVE
-  | typeof R_PLATFORM_ORIGINATOR
   | typeof R_DISPATCH
   | typeof R_ALL_ITEMS
+  | typeof R_DESTRUCTION
+  | typeof R_DISPATCH
+  | typeof R_ADDRESSES
+  | typeof R_CONFIG
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
