@@ -112,7 +112,7 @@ const assignItemsToRandomActiveUser = (
 const loadDefaultData = async (
   userId?: number,
   isHigh?: boolean
-): Promise<void> => {
+): Promise<DataProvider> => {
   await localForage.clear()
 
   const user = typeof userId === 'undefined' ? users[0].id : userId
@@ -258,6 +258,7 @@ const loadDefaultData = async (
         }
     }
   }
+  return dataprovider
 }
 
 export default loadDefaultData
