@@ -56,30 +56,42 @@ function App(): React.ReactElement {
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
-      getDataProvider(loggingPref)
+      checktDefault()
         .then((provider) => {
-          setDataProvider(provider)
-          const authenticationProvider = rcoAuthProvider(provider)
-          setAuthProvider(authenticationProvider)
-          authenticationProvider
-            .getPermissions({})
-            .then(setPermissions)
-            .catch(console.log)
-          if (provider !== undefined && dataProvider === undefined) {
-            const queryParams = new URLSearchParams(window.location.search)
-            const username = queryParams.get('username')
-            const password = queryParams.get('password')
-            if (username !== null && password !== null) {
-              authenticationProvider
-                .login({ username, password })
-                .then((_: any) => {
-                  window.history.replaceState({}, '', window.location.pathname)
-                })
-                .catch(console.log)
-            }
+          if (provider !== null) {
+            populate(provider)
+          } else {
+            getDataProvider(loggingPref)
+              .then((provider) => {
+                populate(provider)
+              })
+              .catch(console.log)
           }
         })
         .catch(console.log)
+    }
+  }
+
+  const populate = (provider: DataProvider): void => {
+    setDataProvider(provider)
+    const authenticationProvider = rcoAuthProvider(provider)
+    setAuthProvider(authenticationProvider)
+    authenticationProvider
+      .getPermissions({})
+      .then(setPermissions)
+      .catch(console.log)
+    if (provider !== undefined && dataProvider === undefined) {
+      const queryParams = new URLSearchParams(window.location.search)
+      const username = queryParams.get('username')
+      const password = queryParams.get('password')
+      if (username !== null && password !== null) {
+        authenticationProvider
+          .login({ username, password })
+          .then((_: any) => {
+            window.history.replaceState({}, '', window.location.pathname)
+          })
+          .catch(console.log)
+      }
     }
   }
 
@@ -164,17 +176,14 @@ function App(): React.ReactElement {
     getConfigData().catch(console.log)
   }, [dataProvider])
 
-  useEffect(() => {
-    const checktDefault = async (): Promise<void> => {
-      if (dataProvider !== undefined) {
-        const localForageData = await localForage.keys()
-        if (localForageData.length === 0) {
-          await loadDefaultData()
-        }
-      }
+  const checktDefault = async (): Promise<DataProvider | null> => {
+    const localForageData = await localForage.keys()
+    if (localForageData.length === 0) {
+      const dataprovider = await loadDefaultData()
+      return dataprovider
     }
-    checktDefault().catch(console.error)
-  }, [dataProvider])
+    return null
+  }
 
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
