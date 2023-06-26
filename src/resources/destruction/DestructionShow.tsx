@@ -266,7 +266,12 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='item_number' label='Reference' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
       <TextField source='mediaType' label='Media type' />
       <SourceField
         source='protectiveMarking'
