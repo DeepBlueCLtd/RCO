@@ -66,7 +66,7 @@ test.describe('LOAN ITEM', async () => {
     const currentDay = String(currentDate.getDate()).padStart(2, '0')
     const currentHours = String(currentDate.getHours()).padStart(2, '0')
     const currentMinutes = String(currentDate.getMinutes()).padStart(2, '0')
-    const formattedStartDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHours}:${currentMinutes}`
+    const formattedStartDate = `${currentYear}-${currentMonth}-${currentDay}`
     await startDate.fill(formattedStartDate)
 
     // Select future date and fill endDate
@@ -75,9 +75,9 @@ test.describe('LOAN ITEM', async () => {
     const newYear = nextDate.getFullYear()
     const newMonth = String(nextDate.getMonth() + 1).padStart(2, '0')
     const newDay = String(nextDate.getDate()).padStart(2, '0')
+    const formattedEndDate = `${newYear}-${newMonth}-${newDay}`
     const newHours = String(nextDate.getHours()).padStart(2, '0')
     const newMinutes = String(nextDate.getMinutes()).padStart(2, '0')
-    const formattedEndDate = `${newYear}-${newMonth}-${newDay}T${newHours}:${newMinutes}`
     const endDate = await page.locator('#endDate')
     await endDate.fill(formattedEndDate)
 
@@ -88,16 +88,29 @@ test.describe('LOAN ITEM', async () => {
     //Add notes
     await page.getByLabel('Receipt notes').fill('Testing Notes')
 
-    // Click on save button
-    await page.click('button:has-text("Save")')
-    projectName = await page
-      .locator('//p[text()="Project"]/../span')
+    // // Extract values for assertions
+    const platformValue = await page.locator('#platform').inputValue()
+    const projectName = await page.locator('input[id="project"]').inputValue()
+
+    const remarksText = await page.locator('#remarks').textContent()
+    const receiptNoteText = await page.locator('#receiptNotes').textContent()
+    const catCode = await page.locator('#catCode').inputValue()
+    const protectiveMarking = await page
+      .locator('#protectiveMarking')
+      .inputValue()
+    const catHandling = await page.locator('#catHandling').inputValue()
+    const catCave = await page
+      .locator('(//input[@id="catCave"]/..//span)[1]')
       .innerText()
 
-    refId = (await page
-      .locator('//div[@id="main-content"]//span[1]//div[3]/span')
+    // // Click on save button
+    await page.click('button:has-text("Save")')
+
+    refId = refId = (await page
+      .locator('div#main-content div[class*="RaShow-noActions"] span')
       .textContent()) as string
 
+    // Create loan item
     await page.getByRole('menuitem', { name: 'Batches' }).click()
     await page.getByPlaceholder('Search').click()
     await page.getByPlaceholder('Search').fill(refId)
@@ -105,11 +118,11 @@ test.describe('LOAN ITEM', async () => {
     await page.getByRole('tab', { name: 'Items' }).click()
     await page.getByRole('link', { name: 'ADD ITEM' }).click()
     await page.getByLabel('Media type').click()
-    await page.getByRole('option', { name: 'DVD' }).click()
+    await page.getByRole('option', { name: 'Media:29' }).click()
     await page.getByLabel('Consec/Pages').click()
     await page.getByLabel('Consec/Pages').fill('125/2022')
 
-    cosecValue = await page.locator('textarea#consecPages').inputValue()
+    // cosecValue = await page.locator('textarea#consecPages').inputValue()
 
     await page.getByLabel('Cat code').click()
     await page.getByRole('option', { name: 'Cat Code:7' }).click()
@@ -120,18 +133,22 @@ test.describe('LOAN ITEM', async () => {
     await page.getByLabel('Cat cave').click()
     await page.getByRole('option', { name: 'Cat Cave:8' }).click()
 
-    await page.locator('#startDate').fill(formattedStartDate)
-    await page.locator('#endDate').fill(formattedEndDate)
+    await page
+      .locator('#startDate')
+      .fill(`${formattedStartDate}T${currentHours}:${currentMinutes}`)
+    await page
+      .locator('#endDate')
+      .fill(`${formattedEndDate}T${newHours}:${newMinutes}`)
 
     await page.getByLabel('Remarks', { exact: true }).click()
     await page.getByLabel('Remarks', { exact: true }).fill('Remarks')
     await page.getByLabel('Muster remarks').click()
     await page.getByLabel('Muster remarks').fill('Muster')
-
-    mediaTypeValue = await page.locator('input#mediaType').inputValue()
-    protectiveMarking = await page
+    const protectiveMarketingValue = await page
       .locator('input#protectiveMarking')
       .inputValue()
+
+    const mediaTypeValue = await page.locator('input#mediaType').inputValue()
 
     await page.getByRole('button', { name: 'Save and Create' }).click()
 
@@ -147,8 +164,14 @@ test.describe('LOAN ITEM', async () => {
 
     await page.getByRole('tab', { name: 'Items' }).click()
 
+    await page.getByRole('menuitem', { name: 'Batches' }).click()
+    await page.getByPlaceholder('Search').click()
+    await page.getByPlaceholder('Search').fill(refId)
+    await page.getByRole('cell', { name: refId }).click()
+    await page.getByRole('tab', { name: 'Items' }).click()
+
     itemrefId = await page
-      .locator(`//tbody/tr/td[3]//span[text()="${refId}/1"]`)
+      .locator(`//tbody/tr/td[2]//span[text()="${refId}/1"]`)
       .innerText()
   })
 
@@ -160,7 +183,7 @@ test.describe('LOAN ITEM', async () => {
     await page.getByRole('tab', { name: 'Items' }).click()
     await page
       .locator(
-        `//tbody/tr/td[3]//span[text()="${itemrefId}"]/../../td[1]//input`
+        `//tbody/tr/td[2]//span[text()="${itemrefId}"]/../../td[1]//input`
       )
       .check()
 

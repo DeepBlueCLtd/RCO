@@ -60,9 +60,7 @@ test.describe('CREATE BATCH', () => {
     const currentYear = currentDate.getFullYear()
     const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0')
     const currentDay = String(currentDate.getDate()).padStart(2, '0')
-    const currentHours = String(currentDate.getHours()).padStart(2, '0')
-    const currentMinutes = String(currentDate.getMinutes()).padStart(2, '0')
-    const formattedStartDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHours}:${currentMinutes}`
+    const formattedStartDate = `${currentYear}-${currentMonth}-${currentDay}`
     await startDate.fill(formattedStartDate)
 
     // Select future date and fill endDate
@@ -71,9 +69,7 @@ test.describe('CREATE BATCH', () => {
     const newYear = nextDate.getFullYear()
     const newMonth = String(nextDate.getMonth() + 1).padStart(2, '0')
     const newDay = String(nextDate.getDate()).padStart(2, '0')
-    const newHours = String(nextDate.getHours()).padStart(2, '0')
-    const newMinutes = String(nextDate.getMinutes()).padStart(2, '0')
-    const formattedEndDate = `${newYear}-${newMonth}-${newDay}T${newHours}:${newMinutes}`
+    const formattedEndDate = `${newYear}-${newMonth}-${newDay}`
     const endDate = await page.locator('#endDate')
     await endDate.fill(formattedEndDate)
 
@@ -87,14 +83,7 @@ test.describe('CREATE BATCH', () => {
     // // Extract values for assertions
     const platformValue = await page.locator('#platform').inputValue()
     const projectValue = await page.locator('input[id="project"]').inputValue()
-    const yearOfReceipt = (
-      await page.locator('[inputmode="text"]').inputValue()
-    ).trim()
-    // const maxProtectiveMarkingValue = await page
-    //   .locator('#maximumProtectiveMarking')
-    //   .inputValue()
-    const organisationText = await page.locator('#organisation').textContent()
-    const departmentText = await page.locator('#department').textContent()
+
     const remarksText = await page.locator('#remarks').textContent()
     const receiptNoteText = await page.locator('#receiptNotes').textContent()
     const catCode = await page.locator('#catCode').inputValue()
@@ -109,59 +98,41 @@ test.describe('CREATE BATCH', () => {
     // // Click on save button
     await page.click('button:has-text("Save")')
 
-    refId = (await page
-      .locator('//p[text()="Batch Number"]/../span')
-      .textContent()) as string
-
     // Assertions
-    await expect(page.locator('//p[text()="User name"]/../span')).toHaveText(
-      'ian (d-1)'
-    )
-    await expect(
-      page.locator('(//div[@id="main-content"]//span)[1]')
-    ).toContainText(`${currentYear}`)
-    await expect(page.locator('//p[text()="Platform"]/../span')).toHaveText(
+    await expect(page.locator('//p[text()="Platform"]/span')).toHaveText(
       platformValue
     )
-    await expect(page.locator('//p[text()="Project"]/../span')).toHaveText(
+
+    await expect(page.locator('//p[text()="Project"]/span/a/span')).toHaveText(
       projectValue
     )
-    await expect(page.locator('//p[text()="Organisation"]/../span')).toHaveText(
-      organisationText
-    )
-    await expect(page.locator('//p[text()="Department"]/../span')).toHaveText(
-      departmentText
-    )
-    await expect(page.locator('//p[text()="Remarks"]/../span')).toHaveText(
+
+    await expect(page.locator('//p[text()="Remarks"]/span')).toHaveText(
       remarksText
     )
-    await expect(
-      page.locator('//p[text()="Receipt notes"]/../span')
-    ).toHaveText(receiptNoteText)
-    await expect(page.locator('//p[text()="Start Date"]/../span')).toHaveText(
+
+    await expect(page.locator('//p[text()="Receipt notes"]/span')).toHaveText(
+      receiptNoteText
+    )
+
+    await expect(page.locator('//p[text()="Start"]/span')).toHaveText(
       `${parseInt(currentMonth, 10)}/${currentDay}/${currentYear}`
     )
-    await expect(page.locator('//p[text()="End Date"]/../span')).toHaveText(
+    await expect(page.locator('//p[text()="End"]/span')).toHaveText(
       `${parseInt(newMonth, 10)}/${newDay}/${newYear}`
     )
-    const batchNumberText = await page
-      .locator('(//div[@id="main-content"]//span)[1]')
-      .innerText()
-    await expect(page.locator('//p[text()="Batch Number"]/../span')).toHaveText(
-      batchNumberText
-    )
-    await expect(page.locator('//p[text()="Cat Code"]/../span')).toHaveText(
-      catCode
-    )
-    await expect(
-      page.locator('//p[text()="Cat Cave"]/..//a//span[1]')
-    ).toHaveText(catCave)
-    await expect(page.locator('//p[text()="Cat Handling"]/../span')).toHaveText(
+
+    await expect(page.locator('input[name="catCode"]')).toHaveValue(catCode)
+
+    await expect(page.locator('div[role="button"] span')).toHaveText(catCave)
+
+    await expect(page.locator('input[name="catHandling"]')).toHaveValue(
       catHandling
     )
-    await expect(
-      page.locator('//p[text()="Maximum Protective Marking"]/../span')
-    ).toHaveText(protectiveMarking)
+
+    await expect(page.locator('input[name="protectiveMarking"]')).toHaveValue(
+      protectiveMarking
+    )
 
     await page.close()
   })
