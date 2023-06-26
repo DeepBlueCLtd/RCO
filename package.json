@@ -9,7 +9,7 @@
   "homepage": ".",
   "scripts": {
     "dev": "vite --open",
-    "build": "tsc && vite --max_old_space_size=4096 build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --max-warnings=0",
     "format": "prettier . --write",

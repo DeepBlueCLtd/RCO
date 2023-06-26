@@ -213,7 +213,7 @@ export default function BatchShow(): React.ReactElement {
             <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
               disabled={true}
               markingSource='protectiveMarking'
-              id={id}
+              id={parseInt(id as string)}
               refTables={{
                 catCave: constants.R_BATCH_CAVE,
                 catCode: constants.R_BATCH_CODE,

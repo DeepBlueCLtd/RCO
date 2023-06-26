@@ -52,7 +52,7 @@ export default function ProtectionBlockInputs<
           label='Cat code'
           {...protectionInputProps}
           multiple={false}
-          sx={{ width: '20%' }}
+          width='20%'
         />
         <SourceInput
           source={markingSource}
@@ -69,7 +69,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           {...protectionInputProps}
           multiple={false}
-          sx={{ width: '30%' }}
+          width='30%'
         />
         <ProtectionRefInput<CatCave, TCatCave>
           reference={constants.R_CAT_CAVE}
@@ -79,7 +79,7 @@ export default function ProtectionBlockInputs<
           itemId={id}
           label='Cat cave'
           {...protectionInputProps}
-          sx={{ width: '30%' }}
+          width='30%'
         />
       </FlexBox>
     </Box>

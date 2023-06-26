@@ -1,13 +1,17 @@
-import { type RaRecord, useGetList, useResourceContext } from 'react-admin'
+import { type RaRecord, useGetList } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import { Typography, Box, Chip } from '@mui/material'
 
-interface RefTableFieldWithLabelProps<T extends RaRecord> {
+interface RefTableFieldWithLabelProps<
+  T extends RaRecord,
+  ResourceType extends RaRecord
+> {
   label: string
   reference: string
   resourceTable: string
   multiple?: boolean
   labelField: keyof T
+  resource: keyof ResourceType
 }
 
 export default function RefTableFieldWithLabel<
@@ -19,11 +23,11 @@ export default function RefTableFieldWithLabel<
     reference,
     resourceTable,
     multiple = false,
-    labelField
+    labelField,
+    resource
   } = props
 
   const { data: referenceData = [] } = useGetList<T>(reference)
-  const resource = useResourceContext()
   const { id } = useParams()
 
   const { data = [], isLoading } = useGetList<ResourceType>(resourceTable, {
@@ -42,7 +46,7 @@ export default function RefTableFieldWithLabel<
           const { id, [labelField]: fieldId } = item
           const value = referenceData?.find(
             (item: T) => item.id === fieldId
-          ).name
+          )?.name
           return multiple ? (
             <Chip sx={{ marginRight: 0.4 }} key={id} label={`${value}`} />
           ) : (

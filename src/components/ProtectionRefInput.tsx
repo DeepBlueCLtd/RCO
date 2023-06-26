@@ -18,7 +18,7 @@ import {
   useRecordContext,
   useResourceContext
 } from 'react-admin'
-import { Box, type SxProps } from '@mui/system'
+import { Box } from '@mui/system'
 
 interface Props<T, RefTable> {
   reference: string
@@ -27,7 +27,7 @@ interface Props<T, RefTable> {
   itemId?: number
   label: string
   labelField: keyof T
-  sx?: SxProps
+  width: string
 }
 
 type SelectedIdType = number | number[]
@@ -44,7 +44,7 @@ export default function ProtectionRefInput<
     label,
     multiple,
     labelField,
-    sx,
+    width = '100%',
     ...rest
   } = props
   const [data, setData] = useState<number[] | number>([])
@@ -66,7 +66,7 @@ export default function ProtectionRefInput<
   const labelById = useMemo(() => {
     const results: Record<number, T> = {}
     options.forEach((option) => {
-      results[option.id] = option
+      results[option.id as number] = option
     })
     return results
   }, [options])
@@ -106,7 +106,11 @@ export default function ProtectionRefInput<
 
   const error: string = (errors[source as string]?.message as string) ?? ''
 
-  const RenderValue = ({ selected }: SelectedIdType): React.ReactElement => {
+  const RenderValue = ({
+    selected
+  }: {
+    selected: SelectedIdType
+  }): React.ReactElement => {
     return (
       <Box
         sx={{
@@ -128,7 +132,7 @@ export default function ProtectionRefInput<
   return (
     <FormControl
       variant='filled'
-      sx={{ width: '100%', padding: 0, ...sx }}
+      sx={{ width, padding: 0 }}
       error={Boolean(error)}>
       <InputLabel id={rest.id}>{label}</InputLabel>
       <Select<typeof data>
