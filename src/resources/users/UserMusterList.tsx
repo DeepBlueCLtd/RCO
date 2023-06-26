@@ -95,7 +95,12 @@ export default function UserMusterList(props: Props): React.ReactElement {
                 </Show>
                 <ItemsReport filter={{ loanedTo: userId }}>
                   <TextField source='item_number' label='Item Number' />
-                  <TextField source='mediaType' label='Media type' />
+                  <SourceField
+                    link='show'
+                    source='mediaType'
+                    reference={constants.R_MEDIA_TYPE}
+                    label='Media type'
+                  />
                   <SourceField
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}

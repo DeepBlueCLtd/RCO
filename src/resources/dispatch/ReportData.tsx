@@ -62,7 +62,12 @@ const ItemListBox = (): React.ReactElement => {
           dispatchJob: id
         }}>
         <TextField source='item_number' />
-        <TextField source='mediaType' />
+        <SourceField
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
         <TextField source='consecPages' label='Consec/Sheets' />
         <SourceField
           reference={constants.R_PROTECTIVE_MARKING}
