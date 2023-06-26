@@ -84,7 +84,12 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
           destruction: recordId
         }}>
         <TextField source='item_number' />
-        <TextField source='mediaType' />
+        <SourceField
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
         <TextField source='consecPages' label='Srl/Pages' />
         <SourceField
           reference={constants.R_PROTECTIVE_MARKING}

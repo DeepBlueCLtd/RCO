@@ -152,7 +152,12 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     {...props}
                     footer={ProtectiveMarking}>
                     <TextField source='item_number' label='Item Number' />
-                    <TextField source='mediaType' label='Media type' />
+                    <SourceField
+                      link='show'
+                      source='mediaType'
+                      reference={constants.R_MEDIA_TYPE}
+                      label='Media type'
+                    />
                     <TextField source='consecPages' label='Consec/Pages' />
                     <SourceField
                       source='protectiveMarking'

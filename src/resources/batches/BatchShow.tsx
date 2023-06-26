@@ -9,33 +9,125 @@ import {
   SelectColumnsButton,
   DateField,
   useShowContext,
-  ReferenceArrayField,
-  SingleFieldList,
-  ChipField,
   DatagridConfigurable,
   type DatagridConfigurableProps,
-  TextField
+  TextField,
+  Form
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import { ICON_ITEM, ICON_DETAILS } from '../../constants'
 import ItemList from '../items/ItemList'
 import FlexBox from '../../components/FlexBox'
-import FieldWithLabel, {
-  type FieldWithLabelProps
-} from '../../components/FieldWithLabel'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
-import { IconButton, Typography } from '@mui/material'
+import { IconButton, Typography, Box } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
-import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
 import SourceField from '../../components/SourceField'
+import { ValueField } from '../projects/ProjectShow'
+import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
+}
+
+const Created = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Created
+        </Typography>
+      </legend>
+      <FlexBox sx={{ padding: '10px 0' }}>
+        <ValueField label='Created at' sx={sx}>
+          <DateField source='createdAt' />
+        </ValueField>
+        <ValueField label='Created by' sx={sx}>
+          <SourceField source='createdBy' reference={constants.R_USERS} />
+        </ValueField>
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Remarks = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Remarks
+        </Typography>
+      </legend>
+      <FlexBox sx={{ padding: '10px 0' }}>
+        <ValueField label='Remarks' sx={sx}>
+          <TextField source='remarks' />
+        </ValueField>
+        <ValueField label='Receipt notes' sx={sx}>
+          <TextField source='receiptNotes' />
+        </ValueField>
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Details = (): React.ReactElement => {
+  const configData = useConfigData()
+
+  const sx = { width: '100%' }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Details
+        </Typography>
+      </legend>
+      <FlexBox sx={{ padding: '10px 0' }}>
+        <ValueField label={configData?.projectName ?? 'Project'} sx={sx}>
+          <SourceField source='project' reference={constants.R_PROJECTS} />
+        </ValueField>
+        <ValueField label='Platform' sx={sx}>
+          <SourceField source='platform' reference={constants.R_PLATFORMS} />
+        </ValueField>
+        <ValueField label='Start' sx={sx}>
+          <DateField source='startDate' />
+        </ValueField>
+        <ValueField label='End' sx={sx}>
+          <DateField source='endDate' />
+        </ValueField>
+      </FlexBox>
+    </Box>
+  )
 }
 
 const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
@@ -77,17 +169,6 @@ const ItemActions = (): React.ReactElement => {
   )
 }
 
-function StyledFieldWithLabel(props: FieldWithLabelProps): React.ReactElement {
-  return (
-    <FieldWithLabel
-      labelPosition='top'
-      separator=''
-      labelStyles={{ minWidth: '300px' }}
-      {...props}
-    />
-  )
-}
-
 export interface HistoryProps {
   handleOpen: (open: boolean) => void
   open: boolean
@@ -111,24 +192,10 @@ const HistoryModal = ({
   )
 }
 
-const ReferenceArrayFieldWithLabel = (): React.ReactElement => (
-  <Box>
-    <Typography fontWeight='bold' sx={{ minWidth: '300px' }}>
-      Cat Cave
-    </Typography>
-    <ReferenceArrayField source='catCave' reference={constants.R_CAT_CAVE}>
-      <SingleFieldList>
-        <ChipField source='name' />
-      </SingleFieldList>
-    </ReferenceArrayField>
-  </Box>
-)
-
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
-  const pageTitle = 'View Batch'
+  const pageTitle = 'Batch Show'
   const [open, setOpen] = useState(false)
-  const configData = useConfigData()
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
@@ -141,82 +208,22 @@ export default function BatchShow(): React.ReactElement {
       </Typography>
       <TabbedShowLayout sx={{ paddingBottom: '4px' }}>
         <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
-          <FlexBox>
-            <StyledFieldWithLabel label='Id' source='id' />
-            <StyledFieldWithLabel
-              label='User name'
-              source='createdBy'
-              reference={constants.R_USERS}
+          <Details />
+          <Form>
+            <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
+              disabled={true}
+              markingSource='protectiveMarking'
+              id={parseInt(id as string)}
+              refTables={{
+                catCave: constants.R_BATCH_CAVE,
+                catCode: constants.R_BATCH_CODE,
+                catHandle: constants.R_BATCH_HANDLE
+              }}
+              resource={constants.R_BATCHES}
             />
-            <StyledFieldWithLabel label='Batch Number' source='batchNumber' />
-          </FlexBox>
-          <FlexBox>
-            <StyledFieldWithLabel
-              label='Year of Receipt'
-              source='yearOfReceipt'
-            />
-            <StyledFieldWithLabel
-              label={configData?.projectName as string}
-              source='project'
-              reference={constants.R_PROJECTS}
-            />
-          </FlexBox>
-          <FlexBox>
-            <StyledFieldWithLabel
-              source={constants.R_PLATFORMS}
-              label='Platform'
-              reference={constants.R_PLATFORMS}
-            />
-            <StyledFieldWithLabel
-              source={constants.R_ORGANISATION}
-              label='Organisation'
-              reference={constants.R_ORGANISATION}
-            />
-          </FlexBox>
-          <FlexBox>
-            <StyledFieldWithLabel
-              label='Department'
-              source={constants.R_DEPARTMENT}
-              reference={constants.R_DEPARTMENT}
-            />
-            <StyledFieldWithLabel
-              label='Maximum Protective Marking'
-              source={constants.R_PROTECTIVE_MARKING}
-              reference={constants.R_PROTECTIVE_MARKING}
-            />
-          </FlexBox>
-          <FlexBox>
-            <StyledFieldWithLabel label='Remarks' source='remarks' />
-            <StyledFieldWithLabel label='Receipt notes' source='receiptNotes' />
-          </FlexBox>
-          <FlexBox>
-            <StyledFieldWithLabel
-              component={DateField}
-              label='Start Date'
-              source='startDate'
-            />
-            <StyledFieldWithLabel
-              component={DateField}
-              label='End Date'
-              source='endDate'
-            />
-          </FlexBox>
-          <FlexBox alignItems='flex-start'>
-            <StyledFieldWithLabel
-              label='Cat Code'
-              source={constants.R_CAT_CODE}
-              reference={constants.R_CAT_CODE}
-            />
-            <StyledFieldWithLabel
-              label='Cat Handling'
-              source={constants.R_CAT_HANDLING}
-              reference={constants.R_CAT_HANDLING}
-            />
-          </FlexBox>
-          <FlexBox alignItems='flex-start'>
-            <StyledFieldWithLabel label='Created' source='createdAt' />
-            <ReferenceArrayFieldWithLabel />
-          </FlexBox>
+          </Form>
+          <Remarks />
+          <Created />
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>
           <ItemList
@@ -246,7 +253,12 @@ function ItemListDataTable(
       preferenceKey={props.preferenceKey}
       {...props}>
       <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
       <TextField source='remarks' />
       <SourceField

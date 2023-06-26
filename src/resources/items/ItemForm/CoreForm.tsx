@@ -20,10 +20,11 @@ const sx = { width: '100%' }
 interface Props {
   batchId?: number
   disabled?: boolean
+  itemId?: Item['id']
 }
 
 const CoreForm = (props: Props): React.ReactElement => {
-  const { batchId, disabled } = props
+  const { batchId, disabled, itemId } = props
   const formContext = useFormContext()
   const [mediaTypes, setMediaTypes] = useState<any[]>([])
   const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
@@ -89,9 +90,16 @@ const CoreForm = (props: Props): React.ReactElement => {
           )}
         </Card>
       </FlexBox>
-      <ProtectionBlockInputs
+      <ProtectionBlockInputs<ItemCode, ItemCave, ItemHandling>
         disabled={disabled}
         markingSource='protectiveMarking'
+        id={itemId}
+        refTables={{
+          catCave: constants.R_ITEMS_CAVE,
+          catCode: constants.R_ITEMS_CODE,
+          catHandle: constants.R_ITEMS_HANDLE
+        }}
+        resource={constants.R_ITEMS}
       />
       <FlexBox>
         <DateTimeInput

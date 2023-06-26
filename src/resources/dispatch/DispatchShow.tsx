@@ -319,7 +319,12 @@ function ItemListDataTable(
       omit={props?.omit}
       {...props}>
       <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
       <TextField source='consecPages' label='Consec Serial' />
       <SourceField
         source='protectiveMarking'

@@ -19,7 +19,13 @@ enum ItemFormSaveType {
 let clone = false
 let save = false
 export const emitter = mitt<Events>()
-const ItemFormToolbar = (): React.ReactElement => {
+
+interface Props {
+  onSuccess: (data: any) => void
+}
+
+const ItemFormToolbar = (props: Props): React.ReactElement => {
+  const { onSuccess } = props
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
@@ -43,10 +49,24 @@ const ItemFormToolbar = (): React.ReactElement => {
     }
   }, [])
 
+  const transformResource = (
+    data: Record<string, any>
+  ): Record<string, any> => {
+    const { catCave, catCode, catHandling, ...rest } = data
+    return rest
+  }
+
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
-        <SaveButton label='Save' />
+        <SaveButton
+          label='Save'
+          type='button'
+          transform={transformResource}
+          mutationOptions={{
+            onSuccess
+          }}
+        />
       </Toolbar>
     )
   }
@@ -68,8 +88,9 @@ const ItemFormToolbar = (): React.ReactElement => {
           onClick={() => {
             clone = true
           }}
+          transform={transformResource}
           mutationOptions={{
-            onSuccess: () => {}
+            onSuccess
           }}
         />
         <SaveButton
@@ -78,8 +99,9 @@ const ItemFormToolbar = (): React.ReactElement => {
           onClick={() => {
             save = true
           }}
+          transform={transformResource}
           mutationOptions={{
-            onSuccess: () => {}
+            onSuccess
           }}
         />
       </FlexBox>

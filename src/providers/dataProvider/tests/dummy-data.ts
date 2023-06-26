@@ -29,9 +29,6 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
     platform: 1,
     organisation: 1,
     protectiveMarking: 1,
-    catCode: 1,
-    catHandle: undefined,
-    catCave: [1],
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1'
   }
@@ -70,9 +67,6 @@ export const generateItemForTesting = ({
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
-    catCode: 1,
-    catHandle: undefined,
-    catCave: [1],
     consecPages: 'consec-pages-1',
     musterRemarks: 'muster-remarks-1'
   }

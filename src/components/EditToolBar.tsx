@@ -1,12 +1,12 @@
 import { Box } from '@mui/system'
 import React from 'react'
-import { SaveButton, Toolbar } from 'react-admin'
+import { SaveButton, type SaveButtonProps, Toolbar } from 'react-admin'
 
-const EditToolBar = (): React.ReactElement => {
+const EditToolBar = (props: SaveButtonProps): React.ReactElement => {
   return (
     <Toolbar>
       <Box display='flex' width='100%' justifyContent='space-between'>
-        <SaveButton />
+        <SaveButton {...props} />
       </Box>
     </Toolbar>
   )

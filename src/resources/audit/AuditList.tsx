@@ -85,7 +85,6 @@ const referenceItems = [
   constants.R_VAULT_LOCATION,
   constants.R_PROTECTIVE_MARKING,
   constants.R_ORGANISATION,
-  constants.R_PLATFORM_ORIGINATOR,
   constants.R_MEDIA_TYPE,
   constants.R_DEPARTMENT
 ]
