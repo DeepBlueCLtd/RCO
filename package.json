@@ -78,9 +78,6 @@
     "vite": "^4.2.0"
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix --ignore-path .eslintignore"
-    ],
     "**/*.{ts,tsx,js,jsx,json,md,html,css,less}": [
       "prettier --write --ignore-path .prettierignore"
     ]

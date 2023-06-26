@@ -48,6 +48,12 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
         <ProtectionBlockInputs
           disabled={true}
           markingSource='protectiveMarking'
+          refTables={{
+            catCave: constants.R_ITEMS_CAVE,
+            catCode: constants.R_ITEMS_CODE,
+            catHandle: constants.R_ITEMS_HANDLE
+          }}
+          resource={constants.R_ITEMS}
         />
         <Remarks />
         <Created />

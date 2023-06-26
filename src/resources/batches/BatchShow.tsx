@@ -21,11 +21,10 @@ import ItemList from '../items/ItemList'
 import FlexBox from '../../components/FlexBox'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
-import { IconButton, Typography } from '@mui/material'
+import { IconButton, Typography, Box } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
-import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
 import SourceField from '../../components/SourceField'
 import { ValueField } from '../projects/ProjectShow'
@@ -211,9 +210,16 @@ export default function BatchShow(): React.ReactElement {
         <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
           <Details />
           <Form>
-            <ProtectionBlockInputs
+            <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
               disabled={true}
               markingSource='protectiveMarking'
+              id={parseInt(id as string)}
+              refTables={{
+                catCave: constants.R_BATCH_CAVE,
+                catCode: constants.R_BATCH_CODE,
+                catHandle: constants.R_BATCH_HANDLE
+              }}
+              resource={constants.R_BATCHES}
             />
           </Form>
           <Remarks />
