@@ -272,7 +272,12 @@ function ItemListDataTable(
         reference={constants.R_MEDIA_TYPE}
         label='Media type'
       />
-      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
       <SourceField
         source='protectiveMarking'
         reference={constants.R_PROTECTIVE_MARKING}
