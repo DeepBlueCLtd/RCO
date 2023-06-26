@@ -5,6 +5,7 @@ import { Box } from '@mui/system'
 import SourceInput from './SourceInput'
 import ProtectionRefInput from './ProtectionRefInput'
 import { type RaRecord } from 'react-admin'
+import { useFormContext } from 'react-hook-form'
 interface Props {
   disabled?: boolean
   markingSource: string
@@ -20,12 +21,19 @@ export default function ProtectionBlockInputs<
   TCatHandle extends RaRecord
 >(props: Props): React.ReactElement {
   const { disabled, markingSource, isEdit, id, refTables } = props
+  const { setValue } = useFormContext()
 
   const inputProps = { disabled }
 
   const protectionInputProps = {
     ...inputProps,
     multiple: true
+  }
+
+  const setIsDirty = (source: string, value: number | number[]): void => {
+    setValue(source, value, {
+      shouldDirty: true
+    })
   }
 
   return (
@@ -44,6 +52,7 @@ export default function ProtectionBlockInputs<
       </legend>
       <FlexBox alignItems={'start'}>
         <ProtectionRefInput<CatCode, TCatCode>
+          setIsDirty={setIsDirty}
           reference={constants.R_CAT_CODE}
           refTable={refTables.catCode}
           labelField='name'
@@ -61,6 +70,7 @@ export default function ProtectionBlockInputs<
           inputProps={{ ...inputProps, sx: { width: '20%' } }}
         />
         <ProtectionRefInput<CatHandle, TCatHandle>
+          setIsDirty={setIsDirty}
           reference={constants.R_CAT_HANDLING}
           refTable={refTables.catHandle}
           source='catHandling'
@@ -72,6 +82,7 @@ export default function ProtectionBlockInputs<
           width='30%'
         />
         <ProtectionRefInput<CatCave, TCatCave>
+          setIsDirty={setIsDirty}
           reference={constants.R_CAT_CAVE}
           refTable={refTables.catCave}
           source='catCave'

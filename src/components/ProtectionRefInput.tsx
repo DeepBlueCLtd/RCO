@@ -28,6 +28,7 @@ interface Props<T, RefTable> {
   label: string
   labelField: keyof T
   width: string
+  setIsDirty: (source: string, value: number | number[]) => void
 }
 
 type SelectedIdType = number | number[]
@@ -45,6 +46,7 @@ export default function ProtectionRefInput<
     multiple,
     labelField,
     width = '100%',
+    setIsDirty,
     ...rest
   } = props
   const [data, setData] = useState<number[] | number>([])
@@ -81,6 +83,7 @@ export default function ProtectionRefInput<
     const value = ev.target.value as SelectedIdType
     setData(value)
     setValue(source as string, value)
+    setIsDirty(source as string, value)
   }
 
   useEffect(() => {
