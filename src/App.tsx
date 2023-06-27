@@ -178,7 +178,11 @@ function App(): React.ReactElement {
 
   const checktDefault = async (): Promise<DataProvider | null> => {
     const localForageData = await localForage.keys()
-    if (localForageData.length === 0) {
+    if (
+      localForageData.length === 0 ||
+      (localForageData.length === 1 &&
+        localForageData[0] === `rco-${constants.R_AUDIT}`)
+    ) {
       const dataprovider = await loadDefaultData()
       return dataprovider
     }
