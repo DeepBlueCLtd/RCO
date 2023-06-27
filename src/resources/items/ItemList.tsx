@@ -40,6 +40,9 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
+import RefFieldFilter, {
+  ResetRefFieldFilter
+} from '../../components/RefFieldFilter'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -55,6 +58,24 @@ const omitColumns: string[] = [
 ]
 
 const filters = [
+  <RefFieldFilter<Platform>
+    refFieldTable={constants.R_BATCHES}
+    refField='batchId'
+    label='Platform'
+    labelField='name'
+    reference={constants.R_PLATFORMS}
+    key='platform'
+    source='platform'
+  />,
+  <RefFieldFilter<Project>
+    refFieldTable={constants.R_BATCHES}
+    refField='batchId'
+    label='Project'
+    labelField='name'
+    reference={constants.R_PROJECTS}
+    key='project'
+    source='project'
+  />,
   <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
   <CreatedByMeFilter
     key='createdByMe'
@@ -104,6 +125,7 @@ const filters = [
     sort={sort('batchNumber')}
     reference={constants.R_BATCHES}
     optionField='batchNumber'
+    multiple={true}
   />,
   <TextInput key='remarks' source='remarks' />,
   <DateFilter source='createdAt' label='Created At' key='createdAt' />,
@@ -454,6 +476,8 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       storeKey={storeKey}
       {...rest}>
       <ResetDateFilter source='createdAt' />
+      <ResetRefFieldFilter source='batchId' display='platform' />
+      <ResetRefFieldFilter source='batchId' display='project' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
       {typeof children !== 'undefined' ? (
         children
@@ -465,6 +489,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <TextField source='item_number' label='Reference' />
           <TextField source='id' />
           <TextField source='createdAt' label='Created' />
+          <TextField source='batchId' />
           <SourceField
             link='show'
             source='mediaType'
