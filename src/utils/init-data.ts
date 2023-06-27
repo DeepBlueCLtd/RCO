@@ -14,7 +14,7 @@ import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
 import { type DataProvider } from 'react-admin'
 
-const generatedUsers = generateUsers(200)
+const generatedUsers = [...generateUsers(200), ...users]
 
 export const encryptedUsers = (isHigh?: boolean): User[] => {
   const userList = isHigh === true ? generatedUsers : users

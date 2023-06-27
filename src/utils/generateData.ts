@@ -220,7 +220,8 @@ export const generateUsers = (length: number): User[] => {
   for (let i = 0; i < length; i++) {
     const active = i > inActivePercentage * length
     const obj: User = {
-      id: i + 1,
+      //to compensate default users the id has to start from 5
+      id: i + 5,
       name: `user-${i + 1}`,
       password: 'user',
       adminRights: generateRandomNumber(0, 100) > 50,
