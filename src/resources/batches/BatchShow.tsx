@@ -17,7 +17,7 @@ import {
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import { ICON_ITEM, ICON_DETAILS } from '../../constants'
-import ItemList from '../items/ItemList'
+import ItemList, { BulkActions } from '../items/ItemList'
 import FlexBox from '../../components/FlexBox'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
@@ -248,6 +248,7 @@ function ItemListDataTable(
 ): React.ReactElement {
   return (
     <DatagridConfigurable
+      bulkActionButtons={<BulkActions />}
       rowClick='show'
       omit={props?.omit}
       preferenceKey={props.preferenceKey}

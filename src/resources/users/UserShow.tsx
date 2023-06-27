@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-import ItemList from '../items/ItemList'
+import ItemList, { BulkActions } from '../items/ItemList'
 import {
   BooleanInput,
   DatagridConfigurable,
@@ -262,6 +262,7 @@ function ItemListDataTable(
 ): React.ReactElement {
   return (
     <DatagridConfigurable
+      bulkActionButtons={<BulkActions />}
       rowClick='show'
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
