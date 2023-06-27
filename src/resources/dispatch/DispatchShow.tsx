@@ -37,7 +37,7 @@ import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 
 interface ShowActionsProps {
-  handleOpen: (open: ModalState) => void
+  handleOpen: (open: DestructionModal) => void
 }
 
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
@@ -65,7 +65,7 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
 }
 
 interface FooterProps {
-  handleOpen: (name: ModalState) => void
+  handleOpen: (name: DestructionModal) => void
   dispatch: (data: UpdateParams) => Promise<void>
 }
 
@@ -175,10 +175,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   )
 }
 
-export type ModalState = 'history' | 'hastener' | 'dispatch' | ''
+export type DestructionModal = 'history' | 'hastener' | 'dispatch' | ''
 
 export default function DispatchShow(): React.ReactElement {
-  const [open, setOpen] = useState<ModalState>()
+  const [open, setOpen] = useState<DestructionModal>()
   const [update] = useUpdate()
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
@@ -188,7 +188,7 @@ export default function DispatchShow(): React.ReactElement {
     filter: { dispatchJob: id }
   })
 
-  const handleOpen = (name: ModalState): void => {
+  const handleOpen = (name: DestructionModal): void => {
     setOpen(name)
   }
 

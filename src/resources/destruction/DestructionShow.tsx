@@ -44,7 +44,7 @@ const Finalised = (): React.ReactElement => {
 }
 
 interface ShowActionsProps {
-  handleOpen: (open: ModalState) => void
+  handleOpen: (open: DestructionModal) => void
 }
 
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
@@ -71,7 +71,7 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
 }
 
 interface FooterProps {
-  handleOpen: (open: ModalState) => void
+  handleOpen: (open: DestructionModal) => void
   destroy: (data: UpdateParams) => Promise<void>
 }
 
@@ -140,10 +140,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   )
 }
 
-export type ModalState = 'history' | 'report' | ''
+export type DestructionModal = 'history' | 'report' | ''
 
 export default function DestructionShow(): React.ReactElement {
-  const [open, setOpen] = useState<ModalState>('')
+  const [open, setOpen] = useState<DestructionModal>('')
   const [update] = useUpdate()
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
@@ -153,7 +153,7 @@ export default function DestructionShow(): React.ReactElement {
     filter: { destruction: id }
   })
 
-  const handleOpen = (value: ModalState): void => {
+  const handleOpen = (value: DestructionModal): void => {
     setOpen(value)
   }
 
