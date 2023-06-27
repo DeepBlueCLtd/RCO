@@ -24,6 +24,7 @@ import FlexBox from '../../components/FlexBox'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import React from 'react'
+import { type DestructionModal } from './DestructionShow'
 
 const ItemsCount = (): React.ReactElement => {
   const record = useRecordContext()
@@ -256,7 +257,7 @@ const TablesData = (): React.ReactElement => {
 
 interface Props {
   open: boolean
-  handleOpen: (open: boolean) => void
+  handleOpen: (open: DestructionModal) => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
@@ -266,7 +267,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
     <Printable
       open={open}
       onClose={() => {
-        handleOpen(false)
+        handleOpen('')
       }}>
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>
