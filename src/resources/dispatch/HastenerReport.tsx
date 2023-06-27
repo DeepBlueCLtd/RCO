@@ -3,6 +3,7 @@ import Printable from '../../components/Printable'
 import ReportData from './ReportData'
 import { Box } from '@mui/system'
 import { Show, useRecordContext } from 'react-admin'
+import { type ModalState } from './DispatchShow'
 
 const BottomText = (): React.ReactElement => {
   const { dispatchedAt } = useRecordContext()
@@ -18,7 +19,7 @@ const BottomText = (): React.ReactElement => {
 
 interface Props {
   open: boolean
-  handleOpen: (name: string) => void
+  handleOpen: (name: ModalState) => void
 }
 export default function HastenerReport(props: Props): React.ReactElement {
   const { open, handleOpen } = props

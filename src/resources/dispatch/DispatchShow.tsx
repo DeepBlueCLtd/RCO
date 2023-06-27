@@ -37,7 +37,7 @@ import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 
 interface ShowActionsProps {
-  handleOpen: (open: string) => void
+  handleOpen: (open: ModalState) => void
 }
 
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
@@ -65,7 +65,7 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
 }
 
 interface FooterProps {
-  handleOpen: (name: string) => void
+  handleOpen: (name: ModalState) => void
   dispatch: (data: UpdateParams) => Promise<void>
 }
 
@@ -175,8 +175,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   )
 }
 
+export type ModalState = 'history' | 'hastener' | 'dispatch' | ''
+
 export default function DispatchShow(): React.ReactElement {
-  const [open, setOpen] = useState<string>()
+  const [open, setOpen] = useState<ModalState>()
   const [update] = useUpdate()
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
@@ -186,7 +188,7 @@ export default function DispatchShow(): React.ReactElement {
     filter: { dispatchJob: id }
   })
 
-  const handleOpen = (name: string): void => {
+  const handleOpen = (name: ModalState): void => {
     setOpen(name)
   }
 

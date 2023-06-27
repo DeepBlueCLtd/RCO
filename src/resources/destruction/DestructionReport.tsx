@@ -24,6 +24,7 @@ import FlexBox from '../../components/FlexBox'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import React from 'react'
+import { type ModalState } from './DestructionShow'
 
 const ItemsCount = (): React.ReactElement => {
   const record = useRecordContext()
@@ -256,7 +257,7 @@ const TablesData = (): React.ReactElement => {
 
 interface Props {
   open: boolean
-  handleOpen: (open: string) => void
+  handleOpen: (open: ModalState) => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
