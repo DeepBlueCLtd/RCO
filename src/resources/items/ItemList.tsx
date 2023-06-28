@@ -43,6 +43,7 @@ import List from '../../components/ListWithLocalStore'
 import RefFieldFilter, {
   ResetRefFieldFilter
 } from '../../components/RefFieldFilter'
+import useRefFilter, { type UseRefFilter } from '../../hooks/useRefFilter'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -57,7 +58,9 @@ const omitColumns: string[] = [
   'loanedTo'
 ]
 
-const filters = [
+const getFilters = (
+  refFilterProps: UseRefFilter
+): React.ReactElement[] => [
   <RefFieldFilter<Platform>
     refFieldTable={constants.R_BATCHES}
     refField='batchId'
@@ -66,6 +69,7 @@ const filters = [
     reference={constants.R_PLATFORMS}
     key='platform'
     source='platform'
+    {...refFilterProps}
   />,
   <RefFieldFilter<Project>
     refFieldTable={constants.R_BATCHES}
@@ -75,6 +79,7 @@ const filters = [
     reference={constants.R_PROJECTS}
     key='project'
     source='project'
+    {...refFilterProps}
   />,
   <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
   <CreatedByMeFilter
@@ -454,6 +459,7 @@ interface ItemListType extends Omit<ListProps, 'children'> {
 
 export default function ItemList(props?: ItemListType): React.ReactElement {
   const { options } = useResourceDefinition()
+  const refFilter = useRefFilter()
   const {
     datagridConfigurableProps,
     children,
@@ -461,7 +467,9 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
     filtersShown,
     ...rest
   } = props ?? {}
-  console.log({ storeKey, filtersShown })
+
+  const filters = getFilters(refFilter)
+
   return (
     <List
       hasCreate={false}
@@ -476,8 +484,8 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       storeKey={storeKey}
       {...rest}>
       <ResetDateFilter source='createdAt' />
-      <ResetRefFieldFilter source='batchId' display='platform' />
-      <ResetRefFieldFilter source='batchId' display='project' />
+      <ResetRefFieldFilter source='batchId' displaySource='platform' />
+      <ResetRefFieldFilter source='batchId' displaySource='project' />
       {/* <ResetDateRangeFilter source='date_range' /> */}
       {typeof children !== 'undefined' ? (
         children
