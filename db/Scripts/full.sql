@@ -173,9 +173,9 @@ CREATE TABLE if not exists batchHandle (
     FOREIGN KEY (catHandle) REFERENCES catHandle(id)
 );
 
--- DDL for Table batchCaveat
+-- DDL for Table batchCave
 
-CREATE TABLE if not exists batchCaveat (
+CREATE TABLE if not exists batchCave (
     id INTEGER PRIMARY KEY,
     batch INTEGER NOT NULL,
     catCave TEXT NOT NULL,
@@ -276,9 +276,9 @@ CREATE TABLE if not exists itemHandle (
     FOREIGN KEY (catHandle) REFERENCES catHandle(id)
 );
 
--- DDL for Table ItemCaveats
+-- DDL for Table ItemCaves
 
-CREATE TABLE if not exists itemCaveat (
+CREATE TABLE if not exists itemCave (
     id INTEGER PRIMARY KEY,
     item INTEGER NOT NULL,
     catCave TEXT NOT NULL,
