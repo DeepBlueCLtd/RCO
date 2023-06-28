@@ -15,7 +15,8 @@ import {
   useDataProvider,
   useResourceDefinition,
   useNotify,
-  useGetMany
+  useGetMany,
+  ReferenceField
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -55,7 +56,8 @@ const omitColumns: string[] = [
   'endDate',
   'vaultLocation',
   'musterRemarks',
-  'loanedTo'
+  'loanedTo',
+  'batchId'
 ]
 
 const getFilters = (refFilterProps: UseRefFilter): React.ReactElement[] => [
@@ -541,6 +543,18 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <DateField source='dispatchedDate' />
           <TextField source='remarks' />
           <TextField source='musterRemarks' />
+          <ReferenceField
+            source='batchId'
+            label='Platform'
+            reference={constants.R_BATCHES}>
+            <SourceField source='platform' reference={constants.R_PLATFORMS} />
+          </ReferenceField>
+          <ReferenceField
+            source='batchId'
+            label='Project'
+            reference={constants.R_BATCHES}>
+            <SourceField source='project' reference={constants.R_PROJECTS} />
+          </ReferenceField>
         </DatagridConfigurableWithShow>
       )}
     </List>
