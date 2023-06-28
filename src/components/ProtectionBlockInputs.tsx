@@ -3,20 +3,38 @@ import * as constants from '../constants'
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import SourceInput from './SourceInput'
-import { AutocompleteArrayInput, ReferenceArrayInput } from 'react-admin'
-
+import ProtectionRefInput from './ProtectionRefInput'
+import { type RaRecord } from 'react-admin'
+import { useFormContext } from 'react-hook-form'
 interface Props {
   disabled?: boolean
   markingSource: string
   isEdit?: boolean
+  id?: number
+  resource: string
+  refTables: Record<'catCave' | 'catCode' | 'catHandle', string>
 }
 
-export default function ProtectionBlockInputs(
-  props: Props
-): React.ReactElement {
-  const { disabled, markingSource, isEdit } = props
+export default function ProtectionBlockInputs<
+  TCatCode extends RaRecord,
+  TCatCave extends RaRecord,
+  TCatHandle extends RaRecord
+>(props: Props): React.ReactElement {
+  const { disabled, markingSource, isEdit, id, refTables } = props
+  const { setValue } = useFormContext()
 
   const inputProps = { disabled }
+
+  const protectionInputProps = {
+    ...inputProps,
+    multiple: true
+  }
+
+  const setIsDirty = (source: string, value: number | number[]): void => {
+    setValue(source, value, {
+      shouldDirty: true
+    })
+  }
 
   return (
     <Box
@@ -32,32 +50,48 @@ export default function ProtectionBlockInputs(
           Protection
         </Typography>
       </legend>
-      <FlexBox>
-        <SourceInput
-          source='catCode'
-          filter={isEdit === true ? {} : { active: true }}
+      <FlexBox alignItems={'start'}>
+        <ProtectionRefInput<CatCode, TCatCode>
+          setIsDirty={setIsDirty}
           reference={constants.R_CAT_CODE}
-          inputProps={inputProps}
+          refTable={refTables.catCode}
+          labelField='name'
+          source='catCode'
+          itemId={id}
+          label='Cat code'
+          {...protectionInputProps}
+          multiple={false}
+          width='20%'
         />
         <SourceInput
           source={markingSource}
           filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PROTECTIVE_MARKING}
-          inputProps={inputProps}
+          inputProps={{ ...inputProps, sx: { width: '20%' } }}
         />
-        <SourceInput
-          source='catHandling'
-          filter={isEdit === true ? {} : { active: true }}
+        <ProtectionRefInput<CatHandle, TCatHandle>
+          setIsDirty={setIsDirty}
           reference={constants.R_CAT_HANDLING}
-          inputProps={inputProps}
+          refTable={refTables.catHandle}
+          source='catHandling'
+          itemId={id}
+          label='Cat handling'
+          labelField='name'
+          {...protectionInputProps}
+          multiple={false}
+          width='30%'
         />
-        <ReferenceArrayInput source='catCave' reference={constants.R_CAT_CAVE}>
-          <AutocompleteArrayInput
-            sx={{ width: '100%' }}
-            optionText={(item: ActiveReferenceItem) => item.name}
-            {...inputProps}
-          />
-        </ReferenceArrayInput>
+        <ProtectionRefInput<CatCave, TCatCave>
+          setIsDirty={setIsDirty}
+          reference={constants.R_CAT_CAVE}
+          refTable={refTables.catCave}
+          source='catCave'
+          labelField='name'
+          itemId={id}
+          label='Cat cave'
+          {...protectionInputProps}
+          width='30%'
+        />
       </FlexBox>
     </Box>
   )

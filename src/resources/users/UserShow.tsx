@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-import ItemList from '../items/ItemList'
+import ItemList, { BulkActions } from '../items/ItemList'
 import {
   BooleanInput,
   DatagridConfigurable,
@@ -262,12 +262,18 @@ function ItemListDataTable(
 ): React.ReactElement {
   return (
     <DatagridConfigurable
+      bulkActionButtons={<BulkActions />}
       rowClick='show'
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
       <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
       <SourceField source='protectiveMarking' reference='protectiveMarking' />
       <TextField source='remarks' />
     </DatagridConfigurable>

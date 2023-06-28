@@ -107,7 +107,12 @@ export default function ItemsReport(props: Props): React.ReactElement {
         ) : (
           <>
             <TextField source='item_number' label='Item Number' />
-            <TextField source='mediaType' label='Media type' />
+            <SourceField
+              link='show'
+              source='mediaType'
+              reference={constants.R_MEDIA_TYPE}
+              label='Media type'
+            />
             <SourceField source='vaultLocation' reference='vaultLocation' />
           </>
         )}
@@ -256,7 +261,12 @@ export function ItemAssetReport(props: Props): React.ReactElement {
           </Card>
           <ItemsReport filter={filters} {...props}>
             <TextField source='item_number' label='Item Number' />
-            <TextField source='mediaType' label='Media type' />
+            <SourceField
+              link='show'
+              source='mediaType'
+              reference={constants.R_MEDIA_TYPE}
+              label='Media type'
+            />{' '}
             <TextField source='remarks' label='Remark' />
             <TextField source='consecPages' label='Consec/Pages' />
           </ItemsReport>

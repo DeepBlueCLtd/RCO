@@ -14,7 +14,7 @@ import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
 import { type DataProvider } from 'react-admin'
 
-const generatedUsers = generateUsers(200)
+const generatedUsers = [...generateUsers(200), ...users]
 
 export const encryptedUsers = (isHigh?: boolean): User[] => {
   const userList = isHigh === true ? generatedUsers : users
@@ -112,7 +112,7 @@ const assignItemsToRandomActiveUser = (
 const loadDefaultData = async (
   userId?: number,
   isHigh?: boolean
-): Promise<void> => {
+): Promise<DataProvider> => {
   await localForage.clear()
 
   const user = typeof userId === 'undefined' ? users[0].id : userId
@@ -146,9 +146,6 @@ const loadDefaultData = async (
     project.length,
     organisation.length,
     protectiveMarking.length,
-    catCode.length,
-    catHandling.length,
-    catCave.length,
     user,
     isHigh
   )
@@ -166,9 +163,6 @@ const loadDefaultData = async (
           batch[index],
           vaultLocation.length,
           protectiveMarking.length,
-          catCode.length,
-          catHandling.length,
-          catCave.length,
           user,
           mediaType.length
         )
@@ -258,6 +252,7 @@ const loadDefaultData = async (
         }
     }
   }
+  return dataprovider
 }
 
 export default loadDefaultData

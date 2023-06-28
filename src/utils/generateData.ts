@@ -119,9 +119,6 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
-  catCodes: number,
-  catHandles: number,
-  catCaves: number,
   user: number,
   isHigh?: boolean
 ): Batch[] => {
@@ -144,9 +141,6 @@ export const generateBatch = (
       platform: generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      catCode: generateRandomNumber(1, catCodes - 1),
-      catHandle: generateRandomNumber(1, catHandles - 1),
-      catCave: [generateRandomNumber(1, catCaves - 1)],
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
       createdBy: user
@@ -162,9 +156,6 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
-  catCodes: number,
-  catHandles: number,
-  catCaves: number,
   user: number,
   mediaType: number
 ): Item[] => {
@@ -202,9 +193,6 @@ export const generateItems = (
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      catCode: generateRandomNumber(1, catCodes - 1),
-      catHandle: generateRandomNumber(1, catHandles - 1),
-      catCave: [generateRandomNumber(1, catCaves - 1)],
       consecPages: `consec-pages-${i + 1}`,
       createdBy: user
     }
@@ -232,7 +220,8 @@ export const generateUsers = (length: number): User[] => {
   for (let i = 0; i < length; i++) {
     const active = i > inActivePercentage * length
     const obj: User = {
-      id: i + 1,
+      //to compensate default users the id has to start from 5
+      id: i + 5,
       name: `user-${i + 1}`,
       password: 'user',
       adminRights: generateRandomNumber(0, 100) > 50,

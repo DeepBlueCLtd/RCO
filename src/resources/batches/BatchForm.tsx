@@ -85,6 +85,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const location = useLocation()
   const { isEdit } = props
   const configData = useConfigData()
+  const [itemId, setItemId] = useState<Item['id']>()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -101,10 +102,32 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   }, [])
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
+
+  const ToolBar = (): React.ReactElement => {
+    const transformResource = (
+      data: Record<string, any>
+    ): Record<string, any> => {
+      const { catCave, catCode, catHandling, ...rest } = data
+      return rest
+    }
+
+    return (
+      <EditToolBar
+        type='button'
+        mutationOptions={{
+          onSuccess: ({ id }: { id: number }) => {
+            setItemId(id)
+          }
+        }}
+        transform={transformResource}
+      />
+    )
+  }
+
   return (
     <>
       <SimpleForm
-        toolbar={<EditToolBar />}
+        toolbar={<ToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <Typography variant='h5' fontWeight='bold'>
@@ -170,9 +193,16 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <ProtectionBlockInputs
+        <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
           isEdit={isEdit}
           markingSource='protectiveMarking'
+          id={itemId}
+          refTables={{
+            catCave: constants.R_BATCH_CAVE,
+            catCode: constants.R_BATCH_CODE,
+            catHandle: constants.R_BATCH_HANDLE
+          }}
+          resource={constants.R_BATCHES}
         />
         <FlexBox>
           <DateInput

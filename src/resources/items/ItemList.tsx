@@ -58,9 +58,7 @@ const omitColumns: string[] = [
   'loanedTo'
 ]
 
-const getFilters = (
-  refFilterProps: UseRefFilter
-): React.ReactElement[] => [
+const getFilters = (refFilterProps: UseRefFilter): React.ReactElement[] => [
   <RefFieldFilter<Platform>
     refFieldTable={constants.R_BATCHES}
     refField='batchId'
