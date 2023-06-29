@@ -11,6 +11,7 @@ import {
 } from 'react-admin'
 import BatchForm from './BatchForm'
 import * as constants from '../../constants'
+import { transformProtectionValues } from '../../utils/helper'
 
 const BatchList = React.lazy(async () => await import('./BatchList'))
 const BatchShow = React.lazy(async () => await import('./BatchShow'))

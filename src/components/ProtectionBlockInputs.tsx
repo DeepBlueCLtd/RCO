@@ -30,7 +30,7 @@ export default function ProtectionBlockInputs<
     multiple: true
   }
 
-  const setIsDirty = (source: string, value: number | number[]): void => {
+  const setIsDirty = (source: string, value = ''): void => {
     setValue(source, value, {
       shouldDirty: true
     })

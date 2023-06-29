@@ -167,6 +167,7 @@ interface Batch extends ResourceWithCreation {
   protectiveMarking: ProtectiveMarking['id']
   remarks: string
   receiptNotes: string
+  protectionString?: string
 }
 
 interface Item extends ResourceWithCreation {
@@ -191,6 +192,7 @@ interface Item extends ResourceWithCreation {
   // destruction details
   destruction?: Destruction['id']
   destructionDate?: string
+  protectionString?: string
 }
 
 interface RCOStore {

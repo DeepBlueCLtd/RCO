@@ -9,7 +9,8 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput
+  DateInput,
+  useRefresh
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -22,6 +23,7 @@ import { Typography } from '@mui/material'
 import dayjs from 'dayjs'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
+import { transformProtectionValues } from '../../utils/helper'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -86,6 +88,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const { isEdit } = props
   const configData = useConfigData()
   const [itemId, setItemId] = useState<Item['id']>()
+  const refresh = useRefresh()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -104,20 +107,16 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
   const ToolBar = (): React.ReactElement => {
-    const transformResource = (
-      data: Record<string, any>
-    ): Record<string, any> => {
-      const { catCave, catCode, catHandling, ...rest } = data
-      return rest
-    }
-
     return (
       <EditToolBar
         type='button'
         mutationOptions={{
-          onSuccess: ({ id }: { id: number }) => { setItemId(id) }
+          onSuccess: ({ id }: { id: number }) => {
+            setItemId(id)
+            refresh()
+          }
         }}
-        transform={transformResource}
+        transform={transformProtectionValues}
       />
     )
   }

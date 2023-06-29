@@ -28,7 +28,7 @@ interface Props<T, RefTable> {
   label: string
   labelField: keyof T
   width: string
-  setIsDirty: (source: string, value: number | number[]) => void
+  setIsDirty: (source: string, value: string) => void
 }
 
 type SelectedIdType = number | number[]
@@ -79,11 +79,25 @@ export default function ProtectionRefInput<
     }
   })
 
+  const getNamesByIds = (ids: number | number[]): string => {
+    const names: string[] = []
+    const values = Array.isArray(ids) ? ids : [ids]
+    options.filter((item: T) => {
+      if (values.includes(item.id as number)) {
+        names.push(item.name)
+        return true
+      }
+      return false
+    })
+    return names.join(',')
+  }
+
   const handleChange = (ev: SelectChangeEvent<typeof data>): void => {
     const value = ev.target.value as SelectedIdType
+    const names = getNamesByIds(value)
     setData(value)
-    setValue(source as string, value)
-    setIsDirty(source as string, value)
+    setValue(source as string, names)
+    setIsDirty(source as string, names)
   }
 
   useEffect(() => {
