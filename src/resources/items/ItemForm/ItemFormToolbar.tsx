@@ -1,10 +1,11 @@
-import { SaveButton, Toolbar, useNotify } from 'react-admin'
+import { SaveButton, Toolbar, useDataProvider, useNotify } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
+import * as constants from '../../../constants'
 
 // eslint-disable-next-line
 type Events = {
@@ -29,6 +30,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
+  const dataProvider = useDataProvider()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -49,11 +51,18 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     }
   }, [])
 
-  const transformResource = (
+  const transformResource = async (
     data: Record<string, any>
-  ): Record<string, any> => {
+  ): Promise<Record<string, any>> => {
     const { catCave, catCode, catHandling, ...rest } = data
-    return rest
+
+    const {
+      data: { project, platform }
+    } = await dataProvider.getOne(constants.R_BATCHES, {
+      id: rest.batchId
+    })
+
+    return { project, platform, ...rest }
   }
 
   if (typeof id !== 'undefined') {
