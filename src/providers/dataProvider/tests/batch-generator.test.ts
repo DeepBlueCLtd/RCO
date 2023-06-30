@@ -56,7 +56,7 @@ const generateBatch = async (
 ): Promise<void> => {
   const [startDate, endDate] = generateRandomDate()
 
-  const isNull = () => {
+  const isNull = (): boolean => {
     if (Math.random() > 0.3) {
       return false
     }
