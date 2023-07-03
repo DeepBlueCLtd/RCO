@@ -1,10 +1,16 @@
 export const transformProtectionValues = (
   data: Record<string, any>
 ): Record<string, any> => {
-  const { catCave = '', catCode = '', catHandling = '', ...rest } = data
+  const {
+    catCave = '',
+    catCode = '',
+    catHandling = '',
+    protectiveMarking = '',
+    ...rest
+  } = data
   const item = {
     ...rest,
-    protectionString: `${catCave}-${catCode}-${catHandling}`
+    protectionString: `${catCode}-${protectiveMarking}-${catHandling}-${catCave}`
   }
   return item
 }

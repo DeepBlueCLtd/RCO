@@ -1,5 +1,5 @@
 import { FunctionField } from 'react-admin'
-import { R_CAT_CAVE, R_CAT_CODE } from '../constants'
+import { R_CAT_CODE, R_CAT_HANDLING, R_PROTECTIVE_MARKING } from '../constants'
 
 interface Props {
   source: string
@@ -7,7 +7,14 @@ interface Props {
 
 export default function ProtectionField(props: Props): React.ReactElement {
   const { source, ...rest } = props
-  const index = source === R_CAT_CAVE ? 0 : source === R_CAT_CODE ? 1 : 2
+  const index =
+    source === R_CAT_CODE
+      ? 0
+      : source === R_PROTECTIVE_MARKING
+      ? 1
+      : source === R_CAT_HANDLING
+      ? 2
+      : 3
 
   return (
     <FunctionField
