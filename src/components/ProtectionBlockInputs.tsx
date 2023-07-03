@@ -6,6 +6,7 @@ import SourceInput from './SourceInput'
 import ProtectionRefInput from './ProtectionRefInput'
 import { type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
+import { useConfigData } from '../utils/useConfigData'
 interface Props {
   disabled?: boolean
   markingSource: string
@@ -22,6 +23,7 @@ export default function ProtectionBlockInputs<
 >(props: Props): React.ReactElement {
   const { disabled, markingSource, isEdit, id, refTables } = props
   const { setValue } = useFormContext()
+  const configDate = useConfigData()
 
   const inputProps = { disabled }
 
@@ -47,7 +49,7 @@ export default function ProtectionBlockInputs<
       }}>
       <legend>
         <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Protection
+          {configDate?.protectionName}
         </Typography>
       </legend>
       <FlexBox alignItems={'start'}>
@@ -58,7 +60,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           source='catCode'
           itemId={id}
-          label='Cat code'
+          label={configDate?.cat_code ?? 'Cat code'}
           {...protectionInputProps}
           multiple={false}
           width='20%'
@@ -75,7 +77,7 @@ export default function ProtectionBlockInputs<
           refTable={refTables.catHandle}
           source='catHandling'
           itemId={id}
-          label='Cat handling'
+          label={configDate?.cat_handle ?? 'Cat handling'}
           labelField='name'
           {...protectionInputProps}
           multiple={false}
@@ -88,7 +90,7 @@ export default function ProtectionBlockInputs<
           source='catCave'
           labelField='name'
           itemId={id}
-          label='Cat cave'
+          label={configDate?.cat_cave ?? 'Cat cave'}
           {...protectionInputProps}
           width='30%'
         />
