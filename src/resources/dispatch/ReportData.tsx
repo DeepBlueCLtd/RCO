@@ -33,6 +33,12 @@ const DispatchDetail = (): React.ReactElement => {
         source='createdAt'
         labelStyles={{ fontSize: '1rem' }}
         component={DateField}
+        locales='en-GB'
+        options={{
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
       <FieldWithLabel
