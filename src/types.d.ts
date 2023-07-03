@@ -161,8 +161,8 @@ interface Batch extends ResourceWithCreation {
   batchNumber: string
   yearOfReceipt: string
   department: Department['id']
-  project: Project['id']
-  platform: Platform['id']
+  project?: Project['id']
+  platform?: Platform['id']
   organisation: Organisation['id']
   protectiveMarking: ProtectiveMarking['id']
   remarks: string
