@@ -1,4 +1,4 @@
-import { Show, TextField } from 'react-admin'
+import { DateField, Show, TextField } from 'react-admin'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import { Typography } from '@mui/material'
 import ItemsReport from '../items/ItemsReport'
@@ -32,6 +32,7 @@ const DispatchDetail = (): React.ReactElement => {
         label='Date'
         source='createdAt'
         labelStyles={{ fontSize: '1rem' }}
+        component={DateField}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
       <FieldWithLabel
