@@ -26,8 +26,8 @@ import { useConfigData } from '../../utils/useConfigData'
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
   department: yup.number().required(),
-  project: yup.number().required(),
-  platform: yup.number().required(),
+  project: yup.number().nullable(),
+  platform: yup.number().nullable(),
   organisation: yup.number().required(),
   protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
@@ -115,7 +115,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <EditToolBar
         type='button'
         mutationOptions={{
-          onSuccess: ({ id }: { id: number }) => { setItemId(id) }
+          onSuccess: ({ id }: { id: number }) => {
+            setItemId(id)
+          }
         }}
         transform={transformResource}
       />
