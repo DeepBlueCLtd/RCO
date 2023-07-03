@@ -166,19 +166,18 @@ const BatchForm = (
           />
         </FlexBox>
         <FlexBox>
-          {isEdit === undefined || !isEdit ? (
+          {(isEdit === undefined || !isEdit) &&
+          (!isShow || isShow === undefined) ? (
             <>
               <ConditionalReferenceInput
                 source='organisation'
                 reference={constants.R_ORGANISATION}
                 active
-                inputProps={{ disabled: isShow }}
               />
               <ConditionalReferenceInput
                 source='department'
                 reference={constants.R_DEPARTMENT}
                 active
-                inputProps={{ disabled: isShow }}
               />
             </>
           ) : (
@@ -187,13 +186,21 @@ const BatchForm = (
                 variant='outlined'
                 source='organisation'
                 reference={constants.R_ORGANISATION}>
-                <AutocompleteInput optionText='name' sx={sx} />
+                <AutocompleteInput
+                  optionText='name'
+                  sx={sx}
+                  disabled={isShow}
+                />
               </ReferenceInput>
               <ReferenceInput
                 variant='outlined'
                 source='department'
                 reference={constants.R_DEPARTMENT}>
-                <AutocompleteInput optionText='name' sx={sx} />
+                <AutocompleteInput
+                  optionText='name'
+                  sx={sx}
+                  disabled={isShow}
+                />
               </ReferenceInput>
             </>
           )}
