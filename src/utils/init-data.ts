@@ -181,13 +181,13 @@ const loadDefaultData = async (
 
   const configDataItem: ConfigData = {
     id: 0,
-    projectName: 'Project_NNNN',
-    projectsName: 'Projects_NNN',
-    fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP_NNN',
-    protectionName: 'Protection_NNN',
-    cat_code: 'Cat-Code_NNN',
-    cat_handle: 'Cat-Handle_NNN',
-    cat_cave: 'Cat-Cave_NNN'
+    projectName: 'Project',
+    projectsName: 'Projects',
+    fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP',
+    protectionName: 'Protection',
+    cat_code: 'Cat-Code',
+    cat_handle: 'Cat-Handle',
+    cat_cave: 'Cat-Cave'
   }
   const configData: ConfigData[] = [configDataItem]
 
