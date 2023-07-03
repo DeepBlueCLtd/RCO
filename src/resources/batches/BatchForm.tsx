@@ -9,7 +9,8 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput
+  DateInput,
+  useRedirect
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -104,6 +105,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
   const ToolBar = (): React.ReactElement => {
+    const redirect = useRedirect()
     const transformResource = (
       data: Record<string, any>
     ): Record<string, any> => {
@@ -115,7 +117,13 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <EditToolBar
         type='button'
         mutationOptions={{
-          onSuccess: ({ id }: { id: number }) => { setItemId(id) }
+          onSuccess: ({ id }: { id: number }) => {
+            setItemId(id)
+            if (!isEdit) {
+              const path = `/${constants.R_BATCHES}/${id}/show`
+              redirect(path)
+            }
+          }
         }}
         transform={transformResource}
       />

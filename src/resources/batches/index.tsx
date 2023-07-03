@@ -6,24 +6,16 @@ import {
   FunctionField,
   ShowButton,
   Show,
-  TopToolbar,
-  useRedirect
+  TopToolbar
 } from 'react-admin'
 import BatchForm from './BatchForm'
-import * as constants from '../../constants'
 
 const BatchList = React.lazy(async () => await import('./BatchList'))
 const BatchShow = React.lazy(async () => await import('./BatchShow'))
 
 const BatchCreate = (): React.ReactElement => {
-  const redirect = useRedirect()
-
-  const onSuccess = (data: Batch): void => {
-    const path: string = `/${constants.R_BATCHES}/${data.id}/show`
-    redirect(path)
-  }
   return (
-    <Create mutationOptions={{ onSuccess }}>
+    <Create>
       <BatchForm />
     </Create>
   )
