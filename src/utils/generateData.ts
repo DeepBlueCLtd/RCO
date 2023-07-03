@@ -124,6 +124,13 @@ export const generateBatch = (
 ): Batch[] => {
   const batches: Batch[] = []
 
+  const isNull = (): boolean => {
+    if (Math.random() > 0.3) {
+      return false
+    }
+    return true
+  }
+
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
 
@@ -137,8 +144,8 @@ export const generateBatch = (
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
-      project: generateRandomNumber(1, projects - 1),
-      platform: generateRandomNumber(1, platforms - 1),
+      project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
+      platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
@@ -220,7 +227,7 @@ export const generateUsers = (length: number): User[] => {
   for (let i = 0; i < length; i++) {
     const active = i > inActivePercentage * length
     const obj: User = {
-      //to compensate default users the id has to start from 5
+      // to compensate default users the id has to start from 5
       id: i + 5,
       name: `user-${i + 1}`,
       password: 'user',

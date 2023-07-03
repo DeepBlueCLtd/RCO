@@ -55,6 +55,14 @@ const generateBatch = async (
   user: number
 ): Promise<void> => {
   const [startDate, endDate] = generateRandomDate()
+
+  const isNull = (): boolean => {
+    if (Math.random() > 0.3) {
+      return false
+    }
+    return true
+  }
+
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
@@ -63,8 +71,8 @@ const generateBatch = async (
     batchNumber: `V${batchNumber ?? id}/${year}`,
     yearOfReceipt: year,
     department: id,
-    project: id,
-    platform: id,
+    project: isNull() ? undefined : id,
+    platform: isNull() ? undefined : id,
     organisation: id,
     protectiveMarking: id,
     remarks: `remarks-batch-${year}`,

@@ -9,6 +9,7 @@ import {
 import { makeStyles } from '@mui/styles'
 import React from 'react'
 import { type CreatePathParams, useCreatePath, useRedirect } from 'react-admin'
+import { useConfigData } from '../utils/useConfigData'
 
 interface CardWithNavigationProps {
   title: string
@@ -73,23 +74,24 @@ const CardWithNavigation = (
   )
 }
 
-const mainReferenceRoutes = [
-  { path: '/platform', title: 'Platforms' },
-  { path: '/audit', title: 'Audit Log' }
-]
-
-const rarelyUsedRoutes = [
-  { path: '/organisation', title: 'Organisation' },
-  { path: '/protectiveMarking', title: 'Protective Marking' },
-  { path: '/catCode', title: 'Cat Code' },
-  { path: '/catHandling', title: 'Cat Handling' },
-  { path: '/catCave', title: 'Cat Cave' },
-  { path: '/mediaType', title: 'Media Type' },
-  { path: '/department', title: 'Department' },
-  { path: '/address', title: 'Addresses' }
-]
-
 export default function ReferenceData(): React.ReactElement {
+  const configData = useConfigData()
+
+  const mainReferenceRoutes = [
+    { path: '/platform', title: 'Platforms' },
+    { path: '/audit', title: 'Audit Log' }
+  ]
+
+  const rarelyUsedRoutes = [
+    { path: '/organisation', title: 'Organisation' },
+    { path: '/protectiveMarking', title: 'Protective Marking' },
+    { path: '/catCode', title: configData?.cat_code ?? 'Cat Code' },
+    { path: '/catHandling', title: configData?.cat_handle ?? 'Cat Handling' },
+    { path: '/catCave', title: configData?.cat_cave ?? 'Cat Cave' },
+    { path: '/mediaType', title: 'Media Type' },
+    { path: '/department', title: 'Department' },
+    { path: '/address', title: 'Addresses' }
+  ]
   return (
     <div>
       <h1></h1>
