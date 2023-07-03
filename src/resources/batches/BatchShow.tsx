@@ -11,123 +11,23 @@ import {
   useShowContext,
   DatagridConfigurable,
   type DatagridConfigurableProps,
-  TextField,
-  Form
+  TextField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import { ICON_ITEM, ICON_DETAILS } from '../../constants'
 import ItemList, { BulkActions } from '../items/ItemList'
-import FlexBox from '../../components/FlexBox'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
-import { IconButton, Typography, Box } from '@mui/material'
+import { IconButton, Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
-import { useConfigData } from '../../utils/useConfigData'
 import SourceField from '../../components/SourceField'
-import { ValueField } from '../projects/ProjectShow'
-import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
+import BatchForm from './BatchForm'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
-}
-
-const Created = (): React.ReactElement => {
-  const sx = {
-    width: '100%'
-  }
-  return (
-    <Box
-      component='fieldset'
-      style={{
-        width: '100%',
-        padding: '0 15px',
-        borderRadius: 16,
-        margin: '20px 0'
-      }}>
-      <legend>
-        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Created
-        </Typography>
-      </legend>
-      <FlexBox sx={{ padding: '10px 0' }}>
-        <ValueField label='Created at' sx={sx}>
-          <DateField source='createdAt' />
-        </ValueField>
-        <ValueField label='Created by' sx={sx}>
-          <SourceField source='createdBy' reference={constants.R_USERS} />
-        </ValueField>
-      </FlexBox>
-    </Box>
-  )
-}
-
-const Remarks = (): React.ReactElement => {
-  const sx = {
-    width: '100%'
-  }
-  return (
-    <Box
-      component='fieldset'
-      style={{
-        width: '100%',
-        padding: '0 15px',
-        borderRadius: 16,
-        margin: '20px 0'
-      }}>
-      <legend>
-        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Remarks
-        </Typography>
-      </legend>
-      <FlexBox sx={{ padding: '10px 0' }}>
-        <ValueField label='Remarks' sx={sx}>
-          <TextField source='remarks' />
-        </ValueField>
-        <ValueField label='Receipt notes' sx={sx}>
-          <TextField source='receiptNotes' />
-        </ValueField>
-      </FlexBox>
-    </Box>
-  )
-}
-
-const Details = (): React.ReactElement => {
-  const configData = useConfigData()
-
-  const sx = { width: '100%' }
-  return (
-    <Box
-      component='fieldset'
-      style={{
-        width: '100%',
-        padding: '0 15px',
-        borderRadius: 16,
-        margin: '20px 0'
-      }}>
-      <legend>
-        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Details
-        </Typography>
-      </legend>
-      <FlexBox sx={{ padding: '10px 0' }}>
-        <ValueField label={configData?.projectName ?? 'Project'} sx={sx}>
-          <SourceField source='project' reference={constants.R_PROJECTS} />
-        </ValueField>
-        <ValueField label='Platform' sx={sx}>
-          <SourceField source='platform' reference={constants.R_PLATFORMS} />
-        </ValueField>
-        <ValueField label='Start' sx={sx}>
-          <DateField source='startDate' />
-        </ValueField>
-        <ValueField label='End' sx={sx}>
-          <DateField source='endDate' />
-        </ValueField>
-      </FlexBox>
-    </Box>
-  )
 }
 
 const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
@@ -208,22 +108,7 @@ export default function BatchShow(): React.ReactElement {
       </Typography>
       <TabbedShowLayout sx={{ paddingBottom: '4px' }}>
         <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
-          <Details />
-          <Form>
-            <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
-              disabled={true}
-              markingSource='protectiveMarking'
-              id={parseInt(id as string)}
-              refTables={{
-                catCave: constants.R_BATCH_CAVE,
-                catCode: constants.R_BATCH_CODE,
-                catHandle: constants.R_BATCH_HANDLE
-              }}
-              resource={constants.R_BATCHES}
-            />
-          </Form>
-          <Remarks />
-          <Created />
+          <BatchForm isShow />
         </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>
           <ItemList
