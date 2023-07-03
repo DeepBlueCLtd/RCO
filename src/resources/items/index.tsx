@@ -22,7 +22,8 @@ const ItemEdit = (): React.ReactElement => {
           <TopToolbarField source='item_number' />
           <ShowButton />
         </TopToolbar>
-      }>
+      }
+      mutationMode='pessimistic'>
       <ItemForm isEdit />
     </Edit>
   )

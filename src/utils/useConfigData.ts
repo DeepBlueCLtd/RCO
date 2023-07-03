@@ -13,5 +13,5 @@ export const useConfigData = (): ConfigData | undefined => {
     getConfigData().catch(console.log)
   }, [provider])
 
-  return configData !== undefined ? configData : undefined
+  return configData
 }
