@@ -80,10 +80,12 @@ export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
   )
 }
 
-const BatchForm = (props: FormProps): React.ReactElement => {
+const BatchForm = (
+  props: FormProps & { isShow?: boolean }
+): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
-  const { isEdit } = props
+  const { isEdit, isShow } = props
   const configData = useConfigData()
   const [itemId, setItemId] = useState<Item['id']>()
 
@@ -115,7 +117,9 @@ const BatchForm = (props: FormProps): React.ReactElement => {
       <EditToolBar
         type='button'
         mutationOptions={{
-          onSuccess: ({ id }: { id: number }) => { setItemId(id) }
+          onSuccess: ({ id }: { id: number }) => {
+            setItemId(id)
+          }
         }}
         transform={transformResource}
       />
@@ -125,7 +129,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   return (
     <>
       <SimpleForm
-        toolbar={<ToolBar />}
+        toolbar={!isShow && <ToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <Typography variant='h5' fontWeight='bold'>
@@ -137,7 +141,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='platform'
             filter={isEdit === true ? {} : { active: true }}
             reference={constants.R_PLATFORMS}>
-            <AutocompleteInput optionText='name' sx={sx} />
+            <AutocompleteInput optionText='name' sx={sx} disabled={isShow} />
           </ReferenceInput>
           <ReferenceInput
             variant='outlined'
@@ -148,6 +152,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
               optionText='name'
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
+              disabled={isShow}
             />
           </ReferenceInput>
         </FlexBox>
@@ -157,7 +162,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='yearOfReceipt'
             variant='outlined'
             format='YYYY'
-            dataPickerProps={{ views: ['year'] }}
+            dataPickerProps={{ views: ['year'], disabled: isShow }}
           />
         </FlexBox>
         <FlexBox>
@@ -167,11 +172,13 @@ const BatchForm = (props: FormProps): React.ReactElement => {
                 source='organisation'
                 reference={constants.R_ORGANISATION}
                 active
+                inputProps={{ disabled: isShow }}
               />
               <ConditionalReferenceInput
                 source='department'
                 reference={constants.R_DEPARTMENT}
                 active
+                inputProps={{ disabled: isShow }}
               />
             </>
           ) : (
@@ -201,6 +208,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             catHandle: constants.R_BATCH_HANDLE
           }}
           resource={constants.R_BATCHES}
+          disabled={true}
         />
         <FlexBox>
           <DateInput
@@ -208,11 +216,30 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='startDate'
             label='Start'
             variant='outlined'
+            disabled={true}
           />
-          <DateInput sx={sx} source='endDate' variant='outlined' label='End' />
+          <DateInput
+            sx={sx}
+            source='endDate'
+            variant='outlined'
+            label='End'
+            disabled={true}
+          />
         </FlexBox>
-        <TextInput multiline source='remarks' variant='outlined' sx={sx} />
-        <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
+        <TextInput
+          multiline
+          source='remarks'
+          variant='outlined'
+          sx={sx}
+          disabled={true}
+        />
+        <TextInput
+          multiline
+          source='receiptNotes'
+          variant='outlined'
+          sx={sx}
+          disabled={true}
+        />
       </SimpleForm>
     </>
   )
