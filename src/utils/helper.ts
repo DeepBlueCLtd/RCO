@@ -10,7 +10,7 @@ export const transformProtectionValues = (
   } = data
   const item = {
     ...rest,
-    protectionString: `${catCode} - ${pMarking} - ${catHandling} - ${catCave}`
+    protectionString: `${catCode} ${pMarking} ${catHandling} ${catCave}`
   }
   return item
 }
