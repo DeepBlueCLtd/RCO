@@ -164,6 +164,7 @@ interface Batch extends ResourceWithCreation {
   project: Project['id']
   platform: Platform['id']
   organisation: Organisation['id']
+  protectiveMarking: ProtectiveMarking['id']
   remarks: string
   receiptNotes: string
   protectionString?: string
@@ -178,6 +179,7 @@ interface Item extends ResourceWithCreation {
   endDate: string
   vaultLocation: VaultLocation['id']
   remarks: string
+  protectiveMarking: ProtectiveMarking['id']
 
   // notes relating to how this item is mustered
   musterRemarks: string

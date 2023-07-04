@@ -2,8 +2,9 @@ import FlexBox from './FlexBox'
 import * as constants from '../constants'
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import SourceInput from './SourceInput'
 import ProtectionRefInput from './ProtectionRefInput'
-import { type RaRecord } from 'react-admin'
+import { useDataProvider, type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 interface Props {
   disabled?: boolean
@@ -17,11 +18,11 @@ interface Props {
 export default function ProtectionBlockInputs<
   TCatCode extends RaRecord,
   TCatCave extends RaRecord,
-  TCatHandle extends RaRecord,
-  TProtectiveMarking extends RaRecord
+  TCatHandle extends RaRecord
 >(props: Props): React.ReactElement {
-  const { disabled, id, refTables } = props
-  const { setValue } = useFormContext()
+  const { disabled, markingSource, isEdit, id, refTables } = props
+  const { setValue, watch } = useFormContext()
+  const dataProvider = useDataProvider()
 
   const inputProps = { disabled }
 
@@ -35,6 +36,16 @@ export default function ProtectionBlockInputs<
       shouldDirty: true
     })
   }
+
+  watch(async (data, { name }) => {
+    if (name === 'protectiveMarking') {
+      const { data: pMarking } = await dataProvider.getOne(
+        constants.R_PROTECTIVE_MARKING,
+        { id: data.protectiveMarking }
+      )
+      setValue('pMarking', pMarking.name)
+    }
+  })
 
   return (
     <Box
@@ -62,17 +73,11 @@ export default function ProtectionBlockInputs<
           {...protectionInputProps}
           width='20%'
         />
-        <ProtectionRefInput<ProtectiveMarking, TProtectiveMarking>
-          setIsDirty={setIsDirty}
+        <SourceInput
+          source={markingSource}
+          filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PROTECTIVE_MARKING}
-          refTable={refTables.catCode}
-          labelField='name'
-          source='protectiveMarking'
-          itemId={id}
-          label='Protective Marking'
-          {...protectionInputProps}
-          multiple={false}
-          width='20%'
+          inputProps={{ ...inputProps, sx: { width: '20%' } }}
         />
         <ProtectionRefInput<CatHandle, TCatHandle>
           setIsDirty={setIsDirty}

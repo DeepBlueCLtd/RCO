@@ -31,6 +31,7 @@ const schema = yup.object({
   project: yup.number().required(),
   platform: yup.number().required(),
   organisation: yup.number().required(),
+  protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
     .date()
@@ -189,12 +190,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             </>
           )}
         </FlexBox>
-        <ProtectionBlockInputs<
-          BatchCode,
-          BatchCave,
-          BatchHandling,
-          ProtectiveMarking
-        >
+        <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
           isEdit={isEdit}
           markingSource='protectiveMarking'
           id={itemId}

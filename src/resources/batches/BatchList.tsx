@@ -23,7 +23,6 @@ import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
 import { useConfigData } from '../../utils/useConfigData'
-import ProtectionField from '../../components/ProtectionField'
 
 const ListActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
@@ -159,9 +158,7 @@ export default function BatchList(): React.ReactElement {
         <TextField source='remarks' />
         <TextField source='receiptNotes' />
         <TextField source='createdAt' label='Created' />
-        <ProtectionField source={constants.R_CAT_HANDLING} />
-        <ProtectionField source={constants.R_CAT_CODE} />
-        <ProtectionField source={constants.R_CAT_CAVE} />
+        <TextField source='protectionString' label='Protection' />
       </DatagridConfigurable>
     </List>
   )

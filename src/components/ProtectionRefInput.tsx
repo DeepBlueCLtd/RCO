@@ -89,7 +89,7 @@ export default function ProtectionRefInput<
       }
       return false
     })
-    return names.join(',')
+    return names.join(', ')
   }
 
   const handleChange = (ev: SelectChangeEvent<typeof data>): void => {

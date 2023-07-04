@@ -40,7 +40,6 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
-import ProtectionField from '../../components/ProtectionField'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -510,9 +509,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <DateField source='dispatchedDate' />
           <TextField source='remarks' />
           <TextField source='musterRemarks' />
-          <ProtectionField source={constants.R_CAT_HANDLING} />
-          <ProtectionField source={constants.R_CAT_CODE} />
-          <ProtectionField source={constants.R_CAT_CAVE} />
+          <TextField source='protectionString' label='Protection' />
         </DatagridConfigurableWithShow>
       )}
     </List>

@@ -90,12 +90,7 @@ const CoreForm = (props: Props): React.ReactElement => {
           )}
         </Card>
       </FlexBox>
-      <ProtectionBlockInputs<
-        ItemCode,
-        ItemCave,
-        ItemHandling,
-        ProtectiveMarking
-      >
+      <ProtectionBlockInputs<ItemCode, ItemCave, ItemHandling>
         disabled={disabled}
         markingSource='protectiveMarking'
         id={itemId}

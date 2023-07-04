@@ -33,7 +33,8 @@ const schema = yup.object({
       }
     ),
   batchId: yup.number().required(),
-  vaultLocation: yup.number().required()
+  vaultLocation: yup.number().required(),
+  protectiveMarking: yup.number().required()
 })
 
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
