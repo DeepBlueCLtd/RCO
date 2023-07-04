@@ -17,6 +17,7 @@ const ItemCreate = (): React.ReactElement => {
 const ItemEdit = (): React.ReactElement => {
   return (
     <Edit
+      mutationMode='pessimistic'
       actions={
         <TopToolbar>
           <TopToolbarField source='item_number' />
