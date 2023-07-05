@@ -4,9 +4,10 @@ import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import SourceInput from './SourceInput'
 import ProtectionRefInput from './ProtectionRefInput'
-import { type RaRecord } from 'react-admin'
+import { useDataProvider, type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useConfigData } from '../utils/useConfigData'
+import { useEffect } from 'react'
 interface Props {
   disabled?: boolean
   markingSource: string
@@ -22,7 +23,8 @@ export default function ProtectionBlockInputs<
   TCatHandle extends RaRecord
 >(props: Props): React.ReactElement {
   const { disabled, markingSource, isEdit, id, refTables } = props
-  const { setValue } = useFormContext()
+  const { setValue, watch, getValues } = useFormContext()
+  const dataProvider = useDataProvider()
   const configDate = useConfigData()
 
   const inputProps = { disabled }
@@ -32,11 +34,30 @@ export default function ProtectionBlockInputs<
     multiple: true
   }
 
-  const setIsDirty = (source: string, value: number | number[]): void => {
+  const setIsDirty = (source: string, value = ''): void => {
     setValue(source, value, {
       shouldDirty: true
     })
   }
+
+  const setProtectiveMarking = (id: number): void => {
+    dataProvider
+      .getOne(constants.R_PROTECTIVE_MARKING, { id })
+      .then(({ data: pMarking }) => {
+        setValue('pMarking', pMarking.name)
+      })
+      .catch(console.error)
+  }
+
+  watch((data, { name }): void => {
+    if (name === 'protectiveMarking') {
+      setProtectiveMarking(data.protectiveMarking)
+    }
+  })
+
+  useEffect(() => {
+    setProtectiveMarking(getValues('protectiveMarking'))
+  }, [])
 
   return (
     <Box
@@ -62,7 +83,6 @@ export default function ProtectionBlockInputs<
           itemId={id}
           label={configDate?.cat_code ?? 'Cat code'}
           {...protectionInputProps}
-          multiple={false}
           width='20%'
         />
         <SourceInput
@@ -80,7 +100,6 @@ export default function ProtectionBlockInputs<
           label={configDate?.cat_handle ?? 'Cat handling'}
           labelField='name'
           {...protectionInputProps}
-          multiple={false}
           width='30%'
         />
         <ProtectionRefInput<CatCave, TCatCave>

@@ -5,6 +5,7 @@ import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
+import { transformProtectionValues } from '../../../utils/helper'
 
 // eslint-disable-next-line
 type Events = {
@@ -49,20 +50,13 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     }
   }, [])
 
-  const transformResource = (
-    data: Record<string, any>
-  ): Record<string, any> => {
-    const { catCave, catCode, catHandling, ...rest } = data
-    return rest
-  }
-
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
         <SaveButton
           label='Save'
           type='button'
-          transform={transformResource}
+          transform={transformProtectionValues}
           mutationOptions={{
             onSuccess
           }}
@@ -88,7 +82,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           onClick={() => {
             clone = true
           }}
-          transform={transformResource}
+          transform={transformProtectionValues}
           mutationOptions={{
             onSuccess
           }}
@@ -99,7 +93,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           onClick={() => {
             save = true
           }}
-          transform={transformResource}
+          transform={transformProtectionValues}
           mutationOptions={{
             onSuccess
           }}
