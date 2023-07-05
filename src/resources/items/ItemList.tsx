@@ -509,6 +509,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
           <DateField source='dispatchedDate' />
           <TextField source='remarks' />
           <TextField source='musterRemarks' />
+          <TextField source='protectionString' label='Protection' />
         </DatagridConfigurableWithShow>
       )}
     </List>

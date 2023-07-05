@@ -8,7 +8,8 @@ import {
   useCreatePath,
   useDataProvider,
   useRecordContext,
-  useRedirect
+  useRedirect,
+  useRefresh
 } from 'react-admin'
 import { useLocation, useParams } from 'react-router-dom'
 import { isNumber } from '../../../utils/number'
@@ -45,6 +46,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const record = useRecordContext<Item>()
   const dataProvider = useDataProvider()
   const [itemId, setItemId] = useState<Item['id']>()
+  const refresh = useRefresh()
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
@@ -122,6 +124,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
           <ItemFormToolbar
             onSuccess={({ id }: { id: number }) => {
               setItemId(id)
+              refresh()
             }}
           />
         }>
