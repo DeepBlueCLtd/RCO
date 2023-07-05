@@ -31,13 +31,25 @@ export const encryptedUsers = (isHigh?: boolean): User[] => {
   return mappedUsers
 }
 
-export const getActiveReferenceData = (
-  nameVal: string,
+type CustomIdFieldType = 'protection' | 'other'
+
+interface GetActiveRefData {
+  nameVal: string
+  alternateInactive?: boolean
+  length?: number
+  isHigh?: boolean
+  inActivePercentage?: number
+  customIdField?: CustomIdFieldType
+}
+
+export const getActiveReferenceData = ({
+  nameVal,
   alternateInactive = false,
   length = 5,
-  isHigh?: boolean,
-  inActivePercentage?: number
-): ActiveReferenceItem[] => {
+  isHigh,
+  inActivePercentage,
+  customIdField
+}: GetActiveRefData): ActiveReferenceItem[] => {
   return Array(length)
     .fill('')
     .map((_, index): ActiveReferenceItem => {
@@ -47,8 +59,11 @@ export const getActiveReferenceData = (
           : alternateInactive
           ? index % 2 === 0
           : index === 0
+
+      const idPrefix = typeof customIdField !== 'undefined' ? `-${nameVal}` : ''
+
       return {
-        id: index + 1,
+        id: `${index + 1}${idPrefix}`,
         name: nameVal + ':' + String(index + 1),
         active
       }
@@ -119,26 +134,53 @@ const loadDefaultData = async (
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
   const project = generateProject(isHigh === true ? 60 : 10, user)
 
-  const organisation = getActiveReferenceData('Organisation')
+  const organisation = getActiveReferenceData({
+    nameVal: 'Organisation',
+    customIdField: 'other'
+  })
 
-  const department = getActiveReferenceData('Department')
+  const department = getActiveReferenceData({
+    nameVal: 'Department',
+    customIdField: 'other'
+  })
 
-  const vaultLocation = getActiveReferenceData(
-    'Vault Location',
-    undefined,
-    isHigh === true ? 100 : undefined,
+  const vaultLocation = getActiveReferenceData({
+    nameVal: 'Vault Location',
+    length: isHigh === true ? 100 : undefined,
     isHigh,
-    5
-  )
+    inActivePercentage: 5
+  })
 
-  const mediaType = getActiveReferenceData('Media', true, 30)
+  const mediaType = getActiveReferenceData({
+    nameVal: 'Media',
+    alternateInactive: true,
+    length: 30
+  })
 
-  const protectiveMarking = getActiveReferenceData('Protective Marking', true)
+  const protectiveMarking = getActiveReferenceData({
+    nameVal: 'Protective Marking',
+    alternateInactive: true
+  })
   const address = getAddresses()
 
-  const catCode = getActiveReferenceData('Cat Code', true, 8)
-  const catHandling = getActiveReferenceData('Cat Handling', true, 8)
-  const catCave = getActiveReferenceData('Cat Cave', true, 8)
+  const protectionFieldParams = {
+    alternateInactive: true,
+    length: 8,
+    customIdField: 'protection' as CustomIdFieldType
+  }
+
+  const catCode = getActiveReferenceData({
+    ...protectionFieldParams,
+    nameVal: 'Cat Code'
+  })
+  const catHandling = getActiveReferenceData({
+    ...protectionFieldParams,
+    nameVal: 'Cat Handling'
+  })
+  const catCave = getActiveReferenceData({
+    ...protectionFieldParams,
+    nameVal: 'Cat Cave'
+  })
   const batch = generateBatch(
     isHigh === true ? 500 : 10,
     platform.length,

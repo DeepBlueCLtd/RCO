@@ -59,6 +59,7 @@ interface RCOResource {
 interface ActiveReferenceItem extends RCOResource {
   // when false, the item should not be included in drop-downs
   // for `create` forms, though it should for `edit` forms
+  id: string | number
   name: string
   active: boolean
 }
