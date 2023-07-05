@@ -59,6 +59,7 @@ export default function ProtectionRefInput<
     setValue
   } = useFormContext()
   const redirect = useRedirect()
+  const [valueLabel, setValueLabel] = useState<string>('')
 
   const { createRecord, updateRecord } = useRefTable(
     refTable,
@@ -97,7 +98,7 @@ export default function ProtectionRefInput<
 
   const setProtectionValues = (ids: number | number[]): string => {
     const names = getNamesByIds(ids)
-    setTimeout(() => { setValue(source as string, names) }, 0)
+    setValueLabel(names)
     return names
   }
 
@@ -107,6 +108,12 @@ export default function ProtectionRefInput<
     const names = setProtectionValues(value)
     setIsDirty(source as string, names)
   }
+
+  useEffect(() => {
+    if (valueLabel.length > 0) {
+      setValue(source as string, valueLabel)
+    }
+  }, [valueLabel])
 
   useEffect(() => {
     const selectedData = multiple
