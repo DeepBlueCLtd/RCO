@@ -78,7 +78,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       <FlexBox>
         <SaveButton
           type='button'
-          label='Save and clone'
+          label='Create / Clone'
           onClick={() => {
             clone = true
           }}
@@ -89,7 +89,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
         />
         <SaveButton
           type='button'
-          label='Save and Create'
+          label='Create / New'
           onClick={() => {
             save = true
           }}
