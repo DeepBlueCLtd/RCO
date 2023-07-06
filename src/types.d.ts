@@ -59,7 +59,13 @@ interface RCOResource {
 interface ActiveReferenceItem extends RCOResource {
   // when false, the item should not be included in drop-downs
   // for `create` forms, though it should for `edit` forms
-  id: string | number
+  id: number
+  name: string
+  active: boolean
+}
+
+interface ReferenceItem extends RCOResource {
+  id: string
   name: string
   active: boolean
 }
@@ -119,9 +125,9 @@ interface Project extends ResourceWithCreation {
 type Department = ActiveReferenceItem
 type Organisation = ActiveReferenceItem
 type ProtectiveMarking = ActiveReferenceItem
-type CatCode = ActiveReferenceItem
-type CatHandle = ActiveReferenceItem
-type CatCave = ActiveReferenceItem
+type CatCode = ReferenceItem
+type CatHandle = ReferenceItem
+type CatCave = ReferenceItem
 type VaultLocation = ActiveReferenceItem
 
 interface ItemCode {

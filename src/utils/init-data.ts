@@ -31,28 +31,26 @@ export const encryptedUsers = (isHigh?: boolean): User[] => {
   return mappedUsers
 }
 
-type CustomIdFieldType = 'protection' | 'other'
-
 interface GetActiveRefData {
   nameVal: string
   alternateInactive?: boolean
   length?: number
   isHigh?: boolean
   inActivePercentage?: number
-  customIdField?: CustomIdFieldType
+  idPostFix?: string
 }
 
-export const getActiveReferenceData = ({
+export const getActiveReferenceData = <T>({
   nameVal,
   alternateInactive = false,
   length = 5,
   isHigh,
   inActivePercentage,
-  customIdField
-}: GetActiveRefData): ActiveReferenceItem[] => {
+  idPostFix
+}: GetActiveRefData): T[] => {
   return Array(length)
     .fill('')
-    .map((_, index): ActiveReferenceItem => {
+    .map((_, index): T => {
       const active =
         isHigh === true && inActivePercentage !== undefined
           ? index > inActivePercentage * length
@@ -60,13 +58,16 @@ export const getActiveReferenceData = ({
           ? index % 2 === 0
           : index === 0
 
-      const idPrefix = typeof customIdField !== 'undefined' ? `-${nameVal}` : ''
+      const id =
+        typeof idPostFix !== 'undefined'
+          ? `${index + 1}-${idPostFix}`
+          : index + 1
 
       return {
-        id: `${index + 1}${idPrefix}`,
+        id,
         name: nameVal + ':' + String(index + 1),
         active
-      }
+      } as any as T
     })
 }
 
@@ -134,30 +135,28 @@ const loadDefaultData = async (
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
   const project = generateProject(isHigh === true ? 60 : 10, user)
 
-  const organisation = getActiveReferenceData({
-    nameVal: 'Organisation',
-    customIdField: 'other'
+  const organisation = getActiveReferenceData<ActiveReferenceItem>({
+    nameVal: 'Organisation'
   })
 
-  const department = getActiveReferenceData({
-    nameVal: 'Department',
-    customIdField: 'other'
+  const department = getActiveReferenceData<ActiveReferenceItem>({
+    nameVal: 'Department'
   })
 
-  const vaultLocation = getActiveReferenceData({
+  const vaultLocation = getActiveReferenceData<ActiveReferenceItem>({
     nameVal: 'Vault Location',
     length: isHigh === true ? 100 : undefined,
     isHigh,
     inActivePercentage: 5
   })
 
-  const mediaType = getActiveReferenceData({
+  const mediaType = getActiveReferenceData<ActiveReferenceItem>({
     nameVal: 'Media',
     alternateInactive: true,
     length: 30
   })
 
-  const protectiveMarking = getActiveReferenceData({
+  const protectiveMarking = getActiveReferenceData<ActiveReferenceItem>({
     nameVal: 'Protective Marking',
     alternateInactive: true
   })
@@ -165,19 +164,18 @@ const loadDefaultData = async (
 
   const protectionFieldParams = {
     alternateInactive: true,
-    length: 8,
-    customIdField: 'protection' as CustomIdFieldType
+    length: 8
   }
 
-  const catCode = getActiveReferenceData({
+  const catCode = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Code'
   })
-  const catHandling = getActiveReferenceData({
+  const catHandling = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Handling'
   })
-  const catCave = getActiveReferenceData({
+  const catCave = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Cave'
   })
