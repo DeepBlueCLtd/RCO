@@ -129,7 +129,7 @@ export default function ProtectionRefInput<
       if (record?.id) {
         updateRecord(record.id as number, selectedData)
       } else if (id) {
-        if (resource !== constants.R_ITEMS) createRecord(id, selectedData)
+        createRecord(id, selectedData)
       }
       if (resource === constants.R_BATCHES) {
         const path = `/${constants.R_BATCHES}/${id ?? record?.id}/show`
