@@ -24,6 +24,7 @@ const lifeCycles = (
   ) => {
     const fields: Array<keyof Item> = ['startDate', 'endDate']
     convertDateToISO<Item>(record.data, fields)
+    // TODO: This feature is only necessary for mock backend. It should be deleted for SQL backend.
     const {
       data: { project, platform }
     } = await dataProvider.getOne<Batch>(R_BATCHES, {

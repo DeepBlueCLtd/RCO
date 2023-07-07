@@ -21,11 +21,15 @@ interface Props {
   batchId?: number
   disabled?: boolean
   itemId?: Item['id']
+  setItemId: React.Dispatch<React.SetStateAction<number | undefined>>
 }
 
 const CoreForm = (props: Props): React.ReactElement => {
-  const { batchId, disabled, itemId } = props
+  const { batchId, disabled, itemId, setItemId } = props
   const formContext = useFormContext()
+  const {
+    formState: { isSubmitted, isSubmitting }
+  } = formContext
   const [mediaTypes, setMediaTypes] = useState<any[]>([])
   const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
 
@@ -36,6 +40,12 @@ const CoreForm = (props: Props): React.ReactElement => {
   useEffect(() => {
     setMediaTypes(data)
   }, [data])
+
+  useEffect(() => {
+    if (isSubmitted) {
+      setItemId(undefined)
+    }
+  }, [isSubmitted, isSubmitting])
 
   const ValueField = ({
     label,

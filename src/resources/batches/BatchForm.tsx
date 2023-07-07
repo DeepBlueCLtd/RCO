@@ -9,7 +9,8 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput
+  DateInput,
+  useRefresh
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -22,6 +23,7 @@ import { Typography } from '@mui/material'
 import dayjs from 'dayjs'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
+import { transformProtectionValues } from '../../utils/helper'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -37,7 +39,7 @@ const schema = yup.object({
     .test(
       'endDate',
       'End date must be greater than start date',
-      function (value) {
+      function (value): boolean {
         return dayjs(value).diff(this.parent.startDate) > 0
       }
     )
@@ -88,6 +90,7 @@ const BatchForm = (
   const { isEdit, isShow } = props
   const configData = useConfigData()
   const [itemId, setItemId] = useState<Item['id']>()
+  const refresh = useRefresh()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -106,22 +109,16 @@ const BatchForm = (
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
   const ToolBar = (): React.ReactElement => {
-    const transformResource = (
-      data: Record<string, any>
-    ): Record<string, any> => {
-      const { catCave, catCode, catHandling, ...rest } = data
-      return rest
-    }
-
     return (
       <EditToolBar
         type='button'
         mutationOptions={{
           onSuccess: ({ id }: { id: number }) => {
             setItemId(id)
+            refresh()
           }
         }}
-        transform={transformResource}
+        transform={transformProtectionValues}
       />
     )
   }
@@ -215,7 +212,7 @@ const BatchForm = (
             catHandle: constants.R_BATCH_HANDLE
           }}
           resource={constants.R_BATCHES}
-          disabled={true}
+          disabled={isShow}
         />
         <FlexBox>
           <DateInput
@@ -223,14 +220,14 @@ const BatchForm = (
             source='startDate'
             label='Start'
             variant='outlined'
-            disabled={true}
+            disabled={isShow}
           />
           <DateInput
             sx={sx}
             source='endDate'
             variant='outlined'
             label='End'
-            disabled={true}
+            disabled={isShow}
           />
         </FlexBox>
         <TextInput
@@ -238,14 +235,14 @@ const BatchForm = (
           source='remarks'
           variant='outlined'
           sx={sx}
-          disabled={true}
+          disabled={isShow}
         />
         <TextInput
           multiline
           source='receiptNotes'
           variant='outlined'
           sx={sx}
-          disabled={true}
+          disabled={isShow}
         />
       </SimpleForm>
     </>
