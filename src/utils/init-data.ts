@@ -9,6 +9,7 @@ import {
   generateUsers
 } from './generateData'
 import * as constants from '../constants'
+import { ID_POSTPREFIX } from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
@@ -37,7 +38,7 @@ interface GetActiveRefData {
   length?: number
   isHigh?: boolean
   inActivePercentage?: number
-  idPostFix?: string
+  resource?: string
 }
 
 export const getActiveReferenceData = <T>({
@@ -46,7 +47,7 @@ export const getActiveReferenceData = <T>({
   length = 5,
   isHigh,
   inActivePercentage,
-  idPostFix
+  resource = ''
 }: GetActiveRefData): T[] => {
   return Array(length)
     .fill('')
@@ -57,6 +58,8 @@ export const getActiveReferenceData = <T>({
           : alternateInactive
           ? index % 2 === 0
           : index === 0
+
+      const idPostFix = ID_POSTPREFIX?.[resource]
 
       const id =
         typeof idPostFix !== 'undefined'
@@ -137,12 +140,12 @@ const loadDefaultData = async (
 
   const organisation = getActiveReferenceData<ActiveReferenceItem>({
     nameVal: 'Organisation',
-    idPostFix: 'organisation'
+    resource: constants.R_ORGANISATION
   })
 
   const department = getActiveReferenceData<ActiveReferenceItem>({
     nameVal: 'Department',
-    idPostFix: 'department'
+    resource: constants.R_DEPARTMENT
   })
 
   const vaultLocation = getActiveReferenceData<ActiveReferenceItem>({
@@ -172,17 +175,17 @@ const loadDefaultData = async (
   const catCode = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Code',
-    idPostFix: 'Cat Code'
+    resource: constants.R_CAT_CODE
   })
   const catHandling = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Handling',
-    idPostFix: 'Cat Handling'
+    resource: constants.R_CAT_HANDLING
   })
   const catCave = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Cave',
-    idPostFix: 'Cat Cave'
+    resource: constants.R_CAT_CAVE
   })
   const batch = generateBatch(
     isHigh === true ? 500 : 10,
