@@ -4,6 +4,7 @@ import {
   useDeleteMany,
   useRedirect
 } from 'react-admin'
+import { R_ITEMS } from '../constants'
 
 interface DBMethods {
   createRecord: (id: number, data?: number[]) => void
@@ -43,14 +44,14 @@ export default function useRefTable(
   const createRecord = (id: number, data?: number[]): void => {
     try {
       data?.map(async (sId: number) => {
-        return create(refTable, {
+        return await create(refTable, {
           data: {
             [source]: sId,
             [resource]: id
           }
         })
       })
-      redirect(`/${resource}`)
+      if (resource !== R_ITEMS) redirect(`/${resource}`)
     } catch (error: any) {
       console.log(error)
     }

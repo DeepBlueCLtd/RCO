@@ -158,6 +158,7 @@ export default function BatchList(): React.ReactElement {
         <TextField source='remarks' />
         <TextField source='receiptNotes' />
         <TextField source='createdAt' label='Created' />
+        <TextField source='protectionString' label='Protection' />
       </DatagridConfigurable>
     </List>
   )

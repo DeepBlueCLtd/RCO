@@ -16,9 +16,11 @@ import {
   type RaRecord,
   useGetList,
   useRecordContext,
-  useResourceContext
+  useResourceContext,
+  useRedirect
 } from 'react-admin'
 import { Box } from '@mui/system'
+import * as constants from '../constants'
 
 interface Props<T, RefTable> {
   reference: string
@@ -28,7 +30,7 @@ interface Props<T, RefTable> {
   label: string
   labelField: keyof T
   width: string
-  setIsDirty: (source: string, value: number | number[]) => void
+  setIsDirty: (source: string, value: string) => void
 }
 
 type SelectedIdType = number | number[]
@@ -56,6 +58,8 @@ export default function ProtectionRefInput<
     formState: { isSubmitted, isSubmitting, errors },
     setValue
   } = useFormContext()
+  const redirect = useRedirect()
+  const [valueLabel, setValueLabel] = useState<string>('')
 
   const { createRecord, updateRecord } = useRefTable(
     refTable,
@@ -79,18 +83,44 @@ export default function ProtectionRefInput<
     }
   })
 
+  const getNamesByIds = (ids: number | number[]): string => {
+    const names: string[] = []
+    const values = Array.isArray(ids) ? ids : [ids]
+    options.filter((item: T) => {
+      if (values.includes(item.id as number)) {
+        names.push(item.name)
+        return true
+      }
+      return false
+    })
+    return names.join(' ')
+  }
+
+  const setProtectionValues = (ids: number | number[]): string => {
+    const names = getNamesByIds(ids)
+    setValueLabel(names)
+    return names
+  }
+
   const handleChange = (ev: SelectChangeEvent<typeof data>): void => {
     const value = ev.target.value as SelectedIdType
     setData(value)
-    setValue(source as string, value)
-    setIsDirty(source as string, value)
+    const names = setProtectionValues(value)
+    setIsDirty(source as string, names)
   }
+
+  useEffect(() => {
+    if (valueLabel.length > 0) {
+      setValue(source as string, valueLabel)
+    }
+  }, [valueLabel])
 
   useEffect(() => {
     const selectedData = multiple
       ? selectedItems?.map((item: RefTable) => item[source]) ?? []
       : selectedItems?.[0]?.[source]
     setData(selectedData)
+    setProtectionValues(selectedData)
   }, [selectedItems])
 
   useEffect(() => {
@@ -100,6 +130,10 @@ export default function ProtectionRefInput<
         updateRecord(record.id as number, selectedData)
       } else if (id) {
         createRecord(id, selectedData)
+      }
+      if (resource === constants.R_BATCHES) {
+        const path = `/${constants.R_BATCHES}/${id ?? record?.id}/show`
+        redirect(path)
       }
     }
   }, [isSubmitted, isSubmitting])
