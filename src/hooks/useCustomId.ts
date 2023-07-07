@@ -26,7 +26,8 @@ export default function useCustomid(): UseCustomId {
     const values = getValues()
 
     const preFix = ID_POSTPREFIX?.[resource]
-    const recordNumber = total + 1
+    const totalItems: number = total
+    const recordNumber = totalItems + 1
     const id =
       typeof preFix !== 'undefined' ? `${preFix}-${recordNumber}` : recordNumber
 
