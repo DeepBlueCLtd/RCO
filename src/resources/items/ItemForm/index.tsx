@@ -128,7 +128,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
             }}
           />
         }>
-        <CoreForm itemId={itemId} batchId={batch?.id} />
+        <CoreForm itemId={itemId} setItemId={setItemId} batchId={batch?.id} />
       </SimpleForm>
     </Box>
   )
