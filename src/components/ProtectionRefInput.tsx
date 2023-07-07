@@ -155,7 +155,7 @@ export default function ProtectionRefInput<
           flexWrap: 'wrap',
           gap: 0.5
         }}>
-        {typeof selected !== 'number' ? (
+        {Array.isArray(selected) ? (
           selected.map((value: number) => (
             <Chip key={value} label={getLabelById(value)} />
           ))

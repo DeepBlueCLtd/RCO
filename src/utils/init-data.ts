@@ -136,11 +136,13 @@ const loadDefaultData = async (
   const project = generateProject(isHigh === true ? 60 : 10, user)
 
   const organisation = getActiveReferenceData<ActiveReferenceItem>({
-    nameVal: 'Organisation'
+    nameVal: 'Organisation',
+    idPostFix: 'organisation'
   })
 
   const department = getActiveReferenceData<ActiveReferenceItem>({
-    nameVal: 'Department'
+    nameVal: 'Department',
+    idPostFix: 'department'
   })
 
   const vaultLocation = getActiveReferenceData<ActiveReferenceItem>({
@@ -169,15 +171,18 @@ const loadDefaultData = async (
 
   const catCode = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
-    nameVal: 'Cat Code'
+    nameVal: 'Cat Code',
+    idPostFix: 'Cat Code'
   })
   const catHandling = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
-    nameVal: 'Cat Handling'
+    nameVal: 'Cat Handling',
+    idPostFix: 'Cat Handling'
   })
   const catCave = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
-    nameVal: 'Cat Cave'
+    nameVal: 'Cat Cave',
+    idPostFix: 'Cat Cave'
   })
   const batch = generateBatch(
     isHigh === true ? 500 : 10,
