@@ -41,6 +41,7 @@ export default function ProtectionBlockInputs<
   }
 
   const setProtectiveMarking = (id: number): void => {
+    if (!id) return
     dataProvider
       .getOne(constants.R_PROTECTIVE_MARKING, { id })
       .then(({ data: pMarking }) => {
