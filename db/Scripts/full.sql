@@ -287,3 +287,14 @@ CREATE TABLE if not exists itemCave (
     FOREIGN KEY (item) REFERENCES item(id),
     FOREIGN KEY (catCave) REFERENCES catCave(id)
 );
+
+CREATE TABLE if not exists  configData (
+  projectName  TEXT NOT NULL,
+  projectsName  TEXT NOT NULL,
+  fromAddress  TEXT NOT NULL,
+  protectionName  TEXT NOT NULL,
+  cat_code  TEXT NOT NULL,
+  cat_handle  TEXT NOT NULL,
+  cat_cave  TEXT NOT NULL
+)
+
