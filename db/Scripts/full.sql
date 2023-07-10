@@ -3,28 +3,28 @@
 PRAGMA foreign_keys = ON;
 -- Meta table - Platform
 CREATE TABLE IF NOT EXISTS platform(
-       id INTEGER PRIMARY KEY,
+       id INTEGER NOT NULL PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
 -- Meta table - catCave
 CREATE TABLE IF NOT EXISTS catCave(
-       id TEXT PRIMARY KEY,
+       id TEXT NOT NULL PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
 -- Meta table - catHandling
 CREATE TABLE IF NOT EXISTS catHandle(
-       id TEXT PRIMARY KEY,
+       id TEXT NOT NULL PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
 -- Meta table - catCode
 CREATE TABLE IF NOT EXISTS catCode(
-       id TEXT PRIMARY KEY,
+       id TEXT NOT NULL PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
@@ -45,14 +45,14 @@ CREATE TABLE IF NOT EXISTS vaultLocation(
 
 -- Meta table - department
 CREATE TABLE IF NOT EXISTS department(
-       id INTEGER PRIMARY KEY,
+       id TEXT PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
 -- Meta table - organisation
 CREATE TABLE IF NOT EXISTS organisation(
-       id INTEGER PRIMARY KEY,
+       id TEXT PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
