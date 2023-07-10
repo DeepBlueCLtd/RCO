@@ -25,7 +25,7 @@ export default function ProtectionBlockInputs<
   const { disabled, markingSource, isEdit, id, refTables } = props
   const { setValue, watch, getValues } = useFormContext()
   const dataProvider = useDataProvider()
-  const configDate = useConfigData()
+  const configData = useConfigData()
 
   const inputProps = { disabled }
 
@@ -50,11 +50,14 @@ export default function ProtectionBlockInputs<
       .catch(console.error)
   }
 
-  watch((data, { name }): void => {
-    if (name === 'protectiveMarking') {
-      setProtectiveMarking(data.protectiveMarking)
-    }
-  })
+  useEffect(() => {
+    const subscription = watch((data, { name }): void => {
+      if (name === 'protectiveMarking') {
+        setProtectiveMarking(data.protectiveMarking)
+      }
+    })
+    return () => { subscription.unsubscribe() }
+  }, [watch])
 
   useEffect(() => {
     setProtectiveMarking(getValues('protectiveMarking'))
@@ -71,7 +74,7 @@ export default function ProtectionBlockInputs<
       }}>
       <legend>
         <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          {configDate?.protectionName}
+          {configData?.protectionName}
         </Typography>
       </legend>
       <FlexBox alignItems={'start'}>
@@ -82,7 +85,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           source='catCode'
           itemId={id}
-          label={configDate?.cat_code ?? 'Cat code'}
+          label={configData?.cat_code ?? 'Cat code'}
           {...protectionInputProps}
           width='20%'
         />
@@ -98,7 +101,7 @@ export default function ProtectionBlockInputs<
           refTable={refTables.catHandle}
           source='catHandling'
           itemId={id}
-          label={configDate?.cat_handle ?? 'Cat handling'}
+          label={configData?.cat_handle ?? 'Cat handling'}
           labelField='name'
           {...protectionInputProps}
           width='30%'
@@ -110,7 +113,7 @@ export default function ProtectionBlockInputs<
           source='catCave'
           labelField='name'
           itemId={id}
-          label={configDate?.cat_cave ?? 'Cat cave'}
+          label={configData?.cat_cave ?? 'Cat cave'}
           {...protectionInputProps}
           width='30%'
         />

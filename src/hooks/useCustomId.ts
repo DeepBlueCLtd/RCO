@@ -1,5 +1,5 @@
 import { useFormContext } from 'react-hook-form'
-import { ID_POSTPREFIX } from '../constants'
+import { ID_FIX } from '../constants'
 import {
   useCreate,
   useCreatePath,
@@ -25,7 +25,7 @@ export default function useCustomid(): UseCustomId {
     ev.preventDefault()
     const values = getValues()
 
-    const preFix = ID_POSTPREFIX?.[resource]
+    const preFix = ID_FIX?.[resource]
     const totalItems: number = total
     const recordNumber = totalItems + 1
     const id =

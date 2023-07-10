@@ -123,8 +123,8 @@ interface Project extends ResourceWithCreation {
   endDate: string
 }
 
-type Department = ActiveReferenceItem
-type Organisation = ActiveReferenceItem
+type Department = ReferenceItem
+type Organisation = ReferenceItem
 type ProtectiveMarking = ActiveReferenceItem
 type CatCode = ReferenceItem
 type CatHandle = ReferenceItem

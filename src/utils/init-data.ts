@@ -9,7 +9,7 @@ import {
   generateUsers
 } from './generateData'
 import * as constants from '../constants'
-import { ID_POSTPREFIX } from '../constants'
+import { ID_FIX } from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
@@ -59,7 +59,7 @@ export const getActiveReferenceData = <T>({
           ? index % 2 === 0
           : index === 0
 
-      const idPostFix = ID_POSTPREFIX?.[resource]
+      const idPostFix = ID_FIX?.[resource]
 
       const id =
         typeof idPostFix !== 'undefined'
@@ -138,12 +138,12 @@ const loadDefaultData = async (
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
   const project = generateProject(isHigh === true ? 60 : 10, user)
 
-  const organisation = getActiveReferenceData<ActiveReferenceItem>({
+  const organisation = getActiveReferenceData<ReferenceItem>({
     nameVal: 'Organisation',
     resource: constants.R_ORGANISATION
   })
 
-  const department = getActiveReferenceData<ActiveReferenceItem>({
+  const department = getActiveReferenceData<ReferenceItem>({
     nameVal: 'Department',
     resource: constants.R_DEPARTMENT
   })
