@@ -27,10 +27,10 @@ import { transformProtectionValues } from '../../utils/helper'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
-  department: yup.number().required(),
+  department: yup.string().nonNullable().required(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
-  organisation: yup.number().required(),
+  organisation: yup.string().nonNullable().required(),
   protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
