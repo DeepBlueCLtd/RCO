@@ -55,7 +55,7 @@ export default function ProtectionRefInput<
   const record = useRecordContext()
   const resource = useResourceContext()
   const {
-    formState: { isSubmitted, isSubmitting, errors },
+    formState: { errors, isSubmitSuccessful },
     setValue
   } = useFormContext()
   const redirect = useRedirect()
@@ -124,7 +124,7 @@ export default function ProtectionRefInput<
   }, [selectedItems])
 
   useEffect(() => {
-    if (isSubmitted) {
+    if (isSubmitSuccessful) {
       const selectedData = typeof data === 'number' ? [data] : data
       if (record?.id) {
         updateRecord(record.id as number, selectedData)
@@ -136,7 +136,7 @@ export default function ProtectionRefInput<
         redirect(path)
       }
     }
-  }, [isSubmitted, isSubmitting])
+  }, [isSubmitSuccessful])
 
   const getLabelById = (id: number): string | undefined =>
     labelById[id]?.[labelField]

@@ -56,7 +56,9 @@ export default function ProtectionBlockInputs<
         setProtectiveMarking(data.protectiveMarking)
       }
     })
-    return () => { subscription.unsubscribe() }
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [watch])
 
   useEffect(() => {
