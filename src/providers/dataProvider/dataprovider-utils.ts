@@ -83,7 +83,7 @@ export const convertDateToISO = <T>(
   keys: Array<keyof T>
 ): Partial<T> => {
   keys.forEach((key) => {
-    if (typeof record[key] !== 'undefined') {
+    if (typeof record[key] !== 'undefined' && record[key] !== null) {
       record[key] = new Date(record[key]).toISOString()
     }
   })

@@ -156,8 +156,8 @@ interface BatchHandling {
 }
 
 interface Batch extends ResourceWithCreation {
-  startDate: string
-  endDate: string
+  startDate: string | null
+  endDate: string | null
   batchNumber: string
   yearOfReceipt: string
   department: Department['id']
@@ -172,11 +172,11 @@ interface Batch extends ResourceWithCreation {
 
 interface Item extends ResourceWithCreation {
   mediaType: MediaType['id']
-  startDate: string
+  startDate: string | null
   batchId: Batch['id']
   item_number: string
   consecPages?: string
-  endDate: string
+  endDate: string | null
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']

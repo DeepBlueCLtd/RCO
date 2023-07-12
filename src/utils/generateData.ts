@@ -1,6 +1,14 @@
 import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
+const skipStartDate = (): boolean => {
+  return Math.random() < 0.05
+}
+
+const skipEndDate = (): boolean => {
+  return Math.random() < 0.05
+}
+
 export function generateRandomNumber(min: number, max: number): number {
   const array = new Uint32Array(1)
   const generatedRandomNumber = window.crypto.getRandomValues(array)
@@ -139,8 +147,8 @@ export const generateBatch = (
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
-      startDate: startDate.toString(),
-      endDate: endDate.toString(),
+      startDate: skipStartDate() ? null : startDate.toString(),
+      endDate: skipEndDate() ? null : endDate.toString(),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
@@ -167,24 +175,35 @@ export const generateItems = (
   mediaType: number
 ): Item[] => {
   const items: Item[] = []
+
   for (let i = 1; i <= length; i++) {
-    const endDate = setMinuteToStep(
-      generateRandomDateInRange(
-        new Date(batch.startDate),
-        new Date(batch.endDate)
-      )
-    )
+    const endDate = skipEndDate()
+      ? null
+      : batch.startDate && batch.endDate
+      ? setMinuteToStep(
+          generateRandomDateInRange(
+            new Date(batch.startDate),
+            new Date(batch.endDate)
+          )
+        )
+      : null
 
-    const minStartDate = DateTime.fromJSDate(new Date(endDate)).minus({
-      minutes: 15
-    })
+    const minStartDate = endDate
+      ? DateTime.fromJSDate(new Date(endDate)).minus({
+          minutes: 15
+        })
+      : null
 
-    const startDate = setMinuteToStep(
-      generateRandomDateInRange(
-        new Date(batch.startDate),
-        new Date(minStartDate.toString())
-      )
-    )
+    const startDate = skipStartDate()
+      ? null
+      : batch.startDate !== null && minStartDate
+      ? setMinuteToStep(
+          generateRandomDateInRange(
+            new Date(batch.startDate),
+            new Date(minStartDate.toString())
+          )
+        )
+      : null
 
     const batchNumber: string = batch.batchNumber
     const itemReference: string = getItemReferenceNumber(batch, items)
