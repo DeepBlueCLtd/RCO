@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react'
-import { BooleanField, FunctionField, List } from 'react-admin'
+import { BooleanField, FunctionField, List, TextField } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import * as constants from '../../constants'
 import { Button, IconButton } from '@mui/material'
 import { Article, History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import DblClickDatagridConfigurable from '../../components/DblClickDatagridConfigurable'
+import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 
 export default function VaultLocationList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>()
@@ -42,9 +42,10 @@ export default function VaultLocationList(): React.ReactElement {
   }
   return (
     <List>
-      <DblClickDatagridConfigurable
+      <DatagridConfigurableWithShow
         resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
+        <TextField source='id' label='ID' />
         <FunctionField
           style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}
@@ -66,7 +67,7 @@ export default function VaultLocationList(): React.ReactElement {
             )
           }}
         />
-      </DblClickDatagridConfigurable>
+      </DatagridConfigurableWithShow>
       <ResourceHistoryModal
         filter={filter}
         open={open}

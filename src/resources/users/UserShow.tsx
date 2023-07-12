@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-import ItemList from '../items/ItemList'
+import ItemList, { BulkActions } from '../items/ItemList'
 import {
   BooleanInput,
+  DatagridConfigurable,
+  type DatagridConfigurableProps,
   EditButton,
   Loading,
   Show,
   SimpleForm,
+  TextField,
   TextInput,
   TopToolbar,
   useGetList,
@@ -23,6 +26,7 @@ import { Warning, History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
+import SourceField from '../../components/SourceField'
 
 const style = {
   position: 'absolute',
@@ -181,8 +185,11 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
           </legend>
           <ItemList
             storeKey={`${constants.R_USERS}-${id}-items-list`}
-            filter={{ loanedTo: record?.id }}
-          />
+            filter={{ loanedTo: record?.id }}>
+            <ItemListDataTable
+              preferenceKey={`datagrid-${constants.R_USERS}-${id}-items-list`}
+            />
+          </ItemList>
         </Box>
       </FlexBox>
 
@@ -223,6 +230,7 @@ export default function UserShow(): React.ReactElement {
 
   return (
     <Show
+      resource={constants.R_USERS}
       actions={
         hasDeleteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>
@@ -246,5 +254,28 @@ export default function UserShow(): React.ReactElement {
         }}
       />
     </Show>
+  )
+}
+
+function ItemListDataTable(
+  props: DatagridConfigurableProps
+): React.ReactElement {
+  return (
+    <DatagridConfigurable
+      bulkActionButtons={<BulkActions />}
+      rowClick='show'
+      omit={props?.omit}
+      preferenceKey={props.preferenceKey}
+      {...props}>
+      <TextField source='item_number' label='Reference' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
+      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <TextField source='remarks' />
+    </DatagridConfigurable>
   )
 }

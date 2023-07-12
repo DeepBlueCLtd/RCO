@@ -43,7 +43,10 @@ interface FormProps {
 // -- SQL Data Types
 // ------------------------
 
-type MediaType = 'DVD' | 'Tape' | 'Paper'
+interface MediaType extends RCOResource {
+  name: string
+  active: boolean
+}
 
 /** an entity, with an id unique to that table */
 interface RCOResource {
@@ -108,17 +111,49 @@ interface Project extends ResourceWithCreation {
   readonly id: number
   name: string
   remarks: string
+  startDate: string
+  endDate: string
 }
 
 type Department = ActiveReferenceItem
 type Organisation = ActiveReferenceItem
 type ProtectiveMarking = ActiveReferenceItem
-type PlatformOriginator = ActiveReferenceItem
 type CatCode = ActiveReferenceItem
 type CatHandle = ActiveReferenceItem
 type CatCave = ActiveReferenceItem
 type VaultLocation = ActiveReferenceItem
-// type MediaType = ActiveReferenceItem
+
+interface ItemCode {
+  id: number
+  item: number
+  catCode: number
+}
+interface ItemCave {
+  id: number
+  item: number
+  catCave: number
+}
+interface ItemHandling {
+  id: number
+  item: number
+  catHandling: number
+}
+
+interface BatchCode {
+  id: number
+  batch: number
+  catCode: number
+}
+interface BatchCave {
+  id: number
+  batch: number
+  catCave: number
+}
+interface BatchHandling {
+  id: number
+  batch: number
+  catHandling: number
+}
 
 interface Batch extends ResourceWithCreation {
   startDate: string
@@ -126,20 +161,17 @@ interface Batch extends ResourceWithCreation {
   batchNumber: string
   yearOfReceipt: string
   department: Department['id']
-  project: Project['id']
-  platform: Platform['id']
+  project?: Project['id']
+  platform?: Platform['id']
   organisation: Organisation['id']
   protectiveMarking: ProtectiveMarking['id']
-  // extra protection details. All are optional
-  catCode: CatCode['id'] | undefined
-  catHandle: CatHandle['id'] | undefined
-  catCave: Array<CatCave['id']> | undefined
   remarks: string
   receiptNotes: string
+  protectionString?: string
 }
 
 interface Item extends ResourceWithCreation {
-  mediaType: MediaType
+  mediaType: MediaType['id']
   startDate: string
   batchId: Batch['id']
   item_number: string
@@ -148,10 +180,6 @@ interface Item extends ResourceWithCreation {
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
-  // extra protection details. All are optional
-  catCode: CatCode['id'] | undefined
-  catHandle: CatHandle['id'] | undefined
-  catCave: Array<CatCave['id']> | undefined
 
   // notes relating to how this item is mustered
   musterRemarks: string
@@ -164,6 +192,7 @@ interface Item extends ResourceWithCreation {
   // destruction details
   destruction?: Destruction['id']
   destructionDate?: string
+  protectionString?: string
 }
 
 interface RCOStore {
@@ -176,7 +205,6 @@ interface RCOStore {
   vaultLocation: VaultLocation[]
   mediaType: ActiveReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
-  platformOriginator: PlatformOriginator[]
   catCode: CatCode[]
   catHandling: CatHandle[]
   catCave: CatCave[]
@@ -228,7 +256,7 @@ interface Dispatch {
 }
 
 /** per instance config data. It is just intended to be one row deep */
-interface ConfigData {
+interface ConfigData extends RCOResource {
   /** singular name for project resource
    * test value: `Project`
    */

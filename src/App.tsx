@@ -40,6 +40,7 @@ import addresses from './resources/addresses'
 import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
+import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -55,30 +56,42 @@ function App(): React.ReactElement {
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
-      getDataProvider(loggingPref)
+      checktDefault()
         .then((provider) => {
-          setDataProvider(provider)
-          const authenticationProvider = rcoAuthProvider(provider)
-          setAuthProvider(authenticationProvider)
-          authenticationProvider
-            .getPermissions({})
-            .then(setPermissions)
-            .catch(console.log)
-          if (provider !== undefined && dataProvider === undefined) {
-            const queryParams = new URLSearchParams(window.location.search)
-            const username = queryParams.get('username')
-            const password = queryParams.get('password')
-            if (username !== null && password !== null) {
-              authenticationProvider
-                .login({ username, password })
-                .then((_: any) => {
-                  window.history.replaceState({}, '', window.location.pathname)
-                })
-                .catch(console.log)
-            }
+          if (provider !== null) {
+            populate(provider)
+          } else {
+            getDataProvider(loggingPref)
+              .then((provider) => {
+                populate(provider)
+              })
+              .catch(console.log)
           }
         })
         .catch(console.log)
+    }
+  }
+
+  const populate = (provider: DataProvider): void => {
+    setDataProvider(provider)
+    const authenticationProvider = rcoAuthProvider(provider)
+    setAuthProvider(authenticationProvider)
+    authenticationProvider
+      .getPermissions({})
+      .then(setPermissions)
+      .catch(console.log)
+    if (provider !== undefined && dataProvider === undefined) {
+      const queryParams = new URLSearchParams(window.location.search)
+      const username = queryParams.get('username')
+      const password = queryParams.get('password')
+      if (username !== null && password !== null) {
+        authenticationProvider
+          .login({ username, password })
+          .then((_: any) => {
+            window.history.replaceState({}, '', window.location.pathname)
+          })
+          .catch(console.log)
+      }
     }
   }
 
@@ -163,6 +176,19 @@ function App(): React.ReactElement {
     getConfigData().catch(console.log)
   }, [dataProvider])
 
+  const checktDefault = async (): Promise<DataProvider | null> => {
+    const localForageData = await localForage.keys()
+    if (
+      localForageData.length === 0 ||
+      (localForageData.length === 1 &&
+        localForageData[0] === `rco-${constants.R_AUDIT}`)
+    ) {
+      const dataprovider = await loadDefaultData()
+      return dataprovider
+    }
+    return null
+  }
+
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
 
@@ -201,48 +227,65 @@ function App(): React.ReactElement {
         <CustomRoutes key='routes'>
           <Route path='/protectiveMarking'>
             {...createRoutes(
-              'protectiveMarking',
+              constants.R_PROTECTIVE_MARKING,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/catCode'>
-            {...createRoutes('catCode', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_CAT_CODE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/catHandling'>
-            {...createRoutes('catHandling', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_CAT_HANDLING,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/catCave'>
-            {...createRoutes('catCave', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_CAT_CAVE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/department'>
-            {...createRoutes('department', undefined, referenceDataPermission)}
-          </Route>
-          <Route path='/platformOriginator'>
             {...createRoutes(
-              'platformOriginator',
+              constants.R_DEPARTMENT,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/organisation'>
             {...createRoutes(
-              'organisation',
+              constants.R_ORGANISATION,
               undefined,
               referenceDataPermission
             )}
           </Route>
           <Route path='/mediaType'>
-            {...createRoutes('mediaType', undefined, referenceDataPermission)}
+            {...createRoutes(
+              constants.R_MEDIA_TYPE,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
-          <Route path='/platforms'>
-            {...createRoutes('platforms', platforms, referenceDataPermission)}
+          <Route path='/platform'>
+            {...createRoutes(
+              constants.R_PLATFORMS,
+              platforms,
+              referenceDataPermission
+            )}
           </Route>
-          <Route path='/users'>
-            {...createRoutes('users', users, referenceDataPermission)}
+          <Route path='/user'>
+            {...createRoutes(constants.R_USERS, users, referenceDataPermission)}
           </Route>
           <Route path='/audit'>
-            {...createRoutes('audit', audit, referenceDataPermission)}
+            {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
           </Route>
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>

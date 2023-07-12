@@ -19,7 +19,7 @@ import {
   TopToolbar,
   EditButton
 } from 'react-admin'
-import { Box, Typography } from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
@@ -31,6 +31,8 @@ import Confirm from '../../components/Confirm'
 import SourceField from '../../components/SourceField'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
+import ResourceHistoryModal from '../../components/ResourceHistory'
+import { History } from '@mui/icons-material'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -41,7 +43,12 @@ const Finalised = (): React.ReactElement => {
   return <Typography variant='body2'>{label}</Typography>
 }
 
-const ShowActions = (): React.ReactElement => {
+interface ShowActionsProps {
+  handleOpen: (open: DestructionModal) => void
+}
+
+const ShowActions = (props: ShowActionsProps): React.ReactElement => {
+  const { handleOpen } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const finalised = typeof record.finalisedAt !== 'undefined'
@@ -52,13 +59,19 @@ const ShowActions = (): React.ReactElement => {
         {hasAccess(constants.R_DESTRUCTION, { write: true }) && !finalised && (
           <EditButton />
         )}
+        <IconButton
+          onClick={() => {
+            handleOpen('history')
+          }}>
+          <History />
+        </IconButton>
       </TopToolbar>
     </>
   )
 }
 
 interface FooterProps {
-  handleOpen: (open: boolean) => void
+  handleOpen: (open: DestructionModal) => void
   destroy: (data: UpdateParams) => Promise<void>
 }
 
@@ -98,7 +111,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
           variant='outlined'
           label='Destruction Certificate'
           onClick={() => {
-            handleOpen(true)
+            handleOpen('report')
           }}
         />
         <Button
@@ -127,8 +140,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   )
 }
 
+export type DestructionModal = 'history' | 'report' | ''
+
 export default function DestructionShow(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<DestructionModal>('')
   const [update] = useUpdate()
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
@@ -138,8 +153,8 @@ export default function DestructionShow(): React.ReactElement {
     filter: { destruction: id }
   })
 
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
+  const handleOpen = (value: DestructionModal): void => {
+    setOpen(value)
   }
 
   const DestroyAudits = async (item: Item): Promise<void> => {
@@ -188,8 +203,20 @@ export default function DestructionShow(): React.ReactElement {
           </Typography>
         </legend>
         <Box>
-          <DestructionReport open={open} handleOpen={handleOpen} />
-          <Show component={'div'} actions={<ShowActions />}>
+          <DestructionReport open={open === 'report'} handleOpen={handleOpen} />
+          <ResourceHistoryModal
+            filter={{
+              resource: constants.R_DESTRUCTION,
+              dataId: parseInt(id as string)
+            }}
+            open={open === 'history'}
+            close={() => {
+              handleOpen('')
+            }}
+          />
+          <Show
+            component={'div'}
+            actions={<ShowActions handleOpen={handleOpen} />}>
             <SimpleShowLayout>
               <TextField source='reference' />
               <DateField source='finalisedAt' />
@@ -247,7 +274,10 @@ function DestructionItemList(
       <ItemList
         storeKey={`${constants.R_DESTRUCTION}-${id}-items-list`}
         filter={{ destruction: id }}>
-        <ItemListDataTable bulkActionButtons={bulkActionButtons} />
+        <ItemListDataTable
+          preferenceKey={`datagrid-${constants.R_DESTRUCTION}-${id}-items-list`}
+          bulkActionButtons={bulkActionButtons}
+        />
       </ItemList>
     </Box>
   )
@@ -261,10 +291,24 @@ function ItemListDataTable(
       rowClick='show'
       bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
       omit={props?.omit}
+      preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
+      <SourceField
+        source='protectiveMarking'
+        reference={constants.R_PROTECTIVE_MARKING}
+      />
     </DatagridConfigurable>
   )
 }

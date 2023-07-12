@@ -29,9 +29,6 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
     platform: 1,
     organisation: 1,
     protectiveMarking: 1,
-    catCode: 1,
-    catHandle: undefined,
-    catCave: [1],
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1'
   }
@@ -40,7 +37,7 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
 interface ItemProps {
   id?: number
   remarks?: string
-  mediaType?: MediaType
+  mediaType?: MediaType['id']
   toISO?: boolean
   batchId?: number
 }
@@ -54,7 +51,7 @@ export const generateItemForTesting = ({
 }: ItemProps = {}): NewItem => {
   return {
     ...(id !== undefined ? { id } : null),
-    mediaType: mediaType ?? 'DVD',
+    mediaType: mediaType ?? 1,
     startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()
@@ -70,9 +67,6 @@ export const generateItemForTesting = ({
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
-    catCode: 1,
-    catHandle: undefined,
-    catCave: [1],
     consecPages: 'consec-pages-1',
     musterRemarks: 'muster-remarks-1'
   }
@@ -91,6 +85,8 @@ export const generateProjectForTesting = ({
     ...(id !== undefined ? { id } : null),
     name: name ?? 'Dummy-Project',
     remarks: 'dummy-remarks-1',
+    startDate: DateTime.now().toFormat('yyyy-MM-dd'),
+    endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
     createdBy: 1
   }
 }

@@ -9,7 +9,8 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateTimeInput
+  DateInput,
+  useRefresh
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -22,12 +23,13 @@ import { Typography } from '@mui/material'
 import dayjs from 'dayjs'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
+import { transformProtectionValues } from '../../utils/helper'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
   department: yup.number().required(),
-  project: yup.number().required(),
-  platform: yup.number().required(),
+  project: yup.number().nullable(),
+  platform: yup.number().nullable(),
   organisation: yup.number().required(),
   protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
@@ -37,13 +39,12 @@ const schema = yup.object({
     .test(
       'endDate',
       'End date must be greater than start date',
-      function (value) {
+      function (value): boolean {
         return dayjs(value).diff(this.parent.startDate) > 0
       }
     )
 })
 
-const optionsText = (value: Batch): string => value.batchNumber
 const sx = { width: '100%' }
 
 interface Props {
@@ -72,7 +73,7 @@ export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
       disabled
       sx={sx}
       defaultValue={data[0].id}
-      optionText={optionsText}
+      optionText='name'
       choices={choices}
       {...inputProps}
     />
@@ -81,11 +82,15 @@ export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
   )
 }
 
-const BatchForm = (props: FormProps): React.ReactElement => {
+const BatchForm = (
+  props: FormProps & { isShow?: boolean }
+): React.ReactElement => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
-  const { isEdit } = props
+  const { isEdit, isShow } = props
   const configData = useConfigData()
+  const [itemId, setItemId] = useState<Item['id']>()
+  const refresh = useRefresh()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -102,10 +107,26 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   }, [])
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
+
+  const ToolBar = (): React.ReactElement => {
+    return (
+      <EditToolBar
+        type='button'
+        mutationOptions={{
+          onSuccess: ({ id }: { id: number }) => {
+            setItemId(id)
+            refresh()
+          }
+        }}
+        transform={transformProtectionValues}
+      />
+    )
+  }
+
   return (
     <>
       <SimpleForm
-        toolbar={<EditToolBar />}
+        toolbar={!isShow && <ToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <Typography variant='h5' fontWeight='bold'>
@@ -117,7 +138,7 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='platform'
             filter={isEdit === true ? {} : { active: true }}
             reference={constants.R_PLATFORMS}>
-            <AutocompleteInput optionText={optionsText} sx={sx} />
+            <AutocompleteInput optionText='name' sx={sx} disabled={isShow} />
           </ReferenceInput>
           <ReferenceInput
             variant='outlined'
@@ -125,9 +146,10 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             reference={constants.R_PROJECTS}>
             <AutocompleteInput
               label={configData?.projectName}
-              optionText={optionsText}
+              optionText='name'
               sx={sx}
               defaultValue={projectId !== undefined ? projectId : null}
+              disabled={isShow}
             />
           </ReferenceInput>
         </FlexBox>
@@ -137,20 +159,21 @@ const BatchForm = (props: FormProps): React.ReactElement => {
             source='yearOfReceipt'
             variant='outlined'
             format='YYYY'
-            dataPickerProps={{ views: ['year'] }}
+            dataPickerProps={{ views: ['year'], disabled: isShow }}
           />
         </FlexBox>
         <FlexBox>
-          {isEdit === undefined || !isEdit ? (
+          {(isEdit === undefined || !isEdit) &&
+          (!isShow || isShow === undefined) ? (
             <>
               <ConditionalReferenceInput
                 source='organisation'
-                reference='organisation'
+                reference={constants.R_ORGANISATION}
                 active
               />
               <ConditionalReferenceInput
                 source='department'
-                reference='department'
+                reference={constants.R_DEPARTMENT}
                 active
               />
             </>
@@ -159,38 +182,68 @@ const BatchForm = (props: FormProps): React.ReactElement => {
               <ReferenceInput
                 variant='outlined'
                 source='organisation'
-                reference='organisation'>
-                <AutocompleteInput optionText={optionsText} sx={sx} />
+                reference={constants.R_ORGANISATION}>
+                <AutocompleteInput
+                  optionText='name'
+                  sx={sx}
+                  disabled={isShow}
+                />
               </ReferenceInput>
               <ReferenceInput
                 variant='outlined'
                 source='department'
-                reference='department'>
-                <AutocompleteInput optionText={optionsText} sx={sx} />
+                reference={constants.R_DEPARTMENT}>
+                <AutocompleteInput
+                  optionText='name'
+                  sx={sx}
+                  disabled={isShow}
+                />
               </ReferenceInput>
             </>
           )}
         </FlexBox>
-        <ProtectionBlockInputs
+        <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
           isEdit={isEdit}
           markingSource='protectiveMarking'
+          id={itemId}
+          refTables={{
+            catCave: constants.R_BATCH_CAVE,
+            catCode: constants.R_BATCH_CODE,
+            catHandle: constants.R_BATCH_HANDLE
+          }}
+          resource={constants.R_BATCHES}
+          disabled={isShow}
         />
         <FlexBox>
-          <DateTimeInput
+          <DateInput
             sx={sx}
             source='startDate'
             label='Start'
             variant='outlined'
+            disabled={isShow}
           />
-          <DateTimeInput
+          <DateInput
             sx={sx}
             source='endDate'
             variant='outlined'
             label='End'
+            disabled={isShow}
           />
         </FlexBox>
-        <TextInput multiline source='remarks' variant='outlined' sx={sx} />
-        <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
+        <TextInput
+          multiline
+          source='remarks'
+          variant='outlined'
+          sx={sx}
+          disabled={isShow}
+        />
+        <TextInput
+          multiline
+          source='receiptNotes'
+          variant='outlined'
+          sx={sx}
+          disabled={isShow}
+        />
       </SimpleForm>
     </>
   )

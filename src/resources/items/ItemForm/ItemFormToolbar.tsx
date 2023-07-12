@@ -5,6 +5,7 @@ import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
+import { transformProtectionValues } from '../../../utils/helper'
 
 // eslint-disable-next-line
 type Events = {
@@ -19,7 +20,13 @@ enum ItemFormSaveType {
 let clone = false
 let save = false
 export const emitter = mitt<Events>()
-const ItemFormToolbar = (): React.ReactElement => {
+
+interface Props {
+  onSuccess: (data: any) => void
+}
+
+const ItemFormToolbar = (props: Props): React.ReactElement => {
+  const { onSuccess } = props
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
@@ -46,7 +53,14 @@ const ItemFormToolbar = (): React.ReactElement => {
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
-        <SaveButton label='Save' />
+        <SaveButton
+          label='Save'
+          type='button'
+          transform={transformProtectionValues}
+          mutationOptions={{
+            onSuccess
+          }}
+        />
       </Toolbar>
     )
   }
@@ -64,22 +78,26 @@ const ItemFormToolbar = (): React.ReactElement => {
       <FlexBox>
         <SaveButton
           type='button'
-          label='Save and clone'
+          label='Create / Clone'
+          title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
           }}
+          transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess: () => {}
+            onSuccess
           }}
         />
         <SaveButton
           type='button'
-          label='Save and Create'
+          label='Create / New'
+          title='Store this item, then create a blank item'
           onClick={() => {
             save = true
           }}
+          transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess: () => {}
+            onSuccess
           }}
         />
       </FlexBox>

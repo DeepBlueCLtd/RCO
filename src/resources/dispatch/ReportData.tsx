@@ -1,4 +1,4 @@
-import { Show, TextField } from 'react-admin'
+import { DateField, Show, TextField } from 'react-admin'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import { Typography } from '@mui/material'
 import ItemsReport from '../items/ItemsReport'
@@ -32,6 +32,13 @@ const DispatchDetail = (): React.ReactElement => {
         label='Date'
         source='createdAt'
         labelStyles={{ fontSize: '1rem' }}
+        component={DateField}
+        locales='en-GB'
+        options={{
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
       <FieldWithLabel
@@ -62,7 +69,12 @@ const ItemListBox = (): React.ReactElement => {
           dispatchJob: id
         }}>
         <TextField source='item_number' />
-        <TextField source='mediaType' />
+        <SourceField
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
         <TextField source='consecPages' label='Consec/Sheets' />
         <SourceField
           reference={constants.R_PROTECTIVE_MARKING}

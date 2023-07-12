@@ -1,7 +1,16 @@
 import React, { useState } from 'react'
-import { Card, CardContent, IconButton, Typography } from '@mui/material'
+import {
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  type SxProps,
+  type Theme,
+  Typography
+} from '@mui/material'
 import {
   CreateButton,
+  DateField,
   EditButton,
   Show,
   TextField,
@@ -16,16 +25,19 @@ import { History } from '@mui/icons-material'
 import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useConfigData } from '../../utils/useConfigData'
+import FlexBox from '../../components/FlexBox'
 
 export const ValueField = ({
   label,
-  children
+  children,
+  sx = {}
 }: {
   label: string
   children: any
+  sx?: SxProps<Theme>
 }): React.ReactElement => {
   return (
-    <Typography fontWeight='bold'>
+    <Typography fontWeight='bold' sx={sx}>
       {label}: {children}
     </Typography>
   )
@@ -77,7 +89,7 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
 
 export default function ProjectShow(): React.ReactElement {
   const configData = useConfigData()
-  const pageTitle = `View ${configData?.projectName}`
+  const pageTitle = `${configData?.projectName} Show`
   const [open, setOpen] = useState(false)
 
   const handleOpen = (open: boolean): void => {
@@ -90,24 +102,97 @@ export default function ProjectShow(): React.ReactElement {
       </Typography>
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <ValueField label='Id'>
-            <TextField variant='h6' source='id' />
-          </ValueField>
-          <ValueField label='User name'>
-            <SourceField source='createdBy' reference={constants.R_USERS} />
-          </ValueField>
-          <ValueField label='Name'>
-            <TextField variant='h6' source='name' />
-          </ValueField>
-          <ValueField label='Remarks'>
-            <TextField source='remarks' />
-          </ValueField>
-          <ValueField label='Created'>
-            <TextField source='createdAt' />
-          </ValueField>
+          <Details />
+          <Remarks />
+          <Created />
         </CardContent>
       </Card>
       <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
+  )
+}
+
+const Details = (): React.ReactElement => {
+  const sx = { width: '100%' }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Details
+        </Typography>
+      </legend>
+      <FlexBox sx={{ padding: '10px 0' }}>
+        <ValueField label='Name' sx={sx}>
+          <TextField variant='h6' source='name' />
+        </ValueField>
+        <ValueField label='Start' sx={sx}>
+          <DateField source='startDate' />
+        </ValueField>
+        <ValueField label='End' sx={sx}>
+          <DateField source='endDate' />
+        </ValueField>
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Remarks = (): React.ReactElement => {
+  const sx = { width: '100%', padding: '10px 0' }
+
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 25px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Remarks
+        </Typography>
+      </legend>
+      <FlexBox sx={sx}>
+        <TextField source='remarks' />
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Created = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Created
+        </Typography>
+      </legend>
+      <FlexBox sx={{ padding: '10px 0' }}>
+        <ValueField label='Created at' sx={sx}>
+          <DateField source='createdAt' />
+        </ValueField>
+        <ValueField label='Created by' sx={sx}>
+          <SourceField source='createdBy' reference={constants.R_USERS} />
+        </ValueField>
+      </FlexBox>
+    </Box>
   )
 }

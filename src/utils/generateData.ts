@@ -1,8 +1,6 @@
 import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 
-const MediaType = ['DVD', 'Tape', 'Paper']
-
 export function generateRandomNumber(min: number, max: number): number {
   const array = new Uint32Array(1)
   const generatedRandomNumber = window.crypto.getRandomValues(array)
@@ -86,10 +84,13 @@ export const generatePlatform = (
 export const generateProject = (length: number, user: number): Project[] => {
   const projects: Project[] = []
   for (let i = 1; i <= length; i++) {
+    const [startDate, endDate] = generateRandomDate()
     const obj: Project = {
       id: i,
       createdAt: nowDate(),
       name: `project-${i}`,
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
       remarks: `project-remarks-${i}`,
       createdBy: user
     }
@@ -118,13 +119,17 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
-  catCodes: number,
-  catHandles: number,
-  catCaves: number,
   user: number,
   isHigh?: boolean
 ): Batch[] => {
   const batches: Batch[] = []
+
+  const isNull = (): boolean => {
+    if (Math.random() > 0.3) {
+      return false
+    }
+    return true
+  }
 
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
@@ -139,13 +144,10 @@ export const generateBatch = (
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department: generateRandomNumber(1, departments - 1),
-      project: generateRandomNumber(1, projects - 1),
-      platform: generateRandomNumber(1, platforms - 1),
+      project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
+      platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
       organisation: generateRandomNumber(1, organisations - 1),
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      catCode: generateRandomNumber(1, catCodes - 1),
-      catHandle: generateRandomNumber(1, catHandles - 1),
-      catCave: [generateRandomNumber(1, catCaves - 1)],
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
       createdBy: user
@@ -161,10 +163,8 @@ export const generateItems = (
   batch: Batch,
   vaults: number,
   protectiveMarking: number,
-  catCodes: number,
-  catHandles: number,
-  catCaves: number,
-  user: number
+  user: number,
+  mediaType: number
 ): Item[] => {
   const items: Item[] = []
   for (let i = 1; i <= length; i++) {
@@ -191,7 +191,7 @@ export const generateItems = (
     const obj: Item = {
       id: offset + i,
       createdAt: nowDate(),
-      mediaType: MediaType[generateRandomNumber(0, 3)] as MediaType,
+      mediaType: generateRandomNumber(1, mediaType - 1),
       startDate,
       batchId: batch.id,
       item_number: `${batchNumber}/${itemReference}`,
@@ -200,9 +200,6 @@ export const generateItems = (
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      catCode: generateRandomNumber(1, catCodes - 1),
-      catHandle: generateRandomNumber(1, catHandles - 1),
-      catCave: [generateRandomNumber(1, catCaves - 1)],
       consecPages: `consec-pages-${i + 1}`,
       createdBy: user
     }
@@ -230,7 +227,8 @@ export const generateUsers = (length: number): User[] => {
   for (let i = 0; i < length; i++) {
     const active = i > inActivePercentage * length
     const obj: User = {
-      id: i + 1,
+      // to compensate default users the id has to start from 5
+      id: i + 5,
       name: `user-${i + 1}`,
       password: 'user',
       adminRights: generateRandomNumber(0, 100) > 50,

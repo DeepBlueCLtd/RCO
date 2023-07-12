@@ -24,6 +24,7 @@ import FlexBox from '../../components/FlexBox'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import React from 'react'
+import { type DestructionModal } from './DestructionShow'
 
 const ItemsCount = (): React.ReactElement => {
   const record = useRecordContext()
@@ -84,7 +85,12 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
           destruction: recordId
         }}>
         <TextField source='item_number' />
-        <TextField source='mediaType' />
+        <SourceField
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
         <TextField source='consecPages' label='Srl/Pages' />
         <SourceField
           reference={constants.R_PROTECTIVE_MARKING}
@@ -251,7 +257,7 @@ const TablesData = (): React.ReactElement => {
 
 interface Props {
   open: boolean
-  handleOpen: (open: boolean) => void
+  handleOpen: (open: DestructionModal) => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
@@ -261,7 +267,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
     <Printable
       open={open}
       onClose={() => {
-        handleOpen(false)
+        handleOpen('')
       }}>
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>

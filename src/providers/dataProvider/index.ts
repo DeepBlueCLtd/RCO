@@ -6,8 +6,6 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
-import localForage from 'localforage'
-import loadDefaultData from '../../utils/init-data'
 import { extendLifeCycle, type AuditFunctionType } from './dataprovider-utils'
 import UserLifeCycle from './resource-callbacks/UserLifeCycle'
 import ProjectLifeCycle from './resource-callbacks/ProjectLifeCycle'
@@ -31,7 +29,6 @@ export const lifecycleCallbacks = (
     extendLifeCycle(constants.R_PLATFORMS, audit),
     ReferenceItemLifeCycle(audit, constants.R_VAULT_LOCATION),
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
-    ReferenceItemLifeCycle(audit, constants.R_PLATFORM_ORIGINATOR),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
     ReferenceItemLifeCycle(audit, constants.R_CAT_CODE),
     ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLING),
@@ -44,9 +41,14 @@ export const lifecycleCallbacks = (
 
 const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
   return {
-    configData: async () => {
-      const configTable = await localForage.getItem<ConfigData[]>(
-        `${constants.LOCAL_STORAGE_DB_KEY}${constants.R_CONFIG}`
+    configData: async function (this: DataProvider) {
+      const { data: configTable } = await this.getList<ConfigData>(
+        constants.R_CONFIG,
+        {
+          sort: { field: 'id', order: 'ASC' },
+          pagination: { page: 1, perPage: 1000 },
+          filter: {}
+        }
       )
       return configTable !== null ? configTable[0] : null
     }
@@ -56,11 +58,6 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
-  const localForageData = await localForage.keys()
-  if (localForageData.length === 0) {
-    await loadDefaultData()
-  }
-
   const provider = await localForageDataProvider({
     prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
     loggingEnabled

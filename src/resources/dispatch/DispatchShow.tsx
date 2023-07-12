@@ -23,7 +23,7 @@ import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-import { Typography } from '@mui/material'
+import { IconButton, Typography } from '@mui/material'
 import DispatchForm from './DispatchForm'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
@@ -33,8 +33,15 @@ import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
+import { History } from '@mui/icons-material'
+import ResourceHistoryModal from '../../components/ResourceHistory'
 
-const ShowActions = (): React.ReactElement => {
+interface ShowActionsProps {
+  handleOpen: (open: DestructionModal) => void
+}
+
+const ShowActions = (props: ShowActionsProps): React.ReactElement => {
+  const { handleOpen } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const dispatched = typeof record.dispatchedAt !== 'undefined'
@@ -46,13 +53,19 @@ const ShowActions = (): React.ReactElement => {
         {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
           <EditButton />
         )}
+        <IconButton
+          onClick={() => {
+            handleOpen('history')
+          }}>
+          <History />
+        </IconButton>
       </TopToolbar>
     </>
   )
 }
 
 interface FooterProps {
-  handleOpen: (name: string) => void
+  handleOpen: (name: DestructionModal) => void
   dispatch: (data: UpdateParams) => Promise<void>
 }
 
@@ -162,8 +175,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   )
 }
 
+export type DestructionModal = 'history' | 'hastener' | 'dispatch' | ''
+
 export default function DispatchShow(): React.ReactElement {
-  const [open, setOpen] = useState<string>()
+  const [open, setOpen] = useState<DestructionModal>()
   const [update] = useUpdate()
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
@@ -173,7 +188,7 @@ export default function DispatchShow(): React.ReactElement {
     filter: { dispatchJob: id }
   })
 
-  const handleOpen = (name: string): void => {
+  const handleOpen = (name: DestructionModal): void => {
     setOpen(name)
   }
 
@@ -216,7 +231,19 @@ export default function DispatchShow(): React.ReactElement {
         <Box>
           <DispatchReport open={open === 'dispatch'} handleOpen={handleOpen} />
           <HastenerReport open={open === 'hastener'} handleOpen={handleOpen} />
-          <Show actions={<ShowActions />} component={'div'}>
+          <ResourceHistoryModal
+            filter={{
+              resource: constants.R_DISPATCH,
+              dataId: parseInt(id as string)
+            }}
+            open={open === 'history'}
+            close={() => {
+              handleOpen('')
+            }}
+          />
+          <Show
+            actions={<ShowActions handleOpen={handleOpen} />}
+            component={'div'}>
             <DispatchForm show />
             <Footer handleOpen={handleOpen} dispatch={dispatch} />
           </Show>
@@ -274,7 +301,10 @@ function DispatchedItemList(
         storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
         filter={{ dispatchJob: id }}
         filtersShown={['q', 'batchId', 'mediaType']}>
-        <ItemListDataTable bulkActionButtons={bulkActionButtons} />
+        <ItemListDataTable
+          preferenceKey={`datagrid-${constants.R_DISPATCH}-${id}-items-list`}
+          bulkActionButtons={bulkActionButtons}
+        />
       </ItemList>
     </Box>
   )
@@ -287,12 +317,21 @@ function ItemListDataTable(
     <DatagridConfigurable
       rowClick='show'
       bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
+      preferenceKey={props.preferenceKey}
       omit={props?.omit}
       {...props}>
       <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
+      <SourceField
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
       <TextField source='consecPages' label='Consec Serial' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
+      <SourceField
+        source='protectiveMarking'
+        reference={constants.R_PROTECTIVE_MARKING}
+      />
     </DatagridConfigurable>
   )
 }

@@ -6,12 +6,14 @@ import {
   type Identifier,
   List,
   TopToolbar,
-  BooleanField
+  BooleanField,
+  TextField
 } from 'react-admin'
 import useCanAccess from '../hooks/useCanAccess'
 import { IconButton } from '@mui/material'
 import { History } from '@mui/icons-material'
 import ResourceHistoryModal from './ResourceHistory'
+import * as constants from '../constants'
 
 interface PropType {
   name: string
@@ -46,7 +48,7 @@ export default function ReferenceDataList({
     setOpen(open)
   }
 
-  const notShowActive = (name: string): boolean => name === 'audit'
+  const notShowActive = (name: string): boolean => name === constants.R_AUDIT
 
   return (
     <List actions={<ListActions />} resource={cName}>
@@ -56,6 +58,7 @@ export default function ReferenceDataList({
           const cID: string = id.toString()
           return `/${cName}/${cID}/show`
         }}>
+        <TextField source='id' label='ID' />
         <FunctionField
           style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}
