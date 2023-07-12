@@ -64,7 +64,7 @@ export default function ReferenceDataList({
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        {notShowActive(name) ? '' : <BooleanField source='active' />}
+        {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}
         <FunctionField
           label='History'
           render={(record: ActiveReferenceItem) => {

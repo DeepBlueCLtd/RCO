@@ -103,8 +103,8 @@ export default function UserList(props: Props): React.ReactElement {
         bulkActionButtons={<UserActions />}>
         <TextField source='staffNumber' label='Staff number' />
         <TextField source='name' />
-        <BooleanField source='adminRights' label='Admin Rights' />
-        <BooleanField source='active' label='Active User' />
+        <BooleanField source='adminRights' label='Admin Rights' looseValue />
+        <BooleanField source='active' label='Active User' looseValue />
         <ArrayField source='roles'>
           <SingleFieldList sx={{ columnGap: 1 }}>
             <ChipField />
@@ -118,7 +118,6 @@ export default function UserList(props: Props): React.ReactElement {
 
 function ChipField(): React.ReactElement {
   const record = useRecordContext<any>()
-
   const role = rolesOptions.find(({ value }) => value === record)
 
   if (typeof role === 'undefined') return <></>
