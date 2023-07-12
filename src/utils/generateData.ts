@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
+import * as constants from '../constants'
+import { ID_FIX } from '../constants'
 
 const skipStartDate = (): boolean => {
   return Math.random() < 0.05
@@ -144,6 +146,15 @@ export const generateBatch = (
 
     const [startDate, endDate] =
       isHigh !== undefined ? getRandomDateInLast20Years() : generateRandomDate()
+
+    const department = `${generateRandomNumber(1, departments - 1)}-${
+      ID_FIX[constants.R_DEPARTMENT]
+    }`
+
+    const organisation = `${generateRandomNumber(1, organisations - 1)}-${
+      ID_FIX[constants.R_ORGANISATION]
+    }`
+
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
@@ -151,10 +162,10 @@ export const generateBatch = (
       endDate: skipEndDate() ? null : endDate.toString(),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
-      department: generateRandomNumber(1, departments - 1),
+      department,
       project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
-      organisation: generateRandomNumber(1, organisations - 1),
+      organisation,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
