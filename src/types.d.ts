@@ -188,6 +188,8 @@ interface Item extends ResourceWithCreation {
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
+  project?: Project['id']
+  platform?: Platform['id']
 
   // notes relating to how this item is mustered
   musterRemarks: string
