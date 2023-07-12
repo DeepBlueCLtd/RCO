@@ -6,7 +6,7 @@ export default function AddressList(): React.ReactElement {
     <List resource={R_ADDRESSES} hasCreate>
       <Datagrid rowClick='show'>
         <TextField source='fullAddress' />
-        <BooleanField source='active' />
+        <BooleanField source='active' looseValue />
         <DateField source='createdAt' />
         <TextField source='remarks' />
       </Datagrid>

@@ -10,7 +10,8 @@ export default {
     EnvironmentPlugin({
       VITE_KEY: null,
       VITE_APP_VERSION: null,
-      VITE_DATA_VERSION: null
+      VITE_DATA_VERSION: null,
+      VITE_API_URL: null
     })
   ],
   base: './'
