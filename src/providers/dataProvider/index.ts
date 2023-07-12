@@ -59,6 +59,7 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
 export const getDataProvider = async (
   loggingEnabled: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
+  console.log(loggingEnabled)
   const provider = dataProvider(
     process.env.VITE_API_URL ?? 'http://localhost:4000/api/tables'
   )
@@ -190,7 +191,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
     // remove the id property
     const { id, ...editData } = params.data
-    return await axios.put(url, { fields: editData }).then(async (response) => {
+    return await axios.put(url, { fields: editData }).then(async () => {
       return { data: params.ids }
     })
   },
@@ -198,7 +199,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
   delete: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
 
-    return await axios.delete(url).then((response) => {
+    return await axios.delete(url).then(() => {
       return { data: params.id }
     })
   },
@@ -207,7 +208,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     const ids = params.ids.toString()
     const url = `${apiUrl}/${resource}/rows/${ids}`
 
-    return await axios.delete(url).then((response) => {
+    return await axios.delete(url).then(() => {
       return { data: params.ids }
     })
   }
