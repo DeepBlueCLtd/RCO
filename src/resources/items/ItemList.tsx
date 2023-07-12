@@ -51,10 +51,22 @@ const omitColumns: string[] = [
   'endDate',
   'vaultLocation',
   'musterRemarks',
-  'loanedTo'
+  'loanedTo',
+  'project',
+  'platform'
 ]
 
 const filters = [
+  <SourceInput
+    source='platform'
+    key='platform'
+    reference={constants.R_PLATFORMS}
+  />,
+  <SourceInput
+    source='project'
+    key='project'
+    reference={constants.R_PROJECTS}
+  />,
   <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
   <CreatedByMeFilter
     key='createdByMe'
@@ -507,6 +519,8 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
             label='Dispatch Job'
           />
           <DateField source='dispatchedDate' />
+          <SourceField source='project' reference={constants.R_PROJECTS} />
+          <SourceField source='platform' reference={constants.R_PLATFORMS} />
           <TextField source='remarks' />
           <TextField source='musterRemarks' />
           <TextField source='protectionString' label='Protection' />
