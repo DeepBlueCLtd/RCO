@@ -42,7 +42,8 @@ const schema = yup.object({
       function (value): boolean {
         return dayjs(value).diff(this.parent.startDate) > 0
       }
-    )
+    ),
+  vault: yup.string()
 })
 
 const sx = { width: '100%' }
@@ -153,14 +154,26 @@ const BatchForm = (
             />
           </ReferenceInput>
         </FlexBox>
-        <FlexBox marginBottom='20px'>
+        <FlexBox marginBottom='20px' alignItems='center'>
           <DatePicker
             label='Year of receipt'
             source='yearOfReceipt'
             variant='outlined'
             format='YYYY'
             dataPickerProps={{ views: ['year'], disabled: isShow }}
+            sx={sx}
           />
+          <ReferenceInput
+            variant='outlined'
+            source='id'
+            reference={constants.R_VAULT}>
+            <AutocompleteInput
+              label='vault'
+              helperText={false}
+              sx={sx}
+              disabled={isShow}
+            />
+          </ReferenceInput>
         </FlexBox>
         <FlexBox>
           {(isEdit === undefined || !isEdit) &&
