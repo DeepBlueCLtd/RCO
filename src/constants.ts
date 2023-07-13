@@ -44,6 +44,14 @@ export const R_BATCH_CODE = 'batchCode'
 export const R_BATCH_HANDLE = 'batchHandle'
 export const R_VAULT = 'vault'
 
+export const ID_FIX: Record<string, string> = {
+  [R_CAT_CAVE]: 'cat_cave',
+  [R_CAT_CODE]: 'cat_code',
+  [R_CAT_HANDLING]: 'cat_handling',
+  [R_DEPARTMENT]: 'department',
+  [R_ORGANISATION]: 'organisation'
+}
+
 export type ResourceTypes =
   | typeof R_ITEMS
   | typeof R_AUDIT

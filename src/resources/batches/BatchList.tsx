@@ -80,6 +80,7 @@ export default function BatchList(): React.ReactElement {
   const configData = useConfigData()
 
   const filters = [
+    <SourceInput key='vault' source='vault' reference={constants.R_VAULT} />,
     <SearchInput source='q' key='q' alwaysOn />,
     <CreatedByMeFilter
       key='createdByMe'
@@ -155,6 +156,7 @@ export default function BatchList(): React.ReactElement {
           reference={constants.R_PROTECTIVE_MARKING}
           label='Maximum protective marking'
         />
+        <SourceField source='vault' reference={constants.R_VAULT} />
         <TextField source='remarks' />
         <TextField source='receiptNotes' />
         <TextField source='createdAt' label='Created' />
