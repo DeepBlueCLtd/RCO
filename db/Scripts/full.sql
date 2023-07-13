@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS catCave(
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
--- Meta table - catHandling
+-- Meta table - catHandle
 CREATE TABLE IF NOT EXISTS catHandle(
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,

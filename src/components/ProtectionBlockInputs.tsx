@@ -101,7 +101,7 @@ export default function ProtectionBlockInputs<
           setIsDirty={setIsDirty}
           reference={constants.R_CAT_HANDLING}
           refTable={refTables.catHandle}
-          source='catHandling'
+          source='catHandle'
           itemId={id}
           label={configData?.cat_handle ?? 'Cat handling'}
           labelField='name'
