@@ -61,9 +61,11 @@ CREATE TABLE IF NOT EXISTS organisation(
 CREATE TABLE IF NOT EXISTS project (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
-       remarks,
+       remarks TEXT,
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
+       startDate TEXT NOT NULL,
+       endDate TEXT NOT NULL,
        FOREIGN KEY (createdBy) REFERENCES user(id)
 ) WITHOUT ROWID;
 
@@ -206,7 +208,7 @@ CREATE TABLE IF NOT EXISTS dispatch(
        remarks TEXT NOT NULL,
        dispatchedAt TEXT,
        toName TEXT NOT NULL,
-       address INTEGER NOT NULL,
+       toAddress INTEGER NOT NULL,
        receiptReceived TEXT,
        lastHastenerSent TEXT,
 
