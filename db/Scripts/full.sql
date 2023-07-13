@@ -60,13 +60,10 @@ CREATE TABLE IF NOT EXISTS organisation(
 --Resource table - Project
 CREATE TABLE IF NOT EXISTS project (
        id INTEGER PRIMARY KEY,
-
        name TEXT NOT NULL,
        remarks,
-
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
-
        FOREIGN KEY (createdBy) REFERENCES user(id)
 ) WITHOUT ROWID;
 
@@ -82,7 +79,6 @@ CREATE TABLE IF NOT EXISTS mediaType(
 -- Resource table - Address
 CREATE TABLE IF NOT EXISTS address(
        id INTEGER PRIMARY KEY,
-
        createdAt TEXT NOT NULL,
        fullAddress TEXT NOT NULL,
        active INTEGER NOT NULL,
@@ -92,7 +88,6 @@ CREATE TABLE IF NOT EXISTS address(
 --Resource table - User
 CREATE TABLE IF NOT EXISTS user (
        id INTEGER PRIMARY KEY,
-
        name TEXT NOT NULL,
        password TEXT NOT NULL,
        adminRights INTEGER NOT NULL,
@@ -100,7 +95,6 @@ CREATE TABLE IF NOT EXISTS user (
        roles TEXT NOT NULL, /*Should be a json array string. Ex.: "['rco-user', 'rco-power-user']" or "['rco-user']" or "[]"*/
        staffNumber TEXT NOT NULL,
        departedDate TEXT,
-
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
 
