@@ -99,11 +99,11 @@ export default function ProtectionBlockInputs<
         />
         <ProtectionRefInput<CatHandle, TCatHandle>
           setIsDirty={setIsDirty}
-          reference={constants.R_CAT_HANDLING}
+          reference={constants.R_CAT_HANDLE}
           refTable={refTables.catHandle}
           source='catHandle'
           itemId={id}
-          label={configData?.cat_handle ?? 'Cat handling'}
+          label={configData?.cat_handle ?? 'Cat handle'}
           labelField='name'
           {...protectionInputProps}
           width='30%'

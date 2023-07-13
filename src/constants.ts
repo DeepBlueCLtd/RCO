@@ -28,7 +28,7 @@ export const R_ORGANISATION = 'organisation'
 export const R_LOANS = 'loan'
 export const R_PROTECTIVE_MARKING = 'protectiveMarking'
 export const R_CAT_CODE = 'catCode'
-export const R_CAT_HANDLING = 'catHandle'
+export const R_CAT_HANDLE = 'catHandle'
 export const R_CAT_CAVE = 'catCave'
 export const R_DEPARTMENT = 'department'
 export const R_MEDIA_TYPE = 'mediaType'
@@ -46,7 +46,7 @@ export const R_BATCH_HANDLE = 'batchHandle'
 export const ID_FIX: Record<string, string> = {
   [R_CAT_CAVE]: 'cat_cave',
   [R_CAT_CODE]: 'cat_code',
-  [R_CAT_HANDLING]: 'cat_handling',
+  [R_CAT_HANDLE]: 'cat_handle',
   [R_DEPARTMENT]: 'department',
   [R_ORGANISATION]: 'organisation'
 }
@@ -65,7 +65,7 @@ export type ResourceTypes =
   | typeof R_DEPARTMENT
   | typeof R_PROTECTIVE_MARKING
   | typeof R_CAT_CODE
-  | typeof R_CAT_HANDLING
+  | typeof R_CAT_HANDLE
   | typeof R_CAT_CAVE
   | typeof R_DISPATCH
   | typeof R_ALL_ITEMS

@@ -86,7 +86,7 @@ export default function ReferenceData(): React.ReactElement {
     { path: '/organisation', title: 'Organisation' },
     { path: '/protectiveMarking', title: 'Protective Marking' },
     { path: '/catCode', title: configData?.cat_code ?? 'Cat Code' },
-    { path: '/catHandle', title: configData?.cat_handle ?? 'Cat Handling' },
+    { path: '/catHandle', title: configData?.cat_handle ?? 'Cat Handle' },
     { path: '/catCave', title: configData?.cat_cave ?? 'Cat Cave' },
     { path: '/mediaType', title: 'Media Type' },
     { path: '/department', title: 'Department' },

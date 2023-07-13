@@ -179,8 +179,8 @@ const loadDefaultData = async (
   })
   const catHandle = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
-    nameVal: 'Cat Handling',
-    resource: constants.R_CAT_HANDLING
+    nameVal: 'Cat Handle',
+    resource: constants.R_CAT_HANDLE
   })
   const catCave = getActiveReferenceData<ReferenceItem>({
     ...protectionFieldParams,
@@ -272,7 +272,7 @@ const loadDefaultData = async (
     mediaType: constants.R_MEDIA_TYPE,
     protectiveMarking: constants.R_PROTECTIVE_MARKING,
     catCode: constants.R_CAT_CODE,
-    catHandle: constants.R_CAT_HANDLING,
+    catHandle: constants.R_CAT_HANDLE,
     catCave: constants.R_CAT_CAVE,
     audit: constants.R_AUDIT,
     destruction: constants.R_DESTRUCTION,
