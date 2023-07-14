@@ -285,7 +285,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dispatchJob: undefined
       }
     })
-    notify(`${selectedIds.length} items removed from dispatch job`)
+    notify(`${selectedIds.length} items removed from dispatch`)
     refresh()
   }
 
@@ -527,7 +527,7 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
             source='dispatchJob'
             reference={constants.R_DISPATCH}
             sourceField='reference'
-            label='Dispatch Job'
+            label='Dispatch'
           />
           <DateField source='dispatchedDate' />
           {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}

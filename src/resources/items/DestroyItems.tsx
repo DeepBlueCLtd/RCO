@@ -110,19 +110,19 @@ export default function DestroyItems(props: Props): React.ReactElement {
       successCallback()
     }
   }
-  const label = 'Destruction Jobs'
+  const label = 'Destructions'
 
   if (typeof loading === 'boolean' && loading) return <></>
 
   return (
     <Box sx={style}>
       <Typography variant='h6'>
-        {ids.length} items added to Destruction Job
+        {ids.length} items added to Destruction
       </Typography>
       <Box>
         {items.length === 0 ? (
           <Typography marginY={3}>
-            Please create the destruction job before destroying items
+            Please create the destruction before destroying items
           </Typography>
         ) : (
           <FormControl sx={{ width: '100%', margin: '25px 0' }}>
