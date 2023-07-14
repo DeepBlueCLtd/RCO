@@ -77,7 +77,8 @@ const generateBatch = async (
     protectiveMarking: id,
     remarks: `remarks-batch-${year}`,
     receiptNotes: `Reference-${id}`,
-    createdBy: user
+    createdBy: user,
+    vault: Math.random() > 0.5 ? 1 : 2
   }
 
   await provider.create(constants.R_BATCHES, { data: { ...obj } })

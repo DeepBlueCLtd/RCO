@@ -79,7 +79,8 @@ export default function ReferenceData(): React.ReactElement {
 
   const mainReferenceRoutes = [
     { path: '/platform', title: 'Platforms' },
-    { path: '/audit', title: 'Audit Log' }
+    { path: '/audit', title: 'Audit Log' },
+    { path: '/vault', title: 'Vault' }
   ]
 
   const rarelyUsedRoutes = [
