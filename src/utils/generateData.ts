@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
+import * as constants from '../constants'
+import { ID_FIX } from '../constants'
 
 export function generateRandomNumber(min: number, max: number): number {
   const array = new Uint32Array(1)
@@ -99,6 +101,22 @@ export const generateProject = (length: number, user: number): Project[] => {
   return projects
 }
 
+export const generateVault = (): Vault[] => {
+  const vaults: Vault[] = [
+    {
+      id: 1,
+      name: 'Vault',
+      active: true
+    },
+    {
+      id: 2,
+      name: 'Vault Legacy',
+      active: false
+    }
+  ]
+  return vaults
+}
+
 const getRandomDateInLast20Years = (): string[] => {
   const randomStartDateInLast20Years = generateRandomDateInRange(
     new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
@@ -120,6 +138,7 @@ export const generateBatch = (
   organisations: number,
   protectiveMarking: number,
   user: number,
+  vaults: number,
   isHigh?: boolean
 ): Batch[] => {
   const batches: Batch[] = []
@@ -136,6 +155,15 @@ export const generateBatch = (
 
     const [startDate, endDate] =
       isHigh !== undefined ? getRandomDateInLast20Years() : generateRandomDate()
+
+    const department = `${generateRandomNumber(1, departments - 1)}-${
+      ID_FIX[constants.R_DEPARTMENT]
+    }`
+
+    const organisation = `${generateRandomNumber(1, organisations - 1)}-${
+      ID_FIX[constants.R_ORGANISATION]
+    }`
+
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
@@ -143,10 +171,11 @@ export const generateBatch = (
       endDate: endDate.toString(),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
-      department: generateRandomNumber(1, departments - 1),
+      department,
       project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
-      organisation: generateRandomNumber(1, organisations - 1),
+      vault: generateRandomNumber(1, vaults),
+      organisation,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
@@ -201,7 +230,9 @@ export const generateItems = (
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       consecPages: `consec-pages-${i + 1}`,
-      createdBy: user
+      createdBy: user,
+      project: batch.project,
+      platform: batch.platform
     }
     items.push(obj)
   }

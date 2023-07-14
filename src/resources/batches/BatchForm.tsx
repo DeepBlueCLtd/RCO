@@ -27,10 +27,10 @@ import { transformProtectionValues } from '../../utils/helper'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
-  department: yup.number().required(),
+  department: yup.string().nonNullable().required(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
-  organisation: yup.number().required(),
+  organisation: yup.string().nonNullable().required(),
   protectiveMarking: yup.number().required(),
   startDate: yup.date().required(),
   endDate: yup
@@ -42,7 +42,8 @@ const schema = yup.object({
       function (value): boolean {
         return dayjs(value).diff(this.parent.startDate) > 0
       }
-    )
+    ),
+  vault: yup.number()
 })
 
 const sx = { width: '100%' }
@@ -153,14 +154,38 @@ const BatchForm = (
             />
           </ReferenceInput>
         </FlexBox>
-        <FlexBox marginBottom='20px'>
+        <FlexBox marginBottom='20px' alignItems='center'>
           <DatePicker
             label='Year of receipt'
             source='yearOfReceipt'
             variant='outlined'
             format='YYYY'
             dataPickerProps={{ views: ['year'], disabled: isShow }}
+            sx={sx}
           />
+          {(isEdit === undefined || !isEdit) &&
+          (!isShow || isShow === undefined) ? (
+            <ConditionalReferenceInput
+              source='vault'
+              reference={constants.R_VAULT}
+              inputProps={{ helperText: false }}
+              active
+            />
+          ) : (
+            <ReferenceInput
+              variant='outlined'
+              source='vault'
+              reference={constants.R_VAULT}>
+              <AutocompleteInput
+                label='Vault'
+                helperText={false}
+                optionText='name'
+                sx={sx}
+                defaultValue={1}
+                disabled={isShow}
+              />
+            </ReferenceInput>
+          )}
         </FlexBox>
         <FlexBox>
           {(isEdit === undefined || !isEdit) &&
