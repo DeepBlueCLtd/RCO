@@ -125,7 +125,12 @@ export default function BatchList(): React.ReactElement {
       label={configData?.projectName}
       key={configData?.projectsName}
     />,
-    <DateFilter key='createdAt' source='createdAt' label='Created At' />
+    <DateFilter
+      key='createdAt'
+      source='createdAt'
+      label='Created At'
+      format='iso'
+    />
   ]
 
   return (
