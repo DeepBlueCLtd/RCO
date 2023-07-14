@@ -26,10 +26,18 @@ interface Filter {
 const getFilter = (value: Values, source: string, format: string): Filter[] => {
   const minusFromNow = (unit: 'week' | 'month' | 'year'): string => {
     const now = DateTime.now()
-    return now.minus({ [unit]: 1 }).toFormat(format)
+    return formatter(now.minus({ [unit]: 1 }))
   }
 
-  const now = DateTime.now().toFormat(format)
+  const formatter = (dateObj: DateTime): string => {
+    const formattedDate =
+      format === 'iso' && value !== 'today'
+        ? dateObj.toJSDate().toISOString()
+        : dateObj.toFormat(format)
+    return formattedDate
+  }
+
+  const now = formatter(DateTime.now())
   const gteKeyName: string = `${source}_gte`
   const lteKeyName: string = `${source}_lte`
 
@@ -41,7 +49,17 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
 
   switch (value) {
     case 'today':
-      return [{ key: source, value: now }, resetLTFilter, resetGTFilter]
+      return [
+        resetTodayFilter,
+        {
+          key: lteKeyName,
+          value: DateTime.now().endOf('day').toISO() ?? ''
+        },
+        {
+          key: gteKeyName,
+          value: DateTime.now().startOf('day').toISO() ?? ''
+        }
+      ]
     case 'past_week':
       return [
         resetTodayFilter,
@@ -75,10 +93,20 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
 }
 
 const useResetFilter = (source: string): void => {
-  const { setFilters, displayedFilters } = useListContext()
+  const { setFilters, displayedFilters, filterValues } = useListContext()
+
   useEffect(() => {
-    if (displayedFilters?.[source] === false) {
-      setFilters(getFilter('', source, ''), displayedFilters)
+    const filterRemoved = Boolean(
+      displayedFilters?.[source] === undefined &&
+        (filterValues?.[`${source}_lte`] || filterValues?.[`${source}_gte`])
+    )
+    if (filterRemoved) {
+      const {
+        [`${source}_lte`]: _,
+        [`${source}_gte`]: __,
+        ...rest
+      } = filterValues
+      setFilters(rest, displayedFilters)
     }
   }, [displayedFilters])
 }
