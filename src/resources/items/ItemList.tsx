@@ -28,7 +28,9 @@ import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
-import DateRangePicker from '../../components/DateRangePicker'
+import DateRangePicker, {
+  ResetDateRangeFilter
+} from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
@@ -90,8 +92,8 @@ const filters = [
     reference={constants.R_MEDIA_TYPE}
   />,
   <DateRangePicker
-    startSource='end_gte'
-    endSource='start_lte'
+    startSource='endDate_gte'
+    endSource='startDate_lte'
     startLabel='Start'
     endLabel='End'
     source='date_range'
@@ -118,7 +120,12 @@ const filters = [
     optionField='batchNumber'
   />,
   <TextInput key='remarks' source='remarks' />,
-  <DateFilter source='createdAt' label='Created At' key='createdAt' />,
+  <DateFilter
+    source='createdAt'
+    label='Created At'
+    key='createdAt'
+    format='iso'
+  />,
   <BooleanFilter<Item>
     source='id'
     label='On loan'
@@ -465,7 +472,11 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       storeKey={storeKey}
       {...rest}>
       <ResetDateFilter source='createdAt' />
-      {/* <ResetDateRangeFilter source='date_range' /> */}
+      <ResetDateRangeFilter
+        source='date_range'
+        startSource='endDate_gte'
+        endSource='startDate_lte'
+      />
       {typeof children !== 'undefined' ? (
         children
       ) : (
