@@ -135,8 +135,17 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
   },
 
   getMany: async (resource: string, params: any) => {
-    const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
+    if (
+      resource === constants.R_ORGANISATION ||
+      resource === constants.R_DEPARTMENT ||
+      resource === constants.R_CAT_CAVE ||
+      resource === constants.R_CAT_CODE ||
+      resource === constants.R_CAT_HANDLE ||
+      resource === constants.R_VAULT
+    )
+      params.ids = params.ids?.map((id: string) => `'${id}'`)
 
+    const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
     return await axios.get(url).then((response) => {
       const { data } = response.data
 
