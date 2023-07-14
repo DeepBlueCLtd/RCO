@@ -287,6 +287,13 @@ function App(): React.ReactElement {
           <Route path='/audit'>
             {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
           </Route>
+          <Route path='/vault'>
+            {...createRoutes(
+              constants.R_VAULT,
+              undefined,
+              referenceDataPermission
+            )}
+          </Route>
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>
         <Resource

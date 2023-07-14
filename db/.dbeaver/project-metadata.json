@@ -6,6 +6,9 @@
     "Scripts/full.sql": {
       "default-datasource": "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76"
     },
+    "Scripts/graphical.sql": {
+      "default-datasource": "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76"
+    },
     "Scripts/reference.sql": {
       "default-datasource": "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76"
     }

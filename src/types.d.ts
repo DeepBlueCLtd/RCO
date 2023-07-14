@@ -176,6 +176,7 @@ interface Batch extends ResourceWithCreation {
   remarks: string
   receiptNotes: string
   protectionString?: string
+  vault: Vault['id']
 }
 
 interface Item extends ResourceWithCreation {
@@ -188,6 +189,8 @@ interface Item extends ResourceWithCreation {
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
+  project?: Project['id']
+  platform?: Platform['id']
 
   // notes relating to how this item is mustered
   musterRemarks: string
@@ -225,6 +228,7 @@ interface RCOStore {
   item: Item[]
   destruction: Destruction[]
   dispatche: Dispatch[]
+  vault: Vault[]
 }
 
 interface Destruction {
@@ -294,3 +298,5 @@ interface ConfigData extends RCOResource {
    */
   cat_cave: string
 }
+
+type Vault = ActiveReferenceItem

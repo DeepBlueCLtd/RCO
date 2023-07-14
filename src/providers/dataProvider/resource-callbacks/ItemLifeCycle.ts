@@ -18,9 +18,20 @@ import { emitter } from '../../../resources/items/ItemForm/ItemFormToolbar'
 const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateParams<Item>) => {
+  beforeCreate: async (
+    record: CreateParams<Item>,
+    dataProvider: DataProvider
+  ) => {
     const fields: Array<keyof Item> = ['startDate', 'endDate']
     convertDateToISO<Item>(record.data, fields)
+    // TODO: This feature is only necessary for mock backend. It should be deleted for SQL backend.
+    const {
+      data: { project, platform }
+    } = await dataProvider.getOne<Batch>(R_BATCHES, {
+      id: record.data.batchId
+    })
+    record.data.project = project
+    record.data.platform = platform
     return withCreatedByAt(record)
   },
   afterCreate: async (
