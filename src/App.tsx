@@ -239,9 +239,9 @@ function App(): React.ReactElement {
               referenceDataPermission
             )}
           </Route>
-          <Route path='/catHandling'>
+          <Route path='/catHandle'>
             {...createRoutes(
-              constants.R_CAT_HANDLING,
+              constants.R_CAT_HANDLE,
               undefined,
               referenceDataPermission
             )}
@@ -286,6 +286,13 @@ function App(): React.ReactElement {
           </Route>
           <Route path='/audit'>
             {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
+          </Route>
+          <Route path='/vault'>
+            {...createRoutes(
+              constants.R_VAULT,
+              undefined,
+              referenceDataPermission
+            )}
           </Route>
           <Route path='/reference-data' element={<ReferenceData />} />
         </CustomRoutes>

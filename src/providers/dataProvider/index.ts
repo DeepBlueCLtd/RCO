@@ -32,7 +32,7 @@ export const lifecycleCallbacks = (
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
     ReferenceItemLifeCycle(audit, constants.R_CAT_CODE),
-    ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLING),
+    ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLE),
     ReferenceItemLifeCycle(audit, constants.R_CAT_CAVE),
     ReferenceItemLifeCycle(audit, constants.R_MEDIA_TYPE),
     ReferenceItemLifeCycle(audit, constants.R_DEPARTMENT),

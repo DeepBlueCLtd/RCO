@@ -79,14 +79,15 @@ export default function ReferenceData(): React.ReactElement {
 
   const mainReferenceRoutes = [
     { path: '/platform', title: 'Platforms' },
-    { path: '/audit', title: 'Audit Log' }
+    { path: '/audit', title: 'Audit Log' },
+    { path: '/vault', title: 'Vault' }
   ]
 
   const rarelyUsedRoutes = [
     { path: '/organisation', title: 'Organisation' },
     { path: '/protectiveMarking', title: 'Protective Marking' },
     { path: '/catCode', title: configData?.cat_code ?? 'Cat Code' },
-    { path: '/catHandling', title: configData?.cat_handle ?? 'Cat Handling' },
+    { path: '/catHandle', title: configData?.cat_handle ?? 'Cat Handle' },
     { path: '/catCave', title: configData?.cat_cave ?? 'Cat Cave' },
     { path: '/mediaType', title: 'Media Type' },
     { path: '/department', title: 'Department' },

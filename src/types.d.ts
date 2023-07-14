@@ -56,11 +56,19 @@ interface RCOResource {
 /** a generic type, used for our assorted reference data lists. Once the
  * interface becomes more complex, introduce a type-specific interface
  */
-interface ActiveReferenceItem extends RCOResource {
-  // when false, the item should not be included in drop-downs
-  // for `create` forms, though it should for `edit` forms
+interface ActiveItem {
   name: string
   active: boolean
+}
+
+interface ActiveReferenceItem extends ActiveItem {
+  // when false, the item should not be included in drop-downs
+  // for `create` forms, though it should for `edit` forms
+  id: number
+}
+
+interface ReferenceItem extends ActiveItem {
+  id: string
 }
 
 /** an entity for which we track instance creation */
@@ -115,12 +123,12 @@ interface Project extends ResourceWithCreation {
   endDate: string
 }
 
-type Department = ActiveReferenceItem
-type Organisation = ActiveReferenceItem
+type Department = ReferenceItem
+type Organisation = ReferenceItem
 type ProtectiveMarking = ActiveReferenceItem
-type CatCode = ActiveReferenceItem
-type CatHandle = ActiveReferenceItem
-type CatCave = ActiveReferenceItem
+type CatCode = ReferenceItem
+type CatHandle = ReferenceItem
+type CatCave = ReferenceItem
 type VaultLocation = ActiveReferenceItem
 
 interface ItemCode {
@@ -136,7 +144,7 @@ interface ItemCave {
 interface ItemHandling {
   id: number
   item: number
-  catHandling: number
+  catHandle: number
 }
 
 interface BatchCode {
@@ -152,7 +160,7 @@ interface BatchCave {
 interface BatchHandling {
   id: number
   batch: number
-  catHandling: number
+  catHandle: number
 }
 
 interface Batch extends ResourceWithCreation {
@@ -168,6 +176,7 @@ interface Batch extends ResourceWithCreation {
   remarks: string
   receiptNotes: string
   protectionString?: string
+  vault: Vault['id']
 }
 
 interface Item extends ResourceWithCreation {
@@ -180,6 +189,8 @@ interface Item extends ResourceWithCreation {
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
+  project?: Project['id']
+  platform?: Platform['id']
 
   // notes relating to how this item is mustered
   musterRemarks: string
@@ -206,7 +217,7 @@ interface RCOStore {
   mediaType: ActiveReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
-  catHandling: CatHandle[]
+  catHandle: CatHandle[]
   catCave: CatCave[]
   // configuration data
   configData: ConfigData[]
@@ -217,6 +228,7 @@ interface RCOStore {
   item: Item[]
   destruction: Destruction[]
   dispatche: Dispatch[]
+  vault: Vault[]
 }
 
 interface Destruction {
@@ -286,3 +298,5 @@ interface ConfigData extends RCOResource {
    */
   cat_cave: string
 }
+
+type Vault = ActiveReferenceItem

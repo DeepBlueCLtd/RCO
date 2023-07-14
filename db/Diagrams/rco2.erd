@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram version="1" name="rco2.erd">
+	<entities>
+		<data-source id="sqlite_jdbc-188bf16d667-6c38fb7c76f27f76">
+			<entity id="1" name="address" fq-name="address" order="0" color-bg="224,189,176" x="1300" y="580"/>
+			<entity id="2" name="audit" fq-name="audit" order="1" color-bg="204,204,204" x="300" y="20"/>
+			<entity id="3" name="batch" fq-name="batch" order="2" color-bg="0,252,255" x="360" y="280"/>
+			<entity id="4" name="catCave" fq-name="catCave" order="3" color-bg="255,215,255" x="720" y="720"/>
+			<entity id="5" name="catCode" fq-name="catCode" order="4" color-bg="255,215,255" x="100" y="720"/>
+			<entity id="6" name="catHandle" fq-name="catHandle" order="5" color-bg="255,215,255" x="520" y="720"/>
+			<entity id="7" name="department" fq-name="department" order="6" x="80" y="360"/>
+			<entity id="8" name="destruction" fq-name="destruction" order="7" color-bg="66,248,185" x="1040" y="100"/>
+			<entity id="9" name="dispatch" fq-name="&quot;dispatch&quot;" order="8" color-bg="255,251,0" x="1280" y="320"/>
+			<entity id="10" name="item" fq-name="item" order="9" color-bg="0,249,0" x="920" y="320"/>
+			<entity id="11" name="mediaType" fq-name="mediaType" order="10" color-bg="239,182,185" x="1320" y="740"/>
+			<entity id="12" name="organisation" fq-name="organisation" order="11" x="80" y="480"/>
+			<entity id="13" name="platform" fq-name="platform" order="12" color-bg="183,171,254" x="80" y="580"/>
+			<entity id="14" name="project" fq-name="project" order="13" color-bg="255,146,0" x="80" y="220"/>
+			<entity id="15" name="protectiveMarking" fq-name="protectiveMarking" order="14" color-bg="255,215,255" x="320" y="720"/>
+			<entity id="16" name="user" fq-name="&quot;user&quot;" order="15" color-bg="254,255,255" border-width="3" x="656" y="120"/>
+			<entity id="17" name="vaultLocation" fq-name="vaultLocation" order="16" color-bg="254,255,255" x="1280" y="180"/>
+		</data-source>
+	</entities>
+	<notes>
+		<note id="18" order="17" x="580" y="40" w="181" h="80">Note: CreatedBy fields all link back to User table.
+This diagram shows other user links.</note>
+		<note id="19" order="18" x="0" y="40" w="276" h="138">Note: Audit log tracks:
+- logins
+- all creations
+- all edits
+- items added to batches/destructions
+- batches/destructions finalised
+- hasteners
+- loans / returns</note>
+	</notes>
+	<relations>
+		<relation name="FK_dispatch_address" fq-name="&quot;dispatch&quot;.FK_dispatch_address" type="fk" pk-ref="1" fk-ref="9"/>
+		<relation name="FK_item_batch" fq-name="item.FK_item_batch" type="fk" pk-ref="3" fk-ref="10"/>
+		<relation name="FK_batch_department" fq-name="batch.FK_batch_department" type="fk" pk-ref="7" fk-ref="3"/>
+		<relation name="FK_item_destruction_2" fq-name="item.FK_item_destruction_2" type="fk" pk-ref="8" fk-ref="10"/>
+		<relation name="FK_item_dispatch_3" fq-name="item.FK_item_dispatch_3" type="fk" pk-ref="9" fk-ref="10"/>
+		<relation name="FK_item_mediaType_4" fq-name="item.FK_item_mediaType_4" type="fk" pk-ref="11" fk-ref="10"/>
+		<relation name="FK_batch_organisation_2" fq-name="batch.FK_batch_organisation_2" type="fk" pk-ref="12" fk-ref="3"/>
+		<relation name="FK_batch_platform_3" fq-name="batch.FK_batch_platform_3" type="fk" pk-ref="13" fk-ref="3"/>
+		<relation name="FK_batch_project_4" fq-name="batch.FK_batch_project_4" type="fk" pk-ref="14" fk-ref="3"/>
+		<relation name="FK_batch_protectiveMarking_5" fq-name="batch.FK_batch_protectiveMarking_5" type="fk" pk-ref="15" fk-ref="3"/>
+		<relation name="FK_item_protectiveMarking_5" fq-name="item.FK_item_protectiveMarking_5" type="fk" pk-ref="15" fk-ref="10"/>
+		<relation name="FK_audit_user_2" fq-name="audit.FK_audit_user_2" type="fk" pk-ref="16" fk-ref="2"/>
+		<relation name="FK_audit_user_3" fq-name="audit.FK_audit_user_3" type="fk" pk-ref="16" fk-ref="2"/>
+		<relation name="FK_batch_user_6" fq-name="batch.FK_batch_user_6" type="fk" pk-ref="16" fk-ref="3"/>
+		<relation name="FK_destruction_user" fq-name="destruction.FK_destruction_user" type="fk" pk-ref="16" fk-ref="8"/>
+		<relation name="FK_destruction_user_2" fq-name="destruction.FK_destruction_user_2" type="fk" pk-ref="16" fk-ref="8"/>
+		<relation name="FK_dispatch_user_2" fq-name="&quot;dispatch&quot;.FK_dispatch_user_2" type="fk" pk-ref="16" fk-ref="9"/>
+		<relation name="FK_item_user_6" fq-name="item.FK_item_user_6" type="fk" pk-ref="16" fk-ref="10"/>
+		<relation name="FK_item_user_7" fq-name="item.FK_item_user_7" type="fk" pk-ref="16" fk-ref="10"/>
+		<relation name="FK_project_user" fq-name="project.FK_project_user" type="fk" pk-ref="16" fk-ref="14"/>
+		<relation name="FK_user_user" fq-name="&quot;user&quot;.FK_user_user" type="fk" pk-ref="16" fk-ref="16">
+			<bend type="abs" x="877" y="318"/>
+			<bend type="abs" x="872" y="275"/>
+		</relation>
+		<relation name="FK_item_vaultLocation_8" fq-name="item.FK_item_vaultLocation_8" type="fk" pk-ref="17" fk-ref="10"/>
+	</relations>
+</diagram>
