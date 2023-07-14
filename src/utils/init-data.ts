@@ -6,7 +6,8 @@ import {
   generateBatch,
   generateItems,
   generateRandomDateInRange,
-  generateUsers
+  generateUsers,
+  generateVault
 } from './generateData'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
@@ -137,6 +138,7 @@ const loadDefaultData = async (
   const user = typeof userId === 'undefined' ? users[0].id : userId
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
   const project = generateProject(isHigh === true ? 60 : 10, user)
+  const vault = generateVault()
 
   const organisation = getActiveReferenceData<ReferenceItem>({
     nameVal: 'Organisation',
@@ -195,6 +197,7 @@ const loadDefaultData = async (
     organisation.length,
     protectiveMarking.length,
     user,
+    vault.length,
     isHigh
   )
 
@@ -257,7 +260,8 @@ const loadDefaultData = async (
     destruction,
     dispatche,
     address,
-    configData
+    configData,
+    vault
   }
 
   const map: Record<string, constants.ResourceTypes> = {
@@ -278,7 +282,8 @@ const loadDefaultData = async (
     destruction: constants.R_DESTRUCTION,
     dispatche: constants.R_DISPATCH,
     address: constants.R_ADDRESSES,
-    configData: constants.R_CONFIG
+    configData: constants.R_CONFIG,
+    vault: constants.R_VAULT
   }
 
   const dataprovider: DataProvider = await getDataProvider(false)

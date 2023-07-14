@@ -101,6 +101,22 @@ export const generateProject = (length: number, user: number): Project[] => {
   return projects
 }
 
+export const generateVault = (): Vault[] => {
+  const vaults: Vault[] = [
+    {
+      id: 1,
+      name: 'Vault',
+      active: true
+    },
+    {
+      id: 2,
+      name: 'Vault Legacy',
+      active: false
+    }
+  ]
+  return vaults
+}
+
 const getRandomDateInLast20Years = (): string[] => {
   const randomStartDateInLast20Years = generateRandomDateInRange(
     new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
@@ -122,6 +138,7 @@ export const generateBatch = (
   organisations: number,
   protectiveMarking: number,
   user: number,
+  vaults: number,
   isHigh?: boolean
 ): Batch[] => {
   const batches: Batch[] = []
@@ -157,6 +174,7 @@ export const generateBatch = (
       department,
       project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
+      vault: generateRandomNumber(1, vaults),
       organisation,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
