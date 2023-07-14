@@ -239,9 +239,9 @@ function App(): React.ReactElement {
               referenceDataPermission
             )}
           </Route>
-          <Route path='/catHandling'>
+          <Route path='/catHandle'>
             {...createRoutes(
-              constants.R_CAT_HANDLING,
+              constants.R_CAT_HANDLE,
               undefined,
               referenceDataPermission
             )}
