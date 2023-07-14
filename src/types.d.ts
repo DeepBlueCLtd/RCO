@@ -144,7 +144,7 @@ interface ItemCave {
 interface ItemHandling {
   id: number
   item: number
-  catHandling: number
+  catHandle: number
 }
 
 interface BatchCode {
@@ -160,7 +160,7 @@ interface BatchCave {
 interface BatchHandling {
   id: number
   batch: number
-  catHandling: number
+  catHandle: number
 }
 
 interface Batch extends ResourceWithCreation {
@@ -217,7 +217,7 @@ interface RCOStore {
   mediaType: ActiveReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
-  catHandling: CatHandle[]
+  catHandle: CatHandle[]
   catCave: CatCave[]
   // configuration data
   configData: ConfigData[]
