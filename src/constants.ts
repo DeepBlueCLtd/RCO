@@ -42,6 +42,7 @@ export const R_ITEMS_HANDLE = 'itemHandle'
 export const R_BATCH_CAVE = 'batchCave'
 export const R_BATCH_CODE = 'batchCode'
 export const R_BATCH_HANDLE = 'batchHandle'
+export const R_VAULT = 'vault'
 
 export const ID_FIX: Record<string, string> = {
   [R_CAT_CAVE]: 'cat_cave',
@@ -73,6 +74,7 @@ export type ResourceTypes =
   | typeof R_DISPATCH
   | typeof R_ADDRESSES
   | typeof R_CONFIG
+  | typeof R_VAULT
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
