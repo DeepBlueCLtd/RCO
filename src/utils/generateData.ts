@@ -230,9 +230,9 @@ export const generateItems = (
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       consecPages: `consec-pages-${i + 1}`,
-      createdBy: user,
-      project: batch.project,
-      platform: batch.platform
+      createdBy: user
+      // project: batch.project,
+      // platform: batch.platform
     }
     items.push(obj)
   }
