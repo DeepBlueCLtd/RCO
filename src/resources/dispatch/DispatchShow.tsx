@@ -1,8 +1,6 @@
 import {
   Button,
   Count,
-  DatagridConfigurable,
-  type DatagridConfigurableProps,
   EditButton,
   Show,
   TopToolbar,
@@ -11,7 +9,6 @@ import {
   useNotify,
   useRecordContext,
   useUpdate,
-  TextField,
   useRefresh,
   useUpdateMany,
   useGetList
@@ -28,7 +25,6 @@ import DispatchForm from './DispatchForm'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
 import ItemList, { BulkActions } from '../items/ItemList'
-import SourceField from '../../components/SourceField'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
@@ -289,6 +285,7 @@ function DispatchedItemList(
   )
 
   const title = dispatched ? 'Dispatched items' : 'Items for dispatch'
+  const preferenceKey = `datagrid-${constants.R_DISPATCH}-${id}-items-list`
 
   return (
     <Box component='fieldset' style={{ padding: '0 15px', overflowX: 'auto' }}>
@@ -300,38 +297,10 @@ function DispatchedItemList(
       <ItemList
         storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
         filter={{ dispatchJob: id }}
-        filtersShown={['q', 'batchId', 'mediaType']}>
-        <ItemListDataTable
-          preferenceKey={`datagrid-${constants.R_DISPATCH}-${id}-items-list`}
-          bulkActionButtons={bulkActionButtons}
-        />
-      </ItemList>
+        preferenceKey={preferenceKey}
+        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+        filtersShown={['q', 'batchId', 'mediaType']}
+      />
     </Box>
-  )
-}
-
-function ItemListDataTable(
-  props: DatagridConfigurableProps
-): React.ReactElement {
-  return (
-    <DatagridConfigurable
-      rowClick='show'
-      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
-      preferenceKey={props.preferenceKey}
-      omit={props?.omit}
-      {...props}>
-      <TextField source='item_number' label='Reference' />
-      <SourceField
-        link='show'
-        source='mediaType'
-        reference={constants.R_MEDIA_TYPE}
-        label='Media type'
-      />
-      <TextField source='consecPages' label='Consec Serial' />
-      <SourceField
-        source='protectiveMarking'
-        reference={constants.R_PROTECTIVE_MARKING}
-      />
-    </DatagridConfigurable>
   )
 }
