@@ -15,7 +15,8 @@ import {
   useDataProvider,
   useResourceDefinition,
   useNotify,
-  useGetMany
+  useGetMany,
+  Pagination
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
@@ -464,6 +465,8 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       actions={<ItemActions />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
+      perPage={100}
+      pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50, 100]} />}
       filters={
         !filtersShown
           ? filters
