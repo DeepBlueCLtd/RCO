@@ -114,7 +114,7 @@ export default function BatchShow(): React.ReactElement {
           <ItemList
             storeKey={`${constants.R_BATCHES}-${id}-items-list`}
             empty={false}
-            filter={{ batchId: id }}
+            filter={{ id }}
             actions={<ItemActions />}
             disableSyncWithLocation>
             <ItemListDataTable

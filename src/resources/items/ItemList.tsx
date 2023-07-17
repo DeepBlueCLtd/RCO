@@ -161,11 +161,21 @@ const getItemStates = (
   } else {
     const filteredData = data.filter((item) => selectedIds.includes(item.id))
     return {
-      noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
-      allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
-      anyDestructed: filteredData.some((f) => f.destruction !== undefined),
-      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined),
-      anyDispatched: filteredData.some((f) => f.dispatchJob !== undefined)
+      noneLoanedVal: filteredData.every(
+        (f) => f.loanedTo === undefined || f.loanedTo === null
+      ),
+      allLoanedVal: filteredData.every(
+        (f) => f.loanedTo !== undefined && f.loanedTo !== null
+      ),
+      anyDestructed: filteredData.some(
+        (f) => f.destruction !== undefined && f.destruction !== null
+      ),
+      anyLoaned: filteredData.some(
+        (f) => f.loanedTo !== undefined && f.loanedTo !== null
+      ),
+      anyDispatched: filteredData.some(
+        (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
+      )
     }
   }
 }

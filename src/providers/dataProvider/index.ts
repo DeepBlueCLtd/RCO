@@ -16,6 +16,7 @@ import DispatchLifeCycle from './resource-callbacks/DispatchLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
 import axios from 'axios'
 import queryString from 'query-string'
+import localForageDataProvider from 'ra-data-local-forage'
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -57,12 +58,17 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
 }
 
 export const getDataProvider = async (
-  loggingEnabled: boolean
+  loggingEnabled: boolean,
+  REST_FLAG: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
-  console.log(loggingEnabled)
-  const provider = dataProvider(
-    process.env.VITE_API_URL ?? 'http://localhost:4000/api/tables'
-  )
+  const provider = REST_FLAG
+    ? dataProvider(
+        process.env.VITE_API_URL ?? 'http://localhost:4000/api/tables'
+      )
+    : await localForageDataProvider({
+        prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+        loggingEnabled
+      })
 
   const providerWithCustomMethods = {
     ...provider,
@@ -89,14 +95,13 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     }, {})
 
     const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
-
     let query: any = {
       _page: page,
       _limit: perPage,
       _ordering: ordering,
       _filters: filter || undefined
     }
-    if (resource === 'configData') {
+    if (resource === constants.R_CONFIG) {
       query = {
         _page: page,
         _limit: perPage
@@ -136,16 +141,6 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
   },
 
   getMany: async (resource: string, params: any) => {
-    if (
-      resource === constants.R_ORGANISATION ||
-      resource === constants.R_DEPARTMENT ||
-      resource === constants.R_CAT_CAVE ||
-      resource === constants.R_CAT_CODE ||
-      resource === constants.R_CAT_HANDLE ||
-      resource === constants.R_VAULT
-    )
-      params.ids = params.ids?.map((id: string) => `'${id}'`)
-
     const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
     return await axios.get(url).then((response) => {
       const { data } = response.data
@@ -178,9 +173,10 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
   create: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows`
-
     return await axios.post(url, { fields: params.data }).then((response) => {
-      return { data: { id: response.data.lastInsertRowId, ...params.data } }
+      return {
+        data: { id: response.data.data.lastInsertRowid, ...params.data }
+      }
     })
   },
 

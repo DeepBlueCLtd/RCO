@@ -286,7 +286,7 @@ const loadDefaultData = async (
     vault: constants.R_VAULT
   }
 
-  const dataprovider: DataProvider = await getDataProvider(false)
+  const dataprovider: DataProvider = await getDataProvider(false, false)
 
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {

@@ -44,6 +44,9 @@ import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
+// true for REST, false for localForage
+const REST_FLAG = true
+
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
     undefined
@@ -56,19 +59,27 @@ function App(): React.ReactElement {
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
-      checktDefault()
-        .then((provider) => {
-          if (provider !== null) {
+      if (REST_FLAG) {
+        getDataProvider(loggingPref, REST_FLAG)
+          .then((provider) => {
             populate(provider)
-          } else {
-            getDataProvider(loggingPref)
-              .then((provider) => {
-                populate(provider)
-              })
-              .catch(console.log)
-          }
-        })
-        .catch(console.log)
+          })
+          .catch(console.log)
+      } else {
+        checktDefault()
+          .then((provider) => {
+            if (provider !== null) {
+              populate(provider)
+            } else {
+              getDataProvider(loggingPref, REST_FLAG)
+                .then((provider) => {
+                  populate(provider)
+                })
+                .catch(console.log)
+            }
+          })
+          .catch(console.log)
+      }
     }
   }
 
