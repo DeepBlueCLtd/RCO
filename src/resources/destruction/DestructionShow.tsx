@@ -199,7 +199,7 @@ export default function DestructionShow(): React.ReactElement {
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Destruction Job
+            Destruction
           </Typography>
         </legend>
         <Box>

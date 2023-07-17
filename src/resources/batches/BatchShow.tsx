@@ -165,7 +165,7 @@ function ItemListDataTable(
         source='dispatchJob'
         reference={constants.R_DISPATCH}
         sourceField='reference'
-        label='Dispatch Job'
+        label='Dispatch'
       />
       <DateField source='dispatchedDate' />
     </DatagridConfigurable>
