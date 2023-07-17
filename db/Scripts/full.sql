@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS batch (
        project INT,
        platform INT,
        organisation INT NOT NULL,
-       vault INT,
+       vault TEXT NOT NULL,
        department INT NOT NULL,
        protectiveMarking INT NOT NULL,
        protectionString TEXT NOT NULL,
