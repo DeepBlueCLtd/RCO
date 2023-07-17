@@ -1,10 +1,8 @@
 import {
-  DateField,
   FilterButton,
   type ListProps,
   SearchInput,
   SelectColumnsButton,
-  TextField,
   TextInput,
   TopToolbar,
   useListContext,
@@ -16,9 +14,11 @@ import {
   useResourceDefinition,
   useNotify,
   useGetMany,
-  Pagination
+  Pagination,
+  type SelectColumnsButtonProps,
+  DateField,
+  TextField
 } from 'react-admin'
-import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
@@ -43,6 +43,7 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
+import SourceField from '../../components/SourceField'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -150,12 +151,14 @@ const filters = [
   />
 ]
 
-const ItemActions = (): React.ReactElement => {
+const ItemActions = ({
+  preferenceKey
+}: SelectColumnsButtonProps): React.ReactElement => {
   return (
     <TopToolbar>
       <ItemAssetReport storeKey='items-asset-report' />
       <FilterButton />
-      <SelectColumnsButton />
+      <SelectColumnsButton preferenceKey={preferenceKey} />
     </TopToolbar>
   )
 }
@@ -467,19 +470,23 @@ interface ItemListType extends Omit<ListProps, 'children'> {
   filtersShown?: string[]
 }
 
-export default function ItemList(props?: ItemListType): React.ReactElement {
+export default function ItemList(
+  props?: ItemListType & SelectColumnsButtonProps
+): React.ReactElement {
   const { options } = useResourceDefinition()
   const {
     datagridConfigurableProps,
     children,
     storeKey = 'items-items-list',
     filtersShown,
+    preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
+    bulkActionButtons,
     ...rest
   } = props ?? {}
   return (
     <List
       hasCreate={false}
-      actions={<ItemActions />}
+      actions={<ItemActions preferenceKey={preferenceKey} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       perPage={100}
@@ -500,66 +507,63 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
         startSource='endDate_gte'
         endSource='startDate_lte'
       />
-      {typeof children !== 'undefined' ? (
-        children
-      ) : (
-        <DatagridConfigurableWithShow
-          resource={constants.R_ITEMS}
-          bulkActionButtons={<BulkActions />}
-          omit={omitColumns}>
-          <TextField source='item_number' label='Reference' />
-          <TextField source='id' />
-          <TextField source='createdAt' label='Created' />
-          <SourceField
-            link='show'
-            source='mediaType'
-            reference={constants.R_MEDIA_TYPE}
-            label='Media type'
-          />
-          <SourceField
-            link='show'
-            source='loanedTo'
-            reference={constants.R_USERS}
-            label='Loaned to'
-          />
-          <DateField showTime source='startDate' />
-          <DateField showTime source='endDate' />
-          <SourceField
-            source='vaultLocation'
-            reference={constants.R_VAULT_LOCATION}
-          />
-          <SourceField
-            source='protectiveMarking'
-            reference={constants.R_PROTECTIVE_MARKING}
-          />
-          <SourceField
-            link='show'
-            source='batchId'
-            reference={constants.R_BATCHES}
-            sourceField='batchNumber'
-          />
-          <SourceField
-            link='show'
-            source='destruction'
-            reference={constants.R_DESTRUCTION}
-            sourceField='reference'
-          />
-          <DateField source='destructionDate' />
-          <SourceField
-            link='show'
-            source='dispatchJob'
-            reference={constants.R_DISPATCH}
-            sourceField='reference'
-            label='Dispatch'
-          />
-          <DateField source='dispatchedDate' />
-          {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
-          {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
-          <TextField source='remarks' />
-          <TextField source='musterRemarks' />
-          <TextField source='protectionString' label='Protection' />
-        </DatagridConfigurableWithShow>
-      )}
+      <DatagridConfigurableWithShow
+        resource={constants.R_ITEMS}
+        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+        preferenceKey={preferenceKey}
+        omit={omitColumns}>
+        <TextField source='item_number' label='Reference' />
+        <TextField source='id' />
+        <TextField source='createdAt' label='Created' />
+        <SourceField
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
+        <SourceField
+          link='show'
+          source='loanedTo'
+          reference={constants.R_USERS}
+          label='Loaned to'
+        />
+        <DateField showTime source='startDate' />
+        <DateField showTime source='endDate' />
+        <SourceField
+          source='vaultLocation'
+          reference={constants.R_VAULT_LOCATION}
+        />
+        <SourceField
+          source='protectiveMarking'
+          reference={constants.R_PROTECTIVE_MARKING}
+        />
+        <SourceField
+          link='show'
+          source='batchId'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
+        <SourceField
+          link='show'
+          source='destruction'
+          reference={constants.R_DESTRUCTION}
+          sourceField='reference'
+        />
+        <DateField source='destructionDate' />
+        <SourceField
+          link='show'
+          source='dispatchJob'
+          reference={constants.R_DISPATCH}
+          sourceField='reference'
+          label='Dispatch'
+        />
+        <DateField source='dispatchedDate' />
+        {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
+        {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
+        <TextField source='remarks' />
+        <TextField source='musterRemarks' />
+        <TextField source='protectionString' label='Protection' />
+      </DatagridConfigurableWithShow>
     </List>
   )
 }
