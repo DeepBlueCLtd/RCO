@@ -22,6 +22,14 @@ CREATE TABLE IF NOT EXISTS catHandle(
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
+
+-- Meta table - vault
+CREATE TABLE IF NOT EXISTS vault(
+       id TEXT NOT NULL PRIMARY KEY,
+       active INTEGER NOT NULL
+) WITHOUT ROWID;
+
+
 -- Meta table - catCode
 CREATE TABLE IF NOT EXISTS catCode(
        id TEXT NOT NULL PRIMARY KEY,
@@ -134,6 +142,7 @@ CREATE TABLE IF NOT EXISTS batch (
        project INT,
        platform INT,
        organisation INT NOT NULL,
+       vault TEXT NOT NULL,
        department INT NOT NULL,
        protectiveMarking INT NOT NULL,
        protectionString TEXT NOT NULL,
@@ -148,6 +157,7 @@ CREATE TABLE IF NOT EXISTS batch (
        FOREIGN KEY (organisation) REFERENCES organisation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
        FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (vault) REFERENCES vault(id)
 ) WITHOUT ROWID;
 
 -- DDL for Table batchCode
