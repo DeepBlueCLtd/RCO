@@ -7,11 +7,8 @@ import {
   TopToolbar,
   FilterButton,
   SelectColumnsButton,
-  DateField,
   useShowContext,
-  DatagridConfigurable,
-  type DatagridConfigurableProps,
-  TextField
+  type SelectColumnsButtonProps
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -23,7 +20,6 @@ import { IconButton, Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
-import SourceField from '../../components/SourceField'
 import BatchForm from './BatchForm'
 
 export interface ShowActionProps {
@@ -46,7 +42,9 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
   )
 }
 
-const ItemActions = (): React.ReactElement => {
+const ItemActions = ({
+  preferenceKey
+}: SelectColumnsButtonProps): React.ReactElement => {
   const { id = '' } = useParams()
   const { hasAccess } = useCanAccess()
   const batchId: string = id
@@ -64,7 +62,7 @@ const ItemActions = (): React.ReactElement => {
         filterDefaultValues={{ batchId }}
       />
       <FilterButton />
-      <SelectColumnsButton />
+      <SelectColumnsButton preferenceKey={preferenceKey} />
     </TopToolbar>
   )
 }
@@ -96,6 +94,7 @@ export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   const pageTitle = 'Batch Show'
   const [open, setOpen] = useState(false)
+  const preferenceKey = `datagrid-${constants.R_BATCHES}-${id}-items-list`
 
   const handleOpen = (open: boolean): void => {
     setOpen(open)
@@ -115,59 +114,14 @@ export default function BatchShow(): React.ReactElement {
             storeKey={`${constants.R_BATCHES}-${id}-items-list`}
             empty={false}
             filter={{ batchId: id }}
-            actions={<ItemActions />}
-            disableSyncWithLocation>
-            <ItemListDataTable
-              preferenceKey={`datagrid-${constants.R_BATCHES}-${id}-items-list`}
-            />
-          </ItemList>
+            actions={<ItemActions preferenceKey={preferenceKey} />}
+            bulkActionButtons={<BulkActions />}
+            preferenceKey={preferenceKey}
+            disableSyncWithLocation
+          />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
       <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
-  )
-}
-
-function ItemListDataTable(
-  props: DatagridConfigurableProps
-): React.ReactElement {
-  return (
-    <DatagridConfigurable
-      bulkActionButtons={<BulkActions />}
-      rowClick='show'
-      omit={props?.omit}
-      preferenceKey={props.preferenceKey}
-      {...props}>
-      <TextField source='item_number' label='Reference' />
-      <SourceField
-        link='show'
-        source='mediaType'
-        reference={constants.R_MEDIA_TYPE}
-        label='Media type'
-      />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <TextField source='remarks' />
-      <SourceField
-        link='show'
-        source='loanedTo'
-        reference={constants.R_USERS}
-        label='Loaned to'
-      />
-      <SourceField
-        link='show'
-        source='destruction'
-        reference={constants.R_DESTRUCTION}
-        sourceField='reference'
-      />
-      <DateField source='destructionDate' />
-      <SourceField
-        link='show'
-        source='dispatchJob'
-        reference={constants.R_DISPATCH}
-        sourceField='reference'
-        label='Dispatch'
-      />
-      <DateField source='dispatchedDate' />
-    </DatagridConfigurable>
   )
 }
