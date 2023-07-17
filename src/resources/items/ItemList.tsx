@@ -23,7 +23,7 @@ import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
-import { Button, Modal } from '@mui/material'
+import { Box, Button, Modal } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
@@ -340,106 +340,123 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
+  const columnsSelected = JSON.parse(
+    localStorage.getItem('RaStore.preferences.item.datagrid.columns') ?? ''
+  )
+  const bulkActionsStyle = {
+    display: 'flex',
+    marginLeft: 2
+  }
 
   return (
-    <>
-      {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
-        <>
-          {dispatch ? (
-            <FlexBox>
-              <Button
-                onClick={handleOpen('dispatch')}
-                size='small'
-                variant='outlined'>
-                Dispatch
-              </Button>
-            </FlexBox>
-          ) : null}
-          {destroy ? (
-            <FlexBox>
-              <Button
-                startIcon={<DeleteSweepIcon />}
-                onClick={handleOpen('destroy')}
-                size='small'
-                variant='outlined'>
-                Destroy
-              </Button>
-            </FlexBox>
-          ) : null}
-          {location ? (
-            <FlexBox>
-              <Button
-                size='small'
-                variant='outlined'
-                onClick={handleOpen('location')}>
-                Change Location
-              </Button>
-            </FlexBox>
-          ) : null}
-        </>
-      )}
-      {!isDestruction &&
-      !isAnyDispatched &&
-      loan &&
-      hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <LoanItemsListBulkActionButtons
-          noneLoaned={noneLoaned}
-          allLoaned={allLoaned}
-        />
-      ) : null}
-      {!isItemNormal && (
-        <>
-          {destroyRemove ? (
-            <FlexBox>
-              <Button
-                startIcon={<RestoreFromTrash />}
-                onClick={handleOpen('destroyRemove')}
-                size='small'
-                variant='outlined'>
-                Remove
-              </Button>
-            </FlexBox>
-          ) : null}
-          {dispatchRemove ? <ReturnButton /> : null}
-        </>
-      )}
+    <Box
+      sx={[
+        bulkActionsStyle,
+        columnsSelected?.length > 9 ? { width: '100vw' } : {}
+      ]}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1
+        }}>
+        {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
+          <>
+            {dispatch ? (
+              <FlexBox>
+                <Button
+                  onClick={handleOpen('dispatch')}
+                  size='small'
+                  variant='outlined'>
+                  Dispatch
+                </Button>
+              </FlexBox>
+            ) : null}
+            {destroy ? (
+              <FlexBox>
+                <Button
+                  startIcon={<DeleteSweepIcon />}
+                  onClick={handleOpen('destroy')}
+                  size='small'
+                  variant='outlined'>
+                  Destroy
+                </Button>
+              </FlexBox>
+            ) : null}
+            {location ? (
+              <FlexBox>
+                <Button
+                  size='small'
+                  variant='outlined'
+                  onClick={handleOpen('location')}>
+                  Change Location
+                </Button>
+              </FlexBox>
+            ) : null}
+          </>
+        )}
+        {!isDestruction &&
+        !isAnyDispatched &&
+        loan &&
+        hasAccess(constants.R_ITEMS, { write: true }) ? (
+          <LoanItemsListBulkActionButtons
+            noneLoaned={noneLoaned}
+            allLoaned={allLoaned}
+          />
+        ) : null}
+        {!isItemNormal && (
+          <>
+            {destroyRemove ? (
+              <FlexBox>
+                <Button
+                  startIcon={<RestoreFromTrash />}
+                  onClick={handleOpen('destroyRemove')}
+                  size='small'
+                  variant='outlined'>
+                  Remove
+                </Button>
+              </FlexBox>
+            ) : null}
+            {dispatchRemove ? <ReturnButton /> : null}
+          </>
+        )}
 
-      <Modal open={Boolean(open)} onClose={handleClose}>
-        <>
-          {open === 'location' && (
-            <ChangeLocation
-              successCallback={handleSuccess}
-              onCancel={handleClose}
-              ids={selectedIds}
-            />
-          )}
-          {open === 'destroy' && (
-            <DestroyItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-          {open === 'destroyRemove' && (
-            <DestroyRestoreItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-          {open === 'dispatch' && (
-            <DispatchItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-        </>
-      </Modal>
-    </>
+        <Modal open={Boolean(open)} onClose={handleClose}>
+          <>
+            {open === 'location' && (
+              <ChangeLocation
+                successCallback={handleSuccess}
+                onCancel={handleClose}
+                ids={selectedIds}
+              />
+            )}
+            {open === 'destroy' && (
+              <DestroyItems
+                ids={selectedIds}
+                data={data}
+                onClose={handleClose}
+                successCallback={handleSuccess}
+              />
+            )}
+            {open === 'destroyRemove' && (
+              <DestroyRestoreItems
+                ids={selectedIds}
+                data={data}
+                onClose={handleClose}
+                successCallback={handleSuccess}
+              />
+            )}
+            {open === 'dispatch' && (
+              <DispatchItems
+                ids={selectedIds}
+                data={data}
+                onClose={handleClose}
+                successCallback={handleSuccess}
+              />
+            )}
+          </>
+        </Modal>
+      </Box>
+    </Box>
   )
 }
 
@@ -466,7 +483,10 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       perPage={100}
-      pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50, 100]} />}
+      pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
+      sx={{
+        overflow: 'hidden'
+      }}
       filters={
         !filtersShown
           ? filters
