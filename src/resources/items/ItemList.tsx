@@ -14,6 +14,7 @@ import {
   useResourceDefinition,
   useNotify,
   useGetMany,
+  Pagination,
   type SelectColumnsButtonProps,
   DateField,
   TextField
@@ -488,6 +489,8 @@ export default function ItemList(
       actions={<ItemActions preferenceKey={preferenceKey} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
+      perPage={100}
+      pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       sx={{
         overflow: 'hidden'
       }}
