@@ -1,7 +1,17 @@
 import users from '../providers/dataProvider/defaults/users'
 import { generateSalt, encryptData } from './encryption'
-import { generateUsers } from './generateData'
+import {
+  generatePlatform,
+  generateProject,
+  generateBatch,
+  generateItems,
+  generateRandomDateInRange,
+  generateUsers,
+  generateVault
+} from './generateData'
+import * as constants from '../constants'
 import { ID_FIX } from '../constants'
+import localForage from 'localforage'
 import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
 import { type DataProvider } from 'react-admin'
@@ -91,9 +101,210 @@ export const getAddresses = (
     })
 }
 
-const loadDefaultData = async (): Promise<DataProvider> => {
-  const dataprovider: DataProvider = await getDataProvider()
+const assignItemsToRandomActiveUser = (
+  users: User[],
+  items: Item[]
+): Record<string, number[]> => {
+  const activeUsers = users.filter((user) => user.active)
+  const randomItems: Record<number, number[]> = {}
 
+  for (const item of items) {
+    if (Math.random() > 0.8) {
+      const randomUser = users[Math.floor(Math.random() * activeUsers.length)]
+      item.loanedTo = randomUser.id
+      item.loanedDate = new Date(
+        generateRandomDateInRange(
+          DateTime.now().minus({ month: 3 }).toJSDate(),
+          DateTime.now().toJSDate()
+        )
+      ).toISOString()
+
+      if (!Object.prototype.hasOwnProperty.call(randomItems, randomUser.id)) {
+        randomItems[randomUser.id] = [] as number[]
+      }
+      randomItems[randomUser.id].push(item.id)
+    }
+  }
+
+  return randomItems
+}
+
+const loadDefaultData = async (
+  userId?: number,
+  isHigh?: boolean
+): Promise<DataProvider> => {
+  await localForage.clear()
+
+  const user = typeof userId === 'undefined' ? users[0].id : userId
+  const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
+  const project = generateProject(isHigh === true ? 60 : 10, user)
+  const vault = generateVault()
+
+  const organisation = getActiveReferenceData<ReferenceItem>({
+    nameVal: 'Organisation',
+    resource: constants.R_ORGANISATION
+  })
+
+  const department = getActiveReferenceData<ReferenceItem>({
+    nameVal: 'Department',
+    resource: constants.R_DEPARTMENT
+  })
+
+  const vaultLocation = getActiveReferenceData<ActiveReferenceItem>({
+    nameVal: 'Vault Location',
+    length: isHigh === true ? 100 : undefined,
+    isHigh,
+    inActivePercentage: 5
+  })
+
+  const mediaType = getActiveReferenceData<ActiveReferenceItem>({
+    nameVal: 'Media',
+    alternateInactive: true,
+    length: 30
+  })
+
+  const protectiveMarking = getActiveReferenceData<ActiveReferenceItem>({
+    nameVal: 'Protective Marking',
+    alternateInactive: true
+  })
+  const address = getAddresses()
+
+  const protectionFieldParams = {
+    alternateInactive: true,
+    length: 8
+  }
+
+  const catCode = getActiveReferenceData<ReferenceItem>({
+    ...protectionFieldParams,
+    nameVal: 'Cat Code',
+    resource: constants.R_CAT_CODE
+  })
+  const catHandle = getActiveReferenceData<ReferenceItem>({
+    ...protectionFieldParams,
+    nameVal: 'Cat Handle',
+    resource: constants.R_CAT_HANDLE
+  })
+  const catCave = getActiveReferenceData<ReferenceItem>({
+    ...protectionFieldParams,
+    nameVal: 'Cat Cave',
+    resource: constants.R_CAT_CAVE
+  })
+  const batch = generateBatch(
+    isHigh === true ? 500 : 10,
+    platform.length,
+    department.length,
+    project.length,
+    organisation.length,
+    protectiveMarking.length,
+    user,
+    vault.length,
+    isHigh
+  )
+
+  const item: Item[] = []
+  const numItems = isHigh === true ? Math.floor(Math.random() * 55) + 6 : 10
+
+  batch.forEach((batch2: Batch, index: number) => {
+    const project3 = project.find((project2) => project2.id === batch2.project)
+    if (project3 !== undefined) {
+      item.push(
+        ...generateItems(
+          numItems,
+          numItems * index,
+          batch[index],
+          vaultLocation.length,
+          protectiveMarking.length,
+          user,
+          mediaType.length
+        )
+      )
+    }
+  })
+
+  const randomItems = assignItemsToRandomActiveUser(
+    isHigh === true ? generatedUsers : users,
+    item
+  )
+
+  const audit: Audit[] = []
+  const dispatche: Dispatch[] = []
+  const destruction: Destruction[] = []
+
+  const configDataItem: ConfigData = {
+    id: 0,
+    projectName: 'Project',
+    projectsName: 'Projects',
+    fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP',
+    protectionName: 'Protection',
+    cat_code: 'Cat-Code',
+    cat_handle: 'Cat-Handle',
+    cat_cave: 'Cat-Cave'
+  }
+  const configData: ConfigData[] = [configDataItem]
+
+  const defaultData: RCOStore = {
+    user: encryptedUsers(isHigh),
+    batch,
+    item,
+    platform,
+    project,
+    organisation,
+    department,
+    vaultLocation,
+    mediaType,
+    protectiveMarking,
+    catCode,
+    catHandle,
+    catCave,
+    audit,
+    destruction,
+    dispatche,
+    address,
+    configData,
+    vault
+  }
+
+  const map: Record<string, constants.ResourceTypes> = {
+    user: constants.R_USERS,
+    batch: constants.R_BATCHES,
+    item: constants.R_ITEMS,
+    platform: constants.R_PLATFORMS,
+    project: constants.R_PROJECTS,
+    organisation: constants.R_ORGANISATION,
+    department: constants.R_DEPARTMENT,
+    vaultLocation: constants.R_VAULT_LOCATION,
+    mediaType: constants.R_MEDIA_TYPE,
+    protectiveMarking: constants.R_PROTECTIVE_MARKING,
+    catCode: constants.R_CAT_CODE,
+    catHandle: constants.R_CAT_HANDLE,
+    catCave: constants.R_CAT_CAVE,
+    audit: constants.R_AUDIT,
+    destruction: constants.R_DESTRUCTION,
+    dispatche: constants.R_DISPATCH,
+    address: constants.R_ADDRESSES,
+    configData: constants.R_CONFIG,
+    vault: constants.R_VAULT
+  }
+
+  const dataprovider: DataProvider = await getDataProvider(false)
+
+  for (const [key, value] of Object.entries(defaultData)) {
+    if (map[key] !== undefined) {
+      if (key === constants.R_ITEMS) {
+        for (const val of value) {
+          await dataprovider.create<Item>(constants.R_ITEMS, { data: val })
+        }
+        for (const userId in randomItems) {
+          await dataprovider.loanItems(randomItems[userId], Number(userId))
+        }
+      } else
+        for (const val of value) {
+          await dataprovider.create<typeof value>(map[key], {
+            data: val
+          })
+        }
+    }
+  }
   return dataprovider
 }
 

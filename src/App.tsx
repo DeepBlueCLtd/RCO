@@ -32,6 +32,7 @@ import items from './resources/items'
 import * as constants from './constants'
 import platforms from './resources/platforms'
 import vaultlocations from './resources/vault-locations'
+import loadDefaultData from './utils/init-data'
 import { type FilterType } from './resources/audit/AuditList'
 import { canAccess } from './providers/authProvider/permissions'
 import { protectedRoutes } from './hooks/useCanAccess'
@@ -39,6 +40,7 @@ import addresses from './resources/addresses'
 import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
+import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
@@ -50,13 +52,24 @@ function App(): React.ReactElement {
   const [authProvider, setAuthProvider] = useState<AuthProvider | undefined>(
     undefined
   )
+  const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
-    getDataProvider()
-      .then((provider) => {
-        populate(provider)
-      })
-      .catch(console.log)
+    if (loggingPref !== null) {
+      checktDefault()
+        .then((provider) => {
+          if (provider !== null) {
+            populate(provider)
+          } else {
+            getDataProvider(loggingPref)
+              .then((provider) => {
+                populate(provider)
+              })
+              .catch(console.log)
+          }
+        })
+        .catch(console.log)
+    }
   }
 
   const populate = (provider: DataProvider): void => {
@@ -81,6 +94,26 @@ function App(): React.ReactElement {
       }
     }
   }
+
+  useEffect(() => {
+    const storedValue = localStorage.getItem(constants.LOGGING_ENABLED)
+    if (storedValue !== null) {
+      setLoggingPref(storedValue === 'true')
+    } else {
+      setLoggingPref(false)
+    }
+
+    const onStorageChange = (event: any): void => {
+      if (event.key === constants.LOGGING_ENABLED) {
+        setLoggingPref(event.newValue === 'true')
+      }
+    }
+
+    window.addEventListener('storage', onStorageChange)
+    return () => {
+      window.removeEventListener('storage', onStorageChange)
+    }
+  }, [])
 
   useEffect(() => {
     const UI_VERSION = localStorage.getItem(constants.APP_VERSION)
@@ -114,7 +147,25 @@ function App(): React.ReactElement {
     }
   }, [])
 
-  useEffect(handleGetProvider, [])
+  useEffect(() => {
+    const DATA_VERSION = localStorage.getItem(constants.DATA_VERSION)
+    if (DATA_VERSION !== null) {
+      if (process.env.VITE_DATA_VERSION !== DATA_VERSION) {
+        loadDefaultData().catch(console.log)
+        localStorage.setItem(
+          constants.DATA_VERSION,
+          process.env.VITE_DATA_VERSION ?? '1'
+        )
+      }
+    } else {
+      localStorage.setItem(
+        constants.DATA_VERSION,
+        process.env.VITE_DATA_VERSION ?? '1'
+      )
+    }
+  }, [])
+
+  useEffect(handleGetProvider, [loggingPref])
 
   useEffect(() => {
     async function getConfigData(): Promise<void> {
@@ -124,6 +175,19 @@ function App(): React.ReactElement {
     }
     getConfigData().catch(console.log)
   }, [dataProvider])
+
+  const checktDefault = async (): Promise<DataProvider | null> => {
+    const localForageData = await localForage.keys()
+    if (
+      localForageData.length === 0 ||
+      (localForageData.length === 1 &&
+        localForageData[0] === `rco-${constants.R_AUDIT}`)
+    ) {
+      const dataprovider = await loadDefaultData()
+      return dataprovider
+    }
+    return null
+  }
 
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage

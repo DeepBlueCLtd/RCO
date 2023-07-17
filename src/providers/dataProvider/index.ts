@@ -56,9 +56,10 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
   }
 }
 
-export const getDataProvider = async (): Promise<
-  CustomDataProvider & DataProvider<string>
-> => {
+export const getDataProvider = async (
+  loggingEnabled: boolean
+): Promise<CustomDataProvider & DataProvider<string>> => {
+  console.log(loggingEnabled)
   const provider = dataProvider(
     process.env.VITE_API_URL ?? 'http://localhost:4000/api/tables'
   )

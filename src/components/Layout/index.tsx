@@ -59,13 +59,13 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   }
 
   const handleLoadData = (): void => {
-    loadDefaultData().catch((error) => {
+    loadDefaultData(undefined).catch((error) => {
       console.log({ error })
     })
   }
 
   const handleHighVolumeLoadData = (): void => {
-    loadDefaultData().catch(console.log)
+    loadDefaultData(undefined, true).catch(console.log)
   }
 
   const handleLoggingPrefChange = (
