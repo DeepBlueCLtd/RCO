@@ -174,7 +174,7 @@ export const generateBatch = (
       department,
       project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
-      vault: generateRandomNumber(1, vaults).toString(),
+      vault: Math.random() >= 0.5 ? 'LEGACY' : 'VAULT',
       organisation,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
