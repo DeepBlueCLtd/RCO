@@ -104,12 +104,12 @@ export const generateProject = (length: number, user: number): Project[] => {
 export const generateVault = (): Vault[] => {
   const vaults: Vault[] = [
     {
-      id: 1,
+      id: '1',
       name: 'Vault',
       active: true
     },
     {
-      id: 2,
+      id: '2',
       name: 'Vault Legacy',
       active: false
     }
@@ -174,7 +174,7 @@ export const generateBatch = (
       department,
       project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
-      vault: generateRandomNumber(1, vaults),
+      vault: generateRandomNumber(1, vaults).toString(),
       organisation,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,

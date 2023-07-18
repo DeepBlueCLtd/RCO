@@ -300,4 +300,4 @@ interface ConfigData extends RCOResource {
   cat_cave: string
 }
 
-type Vault = ActiveReferenceItem
+type Vault = ReferenceItem
