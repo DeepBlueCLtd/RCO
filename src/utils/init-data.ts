@@ -152,7 +152,7 @@ const loadDefaultData = async (
 
   const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Vault Location',
-    length: isHigh === true ? 100 : undefined,
+    length: isHigh === true ? 200 : 50,
     alternateInactive: true,
     isHigh
   })
