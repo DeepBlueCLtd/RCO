@@ -153,8 +153,8 @@ const loadDefaultData = async (
   const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Vault Location',
     length: isHigh === true ? 100 : undefined,
-    isHigh,
-    inActivePercentage: 5
+    alternateInactive: true,
+    isHigh
   })
 
   const mediaType = getActiveReferenceData<IntegerReferenceItem>({
