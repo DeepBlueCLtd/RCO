@@ -140,7 +140,7 @@ export const generateVaultLocationForTesting = ({
   id,
   active,
   name
-}: VaultLocationProps = {}): Omit<ActiveReferenceItem, 'id'> => ({
+}: VaultLocationProps = {}): Omit<IntegerReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
   name: name ?? 'Dummy-Vault-Location-1'
@@ -154,7 +154,7 @@ interface ActiveReferenceItemProps {
 export const generateActiveReferenceItemForTesting = (
   name: string,
   { id, active }: ActiveReferenceItemProps = {}
-): Omit<ActiveReferenceItem, 'id'> => ({
+): Omit<IntegerReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
   name

@@ -57,17 +57,18 @@ interface RCOResource {
  * interface becomes more complex, introduce a type-specific interface
  */
 interface ActiveItem {
+  // human-readable name for this entity
   name: string
   // when false, the item should not be included in drop-downs
   // for `create` forms, though it should for `edit` forms
   active: boolean
 }
 
-interface ActiveReferenceItem extends ActiveItem {
+interface IntegerReferenceItem extends ActiveItem {
   id: number
 }
 
-interface ReferenceItem extends ActiveItem {
+interface StringReferenceItem extends ActiveItem {
   id: string
 }
 
@@ -128,13 +129,13 @@ interface Project extends ResourceWithCreation {
   endDate: string
 }
 
-type Department = ReferenceItem
-type Organisation = ReferenceItem
-type ProtectiveMarking = ActiveReferenceItem
-type CatCode = ReferenceItem
-type CatHandle = ReferenceItem
-type CatCave = ReferenceItem
-type VaultLocation = ActiveReferenceItem
+type Department = StringReferenceItem
+type Organisation = StringReferenceItem
+type ProtectiveMarking = IntegerReferenceItem
+type CatCode = StringReferenceItem
+type CatHandle = StringReferenceItem
+type CatCave = StringReferenceItem
+type VaultLocation = IntegerReferenceItem
 
 type Vault = NamedItem
 
@@ -222,7 +223,7 @@ interface RCOStore {
   organisation: Organisation[]
   department: Department[]
   vaultLocation: VaultLocation[]
-  mediaType: ActiveReferenceItem[]
+  mediaType: IntegerReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
   catHandle: CatHandle[]
