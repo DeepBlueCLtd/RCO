@@ -12,8 +12,6 @@ import {
   useGetOne,
   type UpdateParams,
   Count,
-  type DatagridConfigurableProps,
-  DatagridConfigurable,
   useUpdateMany,
   useGetList,
   TopToolbar,
@@ -28,7 +26,6 @@ import ItemList, { BulkActions } from '../items/ItemList'
 import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
-import SourceField from '../../components/SourceField'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import ResourceHistoryModal from '../../components/ResourceHistory'
@@ -199,7 +196,7 @@ export default function DestructionShow(): React.ReactElement {
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Destruction Job
+            Destruction
           </Typography>
         </legend>
         <Box>
@@ -244,6 +241,7 @@ function DestructionItemList(
   const { data } = useGetOne<Destruction>(constants.R_DESTRUCTION, {
     id: Number(id)
   })
+  const preferenceKey = `datagrid-${constants.R_DESTRUCTION}-${id}-items-list`
 
   const destroyed: boolean = useMemo(() => {
     const permission = hasAccess(constants.R_ITEMS, { write: true })
@@ -273,42 +271,10 @@ function DestructionItemList(
       </legend>
       <ItemList
         storeKey={`${constants.R_DESTRUCTION}-${id}-items-list`}
-        filter={{ destruction: id }}>
-        <ItemListDataTable
-          preferenceKey={`datagrid-${constants.R_DESTRUCTION}-${id}-items-list`}
-          bulkActionButtons={bulkActionButtons}
-        />
-      </ItemList>
+        filter={{ destruction: id }}
+        preferenceKey={preferenceKey}
+        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+      />
     </Box>
-  )
-}
-
-function ItemListDataTable(
-  props: DatagridConfigurableProps
-): React.ReactElement {
-  return (
-    <DatagridConfigurable
-      rowClick='show'
-      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
-      omit={props?.omit}
-      preferenceKey={props.preferenceKey}
-      {...props}>
-      <SourceField
-        link='show'
-        source='mediaType'
-        reference={constants.R_MEDIA_TYPE}
-        label='Media type'
-      />
-      <SourceField
-        link='show'
-        source='mediaType'
-        reference={constants.R_MEDIA_TYPE}
-        label='Media type'
-      />
-      <SourceField
-        source='protectiveMarking'
-        reference={constants.R_PROTECTIVE_MARKING}
-      />
-    </DatagridConfigurable>
   )
 }

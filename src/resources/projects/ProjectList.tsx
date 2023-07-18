@@ -30,7 +30,12 @@ const filters = [
     source='createdBy'
     reference={constants.R_USERS}
   />,
-  <DateFilter key='createdAt' source='createdAt' label='Created At' />
+  <DateFilter
+    key='createdAt'
+    source='createdAt'
+    label='Created At'
+    format='iso'
+  />
 ]
 
 export default function ProjectList(): React.ReactElement {
