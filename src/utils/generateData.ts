@@ -105,10 +105,12 @@ export const generateVault = (): Vault[] => {
   const vaults: Vault[] = [
     {
       id: 'Vault',
+      name: 'Vault',
       active: true
     },
     {
       id: 'Legacy',
+      name: 'Legacy',
       active: false
     }
   ]

@@ -72,11 +72,6 @@ interface StringReferenceItem extends ActiveItem {
   id: string
 }
 
-interface NamedItem {
-  id: string
-  active: boolean
-}
-
 /** an entity for which we track instance creation */
 interface ResourceWithCreation extends RCOResource {
   // ISO date value
@@ -137,7 +132,7 @@ type CatHandle = StringReferenceItem
 type CatCave = StringReferenceItem
 type VaultLocation = IntegerReferenceItem
 
-type Vault = NamedItem
+type Vault = StringReferenceItem
 
 interface ItemCode {
   id: number
