@@ -26,7 +26,7 @@ export default function PlatformList(props: Props): React.ReactElement {
   const basePath: string = `/${cName}`
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState<boolean>()
-  const [record, setRecord] = useState<ActiveReferenceItem>()
+  const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const filter = useMemo(
     () =>
@@ -80,7 +80,7 @@ export default function PlatformList(props: Props): React.ReactElement {
         <BooleanField source='active' label='Active Platform' />
         <FunctionField
           label='History'
-          render={(record: ActiveReferenceItem) => {
+          render={(record: IntegerReferenceItem) => {
             return (
               <IconButton
                 onClick={(e) => {

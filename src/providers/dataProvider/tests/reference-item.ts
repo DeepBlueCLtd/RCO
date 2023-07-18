@@ -20,7 +20,7 @@ const referenceItemTests = (
     async () => {
       await checkEmptyAuditList(provider)
       const createdActiveReferenceItem = (
-        await provider.create<ActiveReferenceItem>(resource, {
+        await provider.create<IntegerReferenceItem>(resource, {
           data: dummyDataGenerate(`Dummy-${(resource as string).toUpperCase()}`)
         })
       ).data
@@ -30,7 +30,7 @@ const referenceItemTests = (
     async () => {
       await checkEmptyAuditList(provider)
       const createdActiveReferenceItem = (
-        await provider.create<ActiveReferenceItem>(resource, {
+        await provider.create<IntegerReferenceItem>(resource, {
           data: generateActiveReferenceItemForTesting(
             `Dummy-${(resource as string).toUpperCase()}`
           )
@@ -38,7 +38,7 @@ const referenceItemTests = (
       ).data
       await checkAuditListForFirstEntry(createdActiveReferenceItem)
 
-      await provider.update<ActiveReferenceItem>(resource, {
+      await provider.update<IntegerReferenceItem>(resource, {
         id: createdActiveReferenceItem.id,
         previousData: createdActiveReferenceItem,
         data: {
