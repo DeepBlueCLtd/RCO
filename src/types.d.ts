@@ -58,17 +58,22 @@ interface RCOResource {
  */
 interface ActiveItem {
   name: string
+  // when false, the item should not be included in drop-downs
+  // for `create` forms, though it should for `edit` forms
   active: boolean
 }
 
 interface ActiveReferenceItem extends ActiveItem {
-  // when false, the item should not be included in drop-downs
-  // for `create` forms, though it should for `edit` forms
   id: number
 }
 
 interface ReferenceItem extends ActiveItem {
   id: string
+}
+
+interface NamedItem {
+  id: string
+  active: boolean
 }
 
 /** an entity for which we track instance creation */
@@ -130,6 +135,8 @@ type CatCode = ReferenceItem
 type CatHandle = ReferenceItem
 type CatCave = ReferenceItem
 type VaultLocation = ActiveReferenceItem
+
+type Vault = NamedItem
 
 interface ItemCode {
   id: number
@@ -299,5 +306,3 @@ interface ConfigData extends RCOResource {
    */
   cat_cave: string
 }
-
-type Vault = ReferenceItem

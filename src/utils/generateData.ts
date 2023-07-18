@@ -104,13 +104,11 @@ export const generateProject = (length: number, user: number): Project[] => {
 export const generateVault = (): Vault[] => {
   const vaults: Vault[] = [
     {
-      id: '1',
-      name: 'Vault',
+      id: 'Vault',
       active: true
     },
     {
-      id: '2',
-      name: 'Vault Legacy',
+      id: 'Legacy',
       active: false
     }
   ]
