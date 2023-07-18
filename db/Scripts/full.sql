@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS user (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
        password TEXT NOT NULL,
+       salt TEXT,
        adminRights INTEGER NOT NULL,
        active INTEGER NOT NULL,
        roles TEXT NOT NULL, /*Should be a json array string. Ex.: "['rco-user', 'rco-power-user']" or "['rco-user']" or "[]"*/
@@ -211,7 +212,7 @@ CREATE TABLE IF NOT EXISTS destruction(
 CREATE TABLE IF NOT EXISTS dispatch(
        id INTEGER PRIMARY KEY,
 
-       reference TEXT NOT NULL,
+       reference TEXT,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
