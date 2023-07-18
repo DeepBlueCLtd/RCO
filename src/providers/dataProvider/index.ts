@@ -90,7 +90,11 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     field = field === 'id' ? 'id' : field
     const ordering = order === 'ASC' ? `${field}` : `-${field}`
     params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
-      acc[key] = params.filter[key] ? 1 : 0
+      if (typeof params.filter[key] === 'boolean') {
+        acc[key] = params.filter[key] ? 1 : 0
+      } else {
+        acc[key] = params.filter[key]
+      }
       return acc
     }, {})
 
