@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS destruction(
        createdBy INT NOT NULL,
        finalisedAt TEXT,
        finalisedBy TEXT,
-       remarks TEXT NOT NULL,
+       remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (finalisedBy) REFERENCES user(id)
