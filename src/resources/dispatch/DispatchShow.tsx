@@ -300,6 +300,7 @@ function DispatchedItemList(
         preferenceKey={preferenceKey}
         bulkActionButtons={bulkActionButtons ?? <BulkActions />}
         filtersShown={['q', 'batchId', 'mediaType']}
+        columnsFit={6}
       />
     </Box>
   )

@@ -4,7 +4,6 @@ import {
   SearchInput,
   SelectColumnsButton,
   TextInput,
-  TopToolbar,
   useListContext,
   useRefresh,
   type SortPayload,
@@ -17,7 +16,8 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField
+  TextField,
+  useStore
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -43,6 +43,7 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
@@ -151,15 +152,18 @@ const filters = [
   />
 ]
 
-const ItemActions = ({
-  preferenceKey
-}: SelectColumnsButtonProps): React.ReactElement => {
+interface ItemActionsProps extends SelectColumnsButtonProps {
+  columnsFit?: number
+}
+
+const ItemActions = (props: ItemActionsProps): React.ReactElement => {
+  const { preferenceKey } = props
   return (
-    <TopToolbar>
+    <StyledTopToolbar {...props}>
       <ItemAssetReport storeKey='items-asset-report' />
       <FilterButton />
       <SelectColumnsButton preferenceKey={preferenceKey} />
-    </TopToolbar>
+    </StyledTopToolbar>
   )
 }
 
@@ -341,11 +345,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       </>
     )
   }
-
+  const preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
-  const columnsSelected = JSON.parse(
-    localStorage.getItem('RaStore.preferences.item.datagrid.columns') ?? ''
-  )
+  const [columnsSelected] = useStore(`preferences.${preferenceKey}.columns`)
   const bulkActionsStyle = {
     display: 'flex',
     marginLeft: 2
@@ -468,6 +470,7 @@ interface ItemListType extends Omit<ListProps, 'children'> {
   children?: React.ReactElement
   datagridConfigurableProps?: DatagridConfigurableProps
   filtersShown?: string[]
+  columnsFit?: number
 }
 
 export default function ItemList(
@@ -483,17 +486,25 @@ export default function ItemList(
     bulkActionButtons,
     ...rest
   } = props ?? {}
+
+  const sx = {
+    '& .MuiToolbar-root': {
+      '& > form': {
+        flex: 1
+      }
+    },
+    overflow: 'hidden'
+  }
+
   return (
     <List
+      sx={sx}
       hasCreate={false}
-      actions={<ItemActions preferenceKey={preferenceKey} />}
+      actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       perPage={100}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
-      sx={{
-        overflow: 'hidden'
-      }}
       filters={
         !filtersShown
           ? filters
