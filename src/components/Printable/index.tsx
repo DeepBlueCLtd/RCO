@@ -4,6 +4,7 @@ import FlexBox from '../FlexBox'
 
 interface Props {
   children?: React.ReactElement | React.ReactElement[]
+  onPrint?: () => void
 }
 
 const style = {
@@ -20,13 +21,16 @@ const buttonSx = {
 export default function Printable(
   props: Props & ModalProps
 ): React.ReactElement {
-  const { children, ...rest } = props
+  const { children, onPrint, ...rest } = props
 
   const handleClose = (): void => {
     rest?.onClose?.({}, 'escapeKeyDown')
   }
 
   const handlePrint = (): void => {
+    if (onPrint) {
+      onPrint()
+    }
     window.print()
   }
 

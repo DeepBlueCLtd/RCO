@@ -4,14 +4,15 @@ import ReportData from './ReportData'
 interface Props {
   open: boolean
   handleOpen: (name: DestructionModal) => void
+  onPrint?: () => void
 }
 
 export default function DispatchReport(props: Props): React.ReactElement {
-  const { open, handleOpen } = props
+  const { handleOpen, ...rest } = props
 
   return (
     <Printable
-      open={open}
+      {...rest}
       onClose={() => {
         handleOpen('')
       }}>
