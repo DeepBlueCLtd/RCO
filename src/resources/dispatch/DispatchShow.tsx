@@ -40,7 +40,7 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { handleOpen } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
-  const dispatched = typeof record.dispatchedAt !== 'undefined'
+  const dispatched = typeof record?.dispatchedAt !== 'undefined'
 
   return (
     <>
@@ -192,7 +192,7 @@ export default function DispatchShow(): React.ReactElement {
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData = {
       type: AuditType.EDIT,
-      activityDetail: 'add item to dispatch',
+      activityDetail: `Item in completed dispatch ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId
@@ -200,13 +200,23 @@ export default function DispatchShow(): React.ReactElement {
     await audit(audiData)
     await audit({
       ...audiData,
-      resource: constants.R_DISPATCH
+      activityDetail: 'Dispatch Sent',
+      resource: constants.R_DISPATCH,
+      dataId: parseInt(id as string)
     })
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
     const ids = itemsAdded.map((item) => item.id)
     await update(constants.R_DISPATCH, data)
+    const audiData = {
+      type: AuditType.EDIT,
+      activityDetail: 'Dispatch Sent',
+      securityRelated: false,
+      resource: constants.R_DISPATCH,
+      dataId: parseInt(id as string)
+    }
+    await audit(audiData)
     await updateMany(constants.R_ITEMS, {
       ids,
       data: {
