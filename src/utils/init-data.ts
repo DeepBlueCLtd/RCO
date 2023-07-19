@@ -140,30 +140,30 @@ const loadDefaultData = async (
   const project = generateProject(isHigh === true ? 60 : 10, user)
   const vault = generateVault()
 
-  const organisation = getActiveReferenceData<ReferenceItem>({
+  const organisation = getActiveReferenceData<StringReferenceItem>({
     nameVal: 'Organisation',
     resource: constants.R_ORGANISATION
   })
 
-  const department = getActiveReferenceData<ReferenceItem>({
+  const department = getActiveReferenceData<StringReferenceItem>({
     nameVal: 'Department',
     resource: constants.R_DEPARTMENT
   })
 
-  const vaultLocation = getActiveReferenceData<ActiveReferenceItem>({
+  const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Vault Location',
-    length: isHigh === true ? 100 : undefined,
-    isHigh,
-    inActivePercentage: 5
+    length: isHigh === true ? 200 : 50,
+    alternateInactive: true,
+    isHigh
   })
 
-  const mediaType = getActiveReferenceData<ActiveReferenceItem>({
+  const mediaType = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Media',
     alternateInactive: true,
     length: 30
   })
 
-  const protectiveMarking = getActiveReferenceData<ActiveReferenceItem>({
+  const protectiveMarking = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Protective Marking',
     alternateInactive: true
   })
@@ -174,17 +174,17 @@ const loadDefaultData = async (
     length: 8
   }
 
-  const catCode = getActiveReferenceData<ReferenceItem>({
+  const catCode = getActiveReferenceData<StringReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Code',
     resource: constants.R_CAT_CODE
   })
-  const catHandle = getActiveReferenceData<ReferenceItem>({
+  const catHandle = getActiveReferenceData<StringReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Handle',
     resource: constants.R_CAT_HANDLE
   })
-  const catCave = getActiveReferenceData<ReferenceItem>({
+  const catCave = getActiveReferenceData<StringReferenceItem>({
     ...protectionFieldParams,
     nameVal: 'Cat Cave',
     resource: constants.R_CAT_CAVE
@@ -197,7 +197,6 @@ const loadDefaultData = async (
     organisation.length,
     protectiveMarking.length,
     user,
-    vault.length,
     isHigh
   )
 

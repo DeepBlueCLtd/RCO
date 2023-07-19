@@ -24,7 +24,7 @@ export default function ReferenceDataList({
 }: PropType): React.ReactElement {
   const cName: string = name
   const [open, setOpen] = useState<boolean>()
-  const [record, setRecord] = useState<ActiveReferenceItem>()
+  const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const { hasAccess } = useCanAccess()
 
@@ -67,7 +67,7 @@ export default function ReferenceDataList({
         {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}
         <FunctionField
           label='History'
-          render={(record: ActiveReferenceItem) => {
+          render={(record: IntegerReferenceItem) => {
             return (
               <IconButton
                 onClick={(e) => {

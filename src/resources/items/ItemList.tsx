@@ -17,7 +17,8 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField
+  TextField,
+  useStore
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -205,10 +206,11 @@ type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
 
 interface BulkActionsProps {
   buttons?: PartialRecord<ModalOpenType, boolean>
+  preferenceKey?: string
 }
 
 export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
-  const { buttons } = props
+  const { buttons, preferenceKey } = props
 
   const {
     location = true,
@@ -353,8 +355,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
-  const columnsSelected = JSON.parse(
-    localStorage.getItem('RaStore.preferences.item.datagrid.columns') ?? ''
+  const [columnsSelected = []] = useStore(
+    `preferences.${preferenceKey}.columns`
   )
   const bulkActionsStyle = {
     display: 'flex',
@@ -365,7 +367,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     <Box
       sx={[
         bulkActionsStyle,
-        columnsSelected?.length > 9 ? { width: '100vw' } : {}
+        (columnsSelected?.length ?? 0) > 9 ? { width: '100vw' } : {}
       ]}>
       <Box
         sx={{
@@ -519,7 +521,9 @@ export default function ItemList(
       />
       <DatagridConfigurableWithShow
         resource={constants.R_ITEMS}
-        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+        bulkActionButtons={
+          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+        }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
         <TextField source='item_number' label='Reference' />

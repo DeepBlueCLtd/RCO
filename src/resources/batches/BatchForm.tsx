@@ -43,7 +43,7 @@ const schema = yup.object({
         return dayjs(value).diff(this.parent.startDate) > 0
       }
     ),
-  vault: yup.number()
+  vault: yup.string()
 })
 
 const sx = { width: '100%' }
@@ -55,7 +55,7 @@ interface Props {
   active?: boolean
 }
 
-export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
+export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
   const { source, reference, inputProps = {}, active } = props

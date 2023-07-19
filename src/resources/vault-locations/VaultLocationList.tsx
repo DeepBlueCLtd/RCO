@@ -11,7 +11,7 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 export default function VaultLocationList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>()
   const [openMusterList, setOpenMusterList] = useState(false)
-  const [record, setRecord] = useState<ActiveReferenceItem>()
+  const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const filter = useMemo(
     () =>
@@ -58,7 +58,7 @@ export default function VaultLocationList(): React.ReactElement {
         />
         <FunctionField
           label='History'
-          render={(record: ActiveReferenceItem) => {
+          render={(record: IntegerReferenceItem) => {
             return (
               <IconButton
                 onClick={(e) => {
