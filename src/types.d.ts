@@ -132,6 +132,8 @@ type CatHandle = StringReferenceItem
 type CatCave = StringReferenceItem
 type VaultLocation = IntegerReferenceItem
 
+type Vault = StringReferenceItem
+
 interface ItemCode {
   id: number
   item: number
@@ -241,6 +243,7 @@ interface Destruction {
   finalisedAt?: string
   finalisedBy?: User['id']
   remarks: string
+  reportPrintedAt?: string
 }
 
 interface ActivityType {
@@ -267,6 +270,7 @@ interface Dispatch {
   toAddress: Address['id']
   receiptReceived?: string
   lastHastenerSent?: string
+  reportPrintedAt?: string
 }
 
 /** per instance config data. It is just intended to be one row deep */
@@ -300,5 +304,3 @@ interface ConfigData extends RCOResource {
    */
   cat_cave: string
 }
-
-type Vault = IntegerReferenceItem
