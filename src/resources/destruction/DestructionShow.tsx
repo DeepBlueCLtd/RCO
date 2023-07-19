@@ -259,6 +259,7 @@ function DestructionItemList(
         loan: false,
         destroyRemove: true
       }}
+      preferenceKey={preferenceKey}
     />
   )
 
@@ -273,7 +274,9 @@ function DestructionItemList(
         storeKey={`${constants.R_DESTRUCTION}-${id}-items-list`}
         filter={{ destruction: id }}
         preferenceKey={preferenceKey}
-        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+        bulkActionButtons={
+          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+        }
       />
     </Box>
   )

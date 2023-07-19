@@ -118,7 +118,7 @@ export default function BatchShow(): React.ReactElement {
             empty={false}
             filter={{ batchId: id }}
             actions={<ItemActions preferenceKey={preferenceKey} />}
-            bulkActionButtons={<BulkActions />}
+            bulkActionButtons={<BulkActions preferenceKey={preferenceKey} />}
             preferenceKey={preferenceKey}
             disableSyncWithLocation
           />

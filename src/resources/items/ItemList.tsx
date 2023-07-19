@@ -16,8 +16,7 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField,
-  useStore
+  TextField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -45,6 +44,7 @@ import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
+import useOverflow from '../../hooks/useOverflow'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -347,20 +347,14 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
-  const [columnsSelected = []] = useStore(
-    `preferences.${preferenceKey}.columns`
-  )
+  const { overflow } = useOverflow('#root', preferenceKey)
   const bulkActionsStyle = {
     display: 'flex',
     marginLeft: 2
   }
 
   return (
-    <Box
-      sx={[
-        bulkActionsStyle,
-        (columnsSelected?.length ?? 0) > 9 ? { width: '100vw' } : {}
-      ]}>
+    <Box sx={[bulkActionsStyle, overflow ? { width: '100vw' } : {}]}>
       <Box
         sx={{
           display: 'flex',
