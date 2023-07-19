@@ -1,5 +1,11 @@
 import React from 'react'
-import { BooleanInput, SimpleForm, TextInput } from 'react-admin'
+import {
+  BooleanInput,
+  SaveButton,
+  SimpleForm,
+  TextInput,
+  Toolbar
+} from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
@@ -21,14 +27,24 @@ export default function ReferenceDataForm(
 
   const isNotActive = (name: string): boolean => name === constants.R_AUDIT
 
-  const Toolbar = (): React.ReactElement => {
+  const ReferenceToolbar = ({
+    isEdit
+  }: {
+    isEdit?: boolean
+  }): React.ReactElement => {
     const createRecord = useCustomid()
-    return <EditToolBar type='button' onClick={createRecord} />
+    return isEdit ? (
+      <Toolbar>
+        <SaveButton />
+      </Toolbar>
+    ) : (
+      <EditToolBar type='button' onClick={createRecord} />
+    )
   }
 
   return (
     <SimpleForm
-      toolbar={<Toolbar />}
+      toolbar={<ReferenceToolbar isEdit={isEdit} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
