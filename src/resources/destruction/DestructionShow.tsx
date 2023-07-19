@@ -114,7 +114,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
         <Button
           variant='contained'
           label='Destroy'
-          disabled={destroyed}
+          disabled={destroyed || !record.reportPrinted}
           onClick={handleDestroy}
         />
       </FlexBox>
@@ -149,6 +149,7 @@ export default function DestructionShow(): React.ReactElement {
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
     filter: { destruction: id }
   })
+  const { data: record } = useGetOne(constants.R_DESTRUCTION, { id })
 
   const handleOpen = (value: DestructionModal): void => {
     setOpen(value)
@@ -191,6 +192,18 @@ export default function DestructionShow(): React.ReactElement {
     notify('Element destroyed', { type: 'success' })
   }
 
+  const saveReportPrinted = (): void => {
+    update(constants.R_DESTRUCTION, {
+      id: record.id,
+      previousData: record,
+      data: {
+        reportPrinted: nowDate()
+      }
+    })
+      .then(console.log)
+      .catch(console.error)
+  }
+
   return (
     <FlexBox maxWidth={'100vw'}>
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
@@ -200,7 +213,11 @@ export default function DestructionShow(): React.ReactElement {
           </Typography>
         </legend>
         <Box>
-          <DestructionReport open={open === 'report'} handleOpen={handleOpen} />
+          <DestructionReport
+            onPrint={saveReportPrinted}
+            open={open === 'report'}
+            handleOpen={handleOpen}
+          />
           <ResourceHistoryModal
             filter={{
               resource: constants.R_DESTRUCTION,

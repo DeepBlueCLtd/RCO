@@ -134,19 +134,19 @@ const Footer = (props: FooterProps): React.ReactElement => {
             onClick={sendHastener as any}
           />
         )}
+        <Button
+          variant='outlined'
+          label='Print Receipt'
+          onClick={() => {
+            handleOpen('dispatch')
+          }}
+        />
         {!dispatched && (
           <>
             <Button
-              variant='outlined'
-              label='Print Receipt'
-              onClick={() => {
-                handleOpen('dispatch')
-              }}
-            />
-            <Button
               variant='contained'
               label='Dispatch'
-              disabled={dispatched}
+              disabled={!record.reportPrinted}
               onClick={handleDispatch}
             />
           </>
@@ -183,6 +183,7 @@ export default function DispatchShow(): React.ReactElement {
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
     filter: { dispatchJob: id }
   })
+  const { data: record } = useGetOne(constants.R_DISPATCH, { id })
 
   const handleOpen = (name: DestructionModal): void => {
     setOpen(name)
@@ -216,6 +217,18 @@ export default function DispatchShow(): React.ReactElement {
     notify('Element dispatched', { type: 'success' })
   }
 
+  const saveReportPrinted = (): void => {
+    update(constants.R_DISPATCH, {
+      id: record.id,
+      previousData: record,
+      data: {
+        reportPrinted: nowDate()
+      }
+    })
+      .then(console.log)
+      .catch(console.error)
+  }
+
   return (
     <FlexBox alignItems={'flex-start'}>
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
@@ -225,7 +238,11 @@ export default function DispatchShow(): React.ReactElement {
           </Typography>
         </legend>
         <Box>
-          <DispatchReport open={open === 'dispatch'} handleOpen={handleOpen} />
+          <DispatchReport
+            onPrint={saveReportPrinted}
+            open={open === 'dispatch'}
+            handleOpen={handleOpen}
+          />
           <HastenerReport open={open === 'hastener'} handleOpen={handleOpen} />
           <ResourceHistoryModal
             filter={{
