@@ -493,9 +493,6 @@ export default function ItemList(
       filter={props?.filter ?? options?.filter}
       perPage={100}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
-      sx={{
-        overflow: 'hidden'
-      }}
       filters={
         !filtersShown
           ? filters
