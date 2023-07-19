@@ -197,7 +197,6 @@ const loadDefaultData = async (
     organisation.length,
     protectiveMarking.length,
     user,
-    vault.length,
     isHigh
   )
 

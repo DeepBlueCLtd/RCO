@@ -132,6 +132,8 @@ type CatHandle = StringReferenceItem
 type CatCave = StringReferenceItem
 type VaultLocation = IntegerReferenceItem
 
+type Vault = StringReferenceItem
+
 interface ItemCode {
   id: number
   item: number
@@ -300,5 +302,3 @@ interface ConfigData extends RCOResource {
    */
   cat_cave: string
 }
-
-type Vault = IntegerReferenceItem
