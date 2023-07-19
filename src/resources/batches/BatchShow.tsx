@@ -21,6 +21,7 @@ import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { History } from '@mui/icons-material'
 import BatchForm from './BatchForm'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -50,20 +51,22 @@ const ItemActions = ({
   const batchId: string = id
 
   return (
-    <TopToolbar>
+    <StyledTopToolbar preferenceKey={preferenceKey}>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <CreateButton
           label='ADD ITEM'
           to={`/${constants.R_ITEMS}/create?batch=${batchId}`}
         />
-      ) : null}
+      ) : (
+        <></>
+      )}
       <ItemAssetReport
         storeKey='batch-items-report'
         filterDefaultValues={{ batchId }}
       />
       <FilterButton />
       <SelectColumnsButton preferenceKey={preferenceKey} />
-    </TopToolbar>
+    </StyledTopToolbar>
   )
 }
 
@@ -115,7 +118,7 @@ export default function BatchShow(): React.ReactElement {
             empty={false}
             filter={{ batchId: id }}
             actions={<ItemActions preferenceKey={preferenceKey} />}
-            bulkActionButtons={<BulkActions />}
+            bulkActionButtons={<BulkActions preferenceKey={preferenceKey} />}
             preferenceKey={preferenceKey}
             disableSyncWithLocation
           />
