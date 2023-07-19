@@ -43,7 +43,7 @@ const schema = yup.object({
         return dayjs(value).diff(this.parent.startDate) > 0
       }
     ),
-  vault: yup.number()
+  vault: yup.string()
 })
 
 const sx = { width: '100%' }
