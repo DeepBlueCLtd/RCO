@@ -50,7 +50,7 @@ export default function ChangeLocation(
 
   const vaultLocationValue: number | string = watch('vaultLocation')
 
-  const [vaultLocation, setVaultLocation] = useState<ActiveReferenceItem[]>([])
+  const [vaultLocation, setVaultLocation] = useState<IntegerReferenceItem[]>([])
   const dataProvider = useDataProvider()
 
   async function onSubmit(values: FormState): Promise<void> {
@@ -68,7 +68,7 @@ export default function ChangeLocation(
 
   useEffect(() => {
     dataProvider
-      .getList<ActiveReferenceItem>(constants.R_VAULT_LOCATION, {
+      .getList<IntegerReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: {}

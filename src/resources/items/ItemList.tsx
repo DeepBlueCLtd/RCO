@@ -195,10 +195,14 @@ type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
 
 interface BulkActionsProps {
   buttons?: PartialRecord<ModalOpenType, boolean>
+  preferenceKey?: string
 }
 
 export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
-  const { buttons } = props
+  const {
+    buttons,
+    preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`
+  } = props
 
   const {
     location = true,
@@ -341,9 +345,11 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       </>
     )
   }
-  const preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`
+
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
-  const [columnsSelected] = useStore(`preferences.${preferenceKey}.columns`)
+  const [columnsSelected = []] = useStore(
+    `preferences.${preferenceKey}.columns`
+  )
   const bulkActionsStyle = {
     display: 'flex',
     marginLeft: 2
@@ -353,7 +359,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     <Box
       sx={[
         bulkActionsStyle,
-        columnsSelected?.length > 9 ? { width: '100vw' } : {}
+        (columnsSelected?.length ?? 0) > 9 ? { width: '100vw' } : {}
       ]}>
       <Box
         sx={{
@@ -515,7 +521,9 @@ export default function ItemList(
       />
       <DatagridConfigurableWithShow
         resource={constants.R_ITEMS}
-        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+        bulkActionButtons={
+          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+        }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
         <TextField source='item_number' label='Reference' />
