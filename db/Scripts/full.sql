@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS audit (
 
        user INTEGER NOT NULL,
        resource TEXT,
-       data INTEGER,
+       dataId INTEGER,
        activityType INTEGER,
        dateTime TEXT NOT NULL,
        label TEXT NOT NULL,
