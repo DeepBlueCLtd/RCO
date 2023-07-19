@@ -146,7 +146,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
             <Button
               variant='contained'
               label='Dispatch'
-              disabled={!record.reportPrinted}
+              disabled={!record.reportPrintedAt}
               onClick={handleDispatch}
             />
           </>
@@ -222,7 +222,7 @@ export default function DispatchShow(): React.ReactElement {
       id: record.id,
       previousData: record,
       data: {
-        reportPrinted: nowDate()
+        reportPrintedAt: nowDate()
       }
     })
       .then(console.log)

@@ -114,7 +114,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
         <Button
           variant='contained'
           label='Destroy'
-          disabled={destroyed || !record.reportPrinted}
+          disabled={destroyed || !record.reportPrintedAt}
           onClick={handleDestroy}
         />
       </FlexBox>
@@ -197,7 +197,7 @@ export default function DestructionShow(): React.ReactElement {
       id: record.id,
       previousData: record,
       data: {
-        reportPrinted: nowDate()
+        reportPrintedAt: nowDate()
       }
     })
       .then(console.log)
