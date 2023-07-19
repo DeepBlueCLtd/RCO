@@ -1,10 +1,10 @@
 import React from 'react'
 import {
   DatagridConfigurable,
-  ShowButton,
   type DatagridConfigurableProps,
   useRecordContext,
-  useRedirect
+  useRedirect,
+  useCreatePath
 } from 'react-admin'
 import useRowClick from '../hooks/useRowClick'
 import { type ResourceTypes } from '../constants'
@@ -17,13 +17,14 @@ export default function DatagridConfigurableWithShow(
   const { children, resource, ...rest } = props
 
   const handleRowClick = useRowClick(resource)
+  const createPath = useCreatePath()
 
   const PreviewButton = (): React.ReactElement => {
     const { id } = useRecordContext()
     const redirect = useRedirect()
 
     const handleClick = (): void => {
-      const path = `/${resource}/${id}/show`
+      const path = createPath({ resource, type: 'show', id })
       redirect(path)
     }
 
@@ -38,7 +39,7 @@ export default function DatagridConfigurableWithShow(
     <DatagridConfigurable
       rowClick={(id) => handleRowClick(id as number)}
       {...rest}>
-      <ShowButton component={PreviewButton} />
+      <PreviewButton />
       {children}
     </DatagridConfigurable>
   )
