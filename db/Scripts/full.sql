@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS catHandle(
 -- Meta table - vault
 CREATE TABLE IF NOT EXISTS vault(
        id TEXT NOT NULL PRIMARY KEY,
+       name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
@@ -119,7 +120,7 @@ CREATE TABLE IF NOT EXISTS audit (
 
        user INTEGER NOT NULL,
        resource TEXT,
-       data INTEGER,
+       dataId INTEGER,
        activityType INTEGER,
        dateTime TEXT NOT NULL,
        label TEXT NOT NULL,

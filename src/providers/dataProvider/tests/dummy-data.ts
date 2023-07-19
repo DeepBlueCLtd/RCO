@@ -31,7 +31,7 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
     protectiveMarking: 1,
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1',
-    vault: 1
+    vault: 'VAULT'
   }
 }
 
