@@ -243,6 +243,7 @@ interface Destruction {
   finalisedAt?: string
   finalisedBy?: User['id']
   remarks: string
+  reportPrintedAt?: string
 }
 
 interface ActivityType {
@@ -269,6 +270,7 @@ interface Dispatch {
   toAddress: Address['id']
   receiptReceived?: string
   lastHastenerSent?: string
+  reportPrintedAt?: string
 }
 
 /** per instance config data. It is just intended to be one row deep */
