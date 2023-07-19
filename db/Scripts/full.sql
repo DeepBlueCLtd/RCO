@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS catHandle(
 -- Meta table - vault
 CREATE TABLE IF NOT EXISTS vault(
        id TEXT NOT NULL PRIMARY KEY,
+       name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
