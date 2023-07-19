@@ -258,14 +258,15 @@ const TablesData = (): React.ReactElement => {
 interface Props {
   open: boolean
   handleOpen: (open: DestructionModal) => void
+  onPrint?: () => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
-  const { open, handleOpen } = props
+  const { handleOpen, ...rest } = props
 
   return (
     <Printable
-      open={open}
+      {...rest}
       onClose={() => {
         handleOpen('')
       }}>
