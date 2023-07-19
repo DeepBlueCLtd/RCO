@@ -152,11 +152,7 @@ const filters = [
   />
 ]
 
-interface ItemActionsProps extends SelectColumnsButtonProps {
-  columnsFit?: number
-}
-
-const ItemActions = (props: ItemActionsProps): React.ReactElement => {
+const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
   const { preferenceKey } = props
   return (
     <StyledTopToolbar {...props}>
@@ -470,7 +466,6 @@ interface ItemListType extends Omit<ListProps, 'children'> {
   children?: React.ReactElement
   datagridConfigurableProps?: DatagridConfigurableProps
   filtersShown?: string[]
-  columnsFit?: number
 }
 
 export default function ItemList(

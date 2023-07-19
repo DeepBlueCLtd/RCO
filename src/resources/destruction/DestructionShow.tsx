@@ -274,7 +274,6 @@ function DestructionItemList(
         filter={{ destruction: id }}
         preferenceKey={preferenceKey}
         bulkActionButtons={bulkActionButtons ?? <BulkActions />}
-        columnsFit={5}
       />
     </Box>
   )
