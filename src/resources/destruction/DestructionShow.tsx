@@ -184,6 +184,7 @@ export default function DestructionShow(): React.ReactElement {
         return (
           ids.includes(id) &&
           typeof loanedTo === 'undefined' &&
+          loanedTo !== null &&
           typeof loanedDate === 'undefined' &&
           typeof destructionDate === 'undefined'
         )

@@ -38,7 +38,6 @@ export const customMethods = (
     },
     returnItems: async (items: Array<Item['id']>) => {
       const userById: Record<number, User> = {}
-
       const { data: itemsData } = await provider.getMany<Item>(R_ITEMS, {
         ids: items
       })
@@ -64,12 +63,11 @@ export const customMethods = (
           })
         }
       })
-
       await provider.updateMany(R_ITEMS, {
         ids: items,
         data: {
-          loanedTo: undefined,
-          loanedDate: undefined
+          loanedTo: null,
+          loanedDate: null
         }
       })
 

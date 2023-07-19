@@ -76,6 +76,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
           return (
             ids.includes(id) &&
             typeof loanedTo === 'undefined' &&
+            loanedTo !== null &&
             typeof loanedDate === 'undefined' &&
             typeof destructionDate === 'undefined'
           )

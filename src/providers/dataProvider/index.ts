@@ -140,6 +140,12 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       let { data } = response.data
       data = data[0]
 
+      if (resource === constants.R_USERS) {
+        const trimmedString = data.roles.slice(1, -1).trim()
+        const stringWithoutQuotes = trimmedString.replace(/['"]+/g, '').trim()
+        data.roles = stringWithoutQuotes.split(',')
+      }
+
       return { data }
     })
   },
