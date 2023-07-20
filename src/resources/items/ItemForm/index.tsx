@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 import { DateTime } from 'luxon'
+import RemarksBox from '../../../components/RemarksBox'
 
 const schema = yup.object({
   mediaType: yup.number().required(),
@@ -34,7 +35,8 @@ const schema = yup.object({
     ),
   batchId: yup.number().required(),
   vaultLocation: yup.number().required(),
-  protectiveMarking: yup.number().required()
+  protectiveMarking: yup.number().required(),
+  editRemarks: yup.string().required()
 })
 
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
@@ -47,6 +49,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const dataProvider = useDataProvider()
   const [itemId, setItemId] = useState<Item['id']>()
   const refresh = useRefresh()
+  const [openRemarks, setOpenRemarks] = useState<boolean>(false)
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
@@ -92,6 +95,11 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
   return (
     <Box>
+      <RemarksBox
+        title='Batch Item editing remarks'
+        open={openRemarks}
+        onCancel={() => { setOpenRemarks(false) }}
+      />
       {batch != null && (
         <TextField
           disabled
@@ -125,6 +133,10 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
             onSuccess={({ id }: { id: number }) => {
               setItemId(id)
               refresh()
+            }}
+            onSave={(event: React.SyntheticEvent) => {
+              event.preventDefault()
+              setOpenRemarks(true)
             }}
           />
         }>

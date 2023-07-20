@@ -23,10 +23,11 @@ export const emitter = mitt<Events>()
 
 interface Props {
   onSuccess: (data: any) => void
+  onSave: (data: any) => void
 }
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
-  const { onSuccess } = props
+  const { onSuccess, onSave } = props
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
@@ -60,6 +61,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           mutationOptions={{
             onSuccess
           }}
+          onClick={onSave}
         />
       </Toolbar>
     )

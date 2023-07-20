@@ -65,12 +65,21 @@ export const auditForUpdatedChanges = async (
   audit: AuditFunctionType,
   subject?: User['id']
 ): Promise<UpdateParams<RCOResource>> => {
+  let remarksText = null
+  if (Object.keys(record?.data).includes('editRemarks')) {
+    const { editRemarks, id, ...rest } = record.data as UpdateParams & {
+      editRemarks: ''
+    }
+    remarksText = editRemarks
+    record.data = { id: id as number, ...rest }
+  }
+  const Remarks = remarksText ? `Remarks: ${remarksText}` : ''
   const difference = getDifference(record.data, record.previousData)
   const dataId =
     record.previousData.id !== undefined ? record.previousData.id : null
   await audit({
     ...auditData,
-    activityDetail: `Previous values: ${JSON.stringify(difference)}`,
+    activityDetail: `Previous values: ${JSON.stringify(difference)}${Remarks}`,
     resource,
     dataId,
     subject
