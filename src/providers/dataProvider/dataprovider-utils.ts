@@ -11,6 +11,7 @@ import {
 } from 'react-admin'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import { isNumber } from '../../utils/number'
+import * as constants from '../../constants'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -66,6 +67,12 @@ export const auditForUpdatedChanges = async (
   subject?: User['id']
 ): Promise<UpdateParams<RCOResource>> => {
   const difference = getDifference(record.data, record.previousData)
+  const isItemDispatched =
+    resource === constants.R_DISPATCH &&
+    Object.keys(difference).includes('dispatchedAt')
+  if (isItemDispatched) {
+    return record
+  }
   const dataId =
     record.previousData.id !== undefined ? record.previousData.id : null
   await audit({

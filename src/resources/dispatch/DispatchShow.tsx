@@ -192,23 +192,15 @@ export default function DispatchShow(): React.ReactElement {
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData = {
       type: AuditType.EDIT,
-      activityDetail: `Item in completed dispatch ${record.reference}`,
+      activityDetail: `Dispatch Sent in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId
     }
     await audit(audiData)
-    await audit({
-      ...audiData,
-      activityDetail: 'Dispatch Sent',
-      resource: constants.R_DISPATCH,
-      dataId: parseInt(id as string)
-    })
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
-    const ids = itemsAdded.map((item) => item.id)
-    await update(constants.R_DISPATCH, data)
     const audiData = {
       type: AuditType.EDIT,
       activityDetail: 'Dispatch Sent',
@@ -217,6 +209,8 @@ export default function DispatchShow(): React.ReactElement {
       dataId: parseInt(id as string)
     }
     await audit(audiData)
+    const ids = itemsAdded.map((item) => item.id)
+    await update(constants.R_DISPATCH, data)
     await updateMany(constants.R_ITEMS, {
       ids,
       data: {
