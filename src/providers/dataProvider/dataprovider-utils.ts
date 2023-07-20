@@ -65,21 +65,22 @@ export const auditForUpdatedChanges = async (
   audit: AuditFunctionType,
   subject?: User['id']
 ): Promise<UpdateParams<RCOResource>> => {
-  let remarksText = null
-  if (Object.keys(record?.data).includes('editRemarks')) {
-    const { editRemarks, id, ...rest } = record.data as UpdateParams & {
-      editRemarks: ''
-    }
-    remarksText = editRemarks
-    record.data = { id: id as number, ...rest }
+  // @ts-expect-error: property not found in type
+  const { editRemarks, ...rest } = record.data
+  if (editRemarks) {
+    record.data = rest
   }
-  const Remarks = remarksText ? `Remarks: ${remarksText}` : ''
   const difference = getDifference(record.data, record.previousData)
+
+  const activityDetail = `Previous values: ${JSON.stringify(difference)}${
+    editRemarks ? `, Remarks: ${editRemarks}` : ''
+  }`
+
   const dataId =
     record.previousData.id !== undefined ? record.previousData.id : null
   await audit({
     ...auditData,
-    activityDetail: `Previous values: ${JSON.stringify(difference)}${Remarks}`,
+    activityDetail,
     resource,
     dataId,
     subject

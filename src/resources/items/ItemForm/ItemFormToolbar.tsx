@@ -3,9 +3,11 @@ import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
+import RemarksBox from '../../../components/RemarksBox'
+import { Button } from '@mui/material'
 
 // eslint-disable-next-line
 type Events = {
@@ -21,16 +23,51 @@ let clone = false
 let save = false
 export const emitter = mitt<Events>()
 
+interface ActionsProps {
+  onSuccess: (data: any) => void
+  setOpenRemarks: React.Dispatch<boolean>
+}
+
+const Actions = (props: ActionsProps): React.ReactElement => {
+  const { onSuccess, setOpenRemarks } = props
+
+  const onSuccessWithRemarksClose = (data: any): void => {
+    onSuccess(data)
+    setOpenRemarks(false)
+  }
+
+  return (
+    <FlexBox>
+      <SaveButton
+        label='Save'
+        type='button'
+        transform={transformProtectionValues}
+        mutationOptions={{
+          onSuccess: onSuccessWithRemarksClose
+        }}
+      />
+      <Button
+        color='secondary'
+        variant='outlined'
+        onClick={() => {
+          setOpenRemarks(false)
+        }}>
+        Cancel
+      </Button>
+    </FlexBox>
+  )
+}
+
 interface Props {
   onSuccess: (data: any) => void
-  onSave: (data: any) => void
 }
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
-  const { onSuccess, onSave } = props
+  const { onSuccess } = props
   const { reset } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
+  const [openRemarks, setOpenRemarks] = useState(false)
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -51,18 +88,22 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     }
   }, [])
 
+  const onSave = (event: React.SyntheticEvent): void => {
+    event.preventDefault()
+    setOpenRemarks(true)
+  }
+
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
-        <SaveButton
-          label='Save'
-          type='button'
-          transform={transformProtectionValues}
-          mutationOptions={{
-            onSuccess
-          }}
-          onClick={onSave}
+        <RemarksBox
+          title='Batch Item editing remarks'
+          open={openRemarks}
+          actions={
+            <Actions onSuccess={onSuccess} setOpenRemarks={setOpenRemarks} />
+          }
         />
+        <SaveButton label='Save' type='button' onClick={onSave} />
       </Toolbar>
     )
   }

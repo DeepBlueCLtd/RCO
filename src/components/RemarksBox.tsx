@@ -1,10 +1,11 @@
-import { Box, Button, Modal, TextField, Typography } from '@mui/material'
-import FlexBox from './FlexBox'
+import { Box, Modal, Typography } from '@mui/material'
+import React from 'react'
+import { TextInput } from 'react-admin'
 
 interface Props {
   title: string
   open: boolean
-  onCancel: () => void
+  actions?: React.ReactElement
 }
 
 const style = {
@@ -20,33 +21,25 @@ const style = {
 }
 
 export default function RemarksBox(props: Props): React.ReactElement {
-  const { title, onCancel, ...rest } = props
+  const { title, actions, open } = props
 
   return (
-    <Modal {...rest}>
+    <Modal open={open}>
       <Box sx={style}>
         <Typography fontSize={20} fontWeight={500}>
           {title}
         </Typography>
-        <TextField
-          id='outlined-basic'
-          label='Remarks here'
-          variant='outlined'
-          //   {...register('remarks')}
+        <TextInput
           multiline
+          variant='outlined'
+          placeholder='Remarks here'
+          source='editRemarks'
           rows={4}
           sx={{
             width: '100%'
           }}
         />
-        <FlexBox justifyContent='space-around' mt={2}>
-          <Button variant='contained' disabled={false}>
-            Save
-          </Button>
-          <Button color='secondary' variant='outlined' onClick={onCancel}>
-            Cancel
-          </Button>
-        </FlexBox>
+        {actions}
       </Box>
     </Modal>
   )
