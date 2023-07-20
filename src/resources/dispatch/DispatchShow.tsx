@@ -286,6 +286,8 @@ function DispatchedItemList(
     return !permission
   }, [data])
 
+  const preferenceKey = `datagrid-${constants.R_DISPATCH}-${id}-items-list`
+
   const bulkActionButtons: false | React.ReactElement = destroyed ? (
     false
   ) : (
@@ -298,11 +300,11 @@ function DispatchedItemList(
         dispatch: false,
         isReturn: dispatched
       }}
+      preferenceKey={preferenceKey}
     />
   )
 
   const title = dispatched ? 'Dispatched items' : 'Items for dispatch'
-  const preferenceKey = `datagrid-${constants.R_DISPATCH}-${id}-items-list`
 
   return (
     <Box component='fieldset' style={{ padding: '0 15px', overflowX: 'auto' }}>
@@ -315,7 +317,9 @@ function DispatchedItemList(
         storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
         filter={{ dispatchJob: id }}
         preferenceKey={preferenceKey}
-        bulkActionButtons={bulkActionButtons ?? <BulkActions />}
+        bulkActionButtons={
+          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+        }
         filtersShown={['q', 'batchId', 'mediaType']}
       />
     </Box>

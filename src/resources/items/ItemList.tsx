@@ -4,7 +4,6 @@ import {
   SearchInput,
   SelectColumnsButton,
   TextInput,
-  TopToolbar,
   useListContext,
   useRefresh,
   type SortPayload,
@@ -17,8 +16,7 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField,
-  useStore
+  TextField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -44,6 +42,7 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
@@ -152,15 +151,14 @@ const filters = [
   />
 ]
 
-const ItemActions = ({
-  preferenceKey
-}: SelectColumnsButtonProps): React.ReactElement => {
+const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
+  const { preferenceKey } = props
   return (
-    <TopToolbar>
+    <StyledTopToolbar {...props}>
       <ItemAssetReport storeKey='items-asset-report' />
       <FilterButton />
       <SelectColumnsButton preferenceKey={preferenceKey} />
-    </TopToolbar>
+    </StyledTopToolbar>
   )
 }
 
@@ -210,7 +208,7 @@ interface BulkActionsProps {
 }
 
 export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
-  const { buttons, preferenceKey } = props
+  const { buttons } = props
 
   const {
     location = true,
@@ -355,20 +353,13 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
-  const [columnsSelected = []] = useStore(
-    `preferences.${preferenceKey}.columns`
-  )
   const bulkActionsStyle = {
     display: 'flex',
     marginLeft: 2
   }
 
   return (
-    <Box
-      sx={[
-        bulkActionsStyle,
-        (columnsSelected?.length ?? 0) > 9 ? { width: '100vw' } : {}
-      ]}>
+    <Box sx={[bulkActionsStyle, { width: '100vw' }]}>
       <Box
         sx={{
           display: 'flex',
@@ -495,10 +486,21 @@ export default function ItemList(
     bulkActionButtons,
     ...rest
   } = props ?? {}
+
+  const sx = {
+    '& .MuiToolbar-root': {
+      '& > form': {
+        flex: 1
+      }
+    },
+    overflow: 'hidden'
+  }
+
   return (
     <List
+      sx={sx}
       hasCreate={false}
-      actions={<ItemActions preferenceKey={preferenceKey} />}
+      actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       perPage={100}
