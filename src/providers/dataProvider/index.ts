@@ -83,18 +83,38 @@ export const getDataProvider = async (
   ) as CustomDataProvider & DataProvider
 }
 
+const operators = ['_neq', '_eq', '_lte', '_gte', 'gt', 'lt']
+
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
     const { page, perPage } = params.pagination
     let { field, order } = params.sort
     field = field === 'id' ? 'id' : field
     const ordering = order === 'ASC' ? `${field}` : `-${field}`
+
+    // converting boolean to 1 and 0 for filters
     params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
       if (typeof params.filter[key] === 'boolean') {
         acc[key] = params.filter[key] ? 1 : 0
       } else {
         acc[key] = params.filter[key]
       }
+      return acc
+    }, {})
+
+    // converting single score operators to double score operators for soul-cli compatibility
+    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
+      const foundOperator = operators.find((operator) => key.includes(operator))
+      if (foundOperator) {
+        const modifiedKey = key.replace(
+          foundOperator,
+          `__${foundOperator.slice(1)}`
+        )
+        acc[modifiedKey] = params.filter[key]
+      } else {
+        acc[key] = params.filter[key]
+      }
+
       return acc
     }, {})
 
@@ -164,6 +184,33 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     const { field, order } = params.sort
 
     const ordering = order === 'ASC' ? `${field}` : `-${field}`
+
+    // converting boolean to 1 and 0 for filters
+    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
+      if (typeof params.filter[key] === 'boolean') {
+        acc[key] = params.filter[key] ? 1 : 0
+      } else {
+        acc[key] = params.filter[key]
+      }
+      return acc
+    }, {})
+
+    // converting single score operators to double score operators for soul-cli compatibility
+    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
+      const foundOperator = operators.find((operator) => key.includes(operator))
+      if (foundOperator) {
+        const modifiedKey = key.replace(
+          foundOperator,
+          `__${foundOperator.slice(1)}`
+        )
+        acc[modifiedKey] = params.filter[key]
+      } else {
+        acc[key] = params.filter[key]
+      }
+
+      return acc
+    }, {})
+
     const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
     const query = {
       _page: page,
