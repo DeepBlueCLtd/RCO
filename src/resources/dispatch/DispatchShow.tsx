@@ -301,8 +301,7 @@ function DispatchedItemList(
         location: false,
         loan: false,
         dispatchRemove: true,
-        dispatch: false,
-        isReturn: dispatched
+        dispatch: false
       }}
       preferenceKey={preferenceKey}
     />
