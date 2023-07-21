@@ -11,7 +11,6 @@ export enum AuditType {
 
   LOAN = 'loan',
   RETURN = 'return',
-
   SENT = 'sent'
 }
 

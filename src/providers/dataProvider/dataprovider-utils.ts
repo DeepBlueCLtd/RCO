@@ -67,12 +67,10 @@ export const auditForUpdatedChanges = async (
 ): Promise<UpdateParams<RCOResource>> => {
   const difference = getDifference(record.data, record.previousData)
   const keys = Object.keys(difference)
-  if (keys.includes('dispatchedAt') && difference?.dispatchedAt === undefined) {
+  if (keys.includes('dispatchedAt') && !difference?.dispatchedAt) {
     difference.dispatchedAt = null
-  } else if (
-    keys.includes('reportPrintedAt') &&
-    difference?.reportPrintedAt === undefined
-  ) {
+  }
+  if (keys.includes('reportPrintedAt') && !difference?.reportPrintedAt) {
     difference.reportPrintedAt = null
   }
   const dataId =
