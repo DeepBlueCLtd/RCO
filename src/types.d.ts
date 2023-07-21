@@ -85,7 +85,7 @@ interface User extends ResourceWithCreation {
   adminRights: boolean
   /** whether items can still be loaned to this user */
   active: boolean
-  roles: UserRole[]
+  role: UserRole
   staffNumber: string
   departedDate?: string
 }

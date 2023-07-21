@@ -126,7 +126,7 @@ export const generateUserForTesting = ({
   password: 'abcd',
   adminRights: adminRights ?? true,
   active: active ?? true,
-  roles: ['rco-user'],
+  role: 'rco-user',
   staffNumber: 'd-1'
 })
 

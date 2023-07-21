@@ -43,7 +43,9 @@ export default function ProjectList(): React.ReactElement {
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <FilterButton />
-      {hasAccess('reference-data', { write: true }) ? <CreateButton /> : null}
+      {hasAccess(constants.R_PROJECTS, { write: true }) ? (
+        <CreateButton />
+      ) : null}
       <SelectColumnsButton />
     </TopToolbar>
   )
