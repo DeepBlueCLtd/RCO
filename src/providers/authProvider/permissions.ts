@@ -17,6 +17,8 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
     [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
     [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
     [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
+    [constants.R_DESTRUCTION]: { read: true, write: true, delete: false },
+    [constants.R_DISPATCH]: { read: true, write: true, delete: false },
     'reference-data': { read: true, write: false, delete: false }
   },
   'rco-power-user': {
