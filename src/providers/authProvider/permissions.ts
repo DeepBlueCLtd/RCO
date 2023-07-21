@@ -14,7 +14,7 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
     [constants.R_BATCHES]: { read: true, write: true, delete: false },
     [constants.R_ITEMS]: { read: true, write: true, delete: false },
     [constants.R_USERS]: { read: true, write: true, delete: false },
-    [constants.R_PLATFORMS]: { read: true, write: true, delete: false },
+    [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
     [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
     [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
     'reference-data': { read: true, write: false, delete: false }
