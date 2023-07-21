@@ -83,7 +83,7 @@ export const getDataProvider = async (
   ) as CustomDataProvider & DataProvider
 }
 
-const operators = ['_neq', '_eq', '_lte', '_gte', 'gt', 'lt']
+const operators = ['_neq', '_eq', '_lte', '_gte']
 
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
@@ -141,14 +141,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       if (resource === constants.R_CONFIG) {
         data[0].id = 1
       }
-      if (resource === constants.R_USERS) {
-        for (let i = 0; i < data.length; i++) {
-          const item = data[i]
-          const trimmedString = item.roles.slice(1, -1).trim()
-          const stringWithoutQuotes = trimmedString.replace(/['"]+/g, '').trim()
-          item.roles = stringWithoutQuotes.split(',')
-        }
-      }
+
       return { data, total: response.data.total }
     })
   },
@@ -159,12 +152,6 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     return await axios.get(url).then((response) => {
       let { data } = response.data
       data = data[0]
-
-      if (resource === constants.R_USERS) {
-        const trimmedString = data.roles.slice(1, -1).trim()
-        const stringWithoutQuotes = trimmedString.replace(/['"]+/g, '').trim()
-        data.roles = stringWithoutQuotes.split(',')
-      }
 
       return { data }
     })

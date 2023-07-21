@@ -143,9 +143,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               }
             />
             <FlexBox>
-              {record?.roles &&
-                record.roles.length > 0 &&
-                record?.roles.map((r, index) => <Chip label={r} key={index} />)}
+              <Chip label={record?.role} />
               <TextInput
                 disabled
                 source='staffNumber'

@@ -87,7 +87,7 @@ export default function ReferenceDataShow({
             <TextField variant='h6' source='name' />
           </ValueField>
           <ValueField label='active'>
-            <BooleanField source='active' />
+            <BooleanField source='active' looseValue />
           </ValueField>
         </CardContent>
       </Card>

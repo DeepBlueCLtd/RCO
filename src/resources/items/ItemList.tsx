@@ -197,7 +197,6 @@ type ModalOpenType =
   | 'loan'
   | 'destroyRemove'
   | 'dispatch'
-  | 'isReturn'
   | 'dispatchRemove'
 
 type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
@@ -216,16 +215,14 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     destroyRemove = false,
     dispatchRemove = false,
     destroy = true,
-    dispatch = true,
-    isReturn = false
+    dispatch = true
   } = buttons ?? {
     destroy: true,
     location: true,
     loan: true,
     destroyRemove: false,
     dispatchRemove: false,
-    dispatch: true,
-    isReturn: false
+    dispatch: true
   }
 
   const { selectedIds } = useListContext<Item>()
@@ -239,6 +236,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const [isDestruction, setIsDestruction] = useState(false)
   const [isAnyLoaned, setIsAnyLoaned] = useState(false)
   const [isAnyDispatched, setIsAnyDispatched] = useState(false)
+  const [isAllDispatched, setIsAllDispatched] = useState(false)
 
   const audit = useAudit()
   const dataProvider = useDataProvider()
@@ -252,13 +250,15 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       allLoanedVal,
       anyDestructed,
       anyLoaned,
-      anyDispatched
+      anyDispatched,
+      allDispatched
     } = getItemStates(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
     setAllLoaned(allLoanedVal)
     setIsDestruction(anyDestructed)
     setIsAnyLoaned(anyLoaned)
     setIsAnyDispatched(anyDispatched)
+    setIsAllDispatched(allDispatched)
   }, [selectedIds, data])
 
   const handleClose = (): void => {
@@ -333,7 +333,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const ReturnButton = (): React.ReactElement => {
     return (
       <>
-        {isReturn ? (
+        {isAllDispatched ? (
           <Button
             onClick={returnDispatchedItems as any}
             size='small'
@@ -422,9 +422,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
                 </Button>
               </FlexBox>
             ) : null}
-            {dispatchRemove ? <ReturnButton /> : null}
           </>
         )}
+        {dispatchRemove || isAllDispatched ? <ReturnButton /> : null}
 
         <Modal open={Boolean(open)} onClose={handleClose}>
           <>

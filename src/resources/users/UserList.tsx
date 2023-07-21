@@ -5,8 +5,6 @@ import {
   List,
   TextField,
   TopToolbar,
-  ArrayField,
-  SingleFieldList,
   useRecordContext,
   useListContext,
   useUpdate,
@@ -105,11 +103,7 @@ export default function UserList(props: Props): React.ReactElement {
         <TextField source='name' />
         <BooleanField source='adminRights' label='Admin Rights' looseValue />
         <BooleanField source='active' label='Active User' looseValue />
-        <ArrayField source='roles'>
-          <SingleFieldList sx={{ columnGap: 1 }}>
-            <ChipField />
-          </SingleFieldList>
-        </ArrayField>
+        <ChipField />
       </DatagridConfigurableWithShow>
       <UserMusterList open={open} onClose={handleOpen(false)} />
     </List>
@@ -118,7 +112,7 @@ export default function UserList(props: Props): React.ReactElement {
 
 function ChipField(): React.ReactElement {
   const record = useRecordContext<any>()
-  const role = rolesOptions.find(({ value }) => value === record)
+  const role = rolesOptions.find(({ value }) => value === record.role)
 
   if (typeof role === 'undefined') return <></>
 

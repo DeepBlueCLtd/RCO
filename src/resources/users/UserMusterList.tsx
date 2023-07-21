@@ -90,6 +90,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                       source='adminRights'
                       label='Admin Rights'
                       component={BooleanField}
+                      looseValue
                     />
                   </Box>
                 </Show>
