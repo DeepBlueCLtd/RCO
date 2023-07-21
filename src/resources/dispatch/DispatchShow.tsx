@@ -202,7 +202,7 @@ export default function DispatchShow(): React.ReactElement {
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
     const audiData = {
-      type: AuditType.EDIT,
+      type: AuditType.SENT,
       activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,

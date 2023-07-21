@@ -10,7 +10,9 @@ export enum AuditType {
   USER_RETURNED = 'USER_RETURNED',
 
   LOAN = 'loan',
-  RETURN = 'return'
+  RETURN = 'return',
+
+  SENT = 'sent'
 }
 
 const ActivityTypes = Object.values(AuditType).map((val) => {
