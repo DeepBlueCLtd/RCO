@@ -68,10 +68,10 @@ export const auditForUpdatedChanges = async (
   const difference = getDifference(record.data, record.previousData)
   const keys = Object.keys(difference)
   if (keys.includes('dispatchedAt') && !difference?.dispatchedAt) {
-    difference.dispatchedAt = null
+    difference.dispatchedAt = 'unset'
   }
   if (keys.includes('reportPrintedAt') && !difference?.reportPrintedAt) {
-    difference.reportPrintedAt = null
+    difference.reportPrintedAt = 'unset'
   }
   const dataId =
     record.previousData.id !== undefined ? record.previousData.id : null
