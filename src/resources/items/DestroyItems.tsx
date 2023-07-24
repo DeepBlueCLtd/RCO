@@ -93,7 +93,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
           await audit({
             ...audiData,
             resource: constants.R_DESTRUCTION,
-            activityDetail: `Add item ${item.item_number} to destruction`,
+            activityDetail: `Add item ${item.itemNumber} to destruction`,
             dataId: destructionJobId as number
           })
 

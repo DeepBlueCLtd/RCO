@@ -87,7 +87,7 @@ const filters = [
     source='loanedTo'
     reference={constants.R_USERS}
   />,
-  <TextInput source='item_number' key='item_number' label='Reference' />,
+  <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
   <SourceInput
     key='mediaType'
     source='mediaType'
@@ -525,7 +525,7 @@ export default function ItemList(
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField source='item_number' label='Reference' />
+        <TextField source='itemNumber' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
         <SourceField
