@@ -76,7 +76,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       const items = data
         .filter(({ id }) => ids.includes(id))
         .map(async (item) => {
-          const { item_number: itemNumber } = item
+          const { itemNumber } = item
           const audiData = {
             type: AuditType.EDIT,
             activityDetail: `Add item to dispatch ${reference}`,
