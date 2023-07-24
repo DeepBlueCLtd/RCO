@@ -45,9 +45,9 @@ export const R_BATCH_HANDLE = 'batchHandle'
 export const R_VAULT = 'vault'
 
 export const ID_FIX: Record<string, string> = {
-  [R_CAT_CAVE]: 'cat_cave',
-  [R_CAT_CODE]: 'cat_code',
-  [R_CAT_HANDLE]: 'cat_handle',
+  [R_CAT_CAVE]: 'catCave',
+  [R_CAT_CODE]: 'catCode',
+  [R_CAT_HANDLE]: 'catHandle',
   [R_DEPARTMENT]: 'department',
   [R_ORGANISATION]: 'organisation'
 }
