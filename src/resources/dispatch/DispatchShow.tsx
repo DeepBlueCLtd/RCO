@@ -319,7 +319,7 @@ function DispatchedItemList(
         bulkActionButtons={
           bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
         }
-        filtersShown={['q', 'batchId', 'mediaType']}
+        filtersShown={['q', 'batch', 'mediaType']}
       />
     </Box>
   )

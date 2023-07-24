@@ -148,7 +148,7 @@ const referenceFields: RefFieldType[] = [
     label: 'Protective Marking'
   },
   {
-    name: 'batchId',
+    name: 'batch',
     resource: constants.R_BATCHES,
     source: 'batchNumber',
     label: 'Batch'

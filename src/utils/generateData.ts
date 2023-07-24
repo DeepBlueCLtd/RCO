@@ -50,7 +50,7 @@ function setMinuteToStep(date: string, step = 15): string {
   return updatedDate.toJSDate().toISOString()
 }
 const getItemReferenceNumber = (batch: Batch, items: Item[]): string => {
-  const existing = items.filter((i) => i.batchId === batch.id)
+  const existing = items.filter((i) => i.batch === batch.id)
   return (existing.length + 1).toLocaleString('en-US', {
     minimumIntegerDigits: 2,
     useGrouping: false
@@ -216,12 +216,13 @@ export const generateItems = (
 
     const batchNumber: string = batch.batchNumber
     const itemReference: string = getItemReferenceNumber(batch, items)
+    const idOfBatch = batch.id
     const obj: Item = {
       id: offset + i,
       createdAt: nowDate(),
       mediaType: generateRandomNumber(1, mediaType - 1),
       startDate,
-      batchId: batch.id,
+      batch: idOfBatch,
       item_number: `${batchNumber}/${itemReference}`,
       endDate,
       vaultLocation: generateRandomNumber(1, vaults - 1),

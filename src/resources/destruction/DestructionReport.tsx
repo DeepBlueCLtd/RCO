@@ -99,7 +99,7 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
         <ReferenceField
           label='Platform'
           reference={constants.R_BATCHES}
-          source='batchId'>
+          source='batch'>
           <ReferenceField reference={constants.R_PLATFORMS} source='platform'>
             <TextField source='name' />
           </ReferenceField>

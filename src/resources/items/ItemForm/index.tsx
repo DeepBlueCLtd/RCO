@@ -32,7 +32,7 @@ const schema = yup.object({
         return dayjs(value).diff(this.parent.startDate) > 0
       }
     ),
-  batchId: yup.number().required(),
+  batch: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required()
 })
@@ -50,7 +50,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const batch = searchParams.get('batch') ?? record.batchId
+    const batch = searchParams.get('batch') ?? record.batch
 
     const isValidNumber = isNumber(batch)
     if (isValidNumber) {
@@ -128,7 +128,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
             }}
           />
         }>
-        <CoreForm itemId={itemId} setItemId={setItemId} batchId={batch?.id} />
+        <CoreForm itemId={itemId} setItemId={setItemId} batch={batch?.id} />
       </SimpleForm>
     </Box>
   )

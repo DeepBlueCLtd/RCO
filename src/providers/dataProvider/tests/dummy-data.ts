@@ -40,7 +40,7 @@ interface ItemProps {
   remarks?: string
   mediaType?: MediaType['id']
   toISO?: boolean
-  batchId?: number
+  batch?: Batch['id']
 }
 
 export const generateItemForTesting = ({
@@ -48,7 +48,7 @@ export const generateItemForTesting = ({
   remarks,
   mediaType,
   toISO,
-  batchId
+  batch
 }: ItemProps = {}): NewItem => {
   return {
     ...(id !== undefined ? { id } : null),
@@ -64,7 +64,7 @@ export const generateItemForTesting = ({
           ).toISOString()
         : DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
 
-    batchId: batchId ?? 1,
+    batch: batch ?? 1,
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,

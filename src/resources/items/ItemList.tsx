@@ -115,8 +115,8 @@ const filters = [
     reference={constants.R_PROTECTIVE_MARKING}
   />,
   <SourceInput
-    source='batchId'
-    key='batchId'
+    source='batch'
+    key='batch'
     sort={sort('batchNumber')}
     reference={constants.R_BATCHES}
     optionField='batchNumber'
@@ -543,7 +543,7 @@ export default function ItemList(
         />
         <SourceField
           link='show'
-          source='batchId'
+          source='batch'
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
