@@ -9,6 +9,7 @@ import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button } from '@mui/material'
 import useVaultLocation from '../../../hooks/useVaultLocation'
+import { DateTime } from 'luxon'
 
 // eslint-disable-next-line
 type Events = {
@@ -67,7 +68,7 @@ interface Props {
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess } = props
-  const { reset, getValues } = useFormContext()
+  const { reset, getValues, setValue } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
   const [openRemarks, setOpenRemarks] = useState(false)
@@ -144,19 +145,26 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       <FlexBox>
         <SaveButton
           type='button'
-          label='Create / Clone'
+          label='Save / Clone'
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
           }}
           transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess: successWithAudit
+            onSuccess: (data: Item) => {
+              successWithAudit(data)
+              setValue('startDate', data.endDate)
+              setValue(
+                'endDate',
+                DateTime.fromISO(data.endDate).plus({ days: 1 }).toISO()
+              )
+            }
           }}
         />
         <SaveButton
           type='button'
-          label='Create / New'
+          label='Save / New'
           title='Store this item, then create a blank item'
           onClick={() => {
             save = true
