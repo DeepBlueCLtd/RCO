@@ -265,7 +265,7 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='item_number' label='Reference' />
+      <TextField source='itemNumber' label='Reference' />
       <SourceField
         link='show'
         source='mediaType'

@@ -61,7 +61,7 @@ const lifeCycles = (
         id,
         previousData: data,
         data: {
-          item_number: itemNumber
+          itemNumber
         }
       })
       await audit({
