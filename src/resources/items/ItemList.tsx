@@ -306,6 +306,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       await audit(auditData)
       await audit({
         ...auditData,
+        type: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS
       })
