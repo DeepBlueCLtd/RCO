@@ -84,7 +84,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   }, [])
 
   const defaultValues: Partial<Item> = {
-    item_number: '',
+    itemNumber: '',
     loanedTo: undefined,
     startDate,
     endDate

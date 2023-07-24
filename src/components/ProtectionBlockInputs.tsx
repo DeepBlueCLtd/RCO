@@ -87,7 +87,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           source='catCode'
           itemId={id}
-          label={configData?.cat_code ?? 'Cat code'}
+          label={configData?.catCode ?? 'Cat code'}
           {...protectionInputProps}
           width='20%'
         />
@@ -103,7 +103,7 @@ export default function ProtectionBlockInputs<
           refTable={refTables.catHandle}
           source='catHandle'
           itemId={id}
-          label={configData?.cat_handle ?? 'Cat handle'}
+          label={configData?.catHandle ?? 'Cat handle'}
           labelField='name'
           {...protectionInputProps}
           width='30%'
@@ -115,7 +115,7 @@ export default function ProtectionBlockInputs<
           source='catCave'
           labelField='name'
           itemId={id}
-          label={configData?.cat_cave ?? 'Cat cave'}
+          label={configData?.catCave ?? 'Cat cave'}
           {...protectionInputProps}
           width='30%'
         />

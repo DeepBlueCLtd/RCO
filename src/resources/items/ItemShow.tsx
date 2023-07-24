@@ -345,7 +345,7 @@ const ItemShowActions = ({
 
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField source='item_number' />
+      <TopToolbarField source='itemNumber' />
       <StatusText record={record} />
       {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
       <IconButton

@@ -151,7 +151,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     filter={{ vaultLocation: id, loanedTo: undefined }}
                     {...props}
                     footer={ProtectiveMarking}>
-                    <TextField source='item_number' label='Item Number' />
+                    <TextField source='itemNumber' label='Item Number' />
                     <SourceField
                       link='show'
                       source='mediaType'
