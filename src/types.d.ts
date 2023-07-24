@@ -294,13 +294,13 @@ interface ConfigData extends RCOResource {
   /** label for cat-code element
    * test value: `Cat-Code`
    */
-  cat_code: string
+  catCode: string
   /** label for cat-handle element
    * test value: `Cat-Handle`
    */
-  cat_handle: string
+  catHandle: string
   /** label for cat-cave element
    * test value: `Cat-Cave`
    */
-  cat_cave: string
+  catCave: string
 }
