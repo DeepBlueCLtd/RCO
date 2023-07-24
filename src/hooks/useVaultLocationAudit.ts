@@ -22,7 +22,8 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
     newId?: number
   ): Promise<Record<Item['id'], Item>> => {
     const items: Record<Item['id'], Item> = {}
-    const allItems: Item[] = data?.length > 0 ? data : record ? [record] : []
+    const fromRecord = record ? [record] : []
+    const allItems: Item[] = data?.length > 0 ? data : fromRecord
     if (newId) {
       const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
         id: newId
@@ -81,7 +82,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
       securityRelated: false
     }
 
-    const allAudits = async (itemId: number): Promise<void> => {
+    const allAudits = async (itemId: number): Promise<any> => {
       const itemRef = selectedItems[itemId]?.item_number
       const itemAudit = {
         ...auditData,
@@ -122,7 +123,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
           ]
         )
       }
-      audits.map(async (auditData) => {
+      return audits.map(async (auditData) => {
         if (auditData) {
           await audit(auditData)
         }
