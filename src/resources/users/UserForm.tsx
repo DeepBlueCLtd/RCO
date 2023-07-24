@@ -4,7 +4,7 @@ import {
   TextInput,
   BooleanInput,
   useEditContext,
-  SelectArrayInput
+  SelectInput
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -18,9 +18,7 @@ const schema = yup.object({
   name: yup.string().required(),
   password: yup.string().required(),
   adminRights: yup.boolean(),
-  roles: yup
-    .array(yup.string().oneOf(rolesOptions.map(({ value }) => value)))
-    .min(1)
+  role: yup.string().oneOf(rolesOptions.map(({ value }) => value))
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
@@ -32,7 +30,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     password: '',
     adminRights: false,
     active: true,
-    roles: []
+    role: 'rco-user'
   }
   const { record } = useEditContext()
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
@@ -57,9 +55,9 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         }}
       />
       <FlexBox>
-        <SelectArrayInput
-          label='Roles'
-          source='roles'
+        <SelectInput
+          label='Role'
+          source='role'
           optionValue='value'
           optionText='label'
           sx={{ width: '100%', flex: 1 }}
