@@ -10,7 +10,6 @@ import RemarksBox from '../../../components/RemarksBox'
 import { Button } from '@mui/material'
 import { DateTime } from 'luxon'
 import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
-import { DateTime } from 'luxon'
 
 // eslint-disable-next-line
 type Events = {
