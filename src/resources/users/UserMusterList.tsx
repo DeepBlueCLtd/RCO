@@ -94,7 +94,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   </Box>
                 </Show>
                 <ItemsReport filter={{ loanedTo: userId }}>
-                  <TextField source='item_number' label='Item Number' />
+                  <TextField source='itemNumber' label='Item Number' />
                   <SourceField
                     link='show'
                     source='mediaType'

@@ -19,7 +19,7 @@ const ItemEdit = (): React.ReactElement => {
     <Edit
       actions={
         <TopToolbar>
-          <TopToolbarField source='item_number' />
+          <TopToolbarField source='itemNumber' />
           <ShowButton />
         </TopToolbar>
       }

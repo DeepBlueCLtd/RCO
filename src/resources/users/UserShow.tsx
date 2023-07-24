@@ -143,9 +143,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               }
             />
             <FlexBox>
-              {record?.roles.map((r, index) => (
-                <Chip label={r} key={index} />
-              ))}
+              <Chip label={record?.role} />
               <TextInput
                 disabled
                 source='staffNumber'
@@ -267,7 +265,7 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='item_number' label='Reference' />
+      <TextField source='itemNumber' label='Reference' />
       <SourceField
         link='show'
         source='mediaType'

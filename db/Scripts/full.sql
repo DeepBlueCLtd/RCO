@@ -301,8 +301,8 @@ CREATE TABLE if not exists  configData (
   projectsName  TEXT NOT NULL,
   fromAddress  TEXT NOT NULL,
   protectionName  TEXT NOT NULL,
-  cat_code  TEXT NOT NULL,
-  cat_handle  TEXT NOT NULL,
-  cat_cave  TEXT NOT NULL
+  catCode  TEXT NOT NULL,
+  catHandle  TEXT NOT NULL,
+  catCave  TEXT NOT NULL
 )
 
