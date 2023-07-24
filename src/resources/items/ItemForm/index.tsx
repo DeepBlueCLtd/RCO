@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -34,7 +34,8 @@ const schema = yup.object({
     ),
   batchId: yup.number().required(),
   vaultLocation: yup.number().required(),
-  protectiveMarking: yup.number().required()
+  protectiveMarking: yup.number().required(),
+  editRemarks: yup.string()
 })
 
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
