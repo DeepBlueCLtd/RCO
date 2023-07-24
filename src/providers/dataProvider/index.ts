@@ -84,6 +84,7 @@ export const getDataProvider = async (
 }
 
 const operators = ['_neq', '_eq', '_lte', '_gte']
+const SEARCH_OPERATOR = 'q'
 
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
@@ -91,7 +92,6 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     let { field, order } = params.sort
     field = field === 'id' ? 'id' : field
     const ordering = order === 'ASC' ? `${field}` : `-${field}`
-
     // converting boolean to 1 and 0 for filters
     params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
       if (typeof params.filter[key] === 'boolean') {
@@ -102,6 +102,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       return acc
     }, {})
 
+    let query: any = {}
     // converting single score operators to double score operators for soul-cli compatibility
     params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
       const foundOperator = operators.find((operator) => key.includes(operator))
@@ -112,14 +113,21 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
         )
         acc[modifiedKey] = params.filter[key]
       } else {
-        acc[key] = params.filter[key]
+        if (key === SEARCH_OPERATOR) {
+          query._search = params.filter[key]
+          const { [key]: _, ...rest } = params.filter
+          params.filter = rest
+        } else {
+          acc[key] = params.filter[key]
+        }
       }
 
       return acc
     }, {})
 
     const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
-    let query: any = {
+    query = {
+      ...query,
       _page: page,
       _limit: perPage,
       _ordering: ordering,
