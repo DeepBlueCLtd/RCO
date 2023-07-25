@@ -222,7 +222,7 @@ export const generateItems = (
       mediaType: generateRandomNumber(1, mediaType - 1),
       startDate,
       batchId: batch.id,
-      item_number: `${batchNumber}/${itemReference}`,
+      itemNumber: `${batchNumber}/${itemReference}`,
       endDate,
       vaultLocation: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,

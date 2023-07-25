@@ -87,7 +87,7 @@ const filters = [
     source='loanedTo'
     reference={constants.R_USERS}
   />,
-  <TextInput source='item_number' key='item_number' label='Reference' />,
+  <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
   <SourceInput
     key='mediaType'
     source='mediaType'
@@ -306,6 +306,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       await audit(auditData)
       await audit({
         ...auditData,
+        type: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS
       })
@@ -516,7 +517,7 @@ export default function ItemList(
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField source='item_number' label='Reference' />
+        <TextField source='itemNumber' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
         <SourceField
