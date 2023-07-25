@@ -51,7 +51,7 @@ export default function SourceNestedFilterInput(
     const val: Data = {
       id: child.id,
       name: child.name,
-      batchId: sources
+      batch: sources
         .filter((src) => src.project === child.id)
         .map((item) => item.id)
     }
@@ -63,8 +63,8 @@ export default function SourceNestedFilterInput(
       <SelectInput
         key={label}
         label={label}
-        source={'batchId'}
-        optionValue={'batchId'}
+        source={'batch'}
+        optionValue={'batch'}
         choices={options}
       />
     </>
