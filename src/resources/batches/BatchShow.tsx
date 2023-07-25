@@ -48,21 +48,21 @@ const ItemActions = ({
 }: SelectColumnsButtonProps): React.ReactElement => {
   const { id = '' } = useParams()
   const { hasAccess } = useCanAccess()
-  const batchId: string = id
+  const batch: string = id
 
   return (
     <StyledTopToolbar preferenceKey={preferenceKey}>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <CreateButton
           label='ADD ITEM'
-          to={`/${constants.R_ITEMS}/create?batch=${batchId}`}
+          to={`/${constants.R_ITEMS}/create?batch=${batch}`}
         />
       ) : (
         <></>
       )}
       <ItemAssetReport
         storeKey='batch-items-report'
-        filterDefaultValues={{ batchId }}
+        filterDefaultValues={{ batch }}
       />
       <FilterButton />
       <SelectColumnsButton preferenceKey={preferenceKey} />
@@ -116,7 +116,7 @@ export default function BatchShow(): React.ReactElement {
           <ItemList
             storeKey={`${constants.R_BATCHES}-${id}-items-list`}
             empty={false}
-            filter={{ batchId: id }}
+            filter={{ batch: id }}
             actions={<ItemActions preferenceKey={preferenceKey} />}
             bulkActionButtons={<BulkActions preferenceKey={preferenceKey} />}
             preferenceKey={preferenceKey}

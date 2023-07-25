@@ -185,7 +185,7 @@ interface Batch extends ResourceWithCreation {
 interface Item extends ResourceWithCreation {
   mediaType: MediaType['id']
   startDate: string
-  batchId: Batch['id']
+  batch: Batch['id']
   itemNumber: string
   consecPages?: string
   endDate: string
