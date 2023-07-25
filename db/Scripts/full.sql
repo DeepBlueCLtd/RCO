@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS dispatch(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
-       remarks TEXT NOT NULL,
+       remarks TEXT,
        dispatchedAt TEXT,
        toName TEXT NOT NULL,
        toAddress INTEGER NOT NULL,
