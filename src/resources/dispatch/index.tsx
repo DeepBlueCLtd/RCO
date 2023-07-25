@@ -14,7 +14,7 @@ const DispatchCreate = (): React.ReactElement => {
     <Create
       mutationOptions={{
         onSuccess: (data: Dispatch) => {
-          notify('“Please add items” from Items page')
+          notify('Please add items from Live Items page')
           redirect(`/${constants.R_DISPATCH}/${data.id}`)
         }
       }}>

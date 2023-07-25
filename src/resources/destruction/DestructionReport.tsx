@@ -84,7 +84,7 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
         filter={{
           destruction: recordId
         }}>
-        <TextField source='item_number' />
+        <TextField source='itemNumber' />
         <SourceField
           link='show'
           source='mediaType'

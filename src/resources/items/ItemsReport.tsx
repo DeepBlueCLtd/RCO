@@ -106,7 +106,7 @@ export default function ItemsReport(props: Props): React.ReactElement {
           children
         ) : (
           <>
-            <TextField source='item_number' label='Item Number' />
+            <TextField source='itemNumber' label='Item Number' />
             <SourceField
               link='show'
               source='mediaType'
@@ -177,7 +177,7 @@ const fields: FieldType[] = [
     type: 'text'
   },
   {
-    name: 'item_number',
+    name: 'itemNumber',
     label: 'Reference',
     type: 'text'
   }
@@ -260,7 +260,7 @@ export function ItemAssetReport(props: Props): React.ReactElement {
             </CardContent>
           </Card>
           <ItemsReport filter={filters} {...props}>
-            <TextField source='item_number' label='Item Number' />
+            <TextField source='itemNumber' label='Item Number' />
             <SourceField
               link='show'
               source='mediaType'

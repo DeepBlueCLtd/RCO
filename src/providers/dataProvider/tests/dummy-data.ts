@@ -9,7 +9,7 @@ interface NewBatch extends Omit<Batch, 'id' | 'createdAt' | 'createdBy'> {
 }
 
 interface NewItem
-  extends Omit<Item, 'id' | 'createdAt' | 'createdBy' | 'item_number'> {
+  extends Omit<Item, 'id' | 'createdAt' | 'createdBy' | 'itemNumber'> {
   readonly id?: number
 }
 
