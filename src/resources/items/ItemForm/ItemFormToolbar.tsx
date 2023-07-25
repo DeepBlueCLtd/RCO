@@ -1,11 +1,12 @@
-import { SaveButton, Toolbar, useNotify } from 'react-admin'
+import { SaveButton, Toolbar } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
+import { Context as NotificationContext } from '../../../context/NotificationContext'
 
 // eslint-disable-next-line
 type Events = {
@@ -28,7 +29,7 @@ interface Props {
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess } = props
   const { reset } = useFormContext()
-  const notify = useNotify()
+  const { notify } = useContext(NotificationContext)
   const { id } = useParams()
 
   const saveHandler = (e: string): void => {
@@ -69,7 +70,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     notify(
       `Item ${itemNumber} has been saved. Now showing ${
         type === ItemFormSaveType.CLONE ? 'clone of previous' : 'blank'
-      } item.`
+      } item.`,
+      { type: 'success' }
     )
   }
 
