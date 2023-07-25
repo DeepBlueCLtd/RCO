@@ -48,7 +48,8 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { handleOpen } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
-  const finalised = typeof record.finalisedAt !== 'undefined'
+  const finalised =
+    typeof record?.finalisedAt !== 'undefined' && record?.finalisedAt !== null
 
   return (
     <>
@@ -81,7 +82,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const { handleOpen, destroy } = props
 
   const destroyed: boolean =
-    !hasWritePermission || typeof record?.finalisedAt !== 'undefined'
+    !hasWritePermission ||
+    (typeof record?.finalisedAt !== 'undefined' && record?.finalisedAt !== null)
 
   const handleDestroy = (): void => {
     setOpen(true)

@@ -143,10 +143,7 @@ export const generateBatch = (
   const batches: Batch[] = []
 
   const isNull = (): boolean => {
-    if (Math.random() > 0.3) {
-      return false
-    }
-    return true
+    return Math.random() > 0.3
   }
 
   for (let i = 1; i <= length; i++) {

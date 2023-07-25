@@ -267,8 +267,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
   let statusText = ''
   let source: keyof Item
   let component: React.ReactElement | null = null
-
-  if (record.destruction !== undefined) {
+  if (record.destruction !== undefined && record.destruction !== null) {
     linkPathname = `/destruction/${record.destruction}/show`
     source = 'destruction'
     const actionText =
@@ -284,7 +283,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
         text={dateText}
       />
     )
-  } else if (record.dispatchJob !== undefined) {
+  } else if (record.dispatchJob !== undefined && record.dispatchJob !== null) {
     linkPathname = `/dispatch/${record.dispatchJob}/show`
     source = 'dispatchJob'
     const actionText =
@@ -298,7 +297,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
         text={dateText}
       />
     )
-  } else if (record.loanedTo !== undefined) {
+  } else if (record.loanedTo !== undefined && record.loanedTo !== null) {
     source = 'loanedTo'
     statusText = 'Loaned to: '
   } else {

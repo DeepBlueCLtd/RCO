@@ -76,10 +76,14 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const [update] = useUpdate()
 
   const dispatched: boolean =
-    !hasWritePermission || typeof record?.dispatchedAt !== 'undefined'
+    !hasWritePermission ||
+    (typeof record?.dispatchedAt !== 'undefined' &&
+      record?.dispatchedAt !== null)
 
   const receiptReceived: boolean =
-    !hasWritePermission || typeof record?.receiptReceived !== 'undefined'
+    !hasWritePermission ||
+    (typeof record?.receiptReceived !== 'undefined' &&
+      record?.dispatchedAt !== null)
 
   const handleDispatch = (): void => {
     setOpen(true)

@@ -102,11 +102,10 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const handleDepartClose = (): void => {
     setDepartOpen(false)
   }
-
   const cannotDepart = (): boolean => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
-      record?.active === false ||
+      (record?.active as unknown as number) === 0 ||
       !hasWriteAccess
     )
   }

@@ -296,7 +296,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids: selectedIds,
       data: {
-        dispatchJob: undefined
+        dispatchJob: null
       }
     })
     notify(`${selectedIds.length} items removed from dispatch`)
@@ -324,8 +324,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids: selectedIds,
       data: {
-        dispatchJob: undefined,
-        dispatchedDate: undefined
+        dispatchJob: null,
+        dispatchedDate: null
       }
     })
     refresh()

@@ -116,7 +116,7 @@ export default function BatchShow(): React.ReactElement {
           <ItemList
             storeKey={`${constants.R_BATCHES}-${id}-items-list`}
             empty={false}
-            filter={{ id }}
+            filter={{ batch: id }}
             actions={<ItemActions preferenceKey={preferenceKey} />}
             bulkActionButtons={<BulkActions preferenceKey={preferenceKey} />}
             preferenceKey={preferenceKey}
