@@ -238,10 +238,10 @@ CREATE TABLE IF NOT EXISTS item(
        itemNumber TEXT NOT NULL,
        consecPages TEXT,
        vaultLocation INTEGER NOT NULL,
-       remarks TEXT NOT NULL,
+       remarks TEXT,
        protectiveMarking INTEGER NOT NULL,
        protectionString TEXT NOT NULL,
-       musterRemarks TEXT NOT NULL,
+       musterRemarks TEXT,
        loanedTo INTEGER,
        loanedDate TEXT,
        
@@ -249,7 +249,6 @@ CREATE TABLE IF NOT EXISTS item(
        dispatchedDate TEXT,
        destruction INTEGER,
        destructionDate TEXT,
-
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
