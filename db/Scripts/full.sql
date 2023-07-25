@@ -201,6 +201,7 @@ CREATE TABLE IF NOT EXISTS destruction(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
+       reportPrintedAt TEXT,
        finalisedAt TEXT,
        finalisedBy TEXT,
        remarks TEXT,
@@ -217,12 +218,14 @@ CREATE TABLE IF NOT EXISTS dispatch(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
-       remarks TEXT,
+       reportPrintedAt TEXT,
        dispatchedAt TEXT,
        toName TEXT NOT NULL,
        toAddress INTEGER NOT NULL,
        receiptReceived TEXT,
        lastHastenerSent TEXT,
+
+       remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (address) REFERENCES address(id)
