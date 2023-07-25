@@ -68,7 +68,7 @@ const ItemListBox = (): React.ReactElement => {
         filter={{
           dispatchJob: id
         }}>
-        <TextField source='item_number' />
+        <TextField source='itemNumber' />
         <SourceField
           link='show'
           source='mediaType'

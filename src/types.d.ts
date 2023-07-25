@@ -186,7 +186,7 @@ interface Item extends ResourceWithCreation {
   mediaType: MediaType['id']
   startDate: string
   batchId: Batch['id']
-  item_number: string
+  itemNumber: string
   consecPages?: string
   endDate: string
   vaultLocation: VaultLocation['id']
