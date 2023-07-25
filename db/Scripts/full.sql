@@ -201,6 +201,7 @@ CREATE TABLE IF NOT EXISTS destruction(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
+       reportPrintedAt TEXT,
        finalisedAt TEXT,
        finalisedBy TEXT,
        remarks TEXT,
@@ -217,12 +218,14 @@ CREATE TABLE IF NOT EXISTS dispatch(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
-       remarks TEXT NOT NULL,
+       reportPrintedAt TEXT,
        dispatchedAt TEXT,
        toName TEXT NOT NULL,
        toAddress INTEGER NOT NULL,
        receiptReceived TEXT,
        lastHastenerSent TEXT,
+
+       remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (address) REFERENCES address(id)
@@ -238,10 +241,10 @@ CREATE TABLE IF NOT EXISTS item(
        itemNumber TEXT NOT NULL,
        consecPages TEXT,
        vaultLocation INTEGER NOT NULL,
-       remarks TEXT NOT NULL,
+       remarks TEXT,
        protectiveMarking INTEGER NOT NULL,
        protectionString TEXT NOT NULL,
-       musterRemarks TEXT NOT NULL,
+       musterRemarks TEXT,
        loanedTo INTEGER,
        loanedDate TEXT,
        
@@ -249,7 +252,6 @@ CREATE TABLE IF NOT EXISTS item(
        dispatchedDate TEXT,
        destruction INTEGER,
        destructionDate TEXT,
-
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
