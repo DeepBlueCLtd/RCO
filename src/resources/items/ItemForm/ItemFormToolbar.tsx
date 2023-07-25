@@ -8,6 +8,8 @@ import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button } from '@mui/material'
+import { DateTime } from 'luxon'
+import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 
 // eslint-disable-next-line
 type Events = {
@@ -26,10 +28,11 @@ export const emitter = mitt<Events>()
 interface ActionsProps {
   onSuccess: (data: any) => void
   setOpenRemarks: React.Dispatch<boolean>
+  vLocationAudits: () => Promise<void>
 }
 
 const Actions = (props: ActionsProps): React.ReactElement => {
-  const { onSuccess, setOpenRemarks } = props
+  const { onSuccess, setOpenRemarks, vLocationAudits } = props
 
   const onSuccessWithRemarksClose = (data: any): void => {
     onSuccess(data)
@@ -41,6 +44,7 @@ const Actions = (props: ActionsProps): React.ReactElement => {
       <SaveButton
         label='Save'
         type='button'
+        onClick={() => vLocationAudits() as any}
         transform={transformProtectionValues}
         mutationOptions={{
           onSuccess: onSuccessWithRemarksClose
@@ -64,10 +68,11 @@ interface Props {
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess } = props
-  const { reset } = useFormContext()
+  const { reset, getValues, setValue } = useFormContext()
   const notify = useNotify()
   const { id } = useParams()
   const [openRemarks, setOpenRemarks] = useState(false)
+  const vaultLocationsAudit = useVaultLocationAudit()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -93,6 +98,21 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     setOpenRemarks(true)
   }
 
+  const vLocationAudits = async (
+    vaultLocationId?: number,
+    itemId?: number
+  ): Promise<void> => {
+    await vaultLocationsAudit(
+      vaultLocationId ?? getValues('vaultLocation'),
+      itemId
+    )
+  }
+
+  const successWithAudit = ({ id, vaultLocation }: Item): void => {
+    vLocationAudits(vaultLocation, id) as any
+    onSuccess({ id })
+  }
+
   if (typeof id !== 'undefined') {
     return (
       <Toolbar>
@@ -100,7 +120,11 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           title='Batch Item editing remarks'
           open={openRemarks}
           actions={
-            <Actions onSuccess={onSuccess} setOpenRemarks={setOpenRemarks} />
+            <Actions
+              vLocationAudits={vLocationAudits}
+              onSuccess={onSuccess}
+              setOpenRemarks={setOpenRemarks}
+            />
           }
         />
         <SaveButton label='Save' type='button' onClick={onSave} />
@@ -121,26 +145,33 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       <FlexBox>
         <SaveButton
           type='button'
-          label='Create / Clone'
+          label='Save / Clone'
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
           }}
           transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess
+            onSuccess: (data: Item) => {
+              successWithAudit(data)
+              setValue('startDate', data.endDate)
+              setValue(
+                'endDate',
+                DateTime.fromISO(data.endDate).plus({ days: 1 }).toISO()
+              )
+            }
           }}
         />
         <SaveButton
           type='button'
-          label='Create / New'
+          label='Save / New'
           title='Store this item, then create a blank item'
           onClick={() => {
             save = true
           }}
           transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess
+            onSuccess: successWithAudit
           }}
         />
       </FlexBox>

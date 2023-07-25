@@ -40,7 +40,7 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { handleOpen } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
-  const dispatched = typeof record.dispatchedAt !== 'undefined'
+  const dispatched = typeof record?.dispatchedAt !== 'undefined'
 
   return (
     <>
@@ -191,20 +191,24 @@ export default function DispatchShow(): React.ReactElement {
 
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData = {
-      type: AuditType.EDIT,
-      activityDetail: 'add item to dispatch',
+      type: AuditType.SENT,
+      activityDetail: `Dispatch Sent in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId
     }
     await audit(audiData)
-    await audit({
-      ...audiData,
-      resource: constants.R_DISPATCH
-    })
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
+    const audiData = {
+      type: AuditType.SENT,
+      activityDetail: 'Dispatch Sent',
+      securityRelated: false,
+      resource: constants.R_DISPATCH,
+      dataId: parseInt(id as string)
+    }
+    await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)
     await update(constants.R_DISPATCH, data)
     await updateMany(constants.R_ITEMS, {
@@ -319,7 +323,7 @@ function DispatchedItemList(
         bulkActionButtons={
           bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
         }
-        filtersShown={['q', 'batchId', 'mediaType']}
+        filtersShown={['q', 'batch', 'mediaType']}
       />
     </Box>
   )
