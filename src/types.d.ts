@@ -85,7 +85,7 @@ interface User extends ResourceWithCreation {
   adminRights: boolean
   /** whether items can still be loaned to this user */
   active: boolean
-  roles: UserRole[]
+  role: UserRole
   staffNumber: string
   departedDate?: string
 }
@@ -186,7 +186,7 @@ interface Item extends ResourceWithCreation {
   mediaType: MediaType['id']
   startDate: string
   batchId: Batch['id']
-  item_number: string
+  itemNumber: string
   consecPages?: string
   endDate: string
   vaultLocation: VaultLocation['id']
@@ -294,13 +294,13 @@ interface ConfigData extends RCOResource {
   /** label for cat-code element
    * test value: `Cat-Code`
    */
-  cat_code: string
+  catCode: string
   /** label for cat-handle element
    * test value: `Cat-Handle`
    */
-  cat_handle: string
+  catHandle: string
   /** label for cat-cave element
    * test value: `Cat-Cave`
    */
-  cat_cave: string
+  catCave: string
 }

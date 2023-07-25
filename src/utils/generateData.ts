@@ -222,7 +222,7 @@ export const generateItems = (
       mediaType: generateRandomNumber(1, mediaType - 1),
       startDate,
       batchId: batch.id,
-      item_number: `${batchNumber}/${itemReference}`,
+      itemNumber: `${batchNumber}/${itemReference}`,
       endDate,
       vaultLocation: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
@@ -237,18 +237,12 @@ export const generateItems = (
   }
   return items
 }
-
-function getRandomRole(): UserRole[] {
+function getRandomRole(): UserRole {
   const roles: UserRole[] = ['rco-power-user', 'rco-user']
-  const minLength = 1
-  const maxLength = roles.length
+  const randomIndex = Math.floor(Math.random() * roles.length)
+  const selectedRole = roles[randomIndex]
 
-  const combinationLength =
-    Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength
-  const shuffledRoles = roles.sort(() => Math.random() - 0.5)
-  const selectedRoles = shuffledRoles.slice(0, combinationLength)
-
-  return selectedRoles
+  return selectedRole
 }
 
 export const generateUsers = (length: number): User[] => {
@@ -265,7 +259,7 @@ export const generateUsers = (length: number): User[] => {
       active,
       staffNumber: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
-      roles: getRandomRole(),
+      role: getRandomRole(),
       createdAt: nowDate()
     }
     users.push(obj)

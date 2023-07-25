@@ -8,7 +8,7 @@ import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button } from '@mui/material'
-import useVaultLocation from '../../../hooks/useVaultLocation'
+import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 
 // eslint-disable-next-line
 type Events = {
@@ -71,7 +71,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const notify = useNotify()
   const { id } = useParams()
   const [openRemarks, setOpenRemarks] = useState(false)
-  const vaultLocationsAudit = useVaultLocation()
+  const vaultLocationsAudit = useVaultLocationAudit()
 
   const saveHandler = (e: string): void => {
     if (clone) {
