@@ -44,6 +44,8 @@ import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
+import LocationField from './LocationField'
+import ItemListData, { type DataType } from './ItemListData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -487,6 +489,8 @@ export default function ItemList(
     overflow: 'hidden'
   }
 
+  const [data, setData] = useState<DataType>()
+
   return (
     <List
       sx={sx}
@@ -503,6 +507,7 @@ export default function ItemList(
       }
       storeKey={storeKey}
       {...rest}>
+      <ItemListData setData={setData} />
       <ResetDateFilter source='createdAt' />
       <ResetDateRangeFilter
         source='date_range'
@@ -567,6 +572,7 @@ export default function ItemList(
         <TextField source='remarks' />
         <TextField source='musterRemarks' />
         <TextField source='protectionString' label='Protection' />
+        <LocationField {...data} label='Location' />
       </DatagridConfigurableWithShow>
     </List>
   )
