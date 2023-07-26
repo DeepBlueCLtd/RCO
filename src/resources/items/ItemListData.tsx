@@ -14,6 +14,8 @@ interface Props {
 export default function ItemListData(props: Props): React.ReactElement {
   const { setData } = props
   const data = useItemList()
-  useEffect(() => { setData(data) }, [data])
+  useEffect(() => {
+    setData(data)
+  }, [data])
   return <></>
 }
