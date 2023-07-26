@@ -7,11 +7,11 @@ import ItemsReport from '../items/ItemsReport'
 import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
-  batchId: string
+  batch: Batch['id']
 }
 
 export default function BatchReport(props: Props): React.ReactElement {
-  const { batchId } = props
+  const { batch } = props
   const configData = useConfigData()
 
   return (
@@ -20,7 +20,7 @@ export default function BatchReport(props: Props): React.ReactElement {
         Batch Report
       </Typography>
 
-      <Show actions={false} resource={constants.R_BATCHES} id={batchId}>
+      <Show actions={false} resource={constants.R_BATCHES} id={batch}>
         <Typography variant='h6' margin='16px'>
           Batch details:
         </Typography>
@@ -36,7 +36,7 @@ export default function BatchReport(props: Props): React.ReactElement {
         </SimpleShowLayout>
       </Show>
 
-      <ItemsReport storeKey='batch-report-items' filter={{ batchId }} />
+      <ItemsReport storeKey='batch-report-items' filter={{ batch }} />
     </Box>
   )
 }

@@ -57,17 +57,18 @@ interface RCOResource {
  * interface becomes more complex, introduce a type-specific interface
  */
 interface ActiveItem {
+  // human-readable name for this entity
   name: string
+  // when false, the item should not be included in drop-downs
+  // for `create` forms, though it should for `edit` forms
   active: boolean
 }
 
-interface ActiveReferenceItem extends ActiveItem {
-  // when false, the item should not be included in drop-downs
-  // for `create` forms, though it should for `edit` forms
+interface IntegerReferenceItem extends ActiveItem {
   id: number
 }
 
-interface ReferenceItem extends ActiveItem {
+interface StringReferenceItem extends ActiveItem {
   id: string
 }
 
@@ -84,7 +85,7 @@ interface User extends ResourceWithCreation {
   adminRights: boolean
   /** whether items can still be loaned to this user */
   active: boolean
-  roles: UserRole[]
+  role: UserRole
   staffNumber: string
   departedDate?: string
 }
@@ -123,13 +124,15 @@ interface Project extends ResourceWithCreation {
   endDate: string
 }
 
-type Department = ReferenceItem
-type Organisation = ReferenceItem
-type ProtectiveMarking = ActiveReferenceItem
-type CatCode = ReferenceItem
-type CatHandle = ReferenceItem
-type CatCave = ReferenceItem
-type VaultLocation = ActiveReferenceItem
+type Department = StringReferenceItem
+type Organisation = StringReferenceItem
+type ProtectiveMarking = IntegerReferenceItem
+type CatCode = StringReferenceItem
+type CatHandle = StringReferenceItem
+type CatCave = StringReferenceItem
+type VaultLocation = IntegerReferenceItem
+
+type Vault = StringReferenceItem
 
 interface ItemCode {
   id: number
@@ -144,7 +147,7 @@ interface ItemCave {
 interface ItemHandling {
   id: number
   item: number
-  catHandling: number
+  catHandle: number
 }
 
 interface BatchCode {
@@ -160,7 +163,7 @@ interface BatchCave {
 interface BatchHandling {
   id: number
   batch: number
-  catHandling: number
+  catHandle: number
 }
 
 interface Batch extends ResourceWithCreation {
@@ -182,15 +185,16 @@ interface Batch extends ResourceWithCreation {
 interface Item extends ResourceWithCreation {
   mediaType: MediaType['id']
   startDate: string | null
-  batchId: Batch['id']
-  item_number: string
+  batch: Batch['id']
+  itemNumber: string
   consecPages?: string
   endDate: string | null
   vaultLocation: VaultLocation['id']
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
-  project?: Project['id']
-  platform?: Platform['id']
+  // temporarily removing for working with soul
+  // project?: Project['id']
+  // platform?: Platform['id']
 
   // notes relating to how this item is mustered
   musterRemarks: string
@@ -214,10 +218,10 @@ interface RCOStore {
   organisation: Organisation[]
   department: Department[]
   vaultLocation: VaultLocation[]
-  mediaType: ActiveReferenceItem[]
+  mediaType: IntegerReferenceItem[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
-  catHandling: CatHandle[]
+  catHandle: CatHandle[]
   catCave: CatCave[]
   // configuration data
   configData: ConfigData[]
@@ -239,6 +243,7 @@ interface Destruction {
   finalisedAt?: string
   finalisedBy?: User['id']
   remarks: string
+  reportPrintedAt?: string
 }
 
 interface ActivityType {
@@ -265,6 +270,7 @@ interface Dispatch {
   toAddress: Address['id']
   receiptReceived?: string
   lastHastenerSent?: string
+  reportPrintedAt?: string
 }
 
 /** per instance config data. It is just intended to be one row deep */
@@ -288,15 +294,13 @@ interface ConfigData extends RCOResource {
   /** label for cat-code element
    * test value: `Cat-Code`
    */
-  cat_code: string
+  catCode: string
   /** label for cat-handle element
    * test value: `Cat-Handle`
    */
-  cat_handle: string
+  catHandle: string
   /** label for cat-cave element
    * test value: `Cat-Cave`
    */
-  cat_cave: string
+  catCave: string
 }
-
-type Vault = ActiveReferenceItem

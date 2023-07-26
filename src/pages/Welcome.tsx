@@ -96,8 +96,8 @@ export default function Welcome(): React.ReactElement {
           resource={constants.R_ITEMS}
           fields={[
             { source: 'loanedTo', reference: constants.R_USERS },
-            { source: 'item_number' },
-            { source: 'batchId', reference: constants.R_BATCHES }
+            { source: 'itemNumber' },
+            { source: 'batch', reference: constants.R_BATCHES }
           ]}
           filter={{ loanedTo_neq: undefined }}
           search={`filter=${JSON.stringify({

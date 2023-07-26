@@ -15,12 +15,21 @@ CREATE TABLE IF NOT EXISTS catCave(
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
 
--- Meta table - catHandling
+-- Meta table - catHandle
 CREATE TABLE IF NOT EXISTS catHandle(
        id TEXT NOT NULL PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
 ) WITHOUT ROWID;
+
+
+-- Meta table - vault
+CREATE TABLE IF NOT EXISTS vault(
+       id TEXT NOT NULL PRIMARY KEY,
+       name TEXT NOT NULL,
+       active INTEGER NOT NULL
+) WITHOUT ROWID;
+
 
 -- Meta table - catCode
 CREATE TABLE IF NOT EXISTS catCode(
@@ -92,6 +101,7 @@ CREATE TABLE IF NOT EXISTS user (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
        password TEXT NOT NULL,
+       salt TEXT,
        adminRights INTEGER NOT NULL,
        active INTEGER NOT NULL,
        roles TEXT NOT NULL, /*Should be a json array string. Ex.: "['rco-user', 'rco-power-user']" or "['rco-user']" or "[]"*/
@@ -110,7 +120,7 @@ CREATE TABLE IF NOT EXISTS audit (
 
        user INTEGER NOT NULL,
        resource TEXT,
-       data INTEGER,
+       dataId INTEGER,
        activityType INTEGER,
        dateTime TEXT NOT NULL,
        label TEXT NOT NULL,
@@ -134,6 +144,7 @@ CREATE TABLE IF NOT EXISTS batch (
        project INT,
        platform INT,
        organisation INT NOT NULL,
+       vault TEXT NOT NULL,
        department INT NOT NULL,
        protectiveMarking INT NOT NULL,
        protectionString TEXT NOT NULL,
@@ -148,6 +159,7 @@ CREATE TABLE IF NOT EXISTS batch (
        FOREIGN KEY (organisation) REFERENCES organisation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
        FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (vault) REFERENCES vault(id)
 ) WITHOUT ROWID;
 
 -- DDL for Table batchCode
@@ -191,7 +203,7 @@ CREATE TABLE IF NOT EXISTS destruction(
        createdBy INT NOT NULL,
        finalisedAt TEXT,
        finalisedBy TEXT,
-       remarks TEXT NOT NULL,
+       remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (finalisedBy) REFERENCES user(id)
@@ -201,7 +213,7 @@ CREATE TABLE IF NOT EXISTS destruction(
 CREATE TABLE IF NOT EXISTS dispatch(
        id INTEGER PRIMARY KEY,
 
-       reference TEXT NOT NULL,
+       reference TEXT,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -289,8 +301,8 @@ CREATE TABLE if not exists  configData (
   projectsName  TEXT NOT NULL,
   fromAddress  TEXT NOT NULL,
   protectionName  TEXT NOT NULL,
-  cat_code  TEXT NOT NULL,
-  cat_handle  TEXT NOT NULL,
-  cat_cave  TEXT NOT NULL
+  catCode  TEXT NOT NULL,
+  catHandle  TEXT NOT NULL,
+  catCave  TEXT NOT NULL
 )
 

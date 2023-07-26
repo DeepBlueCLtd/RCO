@@ -20,7 +20,7 @@ export const nowDate = (): string => {
 export const getDifference = (
   data: Record<string, any>,
   previousData: Record<string, any>
-): Record<any, string> => {
+): Record<any, string | null> => {
   const valuesChanged: Record<string, any> = {}
   Object.keys(data).forEach((item) => {
     const isDateModified =
@@ -65,12 +65,33 @@ export const auditForUpdatedChanges = async (
   audit: AuditFunctionType,
   subject?: User['id']
 ): Promise<UpdateParams<RCOResource>> => {
+  // @ts-expect-error: property not found in type
+  const { editRemarks, ...rest } = record.data
+  if (editRemarks) {
+    record.data = rest
+  }
   const difference = getDifference(record.data, record.previousData)
+
+  const keys = Object.keys(difference)
+  const testKeys: string[] = [
+    'dispatchedAt',
+    'reportPrintedAt',
+    'lastHastenerSent',
+    'receiptReceived'
+  ]
+  testKeys.forEach((key) => {
+    if (keys.includes(key) && !difference?.[key]) {
+      difference[key] = 'unset'
+    }
+  })
+  const activityDetail = `Previous values: ${JSON.stringify(difference)}${
+    editRemarks ? `, Remarks: ${editRemarks}` : ''
+  }`
   const dataId =
     record.previousData.id !== undefined ? record.previousData.id : null
   await audit({
     ...auditData,
-    activityDetail: `Previous values: ${JSON.stringify(difference)}`,
+    activityDetail,
     resource,
     dataId,
     subject

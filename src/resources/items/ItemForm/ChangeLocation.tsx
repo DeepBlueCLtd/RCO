@@ -11,6 +11,7 @@ import {
   useNotify
 } from 'react-admin'
 import FlexBox from '../../../components/FlexBox'
+import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 
 interface ChangeLocationProps {
   ids: Identifier[]
@@ -50,11 +51,13 @@ export default function ChangeLocation(
 
   const vaultLocationValue: number | string = watch('vaultLocation')
 
-  const [vaultLocation, setVaultLocation] = useState<ActiveReferenceItem[]>([])
+  const [vaultLocation, setVaultLocation] = useState<IntegerReferenceItem[]>([])
   const dataProvider = useDataProvider()
+  const vaultLocationsAudit = useVaultLocationAudit()
 
   async function onSubmit(values: FormState): Promise<void> {
     try {
+      await vaultLocationsAudit(values.vaultLocation)
       const { data } = await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids,
         data: values
@@ -68,7 +71,7 @@ export default function ChangeLocation(
 
   useEffect(() => {
     dataProvider
-      .getList<ActiveReferenceItem>(constants.R_VAULT_LOCATION, {
+      .getList<IntegerReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: {}

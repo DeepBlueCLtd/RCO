@@ -9,7 +9,7 @@ interface NewBatch extends Omit<Batch, 'id' | 'createdAt' | 'createdBy'> {
 }
 
 interface NewItem
-  extends Omit<Item, 'id' | 'createdAt' | 'createdBy' | 'item_number'> {
+  extends Omit<Item, 'id' | 'createdAt' | 'createdBy' | 'itemNumber'> {
   readonly id?: number
 }
 
@@ -31,7 +31,7 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
     protectiveMarking: 1,
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1',
-    vault: 1
+    vault: 'VAULT'
   }
 }
 
@@ -40,7 +40,7 @@ interface ItemProps {
   remarks?: string
   mediaType?: MediaType['id']
   toISO?: boolean
-  batchId?: number
+  batch?: Batch['id']
 }
 
 export const generateItemForTesting = ({
@@ -48,7 +48,7 @@ export const generateItemForTesting = ({
   remarks,
   mediaType,
   toISO,
-  batchId
+  batch
 }: ItemProps = {}): NewItem => {
   return {
     ...(id !== undefined ? { id } : null),
@@ -64,7 +64,7 @@ export const generateItemForTesting = ({
           ).toISOString()
         : DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
 
-    batchId: batchId ?? 1,
+    batch: batch ?? 1,
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
@@ -126,7 +126,7 @@ export const generateUserForTesting = ({
   password: 'abcd',
   adminRights: adminRights ?? true,
   active: active ?? true,
-  roles: ['rco-user'],
+  role: 'rco-user',
   staffNumber: 'd-1'
 })
 
@@ -140,7 +140,7 @@ export const generateVaultLocationForTesting = ({
   id,
   active,
   name
-}: VaultLocationProps = {}): Omit<ActiveReferenceItem, 'id'> => ({
+}: VaultLocationProps = {}): Omit<IntegerReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
   name: name ?? 'Dummy-Vault-Location-1'
@@ -154,7 +154,7 @@ interface ActiveReferenceItemProps {
 export const generateActiveReferenceItemForTesting = (
   name: string,
   { id, active }: ActiveReferenceItemProps = {}
-): Omit<ActiveReferenceItem, 'id'> => ({
+): Omit<IntegerReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
   name

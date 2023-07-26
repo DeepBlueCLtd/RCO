@@ -86,9 +86,9 @@ export default function ReferenceData(): React.ReactElement {
   const rarelyUsedRoutes = [
     { path: '/organisation', title: 'Organisation' },
     { path: '/protectiveMarking', title: 'Protective Marking' },
-    { path: '/catCode', title: configData?.cat_code ?? 'Cat Code' },
-    { path: '/catHandling', title: configData?.cat_handle ?? 'Cat Handling' },
-    { path: '/catCave', title: configData?.cat_cave ?? 'Cat Cave' },
+    { path: '/catCode', title: configData?.catCode ?? 'Cat Code' },
+    { path: '/catHandle', title: configData?.catHandle ?? 'Cat Handle' },
+    { path: '/catCave', title: configData?.catCave ?? 'Cat Cave' },
     { path: '/mediaType', title: 'Media Type' },
     { path: '/department', title: 'Department' },
     { path: '/address', title: 'Addresses' }

@@ -18,14 +18,14 @@ import * as constants from '../../../constants'
 const sx = { width: '100%' }
 
 interface Props {
-  batchId?: number
+  batch?: Batch['id']
   disabled?: boolean
   itemId?: Item['id']
   setItemId: React.Dispatch<React.SetStateAction<number | undefined>>
 }
 
 const CoreForm = (props: Props): React.ReactElement => {
-  const { batchId, disabled, itemId, setItemId } = props
+  const { batch, disabled, itemId, setItemId } = props
   const formContext = useFormContext()
   const {
     formState: { isSubmitted, isSubmitting }
@@ -34,7 +34,7 @@ const CoreForm = (props: Props): React.ReactElement => {
   const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
 
   useEffect(() => {
-    formContext?.setValue('batchId', batchId)
+    formContext?.setValue('batch', batch)
   })
 
   useEffect(() => {
@@ -153,7 +153,7 @@ const CoreForm = (props: Props): React.ReactElement => {
               {'Batch: '}
               <SourceField
                 link='show'
-                source='batchId'
+                source='batch'
                 reference={R_BATCHES}
                 sourceField='batchNumber'
                 textProps={{

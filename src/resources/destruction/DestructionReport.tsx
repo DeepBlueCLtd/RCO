@@ -84,7 +84,7 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
         filter={{
           destruction: recordId
         }}>
-        <TextField source='item_number' />
+        <TextField source='itemNumber' />
         <SourceField
           link='show'
           source='mediaType'
@@ -99,7 +99,7 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
         <ReferenceField
           label='Platform'
           reference={constants.R_BATCHES}
-          source='batchId'>
+          source='batch'>
           <ReferenceField reference={constants.R_PLATFORMS} source='platform'>
             <TextField source='name' />
           </ReferenceField>
@@ -258,14 +258,15 @@ const TablesData = (): React.ReactElement => {
 interface Props {
   open: boolean
   handleOpen: (open: DestructionModal) => void
+  onPrint?: () => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
-  const { open, handleOpen } = props
+  const { handleOpen, ...rest } = props
 
   return (
     <Printable
-      open={open}
+      {...rest}
       onClose={() => {
         handleOpen('')
       }}>

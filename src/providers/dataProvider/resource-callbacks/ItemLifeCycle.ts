@@ -19,19 +19,19 @@ const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
   beforeCreate: async (
-    record: CreateParams<Item>,
-    dataProvider: DataProvider
+    record: CreateParams<Item>
+    // dataProvider: DataProvider
   ) => {
     const fields: Array<keyof Item> = ['startDate', 'endDate']
     convertDateToISO<Item>(record.data, fields)
     // TODO: This feature is only necessary for mock backend. It should be deleted for SQL backend.
-    const {
-      data: { project, platform }
-    } = await dataProvider.getOne<Batch>(R_BATCHES, {
-      id: record.data.batchId
-    })
-    record.data.project = project
-    record.data.platform = platform
+    // const {
+    //   data: { project, platform }
+    // } = await dataProvider.getOne<Batch>(R_BATCHES, {
+    //   id: record.data.batch
+    // })
+    // record.data.project = project
+    // record.data.platform = platform
     return withCreatedByAt(record)
   },
   afterCreate: async (
@@ -40,13 +40,13 @@ const lifeCycles = (
   ) => {
     try {
       const { data } = record
-      const { batchId, id } = data
-      const { data: batch } = await dataProvider.getOne<Batch>(R_BATCHES, {
-        id: batchId
+      const { batch, id } = data
+      const { data: batchObj } = await dataProvider.getOne<Batch>(R_BATCHES, {
+        id: batch
       })
 
       const items = await dataProvider.getList<Item>(R_ITEMS, {
-        filter: { batchId },
+        filter: { batch },
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 }
       })
@@ -55,13 +55,13 @@ const lifeCycles = (
       ).toLocaleString('en-US', {
         useGrouping: false
       })
-      const batchNumber: string = batch.batchNumber
+      const batchNumber: string = batchObj.batchNumber
       const itemNumber = `${batchNumber}/${idVal}`
       const withItemRef = await dataProvider.update<Item>(R_ITEMS, {
         id,
         previousData: data,
         data: {
-          item_number: itemNumber
+          itemNumber
         }
       })
       await audit({

@@ -23,7 +23,7 @@ describe('CRUD operation on Organisation Resource', () => {
     createResource: (
       dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
       resource: ResourceTypes
-    ) => Promise<ActiveReferenceItem>
+    ) => Promise<IntegerReferenceItem>
 
   beforeAll(async () => {
     const provider = await localForageDataProvider({
@@ -55,7 +55,7 @@ describe('CRUD operation on Organisation Resource', () => {
       R_ORGANISATION
     )
 
-    await provider.update<ActiveReferenceItem>(R_ORGANISATION, {
+    await provider.update<IntegerReferenceItem>(R_ORGANISATION, {
       id: createdOrganisation.id,
       previousData: createdOrganisation,
       data: {
@@ -66,7 +66,7 @@ describe('CRUD operation on Organisation Resource', () => {
     })
 
     const fetchedOrganisation = (
-      await provider.getOne<ActiveReferenceItem>(R_ORGANISATION, {
+      await provider.getOne<IntegerReferenceItem>(R_ORGANISATION, {
         id: createdOrganisation.id
       })
     ).data

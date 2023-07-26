@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import PlatformList from './PlatformList'
 import EditToolBar from '../../components/EditToolBar'
+import * as constants from '../../constants'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -33,7 +34,7 @@ const PlatformForm = (): React.ReactElement => {
 const PlatformCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Create redirect={`/${cName}`} resource='platforms'>
+    <Create redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
       <PlatformForm />
     </Create>
   )
@@ -42,7 +43,7 @@ const PlatformCreate = ({ name }: PropType): React.ReactElement => {
 const PlatformEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
-    <Edit redirect={`/${cName}`} resource='platforms'>
+    <Edit redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
       <PlatformForm />
     </Edit>
   )

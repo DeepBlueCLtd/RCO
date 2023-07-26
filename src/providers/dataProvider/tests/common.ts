@@ -11,15 +11,15 @@ const TEST_STORAGE_KEY = 'rco-test'
 interface CommonReturnType {
   checkEmptyAuditList: (provider: DataProvider) => Promise<void>
   checkAuditListForFirstEntry: (
-    createdResource: ActiveReferenceItem
+    createdResource: IntegerReferenceItem
   ) => Promise<void>
   checkAuditListForSecondEntry: (
-    createdResource: ActiveReferenceItem
+    createdResource: IntegerReferenceItem
   ) => Promise<void>
   createResource: (
     dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
     resource: ResourceTypes
-  ) => Promise<ActiveReferenceItem>
+  ) => Promise<IntegerReferenceItem>
   checkListBeforeCreate: () => Promise<void>
   checkListAfterCreate: () => Promise<void>
 }
@@ -39,7 +39,7 @@ const common = (
       expect(auditList.total).toBe(0)
     },
     checkAuditListForFirstEntry: async (
-      createdResource: ActiveReferenceItem
+      createdResource: IntegerReferenceItem
     ): Promise<void> => {
       const auditList = await provider.getList<Audit>(R_AUDIT, {
         sort: { field: 'id', order: 'ASC' },
@@ -56,7 +56,7 @@ const common = (
     },
 
     checkAuditListForSecondEntry: async (
-      createdResource: ActiveReferenceItem
+      createdResource: IntegerReferenceItem
     ): Promise<void> => {
       const auditList = await provider.getList<Audit>(R_AUDIT, {
         sort: { field: 'id', order: 'ASC' },
@@ -74,9 +74,9 @@ const common = (
     createResource: async (
       dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
       resource: ResourceTypes
-    ): Promise<ActiveReferenceItem> => {
+    ): Promise<IntegerReferenceItem> => {
       const createdResource = (
-        await provider.create<ActiveReferenceItem>(resource, {
+        await provider.create<IntegerReferenceItem>(resource, {
           data: dummyDataGenerate(`Dummy-${(resource as string).toUpperCase()}`)
         })
       ).data
@@ -88,7 +88,7 @@ const common = (
     },
 
     checkListBeforeCreate: async (): Promise<void> => {
-      const listBeforeCreate = await provider.getList<ActiveReferenceItem>(
+      const listBeforeCreate = await provider.getList<IntegerReferenceItem>(
         resource,
         {
           sort: { field: 'id', order: 'ASC' },
@@ -100,7 +100,7 @@ const common = (
     },
 
     checkListAfterCreate: async (): Promise<void> => {
-      const listAfterCreate = await provider.getList<ActiveReferenceItem>(
+      const listAfterCreate = await provider.getList<IntegerReferenceItem>(
         resource,
         {
           sort: { field: 'id', order: 'ASC' },
