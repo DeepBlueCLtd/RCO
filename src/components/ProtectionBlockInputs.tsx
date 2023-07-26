@@ -7,7 +7,10 @@ import ProtectionRefInput from './ProtectionRefInput'
 import { useDataProvider, type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useConfigData } from '../utils/useConfigData'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import useAudit from '../hooks/useAudit'
+import { useParams } from 'react-router-dom'
+import { AuditType } from '../utils/activity-types'
 interface Props {
   disabled?: boolean
   markingSource: string
@@ -26,7 +29,15 @@ export default function ProtectionBlockInputs<
   const { setValue, watch, getValues } = useFormContext()
   const dataProvider = useDataProvider()
   const configData = useConfigData()
-
+  const { id: dataId } = useParams()
+  const audit = useAudit()
+  const {
+    formState: { isSubmitSuccessful }
+  } = useFormContext()
+  const [codeChanges, setCodeChanges] = useState<string[]>()
+  const [caveChanges, setCaveChanges] = useState<string[]>()
+  const [handleChanges, setHandleChanges] = useState<string[]>()
+  const [submitted, setSubmitted] = useState(false)
   const inputProps = { disabled }
 
   const protectionInputProps = {
@@ -65,6 +76,35 @@ export default function ProtectionBlockInputs<
     setProtectiveMarking(getValues('protectiveMarking'))
   }, [])
 
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      setSubmitted(true)
+    }
+    const isChanged =
+      typeof codeChanges !== 'undefined' ||
+      typeof caveChanges !== 'undefined' ||
+      typeof handleChanges !== 'undefined'
+    if ((isSubmitSuccessful || submitted) && dataId && isChanged) {
+      const detailData: Record<string, string> = {
+        catCode: codeChanges?.join(' ') ?? '',
+        catCave: caveChanges?.join(' ') ?? '',
+        catHandle: handleChanges?.join(' ') ?? ''
+      }
+      const activityDetail = `Previous values: ${JSON.stringify(detailData)}`
+      if (dataId) {
+        audit({
+          activityDetail,
+          resource: props.resource,
+          securityRelated: true,
+          dataId: parseInt(dataId),
+          type: AuditType.EDIT
+        })
+          .then(console.log)
+          .catch(console.error)
+      }
+    }
+  }, [isSubmitSuccessful, codeChanges, submitted])
+
   return (
     <Box
       component='fieldset'
@@ -90,6 +130,7 @@ export default function ProtectionBlockInputs<
           label={configData?.catCode ?? 'Cat code'}
           {...protectionInputProps}
           width='20%'
+          onValueChange={setCodeChanges}
         />
         <SourceInput
           source={markingSource}
@@ -107,6 +148,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           {...protectionInputProps}
           width='30%'
+          onValueChange={setHandleChanges}
         />
         <ProtectionRefInput<CatCave, TCatCave>
           setIsDirty={setIsDirty}
@@ -118,6 +160,7 @@ export default function ProtectionBlockInputs<
           label={configData?.catCave ?? 'Cat cave'}
           {...protectionInputProps}
           width='30%'
+          onValueChange={setCaveChanges}
         />
       </FlexBox>
     </Box>
