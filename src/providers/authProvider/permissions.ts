@@ -7,6 +7,7 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
     [constants.R_BATCHES]: { read: true, write: false, delete: false },
     [constants.R_ITEMS]: { read: true, write: false, delete: false },
     [constants.R_ADDRESSES]: { read: true, write: false, delete: false },
+    [constants.R_ALL_ITEMS]: { read: true, write: false, delete: false },
     'reference-data': { read: true, write: false, delete: false }
   },
   'rco-user': {
