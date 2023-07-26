@@ -528,6 +528,13 @@ export default function ItemList(
         />
         <SourceField
           link='show'
+          source='mediaType'
+          sourceField='mediaCategory'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media category'
+        />
+        <SourceField
+          link='show'
           source='loanedTo'
           reference={constants.R_USERS}
           label='Loaned to'

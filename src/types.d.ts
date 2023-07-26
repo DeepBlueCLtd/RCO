@@ -46,7 +46,10 @@ interface FormProps {
 interface MediaType extends RCOResource {
   name: string
   active: boolean
+  mediaCategory: MediaCategory
 }
+
+type MediaCategory = 'Paper' | 'Magnetic'
 
 /** an entity, with an id unique to that table */
 interface RCOResource {

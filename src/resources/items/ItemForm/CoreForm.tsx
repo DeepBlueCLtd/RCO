@@ -3,17 +3,19 @@ import {
   DateTimeInput,
   TextField,
   TextInput,
-  useGetList
+  useGetList,
+  useRecordContext
 } from 'react-admin'
+import { TextField as MuiTextField , Autocomplete, Card, CardContent, Typography } from '@mui/material'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 import { ConditionalReferenceInput } from '../../batches/BatchForm'
 import ProtectionBlockInputs from '../../../components/ProtectionBlockInputs'
 import * as constants from '../../../constants'
+import { mediaCategories } from '../../../utils/mediaCategory'
 
 const sx = { width: '100%' }
 
@@ -26,19 +28,26 @@ interface Props {
 
 const CoreForm = (props: Props): React.ReactElement => {
   const { batchId, disabled, itemId, setItemId } = props
+  const record = useRecordContext<Item>()
+  const [category, setCategory] = useState(mediaCategories[0])
   const formContext = useFormContext()
   const {
     formState: { isSubmitted, isSubmitting }
   } = formContext
   const [mediaTypes, setMediaTypes] = useState<any[]>([])
-  const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
-
+  const { data = [] } = useGetList(constants.R_MEDIA_TYPE, {
+    pagination: { page: 1, perPage: 1000 }
+  })
   useEffect(() => {
     formContext?.setValue('batchId', batchId)
   })
 
   useEffect(() => {
     setMediaTypes(data)
+    const found: MediaType = data.find(
+      (c: MediaType) => c?.id === record?.mediaType
+    )
+    setCategory(found ? found.mediaCategory : mediaCategories[0])
   }, [data])
 
   useEffect(() => {
@@ -60,13 +69,24 @@ const CoreForm = (props: Props): React.ReactElement => {
       </Typography>
     )
   }
-
   return (
     <>
+      <Autocomplete
+        disabled={disabled}
+        onChange={(_, value) => { setCategory(value as string) }}
+        value={category}
+        options={mediaCategories}
+        sx={sx}
+        renderInput={(params) => <MuiTextField {...params} label='Category' />}
+      />
       <AutocompleteInput
         disabled={disabled}
         source='mediaType'
-        choices={mediaTypes.filter((item: Record<string, any>) => item.active)}
+        choices={mediaTypes.filter((item: Record<string, any>) =>
+          category
+            ? item.active && item.mediaCategory === category
+            : item.active
+        )}
         sx={sx}
       />
       <FlexBox alignItems='flex-start'>
