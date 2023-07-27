@@ -2,6 +2,9 @@
 
 Secure asset register
 
+## Burndown Chart
+![Burndown chart](https://docs.google.com/spreadsheets/d/e/2PACX-1vT3qHQ0zwLklv_xYuSBWqyxTWAa0qvZZWVxVoK3JN3NpRExpMwM6rty1yg8G5wtGVBCFpdI8pn9J64j/pubchart?oid=871636188&format=image)
+
 ## Setup project on local
 
 - Clone the project form github
