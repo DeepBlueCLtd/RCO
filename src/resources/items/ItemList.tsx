@@ -57,7 +57,8 @@ const omitColumns: string[] = [
   'endDate',
   'vaultLocation',
   'musterRemarks',
-  'loanedTo'
+  'loanedTo',
+  'batch'
   // 'project',
   // 'platform'
 ]
@@ -527,6 +528,7 @@ export default function ItemList(
         <TextField source='itemNumber' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
+        <LocationField label='Location' {...data} />
         <SourceField
           link='show'
           source='mediaType'
@@ -579,7 +581,6 @@ export default function ItemList(
         <TextField source='remarks' />
         <TextField source='musterRemarks' />
         <TextField source='protectionString' label='Protection' />
-        <LocationField label='Location' {...data} />
       </DatagridConfigurableWithShow>
     </List>
   )
