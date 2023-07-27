@@ -5,7 +5,6 @@ import {
   TextField,
   useListContext,
   Show,
-  BooleanField,
   Count,
   ReferenceField,
   useRecordContext,
@@ -14,7 +13,6 @@ import {
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
-import FieldWithLabel from '../../components/FieldWithLabel'
 import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
 import { useConfigData } from '../../utils/useConfigData'
@@ -79,16 +77,6 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     Items Currently Booked Out{' '}
                     {DateTime.now().toFormat(constants.DATETIME_FORMAT)}
                   </Typography>
-                </Show>
-                <Show id={userId} resource={constants.R_USERS} actions={false}>
-                  <Box padding={'16px'}>
-                    <FieldWithLabel label='Name' source='name' />
-                    <FieldWithLabel
-                      source='adminRights'
-                      label='Admin Rights'
-                      component={BooleanField}
-                    />
-                  </Box>
                 </Show>
                 <ItemsReport filter={{ loanedTo: userId }}>
                   <TextField source='itemNumber' label='Item Number' />

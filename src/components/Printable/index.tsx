@@ -8,7 +8,12 @@ interface Props {
 }
 
 const style = {
-  background: '#fff'
+  background: '#fff',
+  '@media print': {
+    '@page': {
+      size: 'portrait'
+    }
+  }
 }
 
 const buttonSx = {
