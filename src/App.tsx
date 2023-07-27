@@ -325,6 +325,10 @@ function App(): React.ReactElement {
               dispatchedDate: undefined,
               destructionDate: undefined
             },
+            sort: {
+              field: 'id',
+              order: 'DESC'
+            },
             label: 'Live Items'
           }}
           {...protectedRoutes(permissions, constants.R_ITEMS, items)}
