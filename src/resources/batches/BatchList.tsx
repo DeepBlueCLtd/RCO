@@ -11,7 +11,6 @@ import {
   useListContext,
   useGetList,
   useGetMany,
-  DateField,
   type SortPayload,
   type SelectColumnsButtonProps
 } from 'react-admin'
@@ -158,8 +157,6 @@ export default function BatchList(): React.ReactElement {
         bulkActionButtons={false}
         preferenceKey={preferenceKey}>
         <TextField source='id' />
-        <DateField source='startDate' />
-        <DateField source='endDate' />
         <TextField label='Reference' source='batchNumber' />
         <SourceField source='department' label='Department' />
         <SourceField

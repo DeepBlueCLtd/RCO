@@ -20,8 +20,6 @@ interface Props {
 export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
   return {
     ...(id !== undefined ? { id } : null),
-    startDate: DateTime.now().toFormat('yyyy-MM-dd'),
-    endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
     batchNumber: `V1/${year}`,
     yearOfReceipt: String(year),
     department: '1-department',
