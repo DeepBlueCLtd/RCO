@@ -3,12 +3,12 @@ import * as constants from '../constants'
 import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton, DateField, useGetList } from 'react-admin'
+import { CreateButton, useGetList } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
-import HastenerSentField from '../components/HastenerSentField'
 import useCanAccess from '../hooks/useCanAccess'
 import { useConfigData } from '../utils/useConfigData'
+import PendingReceiptNotes from '../components/PendingReceiptNotes'
 
 const useStyles = makeStyles({
   root: {
@@ -106,17 +106,7 @@ export default function Welcome(): React.ReactElement {
         />
       </FlexBox>
       <FlexBox className={styles.row}>
-        <Recent<Dispatch>
-          label='Pending Receipt Notes'
-          resource={constants.R_DISPATCH}
-          fields={[
-            { source: 'reference' },
-            { source: 'dispatchedAt', component: DateField },
-            { source: 'lastHastenerSent', component: HastenerSentField }
-          ]}
-          filter={{ receiptReceived: undefined }}
-          search={`filter=${JSON.stringify({ receiptReceived: [undefined] })}`}
-        />
+        <PendingReceiptNotes />
       </FlexBox>
     </div>
   )
