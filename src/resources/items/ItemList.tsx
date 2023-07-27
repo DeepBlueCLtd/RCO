@@ -499,6 +499,7 @@ export default function ItemList(
       actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
+      sort={options?.sort}
       perPage={100}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
