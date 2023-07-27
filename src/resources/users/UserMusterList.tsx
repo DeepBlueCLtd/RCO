@@ -26,13 +26,24 @@ interface CompositeFieldProps {
   label: string
 }
 
+const style = { fontSize: '12px' }
+
 const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
   const { label } = props
   return (
     <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
       <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField source='id' reference={constants.R_PROJECTS} />,{' '}
-        <SourceField source='id' reference={constants.R_PLATFORMS} />
+        <SourceField
+          textProps={{ ...style }}
+          source='id'
+          reference={constants.R_PROJECTS}
+        />
+        ,{' '}
+        <SourceField
+          textProps={{ ...style }}
+          source='id'
+          reference={constants.R_PLATFORMS}
+        />
       </ReferenceField>
     </ReferenceField>
   )
@@ -41,7 +52,7 @@ const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
 const Title = (): React.ReactElement => {
   const record = useRecordContext()
   return (
-    <Typography variant='h4' textAlign='center' margin='10px'>
+    <Typography fontSize='12px' variant='h4' textAlign='center' margin='10px'>
       RCO - Loans to {record.name}
     </Typography>
   )
@@ -66,11 +77,15 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   resource={constants.R_USERS}
                   actions={false}>
                   <Title />
-                  <Typography variant='h5' textAlign='center' margin='10px'>
+                  <Typography
+                    fontSize='12px'
+                    variant='h5'
+                    textAlign='center'
+                    margin='10px'>
                     {
                       <Count
                         resource={constants.R_ITEMS}
-                        sx={{ fontSize: '1.5rem' }}
+                        sx={{ fontSize: '12px' }}
                         filter={{ loanedTo: userId }}
                       />
                     }{' '}
@@ -79,22 +94,37 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   </Typography>
                 </Show>
                 <ItemsReport filter={{ loanedTo: userId }}>
-                  <TextField source='itemNumber' label='Item Number' />
+                  <TextField
+                    {...style}
+                    source='itemNumber'
+                    label='Item Number'
+                  />
                   <SourceField
+                    textProps={{ ...style }}
                     link='show'
                     source='mediaType'
                     reference={constants.R_MEDIA_TYPE}
                     label='Media type'
                   />
                   <SourceField
+                    textProps={{ ...style }}
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}
                   />
                   <CompositeField
+                    {...style}
                     label={`${configData?.projectName} & Platform`}
                   />
-                  <DateField source='loanedDate' label='Loaned Date' />
-                  <TextField source='consecPages' label='Consec/Pages' />
+                  <DateField
+                    {...style}
+                    source='loanedDate'
+                    label='Loaned Date'
+                  />
+                  <TextField
+                    {...style}
+                    source='consecPages'
+                    label='Consec/Pages'
+                  />
                 </ItemsReport>
                 <ReportSignature id={userId} />
               </Box>
