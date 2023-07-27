@@ -77,25 +77,29 @@ export const auditForUpdatedChanges = async (
     'dispatchedAt',
     'reportPrintedAt',
     'lastHastenerSent',
-    'receiptReceived'
+    'receiptReceived',
+    'protectionString'
   ]
   testKeys.forEach((key) => {
     if (keys.includes(key) && !difference?.[key]) {
       difference[key] = 'unset'
     }
   })
-  const activityDetail = `Previous values: ${JSON.stringify(difference)}${
-    editRemarks ? `, Remarks: ${editRemarks}` : ''
-  }`
-  const dataId =
-    record.previousData.id !== undefined ? record.previousData.id : null
-  await audit({
-    ...auditData,
-    activityDetail,
-    resource,
-    dataId,
-    subject
-  })
+
+  if (Object.keys(difference).length > 0) {
+    const activityDetail = `Previous values: ${JSON.stringify(difference)}${
+      editRemarks ? `, Remarks: ${editRemarks}` : ''
+    }`
+    const dataId =
+      record.previousData.id !== undefined ? record.previousData.id : null
+    await audit({
+      ...auditData,
+      activityDetail,
+      resource,
+      dataId,
+      subject
+    })
+  }
   return record
 }
 
