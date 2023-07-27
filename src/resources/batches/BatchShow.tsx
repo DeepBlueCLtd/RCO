@@ -109,9 +109,6 @@ export default function BatchShow(): React.ReactElement {
         <constants.ICON_BATCH /> {pageTitle}
       </Typography>
       <TabbedShowLayout sx={{ paddingBottom: '4px' }}>
-        <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
-          <BatchForm isShow />
-        </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>
           <ItemList
             storeKey={`${constants.R_BATCHES}-${id}-items-list`}
@@ -122,6 +119,9 @@ export default function BatchShow(): React.ReactElement {
             preferenceKey={preferenceKey}
             disableSyncWithLocation
           />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
+          <BatchForm isShow />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
       <HistoryModal handleOpen={handleOpen} open={open} />
