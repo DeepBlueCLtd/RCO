@@ -471,6 +471,7 @@ export default function ItemList(
   props?: ItemListType & SelectColumnsButtonProps
 ): React.ReactElement {
   const { options } = useResourceDefinition()
+  const { resource } = options ?? {}
   const {
     datagridConfigurableProps,
     children,
@@ -507,7 +508,7 @@ export default function ItemList(
           ? filters
           : filters.filter((f) => filtersShown.includes(f.key as string))
       }
-      storeKey={storeKey}
+      storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
       <ItemListData setData={setData} />
       <ResetDateFilter source='createdAt' />
@@ -554,27 +555,31 @@ export default function ItemList(
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
-        <SourceField
-          link='show'
-          source='destruction'
-          reference={constants.R_DESTRUCTION}
-          sourceField='reference'
-        />
-        <DateField source='destructionDate' />
-        <SourceField
-          link='show'
-          source='dispatchJob'
-          reference={constants.R_DISPATCH}
-          sourceField='reference'
-          label='Dispatch'
-        />
-        <DateField source='dispatchedDate' />
+        {resource === constants.R_ALL_ITEMS && [
+          <SourceField
+            link='show'
+            source='destruction'
+            reference={constants.R_DESTRUCTION}
+            sourceField='reference'
+            key={'destruction'}
+          />,
+          <DateField source='destructionDate' key={'destructionDate'} />,
+          <SourceField
+            link='show'
+            source='dispatchJob'
+            reference={constants.R_DISPATCH}
+            sourceField='reference'
+            label='Dispatch'
+            key={'dispatchJob'}
+          />,
+          <DateField source='dispatchedDate' key={'dispatchJob'} />
+        ]}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
         <TextField source='remarks' />
         <TextField source='musterRemarks' />
         <TextField source='protectionString' label='Protection' />
-        <LocationField {...data} label='Location' />
+        <LocationField label='Location' {...data} />
       </DatagridConfigurableWithShow>
     </List>
   )

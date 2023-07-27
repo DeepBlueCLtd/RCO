@@ -325,6 +325,7 @@ function App(): React.ReactElement {
               dispatchedDate: undefined,
               destructionDate: undefined
             },
+            resource: constants.R_ITEMS,
             sort: {
               field: 'id',
               order: 'DESC'
@@ -337,7 +338,7 @@ function App(): React.ReactElement {
           key={constants.R_ALL_ITEMS}
           icon={constants.ICON_ALL_ITEM}
           name={constants.R_ALL_ITEMS}
-          options={{ label: 'All Items' }}
+          options={{ label: 'All Items', resource: constants.R_ALL_ITEMS }}
           {...protectedRoutes(permissions, constants.R_ALL_ITEMS, items)}
         />
         <Resource
