@@ -4,7 +4,6 @@ import {
   List,
   TextField,
   DatagridConfigurable,
-  TopToolbar,
   SelectColumnsButton,
   CreateButton,
   SearchInput,
@@ -13,7 +12,8 @@ import {
   useGetList,
   useGetMany,
   DateField,
-  type SortPayload
+  type SortPayload,
+  type SelectColumnsButtonProps
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -23,17 +23,22 @@ import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
 import { useConfigData } from '../../utils/useConfigData'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
 
-const ListActions = (): React.ReactElement => {
+const ListActions = ({
+  preferenceKey
+}: SelectColumnsButtonProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   return (
-    <TopToolbar>
+    <StyledTopToolbar preferenceKey={preferenceKey}>
       {hasAccess(constants.R_BATCHES, { write: true }) ? (
         <CreateButton label='ADD NEW BATCH' />
-      ) : null}
+      ) : (
+        <></>
+      )}
       <FilterButton />
-      <SelectColumnsButton />
-    </TopToolbar>
+      <SelectColumnsButton preferenceKey={preferenceKey} />
+    </StyledTopToolbar>
   )
 }
 
@@ -78,8 +83,10 @@ const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
 
 export default function BatchList(): React.ReactElement {
   const configData = useConfigData()
+  const preferenceKey = `${constants.R_BATCHES}-batch-datagrid-columns`
 
   const filters = [
+    <SourceInput key='vault' source='vault' reference={constants.R_VAULT} />,
     <SearchInput source='q' key='q' alwaysOn />,
     <CreatedByMeFilter
       key='createdByMe'
@@ -124,16 +131,32 @@ export default function BatchList(): React.ReactElement {
       label={configData?.projectName}
       key={configData?.projectsName}
     />,
-    <DateFilter key='createdAt' source='createdAt' label='Created At' />
+    <DateFilter
+      key='createdAt'
+      source='createdAt'
+      label='Created At'
+      format='iso'
+    />
   ]
 
   return (
-    <List perPage={25} actions={<ListActions />} filters={filters}>
+    <List
+      sx={{
+        '& .MuiToolbar-root': {
+          '& > form': {
+            flex: 1
+          }
+        }
+      }}
+      perPage={25}
+      actions={<ListActions preferenceKey={preferenceKey} />}
+      filters={filters}>
       <ResetDateFilter source='createdAt' />
       <DatagridConfigurable
         omit={omitColumns}
         rowClick='show'
-        bulkActionButtons={false}>
+        bulkActionButtons={false}
+        preferenceKey={preferenceKey}>
         <TextField source='id' />
         <DateField source='startDate' />
         <DateField source='endDate' />
@@ -155,6 +178,7 @@ export default function BatchList(): React.ReactElement {
           reference={constants.R_PROTECTIVE_MARKING}
           label='Maximum protective marking'
         />
+        <SourceField source='vault' reference={constants.R_VAULT} />
         <TextField source='remarks' />
         <TextField source='receiptNotes' />
         <TextField source='createdAt' label='Created' />

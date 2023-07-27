@@ -30,7 +30,12 @@ const filters = [
     source='createdBy'
     reference={constants.R_USERS}
   />,
-  <DateFilter key='createdAt' source='createdAt' label='Created At' />
+  <DateFilter
+    key='createdAt'
+    source='createdAt'
+    label='Created At'
+    format='iso'
+  />
 ]
 
 export default function ProjectList(): React.ReactElement {
@@ -38,7 +43,9 @@ export default function ProjectList(): React.ReactElement {
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <FilterButton />
-      {hasAccess('reference-data', { write: true }) ? <CreateButton /> : null}
+      {hasAccess(constants.R_PROJECTS, { write: true }) ? (
+        <CreateButton />
+      ) : null}
       <SelectColumnsButton />
     </TopToolbar>
   )

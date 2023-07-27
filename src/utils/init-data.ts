@@ -6,9 +6,11 @@ import {
   generateBatch,
   generateItems,
   generateRandomDateInRange,
-  generateUsers
+  generateUsers,
+  generateVault
 } from './generateData'
 import * as constants from '../constants'
+import { ID_FIX } from '../constants'
 import localForage from 'localforage'
 import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
@@ -31,27 +33,45 @@ export const encryptedUsers = (isHigh?: boolean): User[] => {
   return mappedUsers
 }
 
-export const getActiveReferenceData = (
-  nameVal: string,
+interface GetActiveRefData {
+  nameVal: string
+  alternateInactive?: boolean
+  length?: number
+  isHigh?: boolean
+  inActivePercentage?: number
+  resource?: string
+}
+
+export const getActiveReferenceData = <T>({
+  nameVal,
   alternateInactive = false,
   length = 5,
-  isHigh?: boolean,
-  inActivePercentage?: number
-): ActiveReferenceItem[] => {
+  isHigh,
+  inActivePercentage,
+  resource = ''
+}: GetActiveRefData): T[] => {
   return Array(length)
     .fill('')
-    .map((_, index): ActiveReferenceItem => {
+    .map((_, index): T => {
       const active =
         isHigh === true && inActivePercentage !== undefined
           ? index > inActivePercentage * length
           : alternateInactive
           ? index % 2 === 0
           : index === 0
+
+      const idPostFix = ID_FIX?.[resource]
+
+      const id =
+        typeof idPostFix !== 'undefined'
+          ? `${index + 1}-${idPostFix}`
+          : index + 1
+
       return {
-        id: index + 1,
+        id,
         name: nameVal + ':' + String(index + 1),
         active
-      }
+      } as any as T
     })
 }
 
@@ -118,27 +138,57 @@ const loadDefaultData = async (
   const user = typeof userId === 'undefined' ? users[0].id : userId
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
   const project = generateProject(isHigh === true ? 60 : 10, user)
+  const vault = generateVault()
 
-  const organisation = getActiveReferenceData('Organisation')
+  const organisation = getActiveReferenceData<StringReferenceItem>({
+    nameVal: 'Organisation',
+    resource: constants.R_ORGANISATION
+  })
 
-  const department = getActiveReferenceData('Department')
+  const department = getActiveReferenceData<StringReferenceItem>({
+    nameVal: 'Department',
+    resource: constants.R_DEPARTMENT
+  })
 
-  const vaultLocation = getActiveReferenceData(
-    'Vault Location',
-    undefined,
-    isHigh === true ? 100 : undefined,
-    isHigh,
-    5
-  )
+  const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
+    nameVal: 'Vault Location',
+    length: isHigh === true ? 200 : 50,
+    alternateInactive: true,
+    isHigh
+  })
 
-  const mediaType = getActiveReferenceData('Media', true, 30)
+  const mediaType = getActiveReferenceData<IntegerReferenceItem>({
+    nameVal: 'Media',
+    alternateInactive: true,
+    length: 30
+  })
 
-  const protectiveMarking = getActiveReferenceData('Protective Marking', true)
+  const protectiveMarking = getActiveReferenceData<IntegerReferenceItem>({
+    nameVal: 'Protective Marking',
+    alternateInactive: true
+  })
   const address = getAddresses()
 
-  const catCode = getActiveReferenceData('Cat Code', true, 8)
-  const catHandling = getActiveReferenceData('Cat Handling', true, 8)
-  const catCave = getActiveReferenceData('Cat Cave', true, 8)
+  const protectionFieldParams = {
+    alternateInactive: true,
+    length: 8
+  }
+
+  const catCode = getActiveReferenceData<StringReferenceItem>({
+    ...protectionFieldParams,
+    nameVal: 'Cat Code',
+    resource: constants.R_CAT_CODE
+  })
+  const catHandle = getActiveReferenceData<StringReferenceItem>({
+    ...protectionFieldParams,
+    nameVal: 'Cat Handle',
+    resource: constants.R_CAT_HANDLE
+  })
+  const catCave = getActiveReferenceData<StringReferenceItem>({
+    ...protectionFieldParams,
+    nameVal: 'Cat Cave',
+    resource: constants.R_CAT_CAVE
+  })
   const batch = generateBatch(
     isHigh === true ? 500 : 10,
     platform.length,
@@ -185,9 +235,9 @@ const loadDefaultData = async (
     projectsName: 'Projects',
     fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP',
     protectionName: 'Protection',
-    cat_code: 'Cat-Code',
-    cat_handle: 'Cat-Handle',
-    cat_cave: 'Cat-Cave'
+    catCode: 'Cat-Code',
+    catHandle: 'Cat-Handle',
+    catCave: 'Cat-Cave'
   }
   const configData: ConfigData[] = [configDataItem]
 
@@ -203,13 +253,14 @@ const loadDefaultData = async (
     mediaType,
     protectiveMarking,
     catCode,
-    catHandling,
+    catHandle,
     catCave,
     audit,
     destruction,
     dispatche,
     address,
-    configData
+    configData,
+    vault
   }
 
   const map: Record<string, constants.ResourceTypes> = {
@@ -224,13 +275,14 @@ const loadDefaultData = async (
     mediaType: constants.R_MEDIA_TYPE,
     protectiveMarking: constants.R_PROTECTIVE_MARKING,
     catCode: constants.R_CAT_CODE,
-    catHandling: constants.R_CAT_HANDLING,
+    catHandle: constants.R_CAT_HANDLE,
     catCave: constants.R_CAT_CAVE,
     audit: constants.R_AUDIT,
     destruction: constants.R_DESTRUCTION,
     dispatche: constants.R_DISPATCH,
     address: constants.R_ADDRESSES,
-    configData: constants.R_CONFIG
+    configData: constants.R_CONFIG,
+    vault: constants.R_VAULT
   }
 
   const dataprovider: DataProvider = await getDataProvider(false)

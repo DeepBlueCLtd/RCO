@@ -1,12 +1,9 @@
 import {
-  DateField,
   FilterButton,
   type ListProps,
   SearchInput,
   SelectColumnsButton,
-  TextField,
   TextInput,
-  TopToolbar,
   useListContext,
   useRefresh,
   type SortPayload,
@@ -15,20 +12,25 @@ import {
   useDataProvider,
   useResourceDefinition,
   useNotify,
-  useGetMany
+  useGetMany,
+  Pagination,
+  type SelectColumnsButtonProps,
+  DateField,
+  TextField
 } from 'react-admin'
-import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
-import { Button, Modal } from '@mui/material'
+import { Box, Button, Modal } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import LoanItemsListBulkActionButtons from './LoanItemsListBulkActionButtons'
-import DateRangePicker from '../../components/DateRangePicker'
+import DateRangePicker, {
+  ResetDateRangeFilter
+} from '../../components/DateRangePicker'
 import useCanAccess from '../../hooks/useCanAccess'
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
 import DestroyItems from './DestroyItems'
@@ -40,6 +42,10 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import { RestoreFromTrash } from '@mui/icons-material'
 import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
+import SourceField from '../../components/SourceField'
+import LocationField from './LocationField'
+import ItemListData, { type DataType } from './ItemListData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -52,9 +58,21 @@ const omitColumns: string[] = [
   'vaultLocation',
   'musterRemarks',
   'loanedTo'
+  // 'project',
+  // 'platform'
 ]
 
 const filters = [
+  // <SourceInput
+  //   source='platform'
+  //   key='platform'
+  //   reference={constants.R_PLATFORMS}
+  // />,
+  // <SourceInput
+  //   source='project'
+  //   key='project'
+  //   reference={constants.R_PROJECTS}
+  // />,
   <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
   <CreatedByMeFilter
     key='createdByMe'
@@ -71,15 +89,15 @@ const filters = [
     source='loanedTo'
     reference={constants.R_USERS}
   />,
-  <TextInput source='item_number' key='item_number' label='Reference' />,
+  <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
   <SourceInput
     key='mediaType'
     source='mediaType'
     reference={constants.R_MEDIA_TYPE}
   />,
   <DateRangePicker
-    startSource='end_gte'
-    endSource='start_lte'
+    startSource='endDate_gte'
+    endSource='startDate_lte'
     startLabel='Start'
     endLabel='End'
     source='date_range'
@@ -99,14 +117,19 @@ const filters = [
     reference={constants.R_PROTECTIVE_MARKING}
   />,
   <SourceInput
-    source='batchId'
-    key='batchId'
+    source='batch'
+    key='batch'
     sort={sort('batchNumber')}
     reference={constants.R_BATCHES}
     optionField='batchNumber'
   />,
   <TextInput key='remarks' source='remarks' />,
-  <DateFilter source='createdAt' label='Created At' key='createdAt' />,
+  <DateFilter
+    source='createdAt'
+    label='Created At'
+    key='createdAt'
+    format='iso'
+  />,
   <BooleanFilter<Item>
     source='id'
     label='On loan'
@@ -130,13 +153,14 @@ const filters = [
   />
 ]
 
-const ItemActions = (): React.ReactElement => {
+const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
+  const { preferenceKey } = props
   return (
-    <TopToolbar>
+    <StyledTopToolbar {...props}>
       <ItemAssetReport storeKey='items-asset-report' />
       <FilterButton />
-      <SelectColumnsButton />
-    </TopToolbar>
+      <SelectColumnsButton preferenceKey={preferenceKey} />
+    </StyledTopToolbar>
   )
 }
 
@@ -153,7 +177,8 @@ const getItemStates = (
       allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
       anyDestructed: filteredData.some((f) => f.destruction !== undefined),
       anyLoaned: filteredData.some((f) => f.loanedTo !== undefined),
-      anyDispatched: filteredData.some((f) => f.dispatchJob !== undefined)
+      anyDispatched: filteredData.some((f) => f.dispatchJob !== undefined),
+      allDispatched: filteredData.every((f) => f.dispatchedDate !== undefined)
     }
   }
 }
@@ -165,13 +190,13 @@ type ModalOpenType =
   | 'loan'
   | 'destroyRemove'
   | 'dispatch'
-  | 'isReturn'
   | 'dispatchRemove'
 
 type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>
 
 interface BulkActionsProps {
   buttons?: PartialRecord<ModalOpenType, boolean>
+  preferenceKey?: string
 }
 
 export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
@@ -183,16 +208,14 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     destroyRemove = false,
     dispatchRemove = false,
     destroy = true,
-    dispatch = true,
-    isReturn = false
+    dispatch = true
   } = buttons ?? {
     destroy: true,
     location: true,
     loan: true,
     destroyRemove: false,
     dispatchRemove: false,
-    dispatch: true,
-    isReturn: false
+    dispatch: true
   }
 
   const { selectedIds } = useListContext<Item>()
@@ -206,6 +229,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const [isDestruction, setIsDestruction] = useState(false)
   const [isAnyLoaned, setIsAnyLoaned] = useState(false)
   const [isAnyDispatched, setIsAnyDispatched] = useState(false)
+  const [isAllDispatched, setIsAllDispatched] = useState(false)
 
   const audit = useAudit()
   const dataProvider = useDataProvider()
@@ -219,13 +243,15 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       allLoanedVal,
       anyDestructed,
       anyLoaned,
-      anyDispatched
+      anyDispatched,
+      allDispatched
     } = getItemStates(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
     setAllLoaned(allLoanedVal)
     setIsDestruction(anyDestructed)
     setIsAnyLoaned(anyLoaned)
     setIsAnyDispatched(anyDispatched)
+    setIsAllDispatched(allDispatched)
   }, [selectedIds, data])
 
   const handleClose = (): void => {
@@ -266,7 +292,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dispatchJob: undefined
       }
     })
-    notify(`${selectedIds.length} items removed from dispatch job`)
+    notify(`${selectedIds.length} items removed from dispatch`)
     refresh()
   }
 
@@ -282,6 +308,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       await audit(auditData)
       await audit({
         ...auditData,
+        type: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS
       })
@@ -300,7 +327,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const ReturnButton = (): React.ReactElement => {
     return (
       <>
-        {isReturn ? (
+        {isAllDispatched ? (
           <Button
             onClick={returnDispatchedItems as any}
             size='small'
@@ -320,106 +347,116 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
+  const bulkActionsStyle = {
+    display: 'flex',
+    marginLeft: 2
+  }
 
   return (
-    <>
-      {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
-        <>
-          {dispatch ? (
-            <FlexBox>
-              <Button
-                onClick={handleOpen('dispatch')}
-                size='small'
-                variant='outlined'>
-                Dispatch
-              </Button>
-            </FlexBox>
-          ) : null}
-          {destroy ? (
-            <FlexBox>
-              <Button
-                startIcon={<DeleteSweepIcon />}
-                onClick={handleOpen('destroy')}
-                size='small'
-                variant='outlined'>
-                Destroy
-              </Button>
-            </FlexBox>
-          ) : null}
-          {location ? (
-            <FlexBox>
-              <Button
-                size='small'
-                variant='outlined'
-                onClick={handleOpen('location')}>
-                Change Location
-              </Button>
-            </FlexBox>
-          ) : null}
-        </>
-      )}
-      {!isDestruction &&
-      !isAnyDispatched &&
-      loan &&
-      hasAccess(constants.R_ITEMS, { write: true }) ? (
-        <LoanItemsListBulkActionButtons
-          noneLoaned={noneLoaned}
-          allLoaned={allLoaned}
-        />
-      ) : null}
-      {!isItemNormal && (
-        <>
-          {destroyRemove ? (
-            <FlexBox>
-              <Button
-                startIcon={<RestoreFromTrash />}
-                onClick={handleOpen('destroyRemove')}
-                size='small'
-                variant='outlined'>
-                Remove
-              </Button>
-            </FlexBox>
-          ) : null}
-          {dispatchRemove ? <ReturnButton /> : null}
-        </>
-      )}
+    <Box sx={[bulkActionsStyle, { width: '100vw' }]}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1
+        }}>
+        {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
+          <>
+            {dispatch ? (
+              <FlexBox>
+                <Button
+                  onClick={handleOpen('dispatch')}
+                  size='small'
+                  variant='outlined'>
+                  Dispatch
+                </Button>
+              </FlexBox>
+            ) : null}
+            {destroy ? (
+              <FlexBox>
+                <Button
+                  startIcon={<DeleteSweepIcon />}
+                  onClick={handleOpen('destroy')}
+                  size='small'
+                  variant='outlined'>
+                  Destroy
+                </Button>
+              </FlexBox>
+            ) : null}
+            {location ? (
+              <FlexBox>
+                <Button
+                  size='small'
+                  variant='outlined'
+                  onClick={handleOpen('location')}>
+                  Change Location
+                </Button>
+              </FlexBox>
+            ) : null}
+          </>
+        )}
+        {!isDestruction &&
+        !isAnyDispatched &&
+        loan &&
+        hasAccess(constants.R_ITEMS, { write: true }) ? (
+          <LoanItemsListBulkActionButtons
+            noneLoaned={noneLoaned}
+            allLoaned={allLoaned}
+          />
+        ) : null}
+        {!isItemNormal && (
+          <>
+            {destroyRemove ? (
+              <FlexBox>
+                <Button
+                  startIcon={<RestoreFromTrash />}
+                  onClick={handleOpen('destroyRemove')}
+                  size='small'
+                  variant='outlined'>
+                  Remove
+                </Button>
+              </FlexBox>
+            ) : null}
+          </>
+        )}
+        {dispatchRemove || isAllDispatched ? <ReturnButton /> : null}
 
-      <Modal open={Boolean(open)} onClose={handleClose}>
-        <>
-          {open === 'location' && (
-            <ChangeLocation
-              successCallback={handleSuccess}
-              onCancel={handleClose}
-              ids={selectedIds}
-            />
-          )}
-          {open === 'destroy' && (
-            <DestroyItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-          {open === 'destroyRemove' && (
-            <DestroyRestoreItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-          {open === 'dispatch' && (
-            <DispatchItems
-              ids={selectedIds}
-              data={data}
-              onClose={handleClose}
-              successCallback={handleSuccess}
-            />
-          )}
-        </>
-      </Modal>
-    </>
+        <Modal open={Boolean(open)} onClose={handleClose}>
+          <>
+            {open === 'location' && (
+              <ChangeLocation
+                successCallback={handleSuccess}
+                onCancel={handleClose}
+                ids={selectedIds}
+              />
+            )}
+            {open === 'destroy' && (
+              <DestroyItems
+                ids={selectedIds}
+                data={data}
+                onClose={handleClose}
+                successCallback={handleSuccess}
+              />
+            )}
+            {open === 'destroyRemove' && (
+              <DestroyRestoreItems
+                ids={selectedIds}
+                data={data}
+                onClose={handleClose}
+                successCallback={handleSuccess}
+              />
+            )}
+            {open === 'dispatch' && (
+              <DispatchItems
+                ids={selectedIds}
+                data={data}
+                onClose={handleClose}
+                successCallback={handleSuccess}
+              />
+            )}
+          </>
+        </Modal>
+      </Box>
+    </Box>
   )
 }
 
@@ -430,21 +467,40 @@ interface ItemListType extends Omit<ListProps, 'children'> {
   filtersShown?: string[]
 }
 
-export default function ItemList(props?: ItemListType): React.ReactElement {
+export default function ItemList(
+  props?: ItemListType & SelectColumnsButtonProps
+): React.ReactElement {
   const { options } = useResourceDefinition()
   const {
     datagridConfigurableProps,
     children,
     storeKey = 'items-items-list',
     filtersShown,
+    preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
+    bulkActionButtons,
     ...rest
   } = props ?? {}
+
+  const sx = {
+    '& .MuiToolbar-root': {
+      '& > form': {
+        flex: 1
+      }
+    },
+    overflow: 'hidden'
+  }
+
+  const [data, setData] = useState<DataType>()
+
   return (
     <List
+      sx={sx}
       hasCreate={false}
-      actions={<ItemActions />}
+      actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
+      perPage={100}
+      pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
         !filtersShown
           ? filters
@@ -452,66 +508,73 @@ export default function ItemList(props?: ItemListType): React.ReactElement {
       }
       storeKey={storeKey}
       {...rest}>
+      <ItemListData setData={setData} />
       <ResetDateFilter source='createdAt' />
-      {/* <ResetDateRangeFilter source='date_range' /> */}
-      {typeof children !== 'undefined' ? (
-        children
-      ) : (
-        <DatagridConfigurableWithShow
-          resource={constants.R_ITEMS}
-          bulkActionButtons={<BulkActions />}
-          omit={omitColumns}>
-          <TextField source='item_number' label='Reference' />
-          <TextField source='id' />
-          <TextField source='createdAt' label='Created' />
-          <SourceField
-            link='show'
-            source='mediaType'
-            reference={constants.R_MEDIA_TYPE}
-            label='Media type'
-          />
-          <SourceField
-            link='show'
-            source='loanedTo'
-            reference={constants.R_USERS}
-            label='Loaned to'
-          />
-          <DateField showTime source='startDate' />
-          <DateField showTime source='endDate' />
-          <SourceField
-            source='vaultLocation'
-            reference={constants.R_VAULT_LOCATION}
-          />
-          <SourceField
-            source='protectiveMarking'
-            reference={constants.R_PROTECTIVE_MARKING}
-          />
-          <SourceField
-            link='show'
-            source='batchId'
-            reference={constants.R_BATCHES}
-            sourceField='batchNumber'
-          />
-          <SourceField
-            link='show'
-            source='destruction'
-            reference={constants.R_DESTRUCTION}
-            sourceField='reference'
-          />
-          <DateField source='destructionDate' />
-          <SourceField
-            link='show'
-            source='dispatchJob'
-            reference={constants.R_DISPATCH}
-            sourceField='reference'
-            label='Dispatch Job'
-          />
-          <DateField source='dispatchedDate' />
-          <TextField source='remarks' />
-          <TextField source='musterRemarks' />
-          <TextField source='protectionString' label='Protection' />
-        </DatagridConfigurableWithShow>
-      )}
+      <ResetDateRangeFilter
+        source='date_range'
+        startSource='endDate_gte'
+        endSource='startDate_lte'
+      />
+      <DatagridConfigurableWithShow
+        resource={constants.R_ITEMS}
+        bulkActionButtons={
+          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+        }
+        preferenceKey={preferenceKey}
+        omit={omitColumns}>
+        <TextField source='itemNumber' label='Reference' />
+        <TextField source='id' />
+        <TextField source='createdAt' label='Created' />
+        <SourceField
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
+        <SourceField
+          link='show'
+          source='loanedTo'
+          reference={constants.R_USERS}
+          label='Loaned to'
+        />
+        <DateField showTime source='startDate' />
+        <DateField showTime source='endDate' />
+        <SourceField
+          source='vaultLocation'
+          reference={constants.R_VAULT_LOCATION}
+        />
+        <SourceField
+          source='protectiveMarking'
+          reference={constants.R_PROTECTIVE_MARKING}
+        />
+        <SourceField
+          link='show'
+          source='batch'
+          reference={constants.R_BATCHES}
+          sourceField='batchNumber'
+        />
+        <SourceField
+          link='show'
+          source='destruction'
+          reference={constants.R_DESTRUCTION}
+          sourceField='reference'
+        />
+        <DateField source='destructionDate' />
+        <SourceField
+          link='show'
+          source='dispatchJob'
+          reference={constants.R_DISPATCH}
+          sourceField='reference'
+          label='Dispatch'
+        />
+        <DateField source='dispatchedDate' />
+        {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
+        {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
+        <TextField source='remarks' />
+        <TextField source='musterRemarks' />
+        <TextField source='protectionString' label='Protection' />
+        <LocationField {...data} label='Location' />
+      </DatagridConfigurableWithShow>
     </List>
   )
 }

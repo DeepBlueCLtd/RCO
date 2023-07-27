@@ -11,17 +11,28 @@ interface Props {
 
 interface ResetFilterProps {
   source: string
+  startSource: string
+  endSource: string
 }
 
-const useResetFilter = (source: string): void => {
+const useResetFilter = (
+  source: string,
+  startSource: string,
+  endSource: string
+): void => {
   const { setFilters, filterValues, displayedFilters } = useListContext()
   useEffect(() => {
-    if (displayedFilters?.[source] !== true) {
+    const filterRemoved = Boolean(
+      displayedFilters?.[source] === undefined &&
+        (filterValues?.[startSource] || filterValues?.[endSource])
+    )
+
+    if (filterRemoved) {
       setFilters(
         {
           ...filterValues,
-          start_gte: undefined,
-          end_lte: undefined
+          [startSource]: undefined,
+          [endSource]: undefined
         },
         displayedFilters
       )
@@ -32,7 +43,8 @@ const useResetFilter = (source: string): void => {
 export function ResetDateRangeFilter(
   props: ResetFilterProps
 ): React.ReactElement {
-  useResetFilter(props.source)
+  const { source, startSource, endSource } = props
+  useResetFilter(source, startSource, endSource)
   return <></>
 }
 

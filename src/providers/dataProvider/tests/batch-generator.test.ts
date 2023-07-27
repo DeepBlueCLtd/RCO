@@ -70,14 +70,15 @@ const generateBatch = async (
     endDate: endDate.toString(),
     batchNumber: `V${batchNumber ?? id}/${year}`,
     yearOfReceipt: year,
-    department: id,
+    department: `${id}-department`,
     project: isNull() ? undefined : id,
     platform: isNull() ? undefined : id,
-    organisation: id,
+    organisation: `${id}-organisation`,
     protectiveMarking: id,
     remarks: `remarks-batch-${year}`,
     receiptNotes: `Reference-${id}`,
-    createdBy: user
+    createdBy: user,
+    vault: Math.random() > 0.5 ? 'VAULT' : 'LEGACY'
   }
 
   await provider.create(constants.R_BATCHES, { data: { ...obj } })

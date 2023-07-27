@@ -24,7 +24,7 @@ describe('CRUD operation on department', () => {
     createResource: (
       dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
       resource: ResourceTypes
-    ) => Promise<ActiveReferenceItem>
+    ) => Promise<IntegerReferenceItem>
 
   beforeAll(async () => {
     const provider = await localForageDataProvider({
@@ -57,7 +57,7 @@ describe('CRUD operation on department', () => {
       R_DEPARTMENT
     )
 
-    await provider.update<ActiveReferenceItem>(R_DEPARTMENT, {
+    await provider.update<IntegerReferenceItem>(R_DEPARTMENT, {
       id: createdDepartment.id,
       previousData: createdDepartment,
       data: {
@@ -68,7 +68,7 @@ describe('CRUD operation on department', () => {
     })
 
     const fetchedDepartment = (
-      await provider.getOne<ActiveReferenceItem>(R_DEPARTMENT, {
+      await provider.getOne<IntegerReferenceItem>(R_DEPARTMENT, {
         id: createdDepartment.id
       })
     ).data

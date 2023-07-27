@@ -61,14 +61,14 @@ export default function DestroyRestoreItems(props: Props): React.ReactElement {
       }
     })
 
-    notify(`${ids.length} items removed from destruction job`)
+    notify(`${ids.length} items removed from destruction`)
     successCallback()
   }
 
   return (
     <Box sx={style}>
       <Typography variant='h6' marginY={2}>
-        Remove {ids.length} items from destruction job
+        Remove {ids.length} items from destruction
       </Typography>
       <FlexBox>
         <Button onClick={onRemove as any} variant='contained'>

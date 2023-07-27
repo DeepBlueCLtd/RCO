@@ -55,7 +55,10 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
           }}
           resource={constants.R_ITEMS}
         />
-        <Remarks />
+        <FlexBox>
+          <Remarks />
+          <Source />
+        </FlexBox>
         <Created />
       </Form>
     </Box>
@@ -124,6 +127,40 @@ const Location = (): React.ReactElement => {
           source='musterRemarks'
           sx={sx}
           disabled
+        />
+      </FlexBox>
+    </Box>
+  )
+}
+
+const Source = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Source
+        </Typography>
+      </legend>
+      <FlexBox>
+        <SourceInput
+          source='platform'
+          reference={constants.R_PLATFORMS}
+          inputProps={{ sx, disabled: true }}
+        />
+        <SourceInput
+          source='project'
+          reference={constants.R_PROJECTS}
+          inputProps={{ sx, disabled: true }}
         />
       </FlexBox>
     </Box>
@@ -308,7 +345,7 @@ const ItemShowActions = ({
 
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField source='item_number' />
+      <TopToolbarField source='itemNumber' />
       <StatusText record={record} />
       {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
       <IconButton

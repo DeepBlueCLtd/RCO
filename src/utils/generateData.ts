@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
+import * as constants from '../constants'
+import { ID_FIX } from '../constants'
 
 const skipStartDate = (): boolean => {
   return Math.random() < 0.05
@@ -56,7 +58,7 @@ function setMinuteToStep(date: string, step = 15): string {
   return updatedDate.toJSDate().toISOString()
 }
 const getItemReferenceNumber = (batch: Batch, items: Item[]): string => {
-  const existing = items.filter((i) => i.batchId === batch.id)
+  const existing = items.filter((i) => i.batch === batch.id)
   return (existing.length + 1).toLocaleString('en-US', {
     minimumIntegerDigits: 2,
     useGrouping: false
@@ -107,6 +109,22 @@ export const generateProject = (length: number, user: number): Project[] => {
   return projects
 }
 
+export const generateVault = (): Vault[] => {
+  const vaults: Vault[] = [
+    {
+      id: 'VAULT',
+      name: 'VAULT',
+      active: true
+    },
+    {
+      id: 'LEGACY',
+      name: 'LEGACY',
+      active: false
+    }
+  ]
+  return vaults
+}
+
 const getRandomDateInLast20Years = (): string[] => {
   const randomStartDateInLast20Years = generateRandomDateInRange(
     new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
@@ -144,6 +162,15 @@ export const generateBatch = (
 
     const [startDate, endDate] =
       isHigh !== undefined ? getRandomDateInLast20Years() : generateRandomDate()
+
+    const department = `${generateRandomNumber(1, departments - 1)}-${
+      ID_FIX[constants.R_DEPARTMENT]
+    }`
+
+    const organisation = `${generateRandomNumber(1, organisations - 1)}-${
+      ID_FIX[constants.R_ORGANISATION]
+    }`
+
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
@@ -151,10 +178,11 @@ export const generateBatch = (
       endDate: skipEndDate() ? null : endDate.toString(),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
-      department: generateRandomNumber(1, departments - 1),
+      department,
       project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
-      organisation: generateRandomNumber(1, organisations - 1),
+      vault: Math.random() >= 0.5 ? 'LEGACY' : 'VAULT',
+      organisation,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
@@ -207,13 +235,14 @@ export const generateItems = (
 
     const batchNumber: string = batch.batchNumber
     const itemReference: string = getItemReferenceNumber(batch, items)
+    const idOfBatch = batch.id
     const obj: Item = {
       id: offset + i,
       createdAt: nowDate(),
       mediaType: generateRandomNumber(1, mediaType - 1),
       startDate,
-      batchId: batch.id,
-      item_number: `${batchNumber}/${itemReference}`,
+      batch: idOfBatch,
+      itemNumber: `${batchNumber}/${itemReference}`,
       endDate,
       vaultLocation: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
@@ -221,23 +250,19 @@ export const generateItems = (
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       consecPages: `consec-pages-${i + 1}`,
       createdBy: user
+      // project: batch.project,
+      // platform: batch.platform
     }
     items.push(obj)
   }
   return items
 }
-
-function getRandomRole(): UserRole[] {
+function getRandomRole(): UserRole {
   const roles: UserRole[] = ['rco-power-user', 'rco-user']
-  const minLength = 1
-  const maxLength = roles.length
+  const randomIndex = Math.floor(Math.random() * roles.length)
+  const selectedRole = roles[randomIndex]
 
-  const combinationLength =
-    Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength
-  const shuffledRoles = roles.sort(() => Math.random() - 0.5)
-  const selectedRoles = shuffledRoles.slice(0, combinationLength)
-
-  return selectedRoles
+  return selectedRole
 }
 
 export const generateUsers = (length: number): User[] => {
@@ -254,7 +279,7 @@ export const generateUsers = (length: number): User[] => {
       active,
       staffNumber: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
-      roles: getRandomRole(),
+      role: getRandomRole(),
       createdAt: nowDate()
     }
     users.push(obj)

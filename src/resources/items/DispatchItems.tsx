@@ -76,7 +76,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       const items = data
         .filter(({ id }) => ids.includes(id))
         .map(async (item) => {
-          const { item_number: itemNumber } = item
+          const { itemNumber } = item
           const audiData = {
             type: AuditType.EDIT,
             activityDetail: `Add item to dispatch ${reference}`,
@@ -105,7 +105,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       successCallback()
     }
   }
-  const label = 'Dispatch Jobs'
+  const label = 'Dispatches'
 
   if (typeof loading === 'boolean' && loading) return <></>
 
@@ -115,7 +115,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       <Box>
         {items.length === 0 ? (
           <Typography marginY={3}>
-            Please create the dispatch job before dispatching items
+            Please create the dispatch before dispatching items
           </Typography>
         ) : (
           <FormControl sx={{ width: '100%', margin: '25px 0' }}>

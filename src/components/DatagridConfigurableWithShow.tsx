@@ -1,15 +1,36 @@
 import React from 'react'
 import {
   DatagridConfigurable,
-  ShowButton,
   type DatagridConfigurableProps,
   useRecordContext,
-  useRedirect
+  useRedirect,
+  useCreatePath
 } from 'react-admin'
 import useRowClick from '../hooks/useRowClick'
 import { type ResourceTypes } from '../constants'
 import { Preview } from '@mui/icons-material'
 import { ButtonBase } from '@mui/material'
+
+const PreviewButton = ({
+  resource
+}: {
+  resource: ResourceTypes
+}): React.ReactElement => {
+  const { id } = useRecordContext()
+  const redirect = useRedirect()
+  const createPath = useCreatePath()
+
+  const handleClick = (): void => {
+    const path = createPath({ resource, type: 'show', id })
+    redirect(path)
+  }
+
+  return (
+    <ButtonBase onClick={handleClick}>
+      <Preview />
+    </ButtonBase>
+  )
+}
 
 export default function DatagridConfigurableWithShow(
   props: DatagridConfigurableProps & { resource: ResourceTypes }
@@ -18,27 +39,11 @@ export default function DatagridConfigurableWithShow(
 
   const handleRowClick = useRowClick(resource)
 
-  const PreviewButton = (): React.ReactElement => {
-    const { id } = useRecordContext()
-    const redirect = useRedirect()
-
-    const handleClick = (): void => {
-      const path = `/${resource}/${id}/show`
-      redirect(path)
-    }
-
-    return (
-      <ButtonBase onClick={handleClick}>
-        <Preview />
-      </ButtonBase>
-    )
-  }
-
   return (
     <DatagridConfigurable
       rowClick={(id) => handleRowClick(id as number)}
       {...rest}>
-      <ShowButton component={PreviewButton} />
+      <PreviewButton resource={resource} />
       {children}
     </DatagridConfigurable>
   )

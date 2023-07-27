@@ -31,10 +31,7 @@ interface CompositeFieldProps {
 const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
   const { label } = props
   return (
-    <ReferenceField
-      label={label}
-      source='batchId'
-      reference={constants.R_ITEMS}>
+    <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
       <ReferenceField source='id' reference={constants.R_BATCHES}>
         <SourceField source='id' reference={constants.R_PROJECTS} />,{' '}
         <SourceField source='id' reference={constants.R_PLATFORMS} />
@@ -94,7 +91,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   </Box>
                 </Show>
                 <ItemsReport filter={{ loanedTo: userId }}>
-                  <TextField source='item_number' label='Item Number' />
+                  <TextField source='itemNumber' label='Item Number' />
                   <SourceField
                     link='show'
                     source='mediaType'
