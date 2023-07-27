@@ -6,18 +6,19 @@ import HastenerSentField from './HastenerSentField'
 import { type SimplePaletteColorOptions, type SxProps } from '@mui/material'
 
 const rowStyle = (dispatch: Dispatch): SxProps => {
-  const { dispatchedAt } = dispatch
+  const { dispatchedAt, lastHastenerSent } = dispatch
   const [theme] = useTheme()
-  if (!dispatchedAt) return {}
+  const date = lastHastenerSent ?? dispatchedAt
+  if (!date) return {}
 
   const { weeks = 0 } = DateTime.now()
-    .diff(DateTime.fromISO(dispatchedAt), ['week'])
+    .diff(DateTime.fromISO(date), ['week'])
     .toObject()
   const style =
     weeks >= 4
       ? {
           backgroundColor: (theme.palette?.error as SimplePaletteColorOptions)
-            .main
+            .light
         }
       : {}
   return style
