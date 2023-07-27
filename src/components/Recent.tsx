@@ -1,4 +1,4 @@
-import { Box, type Theme, Typography } from '@mui/material'
+import { Box, type Theme, Typography, type SxProps } from '@mui/material'
 import React from 'react'
 import {
   Datagrid,
@@ -57,6 +57,7 @@ interface Props<T> {
   fields: Array<Field<T>>
   filter?: FilterPayload
   search?: string
+  rowStyle?: (data: T) => SxProps
 }
 
 function Column<T>(props: Field<T>): React.ReactElement {
@@ -122,7 +123,15 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
   )
 }
 export default function Recent<T>(props: Props<T>): React.ReactElement {
-  const { resource, itemsCount = 5, label, fields = [], filter, search } = props
+  const {
+    resource,
+    itemsCount = 5,
+    label,
+    fields = [],
+    filter,
+    search,
+    rowStyle
+  } = props
 
   return (
     <RecentCard label={label} resource={resource} search={search}>
@@ -136,6 +145,7 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
           pagination={false}
           sort={{ field: 'id', order: 'DESC' }}>
           <Datagrid
+            rowStyle={rowStyle}
             header={() => null}
             bulkActionButtons={false}
             rowClick='show'>
