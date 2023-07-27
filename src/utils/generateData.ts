@@ -125,18 +125,18 @@ export const generateVault = (): Vault[] => {
   return vaults
 }
 
-const getRandomDateInLast20Years = (): string[] => {
-  const randomStartDateInLast20Years = generateRandomDateInRange(
-    new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
-    new Date()
-  )
+// const getRandomDateInLast20Years = (): string[] => {
+//   const randomStartDateInLast20Years = generateRandomDateInRange(
+//     new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
+//     new Date()
+//   )
 
-  const randomEndDateInLast20Years = generateRandomDateInRange(
-    new Date(randomStartDateInLast20Years),
-    new Date()
-  )
-  return [randomStartDateInLast20Years, randomEndDateInLast20Years]
-}
+//   const randomEndDateInLast20Years = generateRandomDateInRange(
+//     new Date(randomStartDateInLast20Years),
+//     new Date()
+//   )
+//   return [randomStartDateInLast20Years, randomEndDateInLast20Years]
+// }
 
 export const generateBatch = (
   length: number,
@@ -145,8 +145,7 @@ export const generateBatch = (
   projects: number,
   organisations: number,
   protectiveMarking: number,
-  user: number,
-  isHigh?: boolean
+  user: number
 ): Batch[] => {
   const batches: Batch[] = []
 
@@ -160,9 +159,6 @@ export const generateBatch = (
   for (let i = 1; i <= length; i++) {
     const year = String(generateRandomNumber(2020, 2023))
 
-    const [startDate, endDate] =
-      isHigh !== undefined ? getRandomDateInLast20Years() : generateRandomDate()
-
     const department = `${generateRandomNumber(1, departments - 1)}-${
       ID_FIX[constants.R_DEPARTMENT]
     }`
@@ -174,8 +170,6 @@ export const generateBatch = (
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
-      startDate: skipStartDate() ? null : startDate.toString(),
-      endDate: skipEndDate() ? null : endDate.toString(),
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department,
@@ -205,33 +199,13 @@ export const generateItems = (
   const items: Item[] = []
 
   for (let i = 1; i <= length; i++) {
-    const endDate = skipEndDate()
-      ? null
-      : batch.startDate && batch.endDate
-      ? setMinuteToStep(
-          generateRandomDateInRange(
-            new Date(batch.startDate),
-            new Date(batch.endDate)
-          )
-        )
-      : null
-
-    const minStartDate = endDate
-      ? DateTime.fromJSDate(new Date(endDate)).minus({
-          minutes: 15
-        })
-      : null
-
-    const startDate = skipStartDate()
-      ? null
-      : batch.startDate !== null && minStartDate
-      ? setMinuteToStep(
-          generateRandomDateInRange(
-            new Date(batch.startDate),
-            new Date(minStartDate.toString())
-          )
-        )
-      : null
+    const skipStart = skipStartDate()
+    const skipEnd = skipEndDate()
+    let start: DateTime | null = null
+    let end: DateTime | null = null
+    if (!skipStart && !skipEnd) {
+      ;[start, end] = skipEndDate() ? [null, null] : generateRandomDate()
+    }
 
     const batchNumber: string = batch.batchNumber
     const itemReference: string = getItemReferenceNumber(batch, items)
@@ -240,10 +214,11 @@ export const generateItems = (
       id: offset + i,
       createdAt: nowDate(),
       mediaType: generateRandomNumber(1, mediaType - 1),
-      startDate,
       batch: idOfBatch,
       itemNumber: `${batchNumber}/${itemReference}`,
-      endDate,
+      startDate:
+        start === null ? start : setMinuteToStep(start.toJSDate().toString()),
+      endDate: end === null ? end : setMinuteToStep(end.toJSDate().toString()),
       vaultLocation: generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
