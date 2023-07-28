@@ -93,7 +93,16 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     {DateTime.now().toFormat(constants.DATETIME_FORMAT)}
                   </Typography>
                 </Show>
-                <ItemsReport filter={{ loanedTo: userId }}>
+                <ItemsReport
+                  filter={{ loanedTo: userId }}
+                  sx={{
+                    '.MuiTableCell-head span': {
+                      fontSize: '12px'
+                    }
+                  }}
+                  headStyle={{
+                    fontSize: '12px'
+                  }}>
                   <TextField
                     {...style}
                     source='itemNumber'
