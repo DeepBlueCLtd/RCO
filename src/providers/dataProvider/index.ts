@@ -85,6 +85,7 @@ export const getDataProvider = async (
 
 const operators = ['_neq', '_eq', '_lte', '_gte']
 const SEARCH_OPERATOR = 'q'
+const nullOperators = ['__null', '__notnull']
 
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
@@ -103,27 +104,40 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     }, {})
 
     let query: any = {}
-    // converting single score operators to double score operators for soul-cli compatibility
-    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
-      const foundOperator = operators.find((operator) => key.includes(operator))
-      if (foundOperator) {
-        const modifiedKey = key.replace(
-          foundOperator,
-          `__${foundOperator.slice(1)}`
-        )
-        acc[modifiedKey] = params.filter[key]
-      } else {
-        if (key === SEARCH_OPERATOR) {
-          query._search = params.filter[key]
-          const { [key]: _, ...rest } = params.filter
-          params.filter = rest
-        } else {
-          acc[key] = params.filter[key]
-        }
-      }
 
-      return acc
-    }, {})
+    params.filter = Object.entries(params.filter).reduce(
+      (acc: any, [key, value]) => {
+        const foundOperator = operators.find((operator) =>
+          key.includes(operator)
+        )
+        if (value === null) {
+          if (foundOperator) {
+            if (foundOperator === operators[0]) {
+              const modifiedKey = key.replace(foundOperator, '')
+              acc[`${modifiedKey}${nullOperators[1]}`] = ''
+            } else if (foundOperator === operators[1]) {
+              const modifiedKey = key.replace(foundOperator, '')
+              acc[`${modifiedKey}${nullOperators[0]}`] = ''
+            }
+          } else {
+            acc[`${key}__null`] = ''
+          }
+        } else if (foundOperator) {
+          const modifiedKey = key.replace(
+            foundOperator,
+            `__${foundOperator.slice(1)}`
+          )
+          acc[modifiedKey] = value
+        } else if (key === SEARCH_OPERATOR) {
+          query._search = value
+        } else {
+          acc[key] = value
+        }
+
+        return acc
+      },
+      {}
+    )
 
     const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
     query = {

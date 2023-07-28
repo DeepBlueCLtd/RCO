@@ -99,7 +99,7 @@ export default function Welcome(): React.ReactElement {
             { source: 'itemNumber' },
             { source: 'batch', reference: constants.R_BATCHES }
           ]}
-          filter={{ loanedTo_neq: undefined }}
+          filter={{ loanedTo_neq: null }}
           search={`filter=${JSON.stringify({
             id: loaned
           })}`}

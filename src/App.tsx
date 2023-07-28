@@ -333,8 +333,8 @@ function App(): React.ReactElement {
           name={constants.R_ITEMS}
           options={{
             filter: {
-              dispatchedDate: undefined,
-              destructionDate: undefined
+              dispatchedDate: null,
+              destructionDate: null
             },
             resource: constants.R_ITEMS,
             sort: {

@@ -42,8 +42,8 @@ export default function PendingReceiptNotes(): React.ReactElement {
         { source: 'dispatchedAt', component: DateField },
         { source: 'lastHastenerSent', component: HastenerSentField }
       ]}
-      filter={{ receiptReceived: undefined, id: dispatchedIds }}
-      search={`filter=${JSON.stringify({ receiptReceived: [undefined] })}`}
+      filter={{ receiptReceived: null, id: dispatchedIds }}
+      search={`filter=${JSON.stringify({ receiptReceived: null })}`}
     />
   )
 }
