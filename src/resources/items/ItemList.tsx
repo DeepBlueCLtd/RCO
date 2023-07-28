@@ -46,6 +46,7 @@ import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
 import LocationField from './LocationField'
 import ItemListData, { type DataType } from './ItemListData'
+import { useLocation } from 'react-router-dom'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -473,10 +474,15 @@ export default function ItemList(
 ): React.ReactElement {
   const { options } = useResourceDefinition()
   const { resource } = options ?? {}
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const sKey = searchParams.get('filter')
+    ? 'filtered-item-list'
+    : 'items-items-list'
   const {
     datagridConfigurableProps,
     children,
-    storeKey = 'items-items-list',
+    storeKey = sKey,
     filtersShown,
     preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
     bulkActionButtons,
