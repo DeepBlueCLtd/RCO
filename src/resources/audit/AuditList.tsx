@@ -1,7 +1,6 @@
 import { Chip } from '@mui/material'
 import React, { useEffect } from 'react'
 import {
-  Datagrid,
   List,
   TextField,
   DateField,
@@ -10,13 +9,19 @@ import {
   useListContext,
   AutocompleteArrayInput,
   TextInput,
-  FunctionField
+  FunctionField,
+  DatagridConfigurable,
+  type DatagridConfigurableProps,
+  FilterButton,
+  ExportButton
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
 import DateFilter from '../../components/DateFilter'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
+import { useLocation } from 'react-router-dom'
 
 interface Props {
   label: string
@@ -78,6 +83,7 @@ export interface FilterType {
   dataId?: number
   user?: number
   resource?: string
+  activityType?: string
 }
 
 const referenceItems = [
@@ -89,14 +95,38 @@ const referenceItems = [
   constants.R_DEPARTMENT
 ]
 
-interface AuditListProps {
+interface ListActionsProps {
+  buttons?: React.ReactElement
+}
+
+export const ListActions = (props: ListActionsProps): React.ReactElement => {
+  const { buttons = <></> } = props
+  return (
+    <StyledTopToolbar>
+      {buttons}
+      <FilterButton />
+      <ExportButton />
+    </StyledTopToolbar>
+  )
+}
+
+interface AuditListProps extends DatagridConfigurableProps {
   filter?: FilterType
   data?: Audit[]
+  actions?: React.ReactElement
 }
 export default function AuditList({
   filter = undefined,
-  data = undefined
+  data = undefined,
+  omit = [],
+  actions
 }: AuditListProps): React.ReactElement {
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const storeKey = searchParams.get('filter')
+    ? 'filtered-audit-list'
+    : 'simple-audit-list'
+
   return (
     <List
       perPage={25}
@@ -106,8 +136,11 @@ export default function AuditList({
         order: 'DESC'
       }}
       filters={filters}
-      filter={filter}>
-      <Datagrid
+      filter={filter}
+      storeKey={storeKey}
+      actions={actions ?? <ListActions />}>
+      <DatagridConfigurable
+        omit={omit}
         {...(data !== undefined ? { data } : null)}
         bulkActionButtons={false}
         sx={{
@@ -126,36 +159,38 @@ export default function AuditList({
         />
         <TextField source='securityRelated' label='Security Related' />
         <TextField source='resource' label='Resource' />
-        <FunctionField
-          label='Name'
-          render={(record: Audit) => {
-            return (
-              <>
-                {record.resource !== null ? (
-                  <SourceField
-                    source='dataId'
-                    reference={record.resource}
-                    sourceField={resourcesRefKey[record.resource]}
-                    link={(record) => {
-                      if (referenceItems.includes(record.resource)) {
-                        return `/${record.resource}/${record.dataId}/show`
-                      }
-                      return 'show'
-                    }}
-                  />
-                ) : (
-                  <TextField source='dataId' label='Item' />
-                )}
-              </>
-            )
-          }}
-        />
+        {!omit.includes('dataId') && (
+          <FunctionField
+            label='Name'
+            render={(record: Audit) => {
+              return (
+                <>
+                  {record.resource !== null ? (
+                    <SourceField
+                      source='dataId'
+                      reference={record.resource}
+                      sourceField={resourcesRefKey[record.resource]}
+                      link={(record) => {
+                        if (referenceItems.includes(record.resource)) {
+                          return `/${record.resource}/${record.dataId}/show`
+                        }
+                        return 'show'
+                      }}
+                    />
+                  ) : (
+                    <TextField source='dataId' label='Item' />
+                  )}
+                </>
+              )
+            }}
+          />
+        )}
         <SourceField
           source='subject'
           reference={constants.R_USERS}
           link='show'
         />
-      </Datagrid>
+      </DatagridConfigurable>
     </List>
   )
 }
