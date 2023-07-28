@@ -33,7 +33,11 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
     <TopToolbar sx={{ alignItems: 'center' }}>
       <TopToolbarField source='batchNumber' />
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
-      <HistoryButton />
+      <HistoryButton
+        onClick={() => {
+          handleOpen(true)
+        }}
+      />
     </TopToolbar>
   )
 }
