@@ -12,15 +12,15 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
-import { Box, Typography, IconButton, type Theme } from '@mui/material'
+import { Box, Typography, type Theme } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import SourceField from '../../components/SourceField'
-import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type SystemStyleObject } from '@mui/system'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import FlexBox from '../../components/FlexBox'
 import SourceInput from '../../components/SourceInput'
+import HistoryButton from '../../components/HistoryButton'
 
 interface ShowFormProps {
   setRecord: React.Dispatch<React.SetStateAction<Item | undefined>>
@@ -348,12 +348,11 @@ const ItemShowActions = ({
       <TopToolbarField source='itemNumber' />
       <StatusText record={record} />
       {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
-      <IconButton
+      <HistoryButton
         onClick={() => {
           handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+        }}
+      />
     </TopToolbar>
   )
 }

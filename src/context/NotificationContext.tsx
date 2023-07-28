@@ -1,7 +1,14 @@
 import { Alert, type AlertColor, Snackbar } from '@mui/material'
-import { type PropsWithChildren, createContext, useContext, useState } from 'react'
+import {
+  type PropsWithChildren,
+  createContext,
+  useContext,
+  useState
+} from 'react'
 
-interface Options { type?: AlertColor }
+interface Options {
+  type?: AlertColor
+}
 type NotifyFunction = (message: string, options?: Options) => void
 
 export const Context = createContext<{ notify: NotifyFunction }>({

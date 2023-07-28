@@ -9,7 +9,6 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput,
   useRefresh
 } from 'react-admin'
 import * as yup from 'yup'
@@ -239,22 +238,6 @@ const BatchForm = (
           resource={constants.R_BATCHES}
           disabled={isShow}
         />
-        <FlexBox>
-          <DateInput
-            sx={sx}
-            source='startDate'
-            label='Start'
-            variant='outlined'
-            disabled={isShow}
-          />
-          <DateInput
-            sx={sx}
-            source='endDate'
-            variant='outlined'
-            label='End'
-            disabled={isShow}
-          />
-        </FlexBox>
         <TextInput
           multiline
           source='remarks'

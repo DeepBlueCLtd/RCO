@@ -16,6 +16,6 @@ export default function ItemListData(props: Props): React.ReactElement {
   const data = useItemList()
   useEffect(() => {
     setData(data)
-  }, [data])
+  }, [])
   return <></>
 }

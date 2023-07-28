@@ -159,7 +159,9 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
               setValue('startDate', data.endDate)
               setValue(
                 'endDate',
-                DateTime.fromISO(data.endDate).plus({ days: 1 }).toISO()
+                DateTime.fromISO(data.endDate ?? '')
+                  .plus({ days: 1 })
+                  .toISO()
               )
             }
           }}

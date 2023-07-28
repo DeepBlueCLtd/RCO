@@ -2,7 +2,6 @@ import * as constants from '../../../constants'
 import { describe, it, beforeAll } from '@jest/globals'
 import { getDataProvider } from '..'
 import { type DataProvider } from 'react-admin'
-import { generateRandomDate } from '../../../utils/generateData'
 import { generateBatchId } from '../resource-callbacks/BatchLifeCycle'
 interface BatchType {
   data: Batch[]
@@ -54,8 +53,6 @@ const generateBatch = async (
   batchNumber: string | undefined,
   user: number
 ): Promise<void> => {
-  const [startDate, endDate] = generateRandomDate()
-
   const isNull = (): boolean => {
     if (Math.random() > 0.3) {
       return false
@@ -66,8 +63,6 @@ const generateBatch = async (
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
-    startDate: startDate.toString(),
-    endDate: endDate.toString(),
     batchNumber: `V${batchNumber ?? id}/${year}`,
     yearOfReceipt: year,
     department: `${id}-department`,
