@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   CardContent,
-  IconButton,
   type SxProps,
   type Theme,
   Typography
@@ -21,11 +20,11 @@ import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
-import { History } from '@mui/icons-material'
 import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useConfigData } from '../../utils/useConfigData'
 import FlexBox from '../../components/FlexBox'
+import HistoryButton from '../../components/HistoryButton'
 
 export const ValueField = ({
   label,
@@ -77,12 +76,11 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
           />
         </>
       ) : null}
-      <IconButton
+      <HistoryButton
         onClick={() => {
           handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+        }}
+      />
     </TopToolbar>
   )
 }

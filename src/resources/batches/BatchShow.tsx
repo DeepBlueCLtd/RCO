@@ -16,12 +16,12 @@ import { ICON_ITEM, ICON_DETAILS } from '../../constants'
 import ItemList, { BulkActions } from '../items/ItemList'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
-import { IconButton, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import { History } from '@mui/icons-material'
 import BatchForm from './BatchForm'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
+import HistoryButton from '../../components/HistoryButton'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -33,12 +33,7 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
     <TopToolbar sx={{ alignItems: 'center' }}>
       <TopToolbarField source='batchNumber' />
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
-      <IconButton
-        onClick={() => {
-          handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+      <HistoryButton />
     </TopToolbar>
   )
 }
