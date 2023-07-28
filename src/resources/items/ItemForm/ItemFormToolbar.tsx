@@ -1,14 +1,16 @@
-import { SaveButton, Toolbar, useNotify } from 'react-admin'
+import { SaveButton, Toolbar } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button } from '@mui/material'
+import { DateTime } from 'luxon'
 import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
+import { Context as NotificationContext } from '../../../context/NotificationContext'
 
 // eslint-disable-next-line
 type Events = {
@@ -67,8 +69,8 @@ interface Props {
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess } = props
-  const { reset, getValues } = useFormContext()
-  const notify = useNotify()
+  const { notify } = useContext(NotificationContext)
+  const { reset, getValues, setValue } = useFormContext()
   const { id } = useParams()
   const [openRemarks, setOpenRemarks] = useState(false)
   const vaultLocationsAudit = useVaultLocationAudit()
@@ -135,7 +137,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     notify(
       `Item ${itemNumber} has been saved. Now showing ${
         type === ItemFormSaveType.CLONE ? 'clone of previous' : 'blank'
-      } item.`
+      } item.`,
+      { type: 'success' }
     )
   }
 
@@ -144,19 +147,28 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       <FlexBox>
         <SaveButton
           type='button'
-          label='Create / Clone'
+          label='Save / Clone'
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
           }}
           transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess: successWithAudit
+            onSuccess: (data: Item) => {
+              successWithAudit(data)
+              setValue('startDate', data.endDate)
+              setValue(
+                'endDate',
+                DateTime.fromISO(data.endDate ?? '')
+                  .plus({ days: 1 })
+                  .toISO()
+              )
+            }
           }}
         />
         <SaveButton
           type='button'
-          label='Create / New'
+          label='Save / New'
           title='Store this item, then create a blank item'
           onClick={() => {
             save = true

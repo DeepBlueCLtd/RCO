@@ -3,10 +3,11 @@ import { BooleanField, FunctionField, List, TextField } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import * as constants from '../../constants'
-import { Button, IconButton } from '@mui/material'
-import { Article, History } from '@mui/icons-material'
+import { Button } from '@mui/material'
+import { Article } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
+import HistoryButton from '../../components/HistoryButton'
 
 export default function VaultLocationList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>()
@@ -60,14 +61,13 @@ export default function VaultLocationList(): React.ReactElement {
           label='History'
           render={(record: IntegerReferenceItem) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   setOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />

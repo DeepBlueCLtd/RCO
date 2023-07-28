@@ -7,10 +7,9 @@ import {
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
-import { IconButton } from '@mui/material'
-import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useMemo, useState } from 'react'
+import HistoryButton from '../../components/HistoryButton'
 
 export default function DestructionList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>()
@@ -39,14 +38,13 @@ export default function DestructionList(): React.ReactElement {
           label='History'
           render={(record: Destruction) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   handleOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />

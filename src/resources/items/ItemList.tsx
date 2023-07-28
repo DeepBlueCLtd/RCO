@@ -44,6 +44,8 @@ import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
+import LocationField from './LocationField'
+import ItemListData, { type DataType } from './ItemListData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -55,7 +57,8 @@ const omitColumns: string[] = [
   'endDate',
   'vaultLocation',
   'musterRemarks',
-  'loanedTo'
+  'loanedTo',
+  'batch'
   // 'project',
   // 'platform'
 ]
@@ -115,8 +118,8 @@ const filters = [
     reference={constants.R_PROTECTIVE_MARKING}
   />,
   <SourceInput
-    source='batchId'
-    key='batchId'
+    source='batch'
+    key='batch'
     sort={sort('batchNumber')}
     reference={constants.R_BATCHES}
     optionField='batchNumber'
@@ -478,6 +481,7 @@ export default function ItemList(
   props?: ItemListType & SelectColumnsButtonProps
 ): React.ReactElement {
   const { options } = useResourceDefinition()
+  const { resource } = options ?? {}
   const {
     datagridConfigurableProps,
     children,
@@ -497,6 +501,8 @@ export default function ItemList(
     overflow: 'hidden'
   }
 
+  const [data, setData] = useState<DataType>()
+
   return (
     <List
       sx={sx}
@@ -504,6 +510,7 @@ export default function ItemList(
       actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
+      sort={options?.sort}
       perPage={100}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
@@ -511,8 +518,9 @@ export default function ItemList(
           ? filters
           : filters.filter((f) => filtersShown.includes(f.key as string))
       }
-      storeKey={storeKey}
+      storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
+      <ItemListData setData={setData} />
       <ResetDateFilter source='createdAt' />
       <ResetDateRangeFilter
         source='date_range'
@@ -529,6 +537,7 @@ export default function ItemList(
         <TextField source='itemNumber' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
+        <LocationField label='Location' {...data} />
         <SourceField
           link='show'
           source='mediaType'
@@ -553,25 +562,29 @@ export default function ItemList(
         />
         <SourceField
           link='show'
-          source='batchId'
+          source='batch'
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
-        <SourceField
-          link='show'
-          source='destruction'
-          reference={constants.R_DESTRUCTION}
-          sourceField='reference'
-        />
-        <DateField source='destructionDate' />
-        <SourceField
-          link='show'
-          source='dispatchJob'
-          reference={constants.R_DISPATCH}
-          sourceField='reference'
-          label='Dispatch'
-        />
-        <DateField source='dispatchedDate' />
+        {resource === constants.R_ALL_ITEMS && [
+          <SourceField
+            link='show'
+            source='destruction'
+            reference={constants.R_DESTRUCTION}
+            sourceField='reference'
+            key={'destruction'}
+          />,
+          <DateField source='destructionDate' key={'destructionDate'} />,
+          <SourceField
+            link='show'
+            source='dispatchJob'
+            reference={constants.R_DISPATCH}
+            sourceField='reference'
+            label='Dispatch'
+            key={'dispatchJob'}
+          />,
+          <DateField source='dispatchedDate' key={'dispatchJob'} />
+        ]}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
         <TextField source='remarks' />

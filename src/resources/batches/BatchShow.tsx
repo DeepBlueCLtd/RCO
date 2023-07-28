@@ -16,12 +16,12 @@ import { ICON_ITEM, ICON_DETAILS } from '../../constants'
 import ItemList, { BulkActions } from '../items/ItemList'
 import TopToolbarField from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
-import { IconButton, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import { History } from '@mui/icons-material'
 import BatchForm from './BatchForm'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
+import HistoryButton from '../../components/HistoryButton'
 
 export interface ShowActionProps {
   handleOpen: (open: boolean) => void
@@ -33,12 +33,11 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
     <TopToolbar sx={{ alignItems: 'center' }}>
       <TopToolbarField source='batchNumber' />
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
-      <IconButton
+      <HistoryButton
         onClick={() => {
           handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+        }}
+      />
     </TopToolbar>
   )
 }
@@ -48,21 +47,21 @@ const ItemActions = ({
 }: SelectColumnsButtonProps): React.ReactElement => {
   const { id = '' } = useParams()
   const { hasAccess } = useCanAccess()
-  const batchId: string = id
+  const batch: string = id
 
   return (
     <StyledTopToolbar preferenceKey={preferenceKey}>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <CreateButton
           label='ADD ITEM'
-          to={`/${constants.R_ITEMS}/create?batch=${batchId}`}
+          to={`/${constants.R_ITEMS}/create?batch=${batch}`}
         />
       ) : (
         <></>
       )}
       <ItemAssetReport
         storeKey='batch-items-report'
-        filterDefaultValues={{ batchId }}
+        filterDefaultValues={{ batch }}
       />
       <FilterButton />
       <SelectColumnsButton preferenceKey={preferenceKey} />
@@ -109,9 +108,6 @@ export default function BatchShow(): React.ReactElement {
         <constants.ICON_BATCH /> {pageTitle}
       </Typography>
       <TabbedShowLayout sx={{ paddingBottom: '4px' }}>
-        <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
-          <BatchForm isShow />
-        </TabbedShowLayout.Tab>
         <TabbedShowLayout.Tab label='Items' icon={<ICON_ITEM />}>
           <ItemList
             storeKey={`${constants.R_BATCHES}-${id}-items-list`}
@@ -122,6 +118,9 @@ export default function BatchShow(): React.ReactElement {
             preferenceKey={preferenceKey}
             disableSyncWithLocation
           />
+        </TabbedShowLayout.Tab>
+        <TabbedShowLayout.Tab label='Details' icon={<ICON_DETAILS />}>
+          <BatchForm isShow />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
       <HistoryModal handleOpen={handleOpen} open={open} />

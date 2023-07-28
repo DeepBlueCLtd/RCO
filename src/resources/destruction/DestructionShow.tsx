@@ -17,7 +17,7 @@ import {
   TopToolbar,
   EditButton
 } from 'react-admin'
-import { Box, IconButton, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
@@ -29,7 +29,7 @@ import Confirm from '../../components/Confirm'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import { History } from '@mui/icons-material'
+import HistoryButton from '../../components/HistoryButton'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -57,12 +57,11 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
         {hasAccess(constants.R_DESTRUCTION, { write: true }) && !finalised && (
           <EditButton />
         )}
-        <IconButton
+        <HistoryButton
           onClick={() => {
             handleOpen('history')
-          }}>
-          <History />
-        </IconButton>
+          }}
+        />
       </TopToolbar>
     </>
   )

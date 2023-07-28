@@ -1,4 +1,4 @@
-import { Chip, IconButton } from '@mui/material'
+import { Chip } from '@mui/material'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   BooleanField,
@@ -14,7 +14,7 @@ import {
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import { History } from '@mui/icons-material'
+import HistoryButton from '../../components/HistoryButton'
 
 interface Props {
   name: string
@@ -82,14 +82,13 @@ export default function PlatformList(props: Props): React.ReactElement {
           label='History'
           render={(record: IntegerReferenceItem) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   handleOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />

@@ -1,4 +1,4 @@
-import { Card, CardContent, IconButton, Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import {
   BooleanField,
   EditButton,
@@ -12,8 +12,8 @@ import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type HistoryProps } from '../batches/BatchShow'
 import { type ResourceTypes } from '../../constants'
 import { useState } from 'react'
-import { History } from '@mui/icons-material'
 import useCanAccess from '../../hooks/useCanAccess'
+import HistoryButton from '../../components/HistoryButton'
 
 const HistoryModal = ({
   handleOpen,
@@ -47,12 +47,11 @@ const Actions = ({
 
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <IconButton
+      <HistoryButton
         onClick={() => {
           handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+        }}
+      />
       {hasAccess(resource, { write: true }) ? <EditButton /> : null}
     </TopToolbar>
   )
