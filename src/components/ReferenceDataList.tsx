@@ -10,10 +10,9 @@ import {
   TextField
 } from 'react-admin'
 import useCanAccess from '../hooks/useCanAccess'
-import { IconButton } from '@mui/material'
-import { History } from '@mui/icons-material'
 import ResourceHistoryModal from './ResourceHistory'
 import * as constants from '../constants'
+import HistoryButton from './HistoryButton'
 
 interface PropType {
   name: string
@@ -69,14 +68,13 @@ export default function ReferenceDataList({
           label='History'
           render={(record: IntegerReferenceItem) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   handleOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />
