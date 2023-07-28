@@ -145,7 +145,8 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
           actions={false}
           perPage={itemsCount}
           pagination={false}
-          sort={{ field: 'id', order: 'DESC' }}>
+          sort={{ field: 'id', order: 'DESC' }}
+          empty={<></>}>
           <Datagrid
             rowStyle={rowStyle}
             header={() => null}
