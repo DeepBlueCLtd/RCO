@@ -44,7 +44,12 @@ const ResourceHistoryModal = ({
     <Printable open={open} onClose={close}>
       <AuditList
         filter={{
-          activityType: AuditType.EDIT,
+          activityType: [
+            AuditType.EDIT,
+            AuditType.SENT,
+            AuditType.DESTROY,
+            AuditType.LOAN
+          ],
           ...filter
         }}
         data={data}
