@@ -96,3 +96,5 @@ export const DATA_VERSION = 'DATA_VERSION'
 
 // mitt events
 export const SAVE_EVENT = 'save'
+export const ITEM_CLONE = 'item_clone'
+export const ITEM_SAVE = 'item_save'

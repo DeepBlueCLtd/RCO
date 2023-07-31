@@ -7,13 +7,14 @@ import {
 } from 'react-admin'
 import FlexBox from '../../../components/FlexBox'
 import { useFormContext } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Card, CardContent, Typography } from '@mui/material'
 import SourceField from '../../../components/SourceField'
 import { R_BATCHES } from '../../../constants'
 import { ConditionalReferenceInput } from '../../batches/BatchForm'
 import ProtectionBlockInputs from '../../../components/ProtectionBlockInputs'
 import * as constants from '../../../constants'
+import { emitter } from './ItemFormToolbar'
 
 const sx = { width: '100%' }
 
@@ -32,6 +33,8 @@ const CoreForm = (props: Props): React.ReactElement => {
   } = formContext
   const [mediaTypes, setMediaTypes] = useState<any[]>([])
   const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
+  const dateRef = useRef<HTMLInputElement>(null)
+  const mediaTypeRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     formContext?.setValue('batch', batch)
@@ -46,6 +49,20 @@ const CoreForm = (props: Props): React.ReactElement => {
       setItemId(undefined)
     }
   }, [isSubmitted, isSubmitting])
+
+  useEffect(() => {
+    emitter.on(constants.ITEM_SAVE, () => {
+      if (mediaTypeRef.current) mediaTypeRef.current.click()
+    })
+    emitter.on(constants.ITEM_CLONE, () => {
+      if (dateRef.current) dateRef.current.click()
+    })
+
+    return () => {
+      emitter.off(constants.ITEM_CLONE)
+      emitter.off(constants.ITEM_SAVE)
+    }
+  }, [])
 
   const ValueField = ({
     label,
@@ -64,6 +81,7 @@ const CoreForm = (props: Props): React.ReactElement => {
   return (
     <>
       <AutocompleteInput
+        TextFieldProps={{ ref: mediaTypeRef }}
         disabled={disabled}
         source='mediaType'
         choices={mediaTypes.filter((item: Record<string, any>) => item.active)}
@@ -120,6 +138,7 @@ const CoreForm = (props: Props): React.ReactElement => {
           variant='outlined'
         />
         <DateTimeInput
+          InputProps={{ ref: dateRef }}
           sx={sx}
           disabled={disabled}
           source='endDate'
