@@ -49,7 +49,7 @@ export default function ReportSignature(props: Props): ReactElement {
         <SignatureDetails />
       </Box>
       <FlexBox
-        alignItems='end'
+        alignItems='start'
         sx={{
           ...sx,
           borderLeft: 'none'
