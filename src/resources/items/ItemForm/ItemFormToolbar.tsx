@@ -1,10 +1,10 @@
-import { SaveButton, Toolbar } from 'react-admin'
+import { SaveButton, Toolbar, useCreatePath, useRedirect } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { ITEM_CLONE, ITEM_SAVE, SAVE_EVENT } from '../../../constants'
+import { ITEM_CLONE, ITEM_SAVE, R_ITEMS, SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button, type ButtonBaseActions } from '@mui/material'
@@ -78,6 +78,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const vaultLocationsAudit = useVaultLocationAudit()
   const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
   const saveNewButtonRef = useRef<ButtonBaseActions>(null)
+  const redirect = useRedirect()
+  const createPath = useCreatePath()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -127,10 +129,15 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     vaultLocationId?: number,
     itemId?: number
   ): Promise<void> => {
+    const path = createPath({ resource: R_ITEMS, id, type: 'show' })
+
     await vaultLocationsAudit(
       vaultLocationId ?? getValues('vaultLocation'),
       itemId
     )
+    setTimeout(() => {
+      redirect(path)
+    }, 0)
   }
 
   const successWithAudit = ({ id, vaultLocation }: Item): void => {
