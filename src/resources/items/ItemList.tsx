@@ -494,8 +494,7 @@ export default function ItemList(
       '& > form': {
         flex: 1
       }
-    },
-    overflow: 'hidden'
+    }
   }
 
   const [data, setData] = useState<DataType>()
