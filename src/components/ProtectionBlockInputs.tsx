@@ -8,9 +8,7 @@ import { useDataProvider, type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useConfigData } from '../utils/useConfigData'
 import { useEffect, useState } from 'react'
-import useAudit from '../hooks/useAudit'
-import { useParams } from 'react-router-dom'
-import { AuditType } from '../utils/activity-types'
+
 interface Props {
   disabled?: boolean
   markingSource: string
@@ -18,6 +16,7 @@ interface Props {
   id?: number
   resource: string
   refTables: Record<'catCave' | 'catCode' | 'catHandle', string>
+  isRemarksOpen?: boolean
 }
 
 export default function ProtectionBlockInputs<
@@ -25,24 +24,20 @@ export default function ProtectionBlockInputs<
   TCatCave extends RaRecord,
   TCatHandle extends RaRecord
 >(props: Props): React.ReactElement {
-  const { disabled, markingSource, isEdit, id, refTables } = props
+  const { disabled, markingSource, isEdit, id, refTables, isRemarksOpen } =
+    props
   const { setValue, watch, getValues } = useFormContext()
   const dataProvider = useDataProvider()
   const configData = useConfigData()
-  const { id: dataId } = useParams()
-  const audit = useAudit()
-  const {
-    formState: { isSubmitSuccessful }
-  } = useFormContext()
-  const [codeChanges, setCodeChanges] = useState<string[]>()
-  const [caveChanges, setCaveChanges] = useState<string[]>()
-  const [handleChanges, setHandleChanges] = useState<string[]>()
-  const [submitted, setSubmitted] = useState(false)
+  const [codeChanges, setCodeChanges] = useState<string[] | undefined>()
+  const [caveChanges, setCaveChanges] = useState<string[] | undefined>()
+  const [handleChanges, setHandleChanges] = useState<string[] | undefined>()
   const inputProps = { disabled }
 
   const protectionInputProps = {
     ...inputProps,
-    multiple: true
+    multiple: true,
+    isRemarksOpen
   }
 
   const setIsDirty = (source: string, value = ''): void => {
@@ -72,38 +67,46 @@ export default function ProtectionBlockInputs<
     }
   }, [watch])
 
+  const formatChanges = (changes: string[] | undefined): string => {
+    if (Array.isArray(changes)) {
+      if (changes.length > 0) {
+        return changes.join(' ')
+      } else {
+        return 'unset'
+      }
+    }
+    return ''
+  }
+
+  const setPrevValues = (): void => {
+    const isChanged =
+      typeof codeChanges !== 'undefined' ||
+      typeof caveChanges !== 'undefined' ||
+      typeof handleChanges !== 'undefined'
+
+    if (isChanged) {
+      const detailData: Record<string, string> = {}
+      const details: Record<string, string> = {
+        catCode: formatChanges(codeChanges),
+        catCave: formatChanges(caveChanges),
+        catHandle: formatChanges(handleChanges)
+      }
+      Object.keys(details).forEach((keyName) => {
+        if (details[keyName]?.length > 0) {
+          detailData[keyName] = details[keyName]
+        }
+      })
+      setValue('prevProtectionValues', detailData)
+    }
+  }
+
   useEffect(() => {
     setProtectiveMarking(getValues('protectiveMarking'))
   }, [])
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      setSubmitted(true)
-    }
-    const isChanged =
-      typeof codeChanges !== 'undefined' ||
-      typeof caveChanges !== 'undefined' ||
-      typeof handleChanges !== 'undefined'
-    if ((isSubmitSuccessful || submitted) && dataId && isChanged) {
-      const detailData: Record<string, string> = {
-        catCode: codeChanges?.join(' ') ?? '',
-        catCave: caveChanges?.join(' ') ?? '',
-        catHandle: handleChanges?.join(' ') ?? ''
-      }
-      const activityDetail = `Previous values: ${JSON.stringify(detailData)}`
-      if (dataId) {
-        audit({
-          activityDetail,
-          resource: props.resource,
-          securityRelated: true,
-          dataId: parseInt(dataId),
-          type: AuditType.EDIT
-        })
-          .then(console.log)
-          .catch(console.error)
-      }
-    }
-  }, [isSubmitSuccessful, codeChanges, submitted])
+    setPrevValues()
+  }, [codeChanges, caveChanges, handleChanges])
 
   return (
     <Box

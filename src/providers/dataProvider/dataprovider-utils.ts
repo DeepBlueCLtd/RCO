@@ -1,6 +1,6 @@
 import { type UpdateParams, type CreateResult, type RaRecord } from 'ra-core'
 import { DateTime } from 'luxon'
-import { type AuditType } from '../../utils/activity-types'
+import { AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
 import { type ResourceTypes } from '../../constants'
@@ -58,6 +58,16 @@ export type AuditFunctionType = ({
   subject
 }: AuditProps) => Promise<void>
 
+const getActivityDetail = (
+  difference: Record<string, any>,
+  editRemarks: Record<string, any>
+): string => {
+  const activityDetail = `Previous values: ${JSON.stringify(difference)}${
+    editRemarks ? `, Remarks: ${JSON.stringify(editRemarks)}` : ''
+  }`
+  return activityDetail
+}
+
 export const auditForUpdatedChanges = async (
   record: UpdateParams<RCOResource>,
   resource: ResourceTypes,
@@ -66,19 +76,21 @@ export const auditForUpdatedChanges = async (
   subject?: User['id']
 ): Promise<UpdateParams<RCOResource>> => {
   // @ts-expect-error: property not found in type
-  const { editRemarks, ...rest } = record.data
-  if (editRemarks) {
+  const { editRemarks, prevProtectionValues = {}, ...rest } = record.data
+  if (editRemarks || prevProtectionValues) {
     record.data = rest
   }
-  const difference = getDifference(record.data, record.previousData)
+  const { protectionString, ...difference } = getDifference(
+    record.data,
+    record.previousData
+  )
 
   const keys = Object.keys(difference)
   const testKeys: string[] = [
     'dispatchedAt',
     'reportPrintedAt',
     'lastHastenerSent',
-    'receiptReceived',
-    'protectionString'
+    'receiptReceived'
   ]
   testKeys.forEach((key) => {
     if (keys.includes(key) && !difference?.[key]) {
@@ -86,12 +98,22 @@ export const auditForUpdatedChanges = async (
     }
   })
 
+  const dataId =
+    record.previousData.id !== undefined ? record.previousData.id : null
+
+  if (Object.keys(prevProtectionValues).length > 0) {
+    const activityDetail = getActivityDetail(prevProtectionValues, editRemarks)
+    await audit({
+      activityDetail,
+      resource,
+      securityRelated: true,
+      dataId,
+      type: AuditType.EDIT
+    })
+  }
+
   if (Object.keys(difference).length > 0) {
-    const activityDetail = `Previous values: ${JSON.stringify(difference)}${
-      editRemarks ? `, Remarks: ${editRemarks}` : ''
-    }`
-    const dataId =
-      record.previousData.id !== undefined ? record.previousData.id : null
+    const activityDetail = getActivityDetail(difference, editRemarks)
     await audit({
       ...auditData,
       activityDetail,

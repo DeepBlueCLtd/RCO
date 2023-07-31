@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
 import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
@@ -65,14 +65,16 @@ const Actions = (props: ActionsProps): React.ReactElement => {
 
 interface Props {
   onSuccess: (data: any) => void
+  onSave: (event: React.SyntheticEvent) => void
+  setOpenRemarks: React.Dispatch<boolean>
+  openRemarks: boolean
 }
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
-  const { onSuccess } = props
+  const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
   const { notify } = useContext(NotificationContext)
   const { reset, getValues, setValue } = useFormContext()
   const { id } = useParams()
-  const [openRemarks, setOpenRemarks] = useState(false)
   const vaultLocationsAudit = useVaultLocationAudit()
 
   const saveHandler = (e: string): void => {
@@ -93,11 +95,6 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       emitter.off(SAVE_EVENT, saveHandler)
     }
   }, [])
-
-  const onSave = (event: React.SyntheticEvent): void => {
-    event.preventDefault()
-    setOpenRemarks(true)
-  }
 
   const vLocationAudits = async (
     vaultLocationId?: number,

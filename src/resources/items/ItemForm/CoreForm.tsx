@@ -22,10 +22,11 @@ interface Props {
   disabled?: boolean
   itemId?: Item['id']
   setItemId: React.Dispatch<React.SetStateAction<number | undefined>>
+  isRemarksOpen: boolean
 }
 
 const CoreForm = (props: Props): React.ReactElement => {
-  const { batch, disabled, itemId, setItemId } = props
+  const { batch, disabled, itemId, setItemId, isRemarksOpen } = props
   const formContext = useFormContext()
   const {
     formState: { isSubmitted, isSubmitting }
@@ -101,6 +102,7 @@ const CoreForm = (props: Props): React.ReactElement => {
         </Card>
       </FlexBox>
       <ProtectionBlockInputs<ItemCode, ItemCave, ItemHandling>
+        isRemarksOpen={isRemarksOpen}
         disabled={disabled}
         markingSource='protectiveMarking'
         id={itemId}

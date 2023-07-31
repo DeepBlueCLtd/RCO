@@ -32,7 +32,8 @@ interface Props<T, RefTable> {
   labelField: keyof T
   width: string
   setIsDirty: (source: string, value: string) => void
-  onValueChange: (value: string[]) => void
+  onValueChange: (value: string[] | undefined) => void
+  isRemarksOpen?: boolean
 }
 
 export default function ProtectionRefInput<
@@ -50,6 +51,7 @@ export default function ProtectionRefInput<
     width = '100%',
     setIsDirty,
     onValueChange,
+    isRemarksOpen,
     ...rest
   } = props
   const [data, setData] = useState<Array<T['id']> | T['id']>([])
@@ -105,8 +107,8 @@ export default function ProtectionRefInput<
     return names
   }
 
-  const getPreviousValue = (): string[] => {
-    const values = Array.isArray(data) ? data : [data]
+  const getPreviousValue = (newValues = data): string[] | undefined => {
+    const values = Array.isArray(newValues) ? newValues : [newValues]
 
     const isSameLength = values.length === prevValue.length
     const compare = (a: any, b: any): number => a.localeCompare(b)
@@ -115,7 +117,7 @@ export default function ProtectionRefInput<
       values.sort(compare).join() === prevValue.sort(compare).join()
 
     if (isSame) {
-      return []
+      return undefined
     }
     return prevValue.map((id) => getLabelById(id))
   }
@@ -125,6 +127,9 @@ export default function ProtectionRefInput<
     setData(value)
     const names = setProtectionValues(value)
     setIsDirty(source as string, names)
+    if (typeof isRemarksOpen === 'undefined') {
+      onValueChange(getPreviousValue(value))
+    }
   }
 
   useEffect(() => {
@@ -143,10 +148,16 @@ export default function ProtectionRefInput<
   }, [selectedItems])
 
   useEffect(() => {
+    if (isRemarksOpen) {
+      onValueChange(getPreviousValue())
+    }
+  }, [isRemarksOpen])
+
+  useEffect(() => {
     if (isSubmitSuccessful) {
       const selectedData = typeof data === 'number' ? [data] : data
       if (record?.id) {
-        onValueChange(getPreviousValue())
+        // onValueChange(getPreviousValue())
         updateRecord(record.id as number, selectedData as number[])
       } else if (id) {
         createRecord(id, selectedData as number[])
