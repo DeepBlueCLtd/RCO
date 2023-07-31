@@ -45,7 +45,7 @@ import localForage from 'localforage'
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 
 // true for REST, false for localForage
-const REST_FLAG = true
+const REST_FLAG = process.env.MOCK !== '1'
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(

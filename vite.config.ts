@@ -11,7 +11,8 @@ export default {
       VITE_KEY: null,
       VITE_APP_VERSION: null,
       VITE_DATA_VERSION: null,
-      VITE_API_URL: null
+      VITE_API_URL: null,
+      MOCK: null
     })
   ],
   base: './'
