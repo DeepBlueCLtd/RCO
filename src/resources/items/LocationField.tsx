@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { FunctionField, type Identifier } from 'react-admin'
 
 interface Props {
@@ -7,7 +8,16 @@ interface Props {
 }
 
 export default function LocationField(props: Props): React.ReactElement {
-  const { users, vaultLocations, label } = props
+  const { label } = props
+  const [users, setUsers] = useState<Record<Identifier, User>>()
+  const [vaultLocations, setVaultLocations] =
+    useState<Record<Identifier, VaultLocation>>()
+
+  useEffect(() => {
+    setUsers(props?.users)
+    setVaultLocations(props?.vaultLocations)
+  }, [props])
+
   return (
     <FunctionField
       label={label}

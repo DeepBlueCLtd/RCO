@@ -17,16 +17,17 @@ import {
   useShowContext,
   useUpdate
 } from 'react-admin'
-import { Chip, Typography, Button, Modal, IconButton } from '@mui/material'
+import { Chip, Typography, Button, Modal } from '@mui/material'
 import { decryptPassword } from '../../utils/encryption'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
-import { Warning, History } from '@mui/icons-material'
+import { Warning } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
+import HistoryButton from '../../components/HistoryButton'
 
 const style = {
   position: 'absolute',
@@ -233,12 +234,11 @@ export default function UserShow(): React.ReactElement {
         hasDeleteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>
             <EditButton />
-            <IconButton
+            <HistoryButton
               onClick={() => {
                 handleOpen(true)
-              }}>
-              <History />
-            </IconButton>
+              }}
+            />
           </TopToolbar>
         )
       }>

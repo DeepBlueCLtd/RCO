@@ -46,6 +46,7 @@ import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
 import LocationField from './LocationField'
 import ItemListData, { type DataType } from './ItemListData'
+import { useLocation } from 'react-router-dom'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -57,7 +58,8 @@ const omitColumns: string[] = [
   'endDate',
   'vaultLocation',
   'musterRemarks',
-  'loanedTo'
+  'loanedTo',
+  'batch'
   // 'project',
   // 'platform'
 ]
@@ -471,10 +473,16 @@ export default function ItemList(
   props?: ItemListType & SelectColumnsButtonProps
 ): React.ReactElement {
   const { options } = useResourceDefinition()
+  const { resource } = options ?? {}
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const sKey = searchParams.get('filter')
+    ? 'filtered-item-list'
+    : 'items-items-list'
   const {
     datagridConfigurableProps,
     children,
-    storeKey = 'items-items-list',
+    storeKey = sKey,
     filtersShown,
     preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
     bulkActionButtons,
@@ -499,6 +507,7 @@ export default function ItemList(
       actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
+      sort={options?.sort}
       perPage={100}
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
@@ -506,7 +515,7 @@ export default function ItemList(
           ? filters
           : filters.filter((f) => filtersShown.includes(f.key as string))
       }
-      storeKey={storeKey}
+      storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
       <ItemListData setData={setData} />
       <ResetDateFilter source='createdAt' />
@@ -525,6 +534,7 @@ export default function ItemList(
         <TextField source='itemNumber' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
+        <LocationField label='Location' {...data} />
         <SourceField
           link='show'
           source='mediaType'
@@ -553,27 +563,30 @@ export default function ItemList(
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
-        <SourceField
-          link='show'
-          source='destruction'
-          reference={constants.R_DESTRUCTION}
-          sourceField='reference'
-        />
-        <DateField source='destructionDate' />
-        <SourceField
-          link='show'
-          source='dispatchJob'
-          reference={constants.R_DISPATCH}
-          sourceField='reference'
-          label='Dispatch'
-        />
-        <DateField source='dispatchedDate' />
+        {resource === constants.R_ALL_ITEMS && [
+          <SourceField
+            link='show'
+            source='destruction'
+            reference={constants.R_DESTRUCTION}
+            sourceField='reference'
+            key={'destruction'}
+          />,
+          <DateField source='destructionDate' key={'destructionDate'} />,
+          <SourceField
+            link='show'
+            source='dispatchJob'
+            reference={constants.R_DISPATCH}
+            sourceField='reference'
+            label='Dispatch'
+            key={'dispatchJob'}
+          />,
+          <DateField source='dispatchedDate' key={'dispatchJob'} />
+        ]}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
         <TextField source='remarks' />
         <TextField source='musterRemarks' />
         <TextField source='protectionString' label='Protection' />
-        <LocationField {...data} label='Location' />
       </DatagridConfigurableWithShow>
     </List>
   )

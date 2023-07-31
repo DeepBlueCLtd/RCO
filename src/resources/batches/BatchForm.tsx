@@ -9,7 +9,6 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput,
   useRefresh
 } from 'react-admin'
 import * as yup from 'yup'
@@ -20,7 +19,6 @@ import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
-import dayjs from 'dayjs'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
 import { transformProtectionValues } from '../../utils/helper'
@@ -32,17 +30,6 @@ const schema = yup.object({
   platform: yup.number().nullable(),
   organisation: yup.string().nonNullable().required(),
   protectiveMarking: yup.number().required(),
-  startDate: yup.date().required(),
-  endDate: yup
-    .date()
-    .required()
-    .test(
-      'endDate',
-      'End date must be greater than start date',
-      function (value): boolean {
-        return dayjs(value).diff(this.parent.startDate) > 0
-      }
-    ),
   vault: yup.string()
 })
 
@@ -239,22 +226,6 @@ const BatchForm = (
           resource={constants.R_BATCHES}
           disabled={isShow}
         />
-        <FlexBox>
-          <DateInput
-            sx={sx}
-            source='startDate'
-            label='Start'
-            variant='outlined'
-            disabled={isShow}
-          />
-          <DateInput
-            sx={sx}
-            source='endDate'
-            variant='outlined'
-            label='End'
-            disabled={isShow}
-          />
-        </FlexBox>
         <TextInput
           multiline
           source='remarks'
