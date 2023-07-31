@@ -48,6 +48,12 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const dataProvider = useDataProvider()
   const [itemId, setItemId] = useState<Item['id']>()
   const refresh = useRefresh()
+  const [openRemarks, setOpenRemarks] = useState(false)
+
+  const onSave = (event: React.SyntheticEvent): void => {
+    setOpenRemarks(true)
+    event.preventDefault()
+  }
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
@@ -127,9 +133,17 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
               setItemId(id)
               refresh()
             }}
+            openRemarks={openRemarks}
+            setOpenRemarks={setOpenRemarks}
+            onSave={onSave}
           />
         }>
-        <CoreForm itemId={itemId} setItemId={setItemId} batch={batch?.id} />
+        <CoreForm
+          isRemarksOpen={openRemarks}
+          itemId={itemId}
+          setItemId={setItemId}
+          batch={batch?.id}
+        />
       </SimpleForm>
     </Box>
   )
