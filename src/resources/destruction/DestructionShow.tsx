@@ -156,20 +156,24 @@ export default function DestructionShow(): React.ReactElement {
 
   const DestroyAudits = async (item: Item): Promise<void> => {
     const audiData = {
-      type: AuditType.EDIT,
-      activityDetail: 'add item to destruction',
+      type: AuditType.DESTROY,
+      activityDetail: `Destroyed in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id
     }
     await audit(audiData)
-    await audit({
-      ...audiData,
-      resource: constants.R_DESTRUCTION
-    })
   }
 
   const destroy = async (data: UpdateParams): Promise<void> => {
+    const audiData = {
+      type: AuditType.DESTROY,
+      activityDetail: 'Destroyed',
+      securityRelated: false,
+      resource: constants.R_DESTRUCTION,
+      dataId: parseInt(id as string)
+    }
+    await audit(audiData)
     const ids = itemsAdded.map((item: Item) => item.id)
     await update(constants.R_DESTRUCTION, data)
     await updateMany(constants.R_ITEMS, {
