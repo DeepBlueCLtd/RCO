@@ -5,7 +5,8 @@ import {
   type FilterPayload,
   List,
   ResourceContext,
-  TextField
+  TextField,
+  type DatagridProps
 } from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
@@ -50,7 +51,7 @@ interface Field<T> {
   component?: React.FC<any>
 }
 
-interface Props<T> {
+interface Props<T> extends DatagridProps {
   resource: string
   itemsCount?: number
   label?: string
@@ -78,7 +79,7 @@ function Column<T>(props: Field<T>): React.ReactElement {
   return <TextField source={source as string} />
 }
 
-interface RecentCardProps {
+interface RecentCardProps extends DatagridProps {
   children: React.ReactElement
   label?: string
   resource?: string
@@ -130,7 +131,8 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
     fields = [],
     filter,
     search,
-    rowStyle
+    rowStyle,
+    rowClick
   } = props
 
   return (
@@ -143,12 +145,13 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
           actions={false}
           perPage={itemsCount}
           pagination={false}
-          sort={{ field: 'id', order: 'DESC' }}>
+          sort={{ field: 'id', order: 'DESC' }}
+          empty={<></>}>
           <Datagrid
             rowStyle={rowStyle}
             header={() => null}
             bulkActionButtons={false}
-            rowClick='show'>
+            rowClick={rowClick ?? 'show'}>
             {fields.map((column, index) => (
               <Column key={index} {...column} />
             ))}

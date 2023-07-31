@@ -3,7 +3,7 @@ import * as constants from '../constants'
 import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton, useGetList } from 'react-admin'
+import { CreateButton, useGetList, useRedirect } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import useCanAccess from '../hooks/useCanAccess'
@@ -39,8 +39,13 @@ export default function Welcome(): React.ReactElement {
   const { data } = useGetList<Item>(constants.R_ITEMS, {
     sort: { field: 'id', order: 'ASC' }
   })
-  const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
+  const usersHaveLoan: Array<User['id']> = []
+  data?.forEach((d) =>
+    d.loanedTo !== undefined ? usersHaveLoan.push(d.loanedTo) : null
+  )
+  const uniqueUsers = [...new Set(usersHaveLoan)]
   const configData = useConfigData()
+  const redirect = useRedirect()
 
   if (loading) return <></>
 
@@ -84,6 +89,7 @@ export default function Welcome(): React.ReactElement {
         <Recent<Batch>
           label='Recent Batches'
           resource={constants.R_BATCHES}
+          itemsCount={10}
           fields={[
             { source: 'batchNumber' },
             { source: 'platform', reference: constants.R_PLATFORMS },
@@ -91,18 +97,20 @@ export default function Welcome(): React.ReactElement {
           ]}
           search='order=DESC&sort=createdAt'
         />
-        <Recent<Item>
-          label='Recent loans'
-          resource={constants.R_ITEMS}
-          fields={[
-            { source: 'loanedTo', reference: constants.R_USERS },
-            { source: 'itemNumber' },
-            { source: 'batch', reference: constants.R_BATCHES }
-          ]}
-          filter={{ loanedTo_neq: undefined }}
+        <Recent<User>
+          label='Items on Loan'
+          resource={constants.R_USERS}
+          fields={[{ source: 'name' }]}
+          filter={{ id: uniqueUsers }}
+          itemsCount={undefined}
           search={`filter=${JSON.stringify({
-            id: loaned
+            id: uniqueUsers
           })}`}
+          rowClick={(id) => {
+            const path = `/${constants.R_ITEMS}?filter={"loanedTo":${id}}`
+            redirect(path)
+            return path
+          }}
         />
       </FlexBox>
       <FlexBox className={styles.row}>
