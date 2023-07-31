@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
@@ -74,6 +74,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { id } = useParams()
   const [openRemarks, setOpenRemarks] = useState(false)
   const vaultLocationsAudit = useVaultLocationAudit()
+  const saveCloneButtonRef = useRef<any>(null)
+  const saveNewButtonRef = useRef<any>(null)
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -91,6 +93,24 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     emitter.on(SAVE_EVENT, saveHandler)
     return () => {
       emitter.off(SAVE_EVENT, saveHandler)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleKeyboardShortcuts = (event: KeyboardEvent): void => {
+      if (event.altKey) {
+        if (event.key === 'c' && saveCloneButtonRef.current) {
+          saveCloneButtonRef.current.focusVisible()
+        } else if (event.key === 'n' && saveNewButtonRef.current) {
+          saveNewButtonRef.current.focusVisible()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyboardShortcuts)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyboardShortcuts)
     }
   }, [])
 
@@ -141,11 +161,11 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       { type: 'success' }
     )
   }
-
   return (
     <Toolbar>
       <FlexBox>
         <SaveButton
+          action={saveCloneButtonRef}
           type='button'
           label='Save / Clone'
           title='Store this item, then create a new copy'
@@ -167,6 +187,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           }}
         />
         <SaveButton
+          action={saveNewButtonRef}
           type='button'
           label='Save / New'
           title='Store this item, then create a blank item'
