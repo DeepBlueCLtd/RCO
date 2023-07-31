@@ -167,7 +167,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
         <SaveButton
           action={saveCloneButtonRef}
           type='button'
-          label='Save / Clone'
+          label='Save / Clone <alt + c>'
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
@@ -189,7 +189,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
         <SaveButton
           action={saveNewButtonRef}
           type='button'
-          label='Save / New'
+          label='Save / New <alt + n>'
           title='Store this item, then create a blank item'
           onClick={() => {
             save = true
