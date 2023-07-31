@@ -7,7 +7,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
-import { Button } from '@mui/material'
+import { Button, type ButtonBaseActions } from '@mui/material'
 import { DateTime } from 'luxon'
 import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 import { Context as NotificationContext } from '../../../context/NotificationContext'
@@ -74,8 +74,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { id } = useParams()
   const [openRemarks, setOpenRemarks] = useState(false)
   const vaultLocationsAudit = useVaultLocationAudit()
-  const saveCloneButtonRef = useRef<any>(null)
-  const saveNewButtonRef = useRef<any>(null)
+  const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
+  const saveNewButtonRef = useRef<ButtonBaseActions>(null)
 
   const saveHandler = (e: string): void => {
     if (clone) {
