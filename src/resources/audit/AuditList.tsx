@@ -83,7 +83,7 @@ export interface FilterType {
   dataId?: number
   user?: number
   resource?: string
-  activityType?: string
+  activityType?: string | string[]
 }
 
 const referenceItems = [
