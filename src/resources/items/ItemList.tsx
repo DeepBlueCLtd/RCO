@@ -65,101 +65,117 @@ const omitColumns: Array<keyof Item> = [
   // 'platform'
 ]
 
-const filters = [
-  // <SourceInput
-  //   source='platform'
-  //   key='platform'
-  //   reference={constants.R_PLATFORMS}
-  // />,
-  // <SourceInput
-  //   source='project'
-  //   key='project'
-  //   reference={constants.R_PROJECTS}
-  // />,
-  <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
-  <CreatedByMeFilter
-    key='createdByMe'
-    source='createdBy_eq'
-    label='Created By Me'
-  />,
-  <SourceInput
-    key='createdBy'
-    source='createdBy'
-    reference={constants.R_USERS}
-  />,
-  <SourceInput
-    key='loanedTo'
-    source='loanedTo'
-    reference={constants.R_USERS}
-  />,
-  <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
-  <SourceInput
-    key='mediaType'
-    source='mediaType'
-    reference={constants.R_MEDIA_TYPE}
-  />,
-  <DateRangePicker
-    startSource='endDate_gte'
-    endSource='startDate_lte'
-    startLabel='Start'
-    endLabel='End'
-    source='date_range'
-    key='date_range'
-    label='Date Range'
-  />,
-  <SourceInput
-    source='vaultLocation'
-    key='vaultLocation'
-    sort={sort()}
-    reference={constants.R_VAULT_LOCATION}
-  />,
-  <SourceInput
-    source='protectiveMarking'
-    key='protectiveMarking'
-    sort={sort()}
-    reference={constants.R_PROTECTIVE_MARKING}
-  />,
-  <SourceInput
-    source='batch'
-    key='batch'
-    sort={sort('batchNumber')}
-    reference={constants.R_BATCHES}
-    optionField='batchNumber'
-  />,
-  <TextInput key='remarks' source='remarks' />,
-  <DateFilter
-    source='createdAt'
-    label='Created At'
-    key='createdAt'
-    format='iso'
-  />,
-  <BooleanFilter<Item>
-    source='id'
-    label='On loan'
-    fieldName='loanedTo'
-    key='loaned'
-    resource={constants.R_ITEMS}
-  />,
-  <BooleanFilter<Item>
-    source='destruction'
-    label='Destroyed'
-    fieldName='destruction'
-    key='destruction'
-    resource={constants.R_ITEMS}
-  />,
-  <BooleanFilter<Item>
-    source='dispatchJob'
-    label='Dispatched'
-    fieldName='dispatchJob'
-    key='dispatch'
-    resource={constants.R_ITEMS}
-  />
-]
+const getFilters = (resource?: string): React.ReactElement[] => {
+  const filters = [
+    // <SourceInput
+    //   source='platform'
+    //   key='platform'
+    //   reference={constants.R_PLATFORMS}
+    // />,
+    // <SourceInput
+    //   source='project'
+    //   key='project'
+    //   reference={constants.R_PROJECTS}
+    // />,
+    <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
+    <CreatedByMeFilter
+      key='createdByMe'
+      source='createdBy_eq'
+      label='Created By Me'
+    />,
+    <SourceInput
+      key='createdBy'
+      source='createdBy'
+      reference={constants.R_USERS}
+    />,
+    <SourceInput
+      key='loanedTo'
+      source='loanedTo'
+      reference={constants.R_USERS}
+    />,
+    <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
+    <SourceInput
+      key='mediaType'
+      source='mediaType'
+      reference={constants.R_MEDIA_TYPE}
+    />,
+    <DateRangePicker
+      startSource='endDate_gte'
+      endSource='startDate_lte'
+      startLabel='Start'
+      endLabel='End'
+      source='date_range'
+      key='date_range'
+      label='Date Range'
+    />,
+    <SourceInput
+      source='vaultLocation'
+      key='vaultLocation'
+      sort={sort()}
+      reference={constants.R_VAULT_LOCATION}
+    />,
+    <SourceInput
+      source='protectiveMarking'
+      key='protectiveMarking'
+      sort={sort()}
+      reference={constants.R_PROTECTIVE_MARKING}
+    />,
+    <SourceInput
+      source='batch'
+      key='batch'
+      sort={sort('batchNumber')}
+      reference={constants.R_BATCHES}
+      optionField='batchNumber'
+    />,
+    <TextInput key='remarks' source='remarks' />,
+    <DateFilter
+      source='createdAt'
+      label='Created At'
+      key='createdAt'
+      format='iso'
+    />,
+    <BooleanFilter<Item>
+      source='id'
+      label='On loan'
+      fieldName='loanedTo'
+      key='loaned'
+      resource={constants.R_ITEMS}
+    />
+  ]
+  if (resource === constants.R_ALL_ITEMS) {
+    filters.push(
+      <BooleanFilter<Item>
+        source='destruction'
+        label='Destroyed'
+        fieldName='destruction'
+        key='destruction'
+        resource={constants.R_ITEMS}
+      />,
+      <BooleanFilter<Item>
+        source='dispatchJob'
+        label='Dispatched'
+        fieldName='dispatchJob'
+        key='dispatch'
+        resource={constants.R_ITEMS}
+      />
+    )
+  }
+  return filters
+}
 
-const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
+interface ItemActionsProps {
+  preferenceKey: string
+  filter?: FilterPayload
+}
+
+const ItemActions = (props: ItemActionsProps): React.ReactElement => {
+  const { filter } = props
   return (
-    <StyledTopToolbar>
-      <ItemAssetReport storeKey='items-asset-report' />
+    <StyledTopToolbar {...props}>
+      <ItemAssetReport
+        storeKey='items-asset-report'
+        filterDefaultValues={filter}
+      />
       <FilterButton />
       <SelectColumnsButton {...props} />
     </StyledTopToolbar>
@@ -489,6 +505,7 @@ export default function ItemList(
     filtersShown,
     preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
     bulkActionButtons,
+    filter,
     ...rest
   } = props ?? {}
 
@@ -513,7 +530,7 @@ export default function ItemList(
     <List
       sx={sx}
       hasCreate={false}
-      actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
+      actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       sort={options?.sort}
@@ -521,8 +538,10 @@ export default function ItemList(
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
         !filtersShown
-          ? filters
-          : filters.filter((f) => filtersShown.includes(f.key as string))
+          ? getFilters(resource)
+          : getFilters(resource).filter((f) =>
+              filtersShown.includes(f.key as string)
+            )
       }
       storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
