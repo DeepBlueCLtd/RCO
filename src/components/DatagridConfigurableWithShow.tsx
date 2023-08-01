@@ -4,7 +4,8 @@ import {
   type DatagridConfigurableProps,
   useRecordContext,
   useRedirect,
-  useCreatePath
+  useCreatePath,
+  useListContext
 } from 'react-admin'
 import useRowClick from '../hooks/useRowClick'
 import { type ResourceTypes } from '../constants'
@@ -32,15 +33,36 @@ const PreviewButton = ({
   )
 }
 
+interface Props {
+  resource: ResourceTypes
+  storeKey?: string
+}
+
 export default function DatagridConfigurableWithShow(
-  props: DatagridConfigurableProps & { resource: ResourceTypes }
+  props: DatagridConfigurableProps & Props
 ): React.ReactElement {
-  const { children, resource, ...rest } = props
+  const { children, resource, storeKey = '', ...rest } = props
 
   const handleRowClick = useRowClick(resource)
+  const { selectedIds } = useListContext()
+
+  const itemsStoreKeys = ['filtered-item-list', 'items-items-list']
+
+  const styles = {
+    '& .RaBulkActionsToolbar-toolbar': {
+      minHeight: '48px',
+      height: '48px',
+      position: 'relative',
+      '& .RaBulkActionsToolbar-title': {
+        display: selectedIds.length > 0 ? 'flex' : 'none'
+      }
+    }
+  }
+  const sx = itemsStoreKeys.includes(storeKey) ? styles : null
 
   return (
     <DatagridConfigurable
+      sx={sx}
       rowClick={(id) => handleRowClick(id as number)}
       {...rest}>
       <PreviewButton resource={resource} />

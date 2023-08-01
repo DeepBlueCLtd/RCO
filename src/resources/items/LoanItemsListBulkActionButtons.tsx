@@ -212,9 +212,12 @@ export default function LoanItemsListBulkActionButtons(
     return data.filter((item) => selectedIds.includes(item.id))
   }, [selectedIds, data])
 
+  const isLoanButton =
+    (buttons.includes('loan') && noneLoaned) || selectedIds.length === 0
+
   return (
     <FlexBox>
-      {buttons.includes('loan') && noneLoaned && (
+      {isLoanButton && (
         <Button
           variant='outlined'
           size='small'

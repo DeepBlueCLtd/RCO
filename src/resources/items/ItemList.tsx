@@ -221,6 +221,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const { selectedIds } = useListContext<Item>()
+  const isSelected = selectedIds.length > 0
   const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
     ids: selectedIds
   })
@@ -354,6 +355,11 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     marginLeft: 2
   }
 
+  const canBeLoaned = !isDestruction && !isAnyDispatched && loan
+  const isLoanItemsBulkActions =
+    !isSelected ||
+    (canBeLoaned && hasAccess(constants.R_ITEMS, { write: true }))
+
   return (
     <Box sx={[bulkActionsStyle, { width: '100vw' }]}>
       <Box
@@ -396,10 +402,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
             ) : null}
           </>
         )}
-        {!isDestruction &&
-        !isAnyDispatched &&
-        loan &&
-        hasAccess(constants.R_ITEMS, { write: true }) ? (
+        {isLoanItemsBulkActions ? (
           <LoanItemsListBulkActionButtons
             noneLoaned={noneLoaned}
             allLoaned={allLoaned}
@@ -526,6 +529,7 @@ export default function ItemList(
       />
       <DatagridConfigurableWithShow
         resource={constants.R_ITEMS}
+        storeKey={storeKey}
         bulkActionButtons={
           bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
         }
