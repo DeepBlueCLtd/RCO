@@ -1,13 +1,13 @@
-import { SaveButton, Toolbar } from 'react-admin'
+import { SaveButton, Toolbar, useCreatePath, useRedirect } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useContext, useEffect, useState } from 'react'
-import { SAVE_EVENT } from '../../../constants'
+import { useContext, useEffect, useRef } from 'react'
+import { ITEM_CLONE, ITEM_SAVE, R_ITEMS, SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
-import { Button } from '@mui/material'
+import { Button, type ButtonBaseActions } from '@mui/material'
 import { DateTime } from 'luxon'
 import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 import { Context as NotificationContext } from '../../../context/NotificationContext'
@@ -15,6 +15,8 @@ import { Context as NotificationContext } from '../../../context/NotificationCon
 // eslint-disable-next-line
 type Events = {
   [SAVE_EVENT]: string
+  [ITEM_CLONE]: null
+  [ITEM_SAVE]: null
 }
 
 enum ItemFormSaveType {
@@ -65,24 +67,32 @@ const Actions = (props: ActionsProps): React.ReactElement => {
 
 interface Props {
   onSuccess: (data: any) => void
+  onSave: (event: React.SyntheticEvent) => void
+  setOpenRemarks: React.Dispatch<boolean>
+  openRemarks: boolean
 }
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
-  const { onSuccess } = props
+  const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
   const { notify } = useContext(NotificationContext)
   const { reset, getValues, setValue } = useFormContext()
   const { id } = useParams()
-  const [openRemarks, setOpenRemarks] = useState(false)
   const vaultLocationsAudit = useVaultLocationAudit()
+  const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
+  const saveNewButtonRef = useRef<ButtonBaseActions>(null)
+  const redirect = useRedirect()
+  const createPath = useCreatePath()
 
   const saveHandler = (e: string): void => {
     if (clone) {
       clone = false
       saveAndClone(e, ItemFormSaveType.CLONE)
+      emitter.emit(ITEM_CLONE, null)
     }
     if (save) {
       save = false
       saveAndClone(e, ItemFormSaveType.SAVE)
+      emitter.emit(ITEM_SAVE, null)
       reset()
     }
   }
@@ -94,19 +104,37 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     }
   }, [])
 
-  const onSave = (event: React.SyntheticEvent): void => {
-    event.preventDefault()
-    setOpenRemarks(true)
-  }
+  useEffect(() => {
+    const handleKeyboardShortcuts = (event: KeyboardEvent): void => {
+      if (event.altKey) {
+        if (event.key === 'c' && saveCloneButtonRef.current) {
+          saveCloneButtonRef.current.focusVisible()
+        } else if (event.key === 'n' && saveNewButtonRef.current) {
+          saveNewButtonRef.current.focusVisible()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyboardShortcuts)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyboardShortcuts)
+    }
+  }, [])
 
   const vLocationAudits = async (
     vaultLocationId?: number,
     itemId?: number
   ): Promise<void> => {
+    const path = createPath({ resource: R_ITEMS, id, type: 'show' })
+
     await vaultLocationsAudit(
       vaultLocationId ?? getValues('vaultLocation'),
       itemId
     )
+    setTimeout(() => {
+      redirect(path)
+    }, 0)
   }
 
   const successWithAudit = ({ id, vaultLocation }: Item): void => {
@@ -141,13 +169,13 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       { type: 'success' }
     )
   }
-
   return (
     <Toolbar>
       <FlexBox>
         <SaveButton
+          action={saveCloneButtonRef}
           type='button'
-          label='Save / Clone'
+          label='Save / Clone <alt + c>'
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
@@ -167,8 +195,9 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           }}
         />
         <SaveButton
+          action={saveNewButtonRef}
           type='button'
-          label='Save / New'
+          label='Save / New <alt + n>'
           title='Store this item, then create a blank item'
           onClick={() => {
             save = true

@@ -17,7 +17,8 @@ import {
   useGetList,
   useRecordContext,
   useResourceContext,
-  useRedirect
+  useRedirect,
+  type Identifier
 } from 'react-admin'
 import { Box } from '@mui/system'
 import * as constants from '../constants'
@@ -31,9 +32,9 @@ interface Props<T, RefTable> {
   labelField: keyof T
   width: string
   setIsDirty: (source: string, value: string) => void
+  onValueChange: (value: string[] | undefined) => void
+  isRemarksOpen?: boolean
 }
-
-type SelectedIdType = number | number[]
 
 export default function ProtectionRefInput<
   T extends RaRecord,
@@ -49,17 +50,21 @@ export default function ProtectionRefInput<
     labelField,
     width = '100%',
     setIsDirty,
+    onValueChange,
+    isRemarksOpen,
     ...rest
   } = props
-  const [data, setData] = useState<number[] | number>([])
+  const [data, setData] = useState<Array<T['id']> | T['id']>([])
   const record = useRecordContext()
   const resource = useResourceContext()
+  const [prevValue, setPrevValue] = useState<Array<T['id']>>([])
   const {
     formState: { errors, isSubmitSuccessful },
     setValue
   } = useFormContext()
   const redirect = useRedirect()
   const [valueLabel, setValueLabel] = useState<string>('')
+  type SelectedIdType = T['id'] | Array<T['id']>
 
   const { createRecord, updateRecord } = useRefTable(
     refTable,
@@ -70,9 +75,9 @@ export default function ProtectionRefInput<
   const { data: options = [] } = useGetList<T>(reference)
 
   const labelById = useMemo(() => {
-    const results: Record<number, T> = {}
+    const results: Record<Identifier, T> = {}
     options.forEach((option) => {
-      results[option.id as number] = option
+      results[option.id as T['id']] = option
     })
     return results
   }, [options])
@@ -83,7 +88,7 @@ export default function ProtectionRefInput<
     }
   })
 
-  const getNamesByIds = (ids: number | number[]): string => {
+  const getNamesByIds = (ids: SelectedIdType): string => {
     const names: string[] = []
     const values = Array.isArray(ids) ? ids : [ids]
     options.filter((item: T) => {
@@ -96,10 +101,25 @@ export default function ProtectionRefInput<
     return names.join(' ')
   }
 
-  const setProtectionValues = (ids: number | number[]): string => {
+  const setProtectionValues = (ids: SelectedIdType): string => {
     const names = getNamesByIds(ids)
     setValueLabel(names)
     return names
+  }
+
+  const getPreviousValue = (newValues = data): string[] | undefined => {
+    const values = Array.isArray(newValues) ? newValues : [newValues]
+
+    const isSameLength = values.length === prevValue.length
+    const compare = (a: any, b: any): number => a.localeCompare(b)
+    const isSame =
+      isSameLength &&
+      values.sort(compare).join() === prevValue.sort(compare).join()
+
+    if (isSame) {
+      return undefined
+    }
+    return prevValue.map((id) => getLabelById(id))
   }
 
   const handleChange = (ev: SelectChangeEvent<typeof data>): void => {
@@ -107,6 +127,9 @@ export default function ProtectionRefInput<
     setData(value)
     const names = setProtectionValues(value)
     setIsDirty(source as string, names)
+    if (typeof isRemarksOpen === 'undefined') {
+      onValueChange(getPreviousValue(value))
+    }
   }
 
   useEffect(() => {
@@ -120,16 +143,24 @@ export default function ProtectionRefInput<
       ? selectedItems?.map((item: RefTable) => item[source]) ?? []
       : selectedItems?.[0]?.[source]
     setData(selectedData)
+    setPrevValue(selectedData)
     setProtectionValues(selectedData)
   }, [selectedItems])
+
+  useEffect(() => {
+    if (isRemarksOpen) {
+      onValueChange(getPreviousValue())
+    }
+  }, [isRemarksOpen])
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       const selectedData = typeof data === 'number' ? [data] : data
       if (record?.id) {
-        updateRecord(record.id as number, selectedData)
+        // onValueChange(getPreviousValue())
+        updateRecord(record.id as number, selectedData as number[])
       } else if (id) {
-        createRecord(id, selectedData)
+        createRecord(id, selectedData as number[])
       }
       if (resource === constants.R_BATCHES) {
         const path = `/${constants.R_BATCHES}/${id ?? record?.id}/show`
@@ -138,8 +169,7 @@ export default function ProtectionRefInput<
     }
   }, [isSubmitSuccessful])
 
-  const getLabelById = (id: number): string | undefined =>
-    labelById[id]?.[labelField]
+  const getLabelById = (id: Identifier): string => labelById[id]?.[labelField]
 
   const error: string = (errors[source as string]?.message as string) ?? ''
 
@@ -156,7 +186,7 @@ export default function ProtectionRefInput<
           gap: 0.5
         }}>
         {Array.isArray(selected) ? (
-          selected.map((value: number) => (
+          selected.map((value: T['id']) => (
             <Chip key={value} label={getLabelById(value)} />
           ))
         ) : (
