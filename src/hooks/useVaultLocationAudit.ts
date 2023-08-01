@@ -79,7 +79,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
     const vaultLocations = await getVLocationByIds(selectedVIds)
 
     const auditData = {
-      activityType: AuditType.EDIT,
+      activityType: AuditType.MOVED,
       securityRelated: false
     }
 
@@ -90,40 +90,42 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         resource: constants.R_ITEMS,
         dataId: itemId
       }
-      const audits: AuditData[] = [
-        {
-          ...itemAudit,
-          activityDetail: `Vault Location changed to ${vaultLocation?.name}`
-        },
-        {
-          ...itemAudit,
-          activityDetail: `item added to VaultLocation ${vaultLocation?.name}`
-        },
-        {
-          ...auditData,
-          activityDetail: `item ${itemRef} added to VaultLocation`,
-          resource: constants.R_VAULT_LOCATION,
-          dataId: vaultLocationId
-        }
-      ]
+      const audits: AuditData[] = []
+      // log removal first
       if (!id) {
         audits.push(
           ...[
             {
               ...itemAudit,
-              activityDetail: `item Removed from ${
+              activityDetail: `Removed from ${
                 vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
               }`
             },
             {
               ...auditData,
-              activityDetail: `item ${itemRef} removed from previous VaultLocation`,
+              activityDetail: `${itemRef} removed`,
               resource: constants.R_VAULT_LOCATION,
               dataId: selectedItems[itemId]?.vaultLocation
             }
           ]
         )
       }
+      // now log putting in new locaiton
+      audits.push(
+        ...[
+          {
+            ...itemAudit,
+            activityDetail: `Moved to ${vaultLocation?.name}`
+          },
+          {
+            ...auditData,
+            activityDetail: `${itemRef} added`,
+            resource: constants.R_VAULT_LOCATION,
+            dataId: vaultLocationId
+          }
+        ]
+      )
+
       return audits.map(async (auditData) => {
         if (auditData) {
           await audit(auditData)

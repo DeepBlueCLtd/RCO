@@ -6,6 +6,8 @@ export enum AuditType {
   DELETE = 'DELETE', // note: not used, by principle
   EDIT = 'EDIT',
 
+  MOVED = 'MOVED',
+
   USER_DEPARTED = 'USER_DEPARTED',
   USER_RETURNED = 'USER_RETURNED',
 
