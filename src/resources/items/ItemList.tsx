@@ -50,7 +50,7 @@ import { useLocation } from 'react-router-dom'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
-const omitColumns: string[] = [
+const omitColumns: Array<keyof Item> = [
   'id',
   'createdAt',
   'remarks',
@@ -59,101 +59,109 @@ const omitColumns: string[] = [
   'vaultLocation',
   'musterRemarks',
   'loanedTo',
-  'batch'
+  'batch',
+  'protectionString'
   // 'project',
   // 'platform'
 ]
 
-const filters = [
-  // <SourceInput
-  //   source='platform'
-  //   key='platform'
-  //   reference={constants.R_PLATFORMS}
-  // />,
-  // <SourceInput
-  //   source='project'
-  //   key='project'
-  //   reference={constants.R_PROJECTS}
-  // />,
-  <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
-  <CreatedByMeFilter
-    key='createdByMe'
-    source='createdBy_eq'
-    label='Created By Me'
-  />,
-  <SourceInput
-    key='createdBy'
-    source='createdBy'
-    reference={constants.R_USERS}
-  />,
-  <SourceInput
-    key='loanedTo'
-    source='loanedTo'
-    reference={constants.R_USERS}
-  />,
-  <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
-  <SourceInput
-    key='mediaType'
-    source='mediaType'
-    reference={constants.R_MEDIA_TYPE}
-  />,
-  <DateRangePicker
-    startSource='endDate_gte'
-    endSource='startDate_lte'
-    startLabel='Start'
-    endLabel='End'
-    source='date_range'
-    key='date_range'
-    label='Date Range'
-  />,
-  <SourceInput
-    source='vaultLocation'
-    key='vaultLocation'
-    sort={sort()}
-    reference={constants.R_VAULT_LOCATION}
-  />,
-  <SourceInput
-    source='protectiveMarking'
-    key='protectiveMarking'
-    sort={sort()}
-    reference={constants.R_PROTECTIVE_MARKING}
-  />,
-  <SourceInput
-    source='batch'
-    key='batch'
-    sort={sort('batchNumber')}
-    reference={constants.R_BATCHES}
-    optionField='batchNumber'
-  />,
-  <TextInput key='remarks' source='remarks' />,
-  <DateFilter
-    source='createdAt'
-    label='Created At'
-    key='createdAt'
-    format='iso'
-  />,
-  <BooleanFilter<Item>
-    source='id'
-    label='On loan'
-    fieldName='loanedTo'
-    key='loaned'
-    resource={constants.R_ITEMS}
-  />,
-  <BooleanFilter<Item>
-    source='destruction'
-    label='Destroyed'
-    fieldName='destruction'
-    key='destruction'
-    resource={constants.R_ITEMS}
-  />,
-  <BooleanFilter<Item>
-    source='dispatchJob'
-    label='Dispatched'
-    fieldName='dispatchJob'
-    key='dispatch'
-    resource={constants.R_ITEMS}
-  />
-]
+const getFilters = (resource?: string): React.ReactElement[] => {
+  const filters = [
+    // <SourceInput
+    //   source='platform'
+    //   key='platform'
+    //   reference={constants.R_PLATFORMS}
+    // />,
+    // <SourceInput
+    //   source='project'
+    //   key='project'
+    //   reference={constants.R_PROJECTS}
+    // />,
+    <SearchInput source='q' key='q' alwaysOn placeholder='Reference' />,
+    <CreatedByMeFilter
+      key='createdByMe'
+      source='createdBy_eq'
+      label='Created By Me'
+    />,
+    <SourceInput
+      key='createdBy'
+      source='createdBy'
+      reference={constants.R_USERS}
+    />,
+    <SourceInput
+      key='loanedTo'
+      source='loanedTo'
+      reference={constants.R_USERS}
+    />,
+    <TextInput source='itemNumber' key='itemNumber' label='Reference' />,
+    <SourceInput
+      key='mediaType'
+      source='mediaType'
+      reference={constants.R_MEDIA_TYPE}
+    />,
+    <DateRangePicker
+      startSource='endDate_gte'
+      endSource='startDate_lte'
+      startLabel='Start'
+      endLabel='End'
+      source='date_range'
+      key='date_range'
+      label='Date Range'
+    />,
+    <SourceInput
+      source='vaultLocation'
+      key='vaultLocation'
+      sort={sort()}
+      reference={constants.R_VAULT_LOCATION}
+    />,
+    <SourceInput
+      source='protectiveMarking'
+      key='protectiveMarking'
+      sort={sort()}
+      reference={constants.R_PROTECTIVE_MARKING}
+    />,
+    <SourceInput
+      source='batch'
+      key='batch'
+      sort={sort('batchNumber')}
+      reference={constants.R_BATCHES}
+      optionField='batchNumber'
+    />,
+    <TextInput key='remarks' source='remarks' />,
+    <DateFilter
+      source='createdAt'
+      label='Created At'
+      key='createdAt'
+      format='iso'
+    />,
+    <BooleanFilter<Item>
+      source='id'
+      label='On loan'
+      fieldName='loanedTo'
+      key='loaned'
+      resource={constants.R_ITEMS}
+    />
+  ]
+  if (resource === constants.R_ALL_ITEMS) {
+    filters.push(
+      <BooleanFilter<Item>
+        source='destruction'
+        label='Destroyed'
+        fieldName='destruction'
+        key='destruction'
+        resource={constants.R_ITEMS}
+      />,
+      <BooleanFilter<Item>
+        source='dispatchJob'
+        label='Dispatched'
+        fieldName='dispatchJob'
+        key='dispatch'
+        resource={constants.R_ITEMS}
+      />
+    )
+  }
+  return filters
+}
 
 interface ItemActionsProps {
   preferenceKey: string
@@ -161,7 +169,7 @@ interface ItemActionsProps {
 }
 
 const ItemActions = (props: ItemActionsProps): React.ReactElement => {
-  const { preferenceKey, filter } = props
+  const { filter } = props
   return (
     <StyledTopToolbar {...props}>
       <ItemAssetReport
@@ -169,7 +177,7 @@ const ItemActions = (props: ItemActionsProps): React.ReactElement => {
         filterDefaultValues={filter}
       />
       <FilterButton />
-      <SelectColumnsButton preferenceKey={preferenceKey} />
+      <SelectColumnsButton {...props} />
     </StyledTopToolbar>
   )
 }
@@ -505,9 +513,16 @@ export default function ItemList(
       }
     }
   }
-
   const [data, setData] = useState<DataType>()
-
+  const CommonEndFields = [
+    <TextField source='remarks' key={'remarks'} />,
+    <TextField source='musterRemarks' key={'musterRemarks'} />,
+    <TextField
+      source='protectionString'
+      label='Protection'
+      key={'protectionString'}
+    />
+  ]
   return (
     <List
       sx={sx}
@@ -520,8 +535,10 @@ export default function ItemList(
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
         !filtersShown
-          ? filters
-          : filters.filter((f) => filtersShown.includes(f.key as string))
+          ? getFilters(resource)
+          : getFilters(resource).filter((f) =>
+              filtersShown.includes(f.key as string)
+            )
       }
       storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
@@ -572,30 +589,31 @@ export default function ItemList(
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
-        {resource === constants.R_ALL_ITEMS && [
-          <SourceField
-            link={false}
-            source='destruction'
-            reference={constants.R_DESTRUCTION}
-            sourceField='reference'
-            key={'destruction'}
-          />,
-          <DateField source='destructionDate' key={'destructionDate'} />,
-          <SourceField
-            link={false}
-            source='dispatchJob'
-            reference={constants.R_DISPATCH}
-            sourceField='reference'
-            label='Dispatch'
-            key={'dispatchJob'}
-          />,
-          <DateField source='dispatchedDate' key={'dispatchJob'} />
-        ]}
+
+        {resource !== constants.R_ITEMS
+          ? [
+              <SourceField
+                link={false}
+                source='destruction'
+                reference={constants.R_DESTRUCTION}
+                sourceField='reference'
+                key={'destruction'}
+              />,
+              <DateField source='destructionDate' key={'destructionDate'} />,
+              <SourceField
+                link={false}
+                source='dispatchJob'
+                reference={constants.R_DISPATCH}
+                sourceField='reference'
+                label='Dispatch'
+                key={'dispatchJob'}
+              />,
+              <DateField source='dispatchedDate' key={'dispatchJob'} />,
+              ...CommonEndFields
+            ]
+          : CommonEndFields}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
-        <TextField source='remarks' />
-        <TextField source='musterRemarks' />
-        <TextField source='protectionString' label='Protection' />
       </DatagridConfigurableWithShow>
     </List>
   )
