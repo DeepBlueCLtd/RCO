@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import FieldSet from '../../components/FieldSet'
+import { AuditType } from '../../utils/activity-types'
 
 export default function ItemHistory(): React.ReactElement {
   const { id } = useParams()
@@ -12,7 +13,8 @@ export default function ItemHistory(): React.ReactElement {
         resource={constants.R_AUDIT}
         filter={{
           resource: constants.R_ITEMS,
-          dataId: id
+          dataId: id,
+          activityType_neq: AuditType.EDIT
         }}
         sort={{
           field: 'id',
