@@ -29,7 +29,7 @@ const lifeCycles = (
       record,
       R_USERS,
       {
-        type: departed
+        activityType: departed
           ? AuditType.USER_DEPARTED
           : returned
           ? AuditType.USER_RETURNED

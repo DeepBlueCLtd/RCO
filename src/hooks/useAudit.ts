@@ -1,7 +1,7 @@
 import { useDataProvider } from 'react-admin'
-import { trackEvent, type Props } from '../utils/audit'
+import { trackEvent, type AuditData } from '../utils/audit'
 
-type AuditFunction = (args: Props) => Promise<void>
+type AuditFunction = (args: AuditData) => Promise<void>
 
 export default function useAudit(): AuditFunction {
   const dataProvider = useDataProvider()

@@ -274,7 +274,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const removeFromDispatch = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
       const auditData = {
-        type: AuditType.EDIT,
+        activityType: AuditType.EDIT,
         activityDetail: 'Item returned',
         securityRelated: false,
         dataId: itemId,
@@ -301,7 +301,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const returnDispatchedItems = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
       const auditData = {
-        type: AuditType.EDIT,
+        activityType: AuditType.EDIT,
         activityDetail: 'Item returned',
         securityRelated: false,
         dataId: itemId,
@@ -310,7 +310,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       await audit(auditData)
       await audit({
         ...auditData,
-        type: AuditType.RETURN,
+        activityType: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS
       })

@@ -156,7 +156,7 @@ export default function DestructionShow(): React.ReactElement {
 
   const DestroyAudits = async (item: Item): Promise<void> => {
     const audiData = {
-      type: AuditType.DESTROY,
+      activityType: AuditType.DESTROY,
       activityDetail: `Destroyed in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
@@ -167,7 +167,7 @@ export default function DestructionShow(): React.ReactElement {
 
   const destroy = async (data: UpdateParams): Promise<void> => {
     const audiData = {
-      type: AuditType.DESTROY,
+      activityType: AuditType.DESTROY,
       activityDetail: 'Destroyed',
       securityRelated: false,
       resource: constants.R_DESTRUCTION,

@@ -119,7 +119,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
     refresh()
     await audit({
-      type: AuditType.EDIT,
+      activityType: AuditType.EDIT,
       activityDetail: 'Hastener sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,
@@ -211,7 +211,7 @@ export default function DispatchShow(): React.ReactElement {
 
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData = {
-      type: AuditType.SENT,
+      activityType: AuditType.SENT,
       activityDetail: `Dispatch Sent in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
@@ -222,7 +222,7 @@ export default function DispatchShow(): React.ReactElement {
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
     const audiData = {
-      type: AuditType.SENT,
+      activityType: AuditType.SENT,
       activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,

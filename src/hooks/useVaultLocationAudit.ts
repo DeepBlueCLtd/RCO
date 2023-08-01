@@ -3,6 +3,7 @@ import useAudit from './useAudit'
 import * as constants from '../constants'
 import { useDataProvider, useListContext, useRecordContext } from 'react-admin'
 import { useParams } from 'react-router-dom'
+import { type AuditData } from '../utils/audit'
 
 type UseVaultLocationAudit = (
   vaultLocationId: number,
@@ -78,7 +79,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
     const vaultLocations = await getVLocationByIds(selectedVIds)
 
     const auditData = {
-      type: AuditType.EDIT,
+      activityType: AuditType.EDIT,
       securityRelated: false
     }
 
@@ -89,7 +90,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         resource: constants.R_ITEMS,
         dataId: itemId
       }
-      const audits = [
+      const audits: AuditData[] = [
         {
           ...itemAudit,
           activityDetail: `Vault Location changed to ${vaultLocation?.name}`
