@@ -73,6 +73,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const audit = useAudit()
   const refresh = useRefresh()
   const [update] = useUpdate()
+  const notify = useNotify()
 
   const dispatched: boolean =
     !hasWritePermission || typeof record?.dispatchedAt !== 'undefined'
@@ -91,6 +92,20 @@ const Footer = (props: FooterProps): React.ReactElement => {
       data: {
         dispatchedAt: nowDate()
       }
+    })
+  }
+
+  const sendReceiptReceived = async (): Promise<void> => {
+    await update(constants.R_DISPATCH, {
+      id: record.id,
+      data: {
+        receiptReceived: nowDate()
+      },
+      previousData: record
+    })
+    refresh()
+    notify('Receipt Received', {
+      type: 'success'
     })
   }
 
@@ -116,39 +131,45 @@ const Footer = (props: FooterProps): React.ReactElement => {
 
   return (
     <>
-      <FlexBox justifyContent='end' padding={2}>
-        {dispatched && (
+      <FlexBox flexDirection='column' gap='6px' marginBottom='20px'>
+        <FlexBox justifyContent='space-around'>
           <Button
             variant='outlined'
-            label='Print Hastener'
+            label='Print Receipt'
             onClick={() => {
-              handleOpen('hastener')
+              handleOpen('dispatch')
             }}
           />
-        )}
-        {dispatched && !receiptReceived && (
-          <Button
-            variant='outlined'
-            label='Record Hastener Sent'
-            onClick={sendHastener as any}
-          />
-        )}
-        <Button
-          variant='outlined'
-          label='Print Receipt'
-          onClick={() => {
-            handleOpen('dispatch')
-          }}
-        />
-        {!dispatched && (
-          <>
+          {dispatched ? (
+            <Button
+              variant='outlined'
+              label='Print Hastener'
+              onClick={() => {
+                handleOpen('hastener')
+              }}
+            />
+          ) : (
             <Button
               variant='contained'
               label='Dispatch'
               disabled={!record.reportPrintedAt}
               onClick={handleDispatch}
             />
-          </>
+          )}
+        </FlexBox>
+        {dispatched && !receiptReceived && (
+          <FlexBox justifyContent='space-around'>
+            <Button
+              variant='outlined'
+              label='Record Hastener Sent'
+              onClick={sendHastener as any}
+            />
+            <Button
+              variant='outlined'
+              label='Receipt Note Received'
+              onClick={sendReceiptReceived as any}
+            />
+          </FlexBox>
         )}
       </FlexBox>
       <Confirm
