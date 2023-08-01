@@ -155,11 +155,19 @@ const filters = [
   />
 ]
 
-const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
-  const { preferenceKey } = props
+interface ItemActionsProps {
+  preferenceKey: string
+  filter?: FilterPayload
+}
+
+const ItemActions = (props: ItemActionsProps): React.ReactElement => {
+  const { preferenceKey, filter } = props
   return (
     <StyledTopToolbar {...props}>
-      <ItemAssetReport storeKey='items-asset-report' />
+      <ItemAssetReport
+        storeKey='items-asset-report'
+        filterDefaultValues={filter}
+      />
       <FilterButton />
       <SelectColumnsButton preferenceKey={preferenceKey} />
     </StyledTopToolbar>
@@ -486,6 +494,7 @@ export default function ItemList(
     filtersShown,
     preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
     bulkActionButtons,
+    filter,
     ...rest
   } = props ?? {}
 
@@ -503,7 +512,7 @@ export default function ItemList(
     <List
       sx={sx}
       hasCreate={false}
-      actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
+      actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       sort={options?.sort}
