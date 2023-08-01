@@ -49,7 +49,7 @@ export default function DatagridConfigurableWithShow(
   const itemsStoreKeys = ['filtered-item-list', 'items-items-list']
 
   const styles = {
-    '& .RaBulkActionsToolbar-toolbar': {
+    '& .RaBulkActionsToolbar-toolbar, .RaBulkActionsToolbar-collapsed': {
       minHeight: '48px',
       height: '48px',
       position: 'relative',
