@@ -11,7 +11,12 @@ export default function ItemHistory(): React.ReactElement {
       <List
         resource={constants.R_AUDIT}
         filter={{
+          resource: constants.R_ITEMS,
           dataId: id
+        }}
+        sort={{
+          field: 'id',
+          order: 'DESC'
         }}>
         <Datagrid bulkActionButtons={false}>
           <DateField source='dateTime' label='Date' />
