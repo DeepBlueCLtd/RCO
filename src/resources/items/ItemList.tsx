@@ -50,7 +50,7 @@ import { useLocation } from 'react-router-dom'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
-const omitColumns: string[] = [
+const omitColumns: Array<keyof Item> = [
   'id',
   'createdAt',
   'remarks',
@@ -59,7 +59,8 @@ const omitColumns: string[] = [
   'vaultLocation',
   'musterRemarks',
   'loanedTo',
-  'batch'
+  'batch',
+  'protectionString'
   // 'project',
   // 'platform'
 ]
@@ -156,12 +157,11 @@ const filters = [
 ]
 
 const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
-  const { preferenceKey } = props
   return (
-    <StyledTopToolbar {...props}>
+    <StyledTopToolbar>
       <ItemAssetReport storeKey='items-asset-report' />
       <FilterButton />
-      <SelectColumnsButton preferenceKey={preferenceKey} />
+      <SelectColumnsButton {...props} />
     </StyledTopToolbar>
   )
 }
@@ -496,9 +496,16 @@ export default function ItemList(
       }
     }
   }
-
   const [data, setData] = useState<DataType>()
-
+  const CommonEndFields = [
+    <TextField source='remarks' key={'remarks'} />,
+    <TextField source='musterRemarks' key={'musterRemarks'} />,
+    <TextField
+      source='protectionString'
+      label='Protection'
+      key={'protectionString'}
+    />
+  ]
   return (
     <List
       sx={sx}
@@ -563,30 +570,31 @@ export default function ItemList(
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
-        {resource === constants.R_ALL_ITEMS && [
-          <SourceField
-            link={false}
-            source='destruction'
-            reference={constants.R_DESTRUCTION}
-            sourceField='reference'
-            key={'destruction'}
-          />,
-          <DateField source='destructionDate' key={'destructionDate'} />,
-          <SourceField
-            link={false}
-            source='dispatchJob'
-            reference={constants.R_DISPATCH}
-            sourceField='reference'
-            label='Dispatch'
-            key={'dispatchJob'}
-          />,
-          <DateField source='dispatchedDate' key={'dispatchJob'} />
-        ]}
+
+        {resource !== constants.R_ITEMS
+          ? [
+              <SourceField
+                link={false}
+                source='destruction'
+                reference={constants.R_DESTRUCTION}
+                sourceField='reference'
+                key={'destruction'}
+              />,
+              <DateField source='destructionDate' key={'destructionDate'} />,
+              <SourceField
+                link={false}
+                source='dispatchJob'
+                reference={constants.R_DISPATCH}
+                sourceField='reference'
+                label='Dispatch'
+                key={'dispatchJob'}
+              />,
+              <DateField source='dispatchedDate' key={'dispatchJob'} />,
+              ...CommonEndFields
+            ]
+          : CommonEndFields}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
-        <TextField source='remarks' />
-        <TextField source='musterRemarks' />
-        <TextField source='protectionString' label='Protection' />
       </DatagridConfigurableWithShow>
     </List>
   )
