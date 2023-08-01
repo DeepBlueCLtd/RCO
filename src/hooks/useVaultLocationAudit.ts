@@ -6,7 +6,8 @@ import { useParams } from 'react-router-dom'
 
 type UseVaultLocationAudit = (
   vaultLocationId: number,
-  itemId?: number | undefined
+  itemId?: number | undefined,
+  editRemarks?: string
 ) => Promise<void>
 
 export default function useVaultLocationAudit(): UseVaultLocationAudit {
@@ -58,7 +59,8 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
 
   const auditLocations = async (
     vaultLocationId: number,
-    id?: number
+    id?: number,
+    editRemarks?: string
   ): Promise<void> => {
     const newIds = id ? [id] : ids
     if (newIds.length === 0) return
@@ -68,6 +70,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         id: vaultLocationId
       }
     )
+
     const selectedItems = await getItemsByIds(vaultLocationId, id)
 
     if (Object.keys(selectedItems).length === 0) return
@@ -112,7 +115,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
               ...itemAudit,
               activityDetail: `item Removed from ${
                 vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
-              }`
+              } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`
             },
             {
               ...auditData,
