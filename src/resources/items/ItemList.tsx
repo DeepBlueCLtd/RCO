@@ -497,8 +497,7 @@ export default function ItemList(
       '& > form': {
         flex: 1
       }
-    },
-    overflow: 'hidden'
+    }
   }
 
   const [data, setData] = useState<DataType>()
@@ -540,7 +539,7 @@ export default function ItemList(
         <TextField source='createdAt' label='Created' />
         <LocationField label='Location' {...data} />
         <SourceField
-          link='show'
+          link={false}
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
@@ -554,6 +553,7 @@ export default function ItemList(
         <DateField showTime source='startDate' />
         <DateField showTime source='endDate' />
         <SourceField
+          link={false}
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
         />
@@ -562,14 +562,14 @@ export default function ItemList(
           reference={constants.R_PROTECTIVE_MARKING}
         />
         <SourceField
-          link='show'
+          link={false}
           source='batch'
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
         {resource === constants.R_ALL_ITEMS && [
           <SourceField
-            link='show'
+            link={false}
             source='destruction'
             reference={constants.R_DESTRUCTION}
             sourceField='reference'
@@ -577,7 +577,7 @@ export default function ItemList(
           />,
           <DateField source='destructionDate' key={'destructionDate'} />,
           <SourceField
-            link='show'
+            link={false}
             source='dispatchJob'
             reference={constants.R_DISPATCH}
             sourceField='reference'
