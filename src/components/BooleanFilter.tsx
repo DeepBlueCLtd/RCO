@@ -17,20 +17,16 @@ export default function BooleanFilter<T extends RaRecord>(
 
   const { setFilters, displayedFilters, filterValues } = useListContext<T>()
 
+  const filterKey = `${[fieldName]}_${nullable ? 'eq' : 'neq'}`
   const { data = [], isLoading } = useGetList<T>(resource, {
-    pagination: {
-      page: 1,
-      perPage: 1000
+    filter: {
+      [filterKey]: undefined
     }
   })
 
   useEffect(() => {
     if (data.length !== 0) {
-      const filteredIds = data
-        .filter((d) =>
-          nullable ? d[fieldName] === undefined : d[fieldName] !== undefined
-        )
-        .map((f) => f[source])
+      const filteredIds = data.map((f) => f[source])
       const ids = filteredIds.length > 0 ? [...new Set(filteredIds)] : [-1]
       setFilters(
         {
