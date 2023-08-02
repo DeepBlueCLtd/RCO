@@ -35,7 +35,11 @@ const schema = yup.object({
   batch: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required(),
-  editRemarks: yup.string()
+  editRemarks: yup.string(),
+  consecPages: yup
+    .string()
+    .nullable()
+    .matches(/(\D*)\b(\d{1,3})\b/, 'Please enter correct format')
 })
 
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {

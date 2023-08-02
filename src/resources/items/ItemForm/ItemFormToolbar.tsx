@@ -75,7 +75,12 @@ interface Props {
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
   const { notify } = useContext(NotificationContext)
-  const { reset, getValues, setValue } = useFormContext()
+  const {
+    reset,
+    getValues,
+    setValue,
+    formState: { errors }
+  } = useFormContext()
   const { id } = useParams()
   const vaultLocationsAudit = useVaultLocationAudit()
   const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
@@ -124,7 +129,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
 
   const vLocationAudits = async (
     vaultLocationId?: number,
-    itemId?: number
+    itemId?: number,
+    clone = false
   ): Promise<void> => {
     const path = createPath({ resource: R_ITEMS, id, type: 'show' })
 
@@ -133,12 +139,17 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       itemId
     )
     setTimeout(() => {
-      redirect(path)
+      if (!clone) {
+        redirect(path)
+      }
     }, 0)
   }
 
-  const successWithAudit = ({ id, vaultLocation }: Item): void => {
-    vLocationAudits(vaultLocation, id) as any
+  const successWithAudit = (
+    { id, vaultLocation }: Item,
+    clone = false
+  ): void => {
+    vLocationAudits(vaultLocation, id, clone) as any
     onSuccess({ id })
   }
 
@@ -169,6 +180,16 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       { type: 'success' }
     )
   }
+
+  function incrementFormat(input: string): string {
+    return input.replace(
+      /(\D*)\b(\d{1,3})\b/,
+      (_: string, other: string, num: string) => {
+        return other + (Number(num) + 1).toString().padStart(num.length, '0')
+      }
+    )
+  }
+
   return (
     <Toolbar>
       <FlexBox>
@@ -179,11 +200,14 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
+            if (Object.keys(errors).length === 0) {
+              setValue('consecPages', incrementFormat(getValues('consecPages')))
+            }
           }}
           transform={transformProtectionValues}
           mutationOptions={{
             onSuccess: (data: Item) => {
-              successWithAudit(data)
+              successWithAudit(data, true)
               setValue('startDate', data.endDate)
               setValue(
                 'endDate',
@@ -204,7 +228,9 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           }}
           transform={transformProtectionValues}
           mutationOptions={{
-            onSuccess: successWithAudit
+            onSuccess: (data: Item) => {
+              successWithAudit(data)
+            }
           }}
         />
       </FlexBox>
