@@ -22,7 +22,7 @@
 
   .RaDatagrid-rowCell *,
   .RaDatagrid-headerCell * {
-    font-size: 12px !important;
+    font-size: 12px;
   }
   .noprint {
     visibility: hidden;
