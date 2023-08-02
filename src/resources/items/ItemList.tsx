@@ -23,7 +23,7 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
 import { Box, Button, Modal } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -344,16 +344,20 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const ReturnButton = (): React.ReactElement => {
+    const { canReturn, canRemove } = {
+      canReturn: isAllDispatched && isSelected,
+      canRemove: dispatchRemove
+    }
     return (
       <>
-        {isAllDispatched ? (
-          <Button
-            onClick={returnDispatchedItems as any}
-            size='small'
-            variant='outlined'>
-            Return
-          </Button>
-        ) : (
+        <Button
+          disabled={!canReturn}
+          onClick={returnDispatchedItems as any}
+          size='small'
+          variant='outlined'>
+          Return
+        </Button>
+        {canRemove && (
           <Button
             onClick={removeFromDispatch as any}
             size='small'
@@ -372,9 +376,22 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const canBeLoaned = !isDestruction && !isAnyDispatched && loan
-  const isLoanItemsBulkActions =
-    !isSelected ||
-    (canBeLoaned && hasAccess(constants.R_ITEMS, { write: true }))
+  const disableLoanItemsBulkActions = !(
+    canBeLoaned &&
+    hasAccess(constants.R_ITEMS, { write: true }) &&
+    isSelected
+  )
+
+  const normalWithWriteAccess =
+    isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && isSelected
+  const { disableDispatch, disableDestroy, disableChangeLocation } = useMemo(
+    () => ({
+      disableDispatch: !(normalWithWriteAccess && dispatch),
+      disableDestroy: !(normalWithWriteAccess && destroy),
+      disableChangeLocation: !(normalWithWriteAccess && location)
+    }),
+    [normalWithWriteAccess]
+  )
 
   return (
     <Box sx={[bulkActionsStyle, { width: '100vw' }]}>
@@ -383,47 +400,39 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
           display: 'flex',
           gap: 1
         }}>
-        {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
-          <>
-            {dispatch ? (
-              <FlexBox>
-                <Button
-                  onClick={handleOpen('dispatch')}
-                  size='small'
-                  variant='outlined'>
-                  Dispatch
-                </Button>
-              </FlexBox>
-            ) : null}
-            {destroy ? (
-              <FlexBox>
-                <Button
-                  startIcon={<DeleteSweepIcon />}
-                  onClick={handleOpen('destroy')}
-                  size='small'
-                  variant='outlined'>
-                  Destroy
-                </Button>
-              </FlexBox>
-            ) : null}
-            {location ? (
-              <FlexBox>
-                <Button
-                  size='small'
-                  variant='outlined'
-                  onClick={handleOpen('location')}>
-                  Change Location
-                </Button>
-              </FlexBox>
-            ) : null}
-          </>
-        )}
-        {isLoanItemsBulkActions ? (
-          <LoanItemsListBulkActionButtons
-            noneLoaned={noneLoaned}
-            allLoaned={allLoaned}
-          />
-        ) : null}
+        <FlexBox>
+          <Button
+            disabled={disableDispatch}
+            onClick={handleOpen('dispatch')}
+            size='small'
+            variant='outlined'>
+            Dispatch
+          </Button>
+        </FlexBox>
+        <FlexBox>
+          <Button
+            disabled={disableDestroy}
+            startIcon={<DeleteSweepIcon />}
+            onClick={handleOpen('destroy')}
+            size='small'
+            variant='outlined'>
+            Destroy
+          </Button>
+        </FlexBox>
+        <FlexBox>
+          <Button
+            disabled={disableChangeLocation}
+            size='small'
+            variant='outlined'
+            onClick={handleOpen('location')}>
+            Change Location
+          </Button>
+        </FlexBox>
+        <LoanItemsListBulkActionButtons
+          disabled={disableLoanItemsBulkActions}
+          noneLoaned={noneLoaned}
+          allLoaned={allLoaned}
+        />
         {!isItemNormal && (
           <>
             {destroyRemove ? (
@@ -439,7 +448,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
             ) : null}
           </>
         )}
-        {dispatchRemove || isAllDispatched ? <ReturnButton /> : null}
+        <ReturnButton />
 
         <Modal open={Boolean(open)} onClose={handleClose}>
           <>

@@ -53,8 +53,13 @@ export default function DatagridConfigurableWithShow(
       minHeight: '48px',
       height: '48px',
       position: 'relative',
+      transform: 'none',
+      justifyContent: 'flex-start',
       '& .RaBulkActionsToolbar-title': {
         display: selectedIds.length > 0 ? 'flex' : 'none'
+      },
+      '& .MuiBox-root': {
+        width: 'auto'
       }
     }
   }
