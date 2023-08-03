@@ -5,7 +5,6 @@ import {
   TextField,
   useListContext,
   Show,
-  BooleanField,
   Count,
   ReferenceField,
   useRecordContext,
@@ -14,7 +13,6 @@ import {
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
-import FieldWithLabel from '../../components/FieldWithLabel'
 import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
 import { useConfigData } from '../../utils/useConfigData'
@@ -28,13 +26,24 @@ interface CompositeFieldProps {
   label: string
 }
 
+const style = { fontSize: '12px' }
+
 const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
   const { label } = props
   return (
     <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
       <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField source='id' reference={constants.R_PROJECTS} />,{' '}
-        <SourceField source='id' reference={constants.R_PLATFORMS} />
+        <SourceField
+          textProps={{ ...style }}
+          source='id'
+          reference={constants.R_PROJECTS}
+        />
+        ,{' '}
+        <SourceField
+          textProps={{ ...style }}
+          source='id'
+          reference={constants.R_PLATFORMS}
+        />
       </ReferenceField>
     </ReferenceField>
   )
@@ -43,7 +52,7 @@ const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
 const Title = (): React.ReactElement => {
   const record = useRecordContext()
   return (
-    <Typography variant='h4' textAlign='center' margin='10px'>
+    <Typography fontSize='18px' variant='h4' textAlign='center' margin='10px'>
       RCO - Loans to {record.name}
     </Typography>
   )
@@ -68,11 +77,15 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   resource={constants.R_USERS}
                   actions={false}>
                   <Title />
-                  <Typography variant='h5' textAlign='center' margin='10px'>
+                  <Typography
+                    fontSize='16px'
+                    variant='h5'
+                    textAlign='center'
+                    margin='10px'>
                     {
                       <Count
                         resource={constants.R_ITEMS}
-                        sx={{ fontSize: '1.5rem' }}
+                        sx={{ fontSize: '16px' }}
                         filter={{ loanedTo: userId }}
                       />
                     }{' '}
@@ -80,33 +93,47 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     {DateTime.now().toFormat(constants.DATETIME_FORMAT)}
                   </Typography>
                 </Show>
-                <Show id={userId} resource={constants.R_USERS} actions={false}>
-                  <Box padding={'16px'}>
-                    <FieldWithLabel label='Name' source='name' />
-                    <FieldWithLabel
-                      source='adminRights'
-                      label='Admin Rights'
-                      component={BooleanField}
-                    />
-                  </Box>
-                </Show>
-                <ItemsReport filter={{ loanedTo: userId }}>
-                  <TextField source='itemNumber' label='Item Number' />
+                <ItemsReport
+                  filter={{ loanedTo: userId }}
+                  sx={{
+                    '.MuiTableCell-head span': {
+                      fontSize: '12px'
+                    }
+                  }}
+                  headStyle={{
+                    fontSize: '12px'
+                  }}>
+                  <TextField
+                    {...style}
+                    source='itemNumber'
+                    label='Item Number'
+                  />
                   <SourceField
+                    textProps={{ ...style }}
                     link='show'
                     source='mediaType'
                     reference={constants.R_MEDIA_TYPE}
                     label='Media type'
                   />
                   <SourceField
+                    textProps={{ ...style }}
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}
                   />
                   <CompositeField
+                    {...style}
                     label={`${configData?.projectName} & Platform`}
                   />
-                  <DateField source='loanedDate' label='Loaned Date' />
-                  <TextField source='consecPages' label='Consec/Pages' />
+                  <DateField
+                    {...style}
+                    source='loanedDate'
+                    label='Loaned Date'
+                  />
+                  <TextField
+                    {...style}
+                    source='consecPages'
+                    label='Consec/Pages'
+                  />
                 </ItemsReport>
                 <ReportSignature id={userId} />
               </Box>
