@@ -1,4 +1,11 @@
-import { Box, Button, Card, CardContent, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  type SxProps,
+  Typography
+} from '@mui/material'
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import {
   Datagrid,
@@ -18,6 +25,7 @@ import FlexBox from '../../components/FlexBox'
 
 type Props = PartialBy<ListProps, 'children'> & {
   footer?: React.FunctionComponent
+  headStyle?: Record<string, any>
 }
 
 interface Field {
@@ -85,8 +93,10 @@ const FieldWithReference = (
   return <FieldValue field={{ type: 'text', label, name }} value={value} />
 }
 
-export default function ItemsReport(props: Props): React.ReactElement {
-  const { footer, children, ...rest } = props
+export default function ItemsReport(
+  props: Props & SxProps
+): React.ReactElement {
+  const { footer, children, headStyle = {}, sx = {}, ...rest } = props
   return (
     <List
       resource={constants.R_ITEMS}
@@ -97,11 +107,11 @@ export default function ItemsReport(props: Props): React.ReactElement {
       hasCreate={false}
       disableSyncWithLocation
       {...rest}>
-      <Typography variant='h6' margin='16px'>
+      <Typography variant='h6' margin='16px' {...headStyle}>
         Items:
       </Typography>
 
-      <Datagrid bulkActionButtons={false}>
+      <Datagrid bulkActionButtons={false} sx={sx}>
         {children !== undefined ? (
           children
         ) : (

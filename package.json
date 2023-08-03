@@ -12,6 +12,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --max-warnings=0",
+    "serve": "node server.mjs",
     "format": "prettier . --write",
     "prepare": "husky install",
     "deploy": "gh-pages -d build",

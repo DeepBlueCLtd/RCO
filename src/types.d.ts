@@ -137,33 +137,17 @@ type Vault = StringReferenceItem
 interface ItemCode {
   id: number
   item: number
-  catCode: number
+  catCode: CatCode['id']
 }
 interface ItemCave {
   id: number
   item: number
-  catCave: number
+  catCave: CatCave['id']
 }
 interface ItemHandling {
   id: number
   item: number
-  catHandle: number
-}
-
-interface BatchCode {
-  id: number
-  batch: number
-  catCode: number
-}
-interface BatchCave {
-  id: number
-  batch: number
-  catCave: number
-}
-interface BatchHandling {
-  id: number
-  batch: number
-  catHandle: number
+  catHandle: CatHandle['id']
 }
 
 interface Batch extends ResourceWithCreation {
@@ -173,10 +157,8 @@ interface Batch extends ResourceWithCreation {
   project?: Project['id']
   platform?: Platform['id']
   organisation: Organisation['id']
-  protectiveMarking: ProtectiveMarking['id']
   remarks: string
   receiptNotes: string
-  protectionString?: string
   vault: Vault['id']
 }
 
@@ -231,6 +213,13 @@ interface RCOStore {
   destruction: Destruction[]
   dispatche: Dispatch[]
   vault: Vault[]
+  // bridging tables
+  itemCode: ItemCode[]
+  itemCave: ItemCave[]
+  itemHandle: ItemHandling[]
+  batchCode: BatchCode[]
+  batchCave: BatchCave[]
+  batchHandle: BatchHandling[]
 }
 
 interface Destruction {

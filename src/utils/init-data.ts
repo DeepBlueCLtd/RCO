@@ -195,7 +195,6 @@ const loadDefaultData = async (
     department.length,
     project.length,
     organisation.length,
-    protectiveMarking.length,
     user
   )
 
@@ -259,7 +258,13 @@ const loadDefaultData = async (
     dispatche,
     address,
     configData,
-    vault
+    vault,
+    itemCode: [],
+    itemCave: [],
+    itemHandle: [],
+    batchCode: [],
+    batchCave: [],
+    batchHandle: []
   }
 
   const map: Record<string, constants.ResourceTypes> = {

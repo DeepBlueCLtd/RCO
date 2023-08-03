@@ -23,7 +23,7 @@ import * as constants from '../../constants'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import { ItemAssetReport } from './ItemsReport'
 import { Box, Button, Modal } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import ChangeLocation from './ItemForm/ChangeLocation'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -163,10 +163,19 @@ const getFilters = (resource?: string): React.ReactElement[] => {
   return filters
 }
 
-const ItemActions = (props: SelectColumnsButtonProps): React.ReactElement => {
+interface ItemActionsProps {
+  preferenceKey: string
+  filter?: FilterPayload
+}
+
+const ItemActions = (props: ItemActionsProps): React.ReactElement => {
+  const { filter } = props
   return (
-    <StyledTopToolbar>
-      <ItemAssetReport storeKey='items-asset-report' />
+    <StyledTopToolbar {...props}>
+      <ItemAssetReport
+        storeKey='items-asset-report'
+        filterDefaultValues={filter}
+      />
       <FilterButton />
       <SelectColumnsButton {...props} />
     </StyledTopToolbar>
@@ -228,6 +237,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const { selectedIds } = useListContext<Item>()
+  const isSelected = selectedIds.length > 0
   const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
     ids: selectedIds
   })
@@ -334,16 +344,20 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   }
 
   const ReturnButton = (): React.ReactElement => {
+    const { canReturn, canRemove } = {
+      canReturn: isAllDispatched && isSelected,
+      canRemove: dispatchRemove
+    }
     return (
       <>
-        {isAllDispatched ? (
-          <Button
-            onClick={returnDispatchedItems as any}
-            size='small'
-            variant='outlined'>
-            Return
-          </Button>
-        ) : (
+        <Button
+          disabled={!canReturn}
+          onClick={returnDispatchedItems as any}
+          size='small'
+          variant='outlined'>
+          Return
+        </Button>
+        {canRemove && (
           <Button
             onClick={removeFromDispatch as any}
             size='small'
@@ -361,6 +375,24 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     marginLeft: 2
   }
 
+  const canBeLoaned = !isDestruction && !isAnyDispatched && loan
+  const disableLoanItemsBulkActions = !(
+    canBeLoaned &&
+    hasAccess(constants.R_ITEMS, { write: true }) &&
+    isSelected
+  )
+
+  const normalWithWriteAccess =
+    isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && isSelected
+  const { disableDispatch, disableDestroy, disableChangeLocation } = useMemo(
+    () => ({
+      disableDispatch: !(normalWithWriteAccess && dispatch),
+      disableDestroy: !(normalWithWriteAccess && destroy),
+      disableChangeLocation: !(normalWithWriteAccess && location)
+    }),
+    [normalWithWriteAccess]
+  )
+
   return (
     <Box sx={[bulkActionsStyle, { width: '100vw' }]}>
       <Box
@@ -368,50 +400,39 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
           display: 'flex',
           gap: 1
         }}>
-        {isItemNormal && hasAccess(constants.R_ITEMS, { write: true }) && (
-          <>
-            {dispatch ? (
-              <FlexBox>
-                <Button
-                  onClick={handleOpen('dispatch')}
-                  size='small'
-                  variant='outlined'>
-                  Dispatch
-                </Button>
-              </FlexBox>
-            ) : null}
-            {destroy ? (
-              <FlexBox>
-                <Button
-                  startIcon={<DeleteSweepIcon />}
-                  onClick={handleOpen('destroy')}
-                  size='small'
-                  variant='outlined'>
-                  Destroy
-                </Button>
-              </FlexBox>
-            ) : null}
-            {location ? (
-              <FlexBox>
-                <Button
-                  size='small'
-                  variant='outlined'
-                  onClick={handleOpen('location')}>
-                  Change Location
-                </Button>
-              </FlexBox>
-            ) : null}
-          </>
-        )}
-        {!isDestruction &&
-        !isAnyDispatched &&
-        loan &&
-        hasAccess(constants.R_ITEMS, { write: true }) ? (
-          <LoanItemsListBulkActionButtons
-            noneLoaned={noneLoaned}
-            allLoaned={allLoaned}
-          />
-        ) : null}
+        <FlexBox>
+          <Button
+            disabled={disableDispatch}
+            onClick={handleOpen('dispatch')}
+            size='small'
+            variant='outlined'>
+            Dispatch
+          </Button>
+        </FlexBox>
+        <FlexBox>
+          <Button
+            disabled={disableDestroy}
+            startIcon={<DeleteSweepIcon />}
+            onClick={handleOpen('destroy')}
+            size='small'
+            variant='outlined'>
+            Destroy
+          </Button>
+        </FlexBox>
+        <FlexBox>
+          <Button
+            disabled={disableChangeLocation}
+            size='small'
+            variant='outlined'
+            onClick={handleOpen('location')}>
+            Change Location
+          </Button>
+        </FlexBox>
+        <LoanItemsListBulkActionButtons
+          disabled={disableLoanItemsBulkActions}
+          noneLoaned={noneLoaned}
+          allLoaned={allLoaned}
+        />
         {!isItemNormal && (
           <>
             {destroyRemove ? (
@@ -427,7 +448,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
             ) : null}
           </>
         )}
-        {dispatchRemove || isAllDispatched ? <ReturnButton /> : null}
+        <ReturnButton />
 
         <Modal open={Boolean(open)} onClose={handleClose}>
           <>
@@ -493,6 +514,7 @@ export default function ItemList(
     filtersShown,
     preferenceKey = `${constants.R_ITEMS}-items-datagrid-columns`,
     bulkActionButtons,
+    filter,
     ...rest
   } = props ?? {}
 
@@ -517,7 +539,7 @@ export default function ItemList(
     <List
       sx={sx}
       hasCreate={false}
-      actions={<ItemActions preferenceKey={preferenceKey} {...rest} />}
+      actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
       resource={constants.R_ITEMS}
       filter={props?.filter ?? options?.filter}
       sort={options?.sort}
@@ -541,6 +563,7 @@ export default function ItemList(
       />
       <DatagridConfigurableWithShow
         resource={constants.R_ITEMS}
+        storeKey={storeKey}
         bulkActionButtons={
           bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
         }

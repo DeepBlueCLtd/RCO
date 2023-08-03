@@ -69,7 +69,6 @@ const generateBatch = async (
     project: isNull() ? undefined : id,
     platform: isNull() ? undefined : id,
     organisation: `${id}-organisation`,
-    protectiveMarking: id,
     remarks: `remarks-batch-${year}`,
     receiptNotes: `Reference-${id}`,
     createdBy: user,
