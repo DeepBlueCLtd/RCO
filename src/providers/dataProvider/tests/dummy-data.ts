@@ -26,7 +26,6 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
     project: 1,
     platform: 1,
     organisation: '1-organisation',
-    protectiveMarking: 1,
     remarks: 'remarks-1',
     receiptNotes: 'receipt-notes-1',
     vault: 'VAULT'

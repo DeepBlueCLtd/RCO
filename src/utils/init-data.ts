@@ -195,7 +195,6 @@ const loadDefaultData = async (
     department.length,
     project.length,
     organisation.length,
-    protectiveMarking.length,
     user
   )
 

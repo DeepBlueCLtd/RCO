@@ -150,22 +150,6 @@ interface ItemHandling {
   catHandle: CatHandle['id']
 }
 
-interface BatchCode {
-  id: number
-  batch: number
-  catCode: CatCode['id']
-}
-interface BatchCave {
-  id: number
-  batch: number
-  catCave: CatCave['id']
-}
-interface BatchHandling {
-  id: number
-  batch: number
-  catHandle: CatHandle['id']
-}
-
 interface Batch extends ResourceWithCreation {
   batchNumber: string
   yearOfReceipt: string
@@ -173,10 +157,8 @@ interface Batch extends ResourceWithCreation {
   project?: Project['id']
   platform?: Platform['id']
   organisation: Organisation['id']
-  protectiveMarking: ProtectiveMarking['id']
   remarks: string
   receiptNotes: string
-  protectionString?: string
   vault: Vault['id']
 }
 
