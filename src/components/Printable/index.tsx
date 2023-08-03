@@ -12,6 +12,15 @@ const style = {
   '@media print': {
     '@page': {
       size: 'portrait'
+    },
+    '& .MuiBox-root *': {
+      fontSize: '12px'
+    },
+    '& .RaDatagrid-rowCell, .RaDatagrid-headerCell': {
+      padding: '0 !important;'
+    },
+    '& .RaDatagrid-rowCell *, .RaDatagrid-headerCell *': {
+      fontSize: '12px !important'
     }
   }
 }

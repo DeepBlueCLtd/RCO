@@ -10,20 +10,6 @@
   #root {
     display: none;
   }
-
-  .MuiBox-root * {
-    font-size: 12px;
-  }
-
-  .RaDatagrid-rowCell,
-  .RaDatagrid-headerCell {
-    padding: 0 !important;
-  }
-
-  .RaDatagrid-rowCell *,
-  .RaDatagrid-headerCell * {
-    font-size: 12px;
-  }
   .noprint {
     visibility: hidden;
   }
