@@ -17,11 +17,9 @@ import {
   useGetList,
   useRecordContext,
   useResourceContext,
-  useRedirect,
   type Identifier
 } from 'react-admin'
 import { Box } from '@mui/system'
-import * as constants from '../constants'
 
 interface Props<T, RefTable> {
   reference: string
@@ -62,7 +60,6 @@ export default function ProtectionRefInput<
     formState: { errors, isSubmitSuccessful },
     setValue
   } = useFormContext()
-  const redirect = useRedirect()
   const [valueLabel, setValueLabel] = useState<string>('')
   type SelectedIdType = T['id'] | Array<T['id']>
 
@@ -161,10 +158,6 @@ export default function ProtectionRefInput<
         updateRecord(record.id as number, selectedData as number[])
       } else if (id) {
         createRecord(id, selectedData as number[])
-      }
-      if (resource === constants.R_BATCHES) {
-        const path = `/${constants.R_BATCHES}/${id ?? record?.id}/show`
-        redirect(path)
       }
     }
   }, [isSubmitSuccessful])
