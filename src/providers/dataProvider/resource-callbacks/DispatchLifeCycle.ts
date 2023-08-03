@@ -48,7 +48,7 @@ const lifeCycles = (
         }
       })
       await audit({
-        type: AuditType.CREATE,
+        activityType: AuditType.CREATE,
         resource: R_DISPATCH,
         dataId: record.data.id
       })

@@ -15,7 +15,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       const { data } = record
       const { id } = data
       await audit({
-        type: AuditType.CREATE,
+        activityType: AuditType.CREATE,
         resource: R_DESTRUCTION,
         dataId: id
       })

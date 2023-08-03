@@ -1,5 +1,4 @@
 import AuditList, { type FilterType } from '../resources/audit/AuditList'
-import { AuditType } from '../utils/activity-types'
 import Printable from './Printable'
 import { ListActions } from '../resources/audit/AuditList'
 import { Button, type ButtonProps } from '@mui/material'
@@ -44,12 +43,13 @@ const ResourceHistoryModal = ({
     <Printable open={open} onClose={close}>
       <AuditList
         filter={{
-          activityType: [
-            AuditType.EDIT,
-            AuditType.SENT,
-            AuditType.DESTROY,
-            AuditType.LOAN
-          ],
+          // note: don't filter the activities shown in the audit log
+          // activityType: [
+          //   AuditType.EDIT,
+          //   AuditType.SENT,
+          //   AuditType.DESTROY,
+          //   AuditType.LOAN
+          // ],
           ...filter
         }}
         data={data}

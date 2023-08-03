@@ -82,7 +82,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         })
         .map(async (item) => {
           const audiData = {
-            type: AuditType.EDIT,
+            activityType: AuditType.EDIT,
             activityDetail: `Add item to destruction ${reference}`,
             securityRelated: false,
             resource: constants.R_ITEMS,

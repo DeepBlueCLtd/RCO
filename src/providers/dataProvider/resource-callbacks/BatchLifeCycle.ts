@@ -84,7 +84,7 @@ const lifeCycles = (
         }
       })
       await audit({
-        type: AuditType.CREATE,
+        activityType: AuditType.CREATE,
         resource: R_BATCHES,
         dataId: record.data.id
       })

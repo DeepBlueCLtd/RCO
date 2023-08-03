@@ -78,7 +78,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
         .map(async (item) => {
           const { itemNumber } = item
           const audiData = {
-            type: AuditType.EDIT,
+            activityType: AuditType.EDIT,
             activityDetail: `Add item to dispatch ${reference}`,
             securityRelated: false,
             resource: constants.R_ITEMS,

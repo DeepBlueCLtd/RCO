@@ -18,7 +18,7 @@ export default (
   resource,
   afterCreate: async (record: CreateResult<RCOResource>) => {
     await audit({
-      type: AuditType.CREATE,
+      activityType: AuditType.CREATE,
       resource,
       dataId: record.data.id
     })
@@ -29,7 +29,7 @@ export default (
       record,
       resource,
       {
-        type: AuditType.EDIT,
+        activityType: AuditType.EDIT,
         ...(securityRelated !== undefined
           ? { securityRelated: securityRelated(record) }
           : null)

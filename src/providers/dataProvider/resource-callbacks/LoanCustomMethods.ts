@@ -27,7 +27,7 @@ export const customMethods = (
 
       const promisees = items.map(async (item) => {
         await audit({
-          type: AuditType.LOAN,
+          activityType: AuditType.LOAN,
           activityDetail: `Item loaned to ${name}.`,
           resource: R_ITEMS,
           dataId: item,
@@ -58,7 +58,7 @@ export const customMethods = (
           const { name } = userById[loanedTo]
           await audit({
             dataId: id,
-            type: AuditType.RETURN,
+            activityType: AuditType.RETURN,
             activityDetail: `Item returned from ${name}`,
             resource: R_ITEMS
           })

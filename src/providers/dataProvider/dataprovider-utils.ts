@@ -11,6 +11,7 @@ import {
 } from 'react-admin'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import { isNumber } from '../../utils/number'
+import { type AuditData } from '../../utils/audit'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -35,28 +36,19 @@ export const getDifference = (
   return valuesChanged
 }
 
-interface AuditProps {
-  type: AuditType
-  activityDetail?: string
-  securityRelated?: boolean
-  resource: string | null
-  dataId: number | null
-  subject?: User['id']
-}
-
 interface AuditDataArgs {
-  type: AuditType
+  activityType: AuditType
   securityRelated?: boolean
 }
 
 export type AuditFunctionType = ({
-  type,
+  activityType,
   activityDetail,
   securityRelated,
   resource,
   dataId,
   subject
-}: AuditProps) => Promise<void>
+}: AuditData) => Promise<void>
 
 const getActivityDetail = (
   difference: Record<string, any>,
@@ -108,7 +100,7 @@ export const auditForUpdatedChanges = async (
       resource,
       securityRelated: true,
       dataId,
-      type: AuditType.EDIT
+      activityType: AuditType.EDIT
     })
   }
 
