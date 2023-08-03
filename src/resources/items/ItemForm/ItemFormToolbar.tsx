@@ -183,7 +183,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
 
   function incrementFormat(input: string): string {
     return input.replace(
-      /(\D*)\b(\d{1,3})\b/,
+      /(.*?)(\b\d{1,3}\b)/,
       (_: string, other: string, num: string) => {
         return other + (Number(num) + 1).toString().padStart(num.length, '0')
       }
