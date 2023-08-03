@@ -144,7 +144,6 @@ export const generateBatch = (
   departments: number,
   projects: number,
   organisations: number,
-  protectiveMarking: number,
   user: number
 ): Batch[] => {
   const batches: Batch[] = []
