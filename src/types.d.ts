@@ -153,17 +153,17 @@ interface ItemHandling {
 interface BatchCode {
   id: number
   batch: number
-  catCode: number
+  catCode: CatCode['id']
 }
 interface BatchCave {
   id: number
   batch: number
-  catCave: number
+  catCave: CatCave['id']
 }
 interface BatchHandling {
   id: number
   batch: number
-  catHandle: number
+  catHandle: CatHandle['id']
 }
 
 interface Batch extends ResourceWithCreation {
