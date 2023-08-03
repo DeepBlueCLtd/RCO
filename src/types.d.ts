@@ -137,17 +137,17 @@ type Vault = StringReferenceItem
 interface ItemCode {
   id: number
   item: number
-  catCode: number
+  catCode: CatCode['id']
 }
 interface ItemCave {
   id: number
   item: number
-  catCave: number
+  catCave: CatCave['id']
 }
 interface ItemHandling {
   id: number
   item: number
-  catHandle: number
+  catHandle: CatHandle['id']
 }
 
 interface BatchCode {
