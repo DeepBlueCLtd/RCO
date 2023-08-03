@@ -177,7 +177,6 @@ export const generateBatch = (
       platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
       vault: Math.random() >= 0.5 ? 'LEGACY' : 'VAULT',
       organisation,
-      protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
       createdBy: user
