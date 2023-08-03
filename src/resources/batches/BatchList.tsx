@@ -42,7 +42,6 @@ const ListActions = ({
 }
 
 const omitColumns: string[] = [
-  'protectiveMarking',
   'department',
   'remarks',
   'id',
@@ -170,16 +169,10 @@ export default function BatchList(): React.ReactElement {
           label='Platform'
         />
         <SourceField source='organisation' label='Organisation' />
-        <SourceField
-          source='protectiveMarking'
-          reference={constants.R_PROTECTIVE_MARKING}
-          label='Maximum protective marking'
-        />
         <SourceField source='vault' reference={constants.R_VAULT} />
         <TextField source='remarks' />
         <TextField source='receiptNotes' />
         <TextField source='createdAt' label='Created' />
-        <TextField source='protectionString' label='Protection' />
       </DatagridConfigurable>
     </List>
   )
