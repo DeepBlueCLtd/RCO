@@ -190,12 +190,18 @@ interface Props {
   noneLoaned: boolean
   // all of the items have been loaned (so provide the Return button)
   allLoaned: boolean
+  disabled?: boolean
 }
 
 export default function LoanItemsListBulkActionButtons(
   props: Props
 ): React.ReactElement {
-  const { buttons = ['loan', 'loanReturn'], noneLoaned, allLoaned } = props
+  const {
+    buttons = ['loan', 'loanReturn'],
+    noneLoaned,
+    allLoaned,
+    disabled = false
+  } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
   const { selectedIds } = useListContext<Item>()
   const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
@@ -212,26 +218,36 @@ export default function LoanItemsListBulkActionButtons(
     return data.filter((item) => selectedIds.includes(item.id))
   }, [selectedIds, data])
 
+  const { disableLoanItem, disableReturnItem } = useMemo(
+    () => ({
+      disableLoanItem: !(!disabled && buttons.includes('loan') && noneLoaned),
+      disableReturnItem: !(
+        !disabled &&
+        buttons.includes('loanReturn') &&
+        allLoaned
+      )
+    }),
+    [noneLoaned, disabled, allLoaned]
+  )
+
   return (
     <FlexBox>
-      {buttons.includes('loan') && noneLoaned && (
-        <Button
-          variant='outlined'
-          size='small'
-          color='primary'
-          onClick={handleClick('loan')}>
-          Loan
-        </Button>
-      )}
-      {buttons.includes('loanReturn') && allLoaned && (
-        <Button
-          variant='outlined'
-          size='small'
-          color='primary'
-          onClick={handleClick('loanReturn')}>
-          Loan return
-        </Button>
-      )}
+      <Button
+        disabled={disableLoanItem}
+        variant='outlined'
+        size='small'
+        color='primary'
+        onClick={handleClick('loan')}>
+        Loan
+      </Button>
+      <Button
+        disabled={disableReturnItem}
+        variant='outlined'
+        size='small'
+        color='primary'
+        onClick={handleClick('loanReturn')}>
+        Loan return
+      </Button>
       <Modal open={Boolean(buttonType)} onClose={handleClick('')}>
         <Box sx={style}>
           {buttonType === 'loan' && (
