@@ -13,7 +13,14 @@ const style = {
     '@page': {
       size: 'portrait'
     },
-    '& .MuiBox-root *': {
+    '& .MuiBox-root .RaShow-card .MuiTypography-h4': {
+      fontSize: '18px'
+    },
+    '& .MuiBox-root .RaShow-card .MuiTypography-h5,.MuiBox-root .RaShow-card .MuiTypography-h5 span':
+      {
+        fontSize: '16px'
+      },
+    '& .MuiBox-root .MuiTypography-root': {
       fontSize: '12px'
     },
     '& .RaDatagrid-rowCell, .RaDatagrid-headerCell': {

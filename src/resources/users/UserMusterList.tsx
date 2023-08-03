@@ -52,7 +52,7 @@ const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
 const Title = (): React.ReactElement => {
   const record = useRecordContext()
   return (
-    <Typography fontSize='12px' variant='h4' textAlign='center' margin='10px'>
+    <Typography fontSize='18px' variant='h4' textAlign='center' margin='10px'>
       RCO - Loans to {record.name}
     </Typography>
   )
@@ -78,14 +78,14 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   actions={false}>
                   <Title />
                   <Typography
-                    fontSize='12px'
+                    fontSize='16px'
                     variant='h5'
                     textAlign='center'
                     margin='10px'>
                     {
                       <Count
                         resource={constants.R_ITEMS}
-                        sx={{ fontSize: '12px' }}
+                        sx={{ fontSize: '16px' }}
                         filter={{ loanedTo: userId }}
                       />
                     }{' '}
