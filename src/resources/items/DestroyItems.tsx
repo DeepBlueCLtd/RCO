@@ -86,14 +86,18 @@ export default function DestroyItems(props: Props): React.ReactElement {
             activityDetail: `Add item to destruction ${reference}`,
             securityRelated: false,
             resource: constants.R_ITEMS,
-            dataId: item.id
+            dataId: item.id,
+            subjectId: destructionJobId as number,
+            subjectResource: constants.R_DESTRUCTION
           }
           await audit(audiData)
           await audit({
             ...audiData,
             resource: constants.R_DESTRUCTION,
             activityDetail: `Add item ${item.itemNumber} to destruction`,
-            dataId: destructionJobId as number
+            dataId: destructionJobId as number,
+            subjectId: null,
+            subjectResource: null
           })
 
           return item.id

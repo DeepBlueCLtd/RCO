@@ -19,7 +19,8 @@ export const trackEvent =
     securityRelated,
     resource,
     dataId,
-    subject
+    subjectId,
+    subjectResource
   }: AuditData) => {
     try {
       const user = getUser()
@@ -34,7 +35,8 @@ export const trackEvent =
           label: getActivityTypeLabel(activityType),
           securityRelated:
             securityRelated !== undefined ? securityRelated : false,
-          subject: subject !== undefined ? subject : undefined
+          subjectId,
+          subjectResource
         }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
           data: audit
