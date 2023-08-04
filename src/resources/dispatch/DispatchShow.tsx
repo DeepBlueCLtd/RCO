@@ -31,6 +31,7 @@ import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
+import { type AuditData } from '../../utils/audit'
 
 interface ShowActionsProps {
   handleOpen: (open: DestructionModal) => void
@@ -123,7 +124,9 @@ const Footer = (props: FooterProps): React.ReactElement => {
       activityDetail: 'Hastener sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,
-      dataId: record.id
+      dataId: record.id,
+      subjectId: null,
+      subjectResource: null
     })
   }
 
@@ -210,23 +213,27 @@ export default function DispatchShow(): React.ReactElement {
   }
 
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
-    const audiData = {
+    const audiData: AuditData = {
       activityType: AuditType.SENT,
       activityDetail: `Dispatch Sent in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
-      dataId: itemId
+      dataId: itemId,
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
-    const audiData = {
+    const audiData: AuditData = {
       activityType: AuditType.SENT,
       activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,
-      dataId: parseInt(id as string)
+      dataId: parseInt(id as string),
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)

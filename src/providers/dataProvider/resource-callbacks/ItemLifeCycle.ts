@@ -67,7 +67,9 @@ const lifeCycles = (
       await audit({
         activityType: AuditType.CREATE,
         resource: R_ITEMS,
-        dataId: id
+        dataId: id,
+        subjectId: null,
+        subjectResource: null
       })
       emitter.emit(SAVE_EVENT, itemNumber)
       return { ...record, data: withItemRef.data }

@@ -47,7 +47,8 @@ export type AuditFunctionType = ({
   securityRelated,
   resource,
   dataId,
-  subject
+  subjectId,
+  subjectResource
 }: AuditData) => Promise<void>
 
 const getActivityDetail = (
@@ -64,8 +65,7 @@ export const auditForUpdatedChanges = async (
   record: UpdateParams<RCOResource>,
   resource: ResourceTypes,
   auditData: AuditDataArgs,
-  audit: AuditFunctionType,
-  subject?: User['id']
+  audit: AuditFunctionType
 ): Promise<UpdateParams<RCOResource>> => {
   // @ts-expect-error: property not found in type
   const { editRemarks, prevProtectionValues = {}, ...rest } = record.data
@@ -100,7 +100,9 @@ export const auditForUpdatedChanges = async (
       resource,
       securityRelated: true,
       dataId,
-      activityType: AuditType.EDIT
+      activityType: AuditType.EDIT,
+      subjectId: null,
+      subjectResource: null
     })
   }
 
@@ -111,7 +113,8 @@ export const auditForUpdatedChanges = async (
       activityDetail,
       resource,
       dataId,
-      subject
+      subjectId: null,
+      subjectResource: null
     })
   }
   return record

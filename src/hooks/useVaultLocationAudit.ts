@@ -83,12 +83,14 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
 
     const auditData = {
       activityType: AuditType.MOVED,
-      securityRelated: false
+      securityRelated: false,
+      subjectId: null,
+      subjectResource: null
     }
 
     const allAudits = async (itemId: number): Promise<any> => {
       const itemRef = selectedItems[itemId]?.itemNumber
-      const itemAudit = {
+      const itemAudit: AuditData = {
         ...auditData,
         resource: constants.R_ITEMS,
         dataId: itemId

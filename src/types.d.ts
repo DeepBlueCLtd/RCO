@@ -105,10 +105,12 @@ interface Audit extends RCOResource {
   label: string
   // summary of change
   activityDetail?: string
-  /** should this audit entry be included in security review? */
+  // should this audit entry be included in security review?
   securityRelated?: boolean
-  // who this event relates to
-  subject?: User['id']
+  // the "other" resource that this event relates to
+  subjectId: string | number | null
+  // the resource type of the subject
+  subjectResource: string | null
 }
 
 interface Platform extends RCOResource {

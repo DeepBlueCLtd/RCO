@@ -50,7 +50,9 @@ const lifeCycles = (
       await audit({
         activityType: AuditType.CREATE,
         resource: R_DISPATCH,
-        dataId: record.data.id
+        dataId: record.data.id,
+        subjectId: null,
+        subjectResource: null
       })
       return { ...record, data: withRef.data }
     } catch (error) {
