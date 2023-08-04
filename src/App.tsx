@@ -43,9 +43,8 @@ import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
-
 // true for REST, false for localForage
-const REST_FLAG = process.env.MOCK !== '1'
+const MOCK = !!(process.env.MOCK && process.env.MOCK === '0')
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
@@ -59,8 +58,8 @@ function App(): React.ReactElement {
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
-      if (REST_FLAG) {
-        getDataProvider(loggingPref, REST_FLAG)
+      if (MOCK) {
+        getDataProvider(loggingPref, MOCK)
           .then((provider) => {
             populate(provider)
           })
@@ -71,7 +70,7 @@ function App(): React.ReactElement {
             if (provider !== null) {
               populate(provider)
             } else {
-              getDataProvider(loggingPref, REST_FLAG)
+              getDataProvider(loggingPref, MOCK)
                 .then((provider) => {
                   populate(provider)
                 })

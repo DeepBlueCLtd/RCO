@@ -59,9 +59,9 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
 
 export const getDataProvider = async (
   loggingEnabled: boolean,
-  REST_FLAG: boolean
+  MOCK: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
-  const provider = REST_FLAG
+  const provider = !MOCK
     ? dataProvider(
         process.env.VITE_API_URL ?? 'http://localhost:4000/api/tables'
       )
