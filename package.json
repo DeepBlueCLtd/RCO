@@ -9,6 +9,7 @@
   "homepage": ".",
   "scripts": {
     "dev": "vite --open",
+    "dev:mock": "cross-env MOCK=true vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --max-warnings=0",
@@ -32,6 +33,7 @@
     "@types/preval.macro": "^3.0.0",
     "@vitejs/plugin-react": "^3.1.0",
     "axios": "^1.4.0",
+    "cross-env": "^7.0.3",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "luxon": "^3.3.0",
