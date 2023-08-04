@@ -537,6 +537,7 @@ export default function ItemList(
   ]
   return (
     <List
+      disableSyncWithLocation
       sx={sx}
       hasCreate={false}
       actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
