@@ -292,15 +292,18 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     selectedIds.map(async (itemId) => {
       const auditData = {
         activityType: AuditType.EDIT,
-        activityDetail: 'Item returned',
+        activityDetail: 'Item removed',
         securityRelated: false,
         dataId: itemId,
-        resource: constants.R_DISPATCH
+        resource: constants.R_DISPATCH,
+        // TODO: put the item number in for subject
+        subjectId: null,
+        subjectResource: null
       }
       await audit(auditData)
       await audit({
         ...auditData,
-        activityDetail: 'Dispatched Item returned',
+        activityDetail: 'Dispatch Item removed',
         resource: constants.R_ITEMS
       })
     })
@@ -322,14 +325,20 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityDetail: 'Item returned',
         securityRelated: false,
         dataId: itemId,
-        resource: constants.R_DISPATCH
+        resource: constants.R_DISPATCH,
+        // TODO: include the item as subject
+        subjectId: null,
+        subjectResource: null
       }
       await audit(auditData)
       await audit({
         ...auditData,
         activityType: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
-        resource: constants.R_ITEMS
+        resource: constants.R_ITEMS,
+        // TODO: include the dispatch as subject
+        subjectId: null,
+        subjectResource: null
       })
     })
 

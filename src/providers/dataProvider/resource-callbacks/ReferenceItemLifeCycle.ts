@@ -20,7 +20,9 @@ export default (
     await audit({
       activityType: AuditType.CREATE,
       resource,
-      dataId: record.data.id
+      dataId: record.data.id,
+      subjectId: null,
+      subjectResource: null
     })
     return record
   },

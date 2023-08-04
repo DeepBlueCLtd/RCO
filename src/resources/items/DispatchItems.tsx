@@ -82,7 +82,9 @@ export default function DispatchItems(props: Props): React.ReactElement {
             activityDetail: `Add item to dispatch ${reference}`,
             securityRelated: false,
             resource: constants.R_ITEMS,
-            dataId: item.id
+            dataId: item.id,
+            subjectId: null,
+            subjectResource: null
           }
           await audit(audiData)
           await audit({

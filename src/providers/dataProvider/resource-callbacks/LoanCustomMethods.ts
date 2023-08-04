@@ -31,7 +31,8 @@ export const customMethods = (
           activityDetail: `Item loaned to ${name}.`,
           resource: R_ITEMS,
           dataId: item,
-          subject: id
+          subjectId: id,
+          subjectResource: R_USERS
         })
       })
       await Promise.all(promisees)
@@ -60,7 +61,9 @@ export const customMethods = (
             dataId: id,
             activityType: AuditType.RETURN,
             activityDetail: `Item returned from ${name}`,
-            resource: R_ITEMS
+            resource: R_ITEMS,
+            subjectId: loanedTo,
+            subjectResource: R_USERS
           })
         }
       })

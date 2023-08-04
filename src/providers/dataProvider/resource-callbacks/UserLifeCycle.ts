@@ -36,8 +36,7 @@ const lifeCycles = (
           : AuditType.EDIT,
         securityRelated
       },
-      audit,
-      record.id as number
+      audit
     )
   }
 })

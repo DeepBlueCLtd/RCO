@@ -30,6 +30,7 @@ import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
+import { type AuditData } from '../../utils/audit'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -155,12 +156,14 @@ export default function DestructionShow(): React.ReactElement {
   }
 
   const DestroyAudits = async (item: Item): Promise<void> => {
-    const audiData = {
+    const audiData: AuditData = {
       activityType: AuditType.DESTROY,
       activityDetail: `Destroyed in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
-      dataId: item.id
+      dataId: item.id,
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
   }
@@ -171,7 +174,9 @@ export default function DestructionShow(): React.ReactElement {
       activityDetail: 'Destroyed',
       securityRelated: false,
       resource: constants.R_DESTRUCTION,
-      dataId: parseInt(id as string)
+      dataId: parseInt(id as string),
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
     const ids = itemsAdded.map((item: Item) => item.id)
