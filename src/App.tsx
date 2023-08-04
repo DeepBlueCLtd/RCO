@@ -43,8 +43,8 @@ import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
-// true for REST, false for localForage
-const MOCK = !!(process.env.MOCK && process.env.MOCK === '0')
+// true for mock, false for REST
+const MOCK = !!process.env.MOCK
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(

@@ -9,7 +9,6 @@
   "homepage": ".",
   "scripts": {
     "dev": "vite --open",
-    "dev:mock": "MOCK=0 vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --max-warnings=0",
