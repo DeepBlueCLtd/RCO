@@ -8,8 +8,7 @@ import {
   useGetList,
   type TextInputProps,
   ReferenceInput,
-  AutocompleteInput,
-  useRefresh
+  AutocompleteInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -19,10 +18,7 @@ import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
-import dayjs from 'dayjs'
-import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
-import { transformProtectionValues } from '../../utils/helper'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
@@ -30,18 +26,6 @@ const schema = yup.object({
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
   organisation: yup.string().nonNullable().required(),
-  protectiveMarking: yup.number().required(),
-  startDate: yup.date().required(),
-  endDate: yup
-    .date()
-    .required()
-    .test(
-      'endDate',
-      'End date must be greater than start date',
-      function (value): boolean {
-        return dayjs(value).diff(this.parent.startDate) > 0
-      }
-    ),
   vault: yup.string()
 })
 
@@ -89,8 +73,6 @@ const BatchForm = (
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
-  const [itemId, setItemId] = useState<Item['id']>()
-  const refresh = useRefresh()
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -109,18 +91,7 @@ const BatchForm = (
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
   const ToolBar = (): React.ReactElement => {
-    return (
-      <EditToolBar
-        type='button'
-        mutationOptions={{
-          onSuccess: ({ id }: { id: number }) => {
-            setItemId(id)
-            refresh()
-          }
-        }}
-        transform={transformProtectionValues}
-      />
-    )
+    return <EditToolBar type='button' />
   }
 
   return (
@@ -226,18 +197,6 @@ const BatchForm = (
             </>
           )}
         </FlexBox>
-        <ProtectionBlockInputs<BatchCode, BatchCave, BatchHandling>
-          isEdit={isEdit}
-          markingSource='protectiveMarking'
-          id={itemId}
-          refTables={{
-            catCave: constants.R_BATCH_CAVE,
-            catCode: constants.R_BATCH_CODE,
-            catHandle: constants.R_BATCH_HANDLE
-          }}
-          resource={constants.R_BATCHES}
-          disabled={isShow}
-        />
         <TextInput
           multiline
           source='remarks'

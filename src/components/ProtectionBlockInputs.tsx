@@ -7,7 +7,8 @@ import ProtectionRefInput from './ProtectionRefInput'
 import { useDataProvider, type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useConfigData } from '../utils/useConfigData'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+
 interface Props {
   disabled?: boolean
   markingSource: string
@@ -15,6 +16,7 @@ interface Props {
   id?: number
   resource: string
   refTables: Record<'catCave' | 'catCode' | 'catHandle', string>
+  isRemarksOpen?: boolean
 }
 
 export default function ProtectionBlockInputs<
@@ -22,16 +24,20 @@ export default function ProtectionBlockInputs<
   TCatCave extends RaRecord,
   TCatHandle extends RaRecord
 >(props: Props): React.ReactElement {
-  const { disabled, markingSource, isEdit, id, refTables } = props
+  const { disabled, markingSource, isEdit, id, refTables, isRemarksOpen } =
+    props
   const { setValue, watch, getValues } = useFormContext()
   const dataProvider = useDataProvider()
   const configData = useConfigData()
-
+  const [codeChanges, setCodeChanges] = useState<string[] | undefined>()
+  const [caveChanges, setCaveChanges] = useState<string[] | undefined>()
+  const [handleChanges, setHandleChanges] = useState<string[] | undefined>()
   const inputProps = { disabled }
 
   const protectionInputProps = {
     ...inputProps,
-    multiple: true
+    multiple: true,
+    isRemarksOpen
   }
 
   const setIsDirty = (source: string, value = ''): void => {
@@ -61,9 +67,46 @@ export default function ProtectionBlockInputs<
     }
   }, [watch])
 
+  const formatChanges = (changes: string[] | undefined): string => {
+    if (Array.isArray(changes)) {
+      if (changes.length > 0) {
+        return changes.join(' ')
+      } else {
+        return 'unset'
+      }
+    }
+    return ''
+  }
+
+  const setPrevValues = (): void => {
+    const isChanged =
+      typeof codeChanges !== 'undefined' ||
+      typeof caveChanges !== 'undefined' ||
+      typeof handleChanges !== 'undefined'
+
+    if (isChanged) {
+      const detailData: Record<string, string> = {}
+      const details: Record<string, string> = {
+        catCode: formatChanges(codeChanges),
+        catCave: formatChanges(caveChanges),
+        catHandle: formatChanges(handleChanges)
+      }
+      Object.keys(details).forEach((keyName) => {
+        if (details[keyName]?.length > 0) {
+          detailData[keyName] = details[keyName]
+        }
+      })
+      setValue('prevProtectionValues', detailData)
+    }
+  }
+
   useEffect(() => {
     setProtectiveMarking(getValues('protectiveMarking'))
   }, [])
+
+  useEffect(() => {
+    setPrevValues()
+  }, [codeChanges, caveChanges, handleChanges])
 
   return (
     <Box
@@ -90,6 +133,7 @@ export default function ProtectionBlockInputs<
           label={configData?.catCode ?? 'Cat code'}
           {...protectionInputProps}
           width='20%'
+          onValueChange={setCodeChanges}
         />
         <SourceInput
           source={markingSource}
@@ -107,6 +151,7 @@ export default function ProtectionBlockInputs<
           labelField='name'
           {...protectionInputProps}
           width='30%'
+          onValueChange={setHandleChanges}
         />
         <ProtectionRefInput<CatCave, TCatCave>
           setIsDirty={setIsDirty}
@@ -118,6 +163,7 @@ export default function ProtectionBlockInputs<
           label={configData?.catCave ?? 'Cat cave'}
           {...protectionInputProps}
           width='30%'
+          onValueChange={setCaveChanges}
         />
       </FlexBox>
     </Box>

@@ -3,10 +3,12 @@ import useAudit from './useAudit'
 import * as constants from '../constants'
 import { useDataProvider, useListContext, useRecordContext } from 'react-admin'
 import { useParams } from 'react-router-dom'
+import { type AuditData } from '../utils/audit'
 
 type UseVaultLocationAudit = (
   vaultLocationId: number,
-  itemId?: number | undefined
+  itemId?: number | undefined,
+  editRemarks?: string
 ) => Promise<void>
 
 export default function useVaultLocationAudit(): UseVaultLocationAudit {
@@ -58,7 +60,8 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
 
   const auditLocations = async (
     vaultLocationId: number,
-    id?: number
+    id?: number,
+    editRemarks?: string
   ): Promise<void> => {
     const newIds = id ? [id] : ids
     if (newIds.length === 0) return
@@ -68,6 +71,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         id: vaultLocationId
       }
     )
+
     const selectedItems = await getItemsByIds(vaultLocationId, id)
 
     if (Object.keys(selectedItems).length === 0) return
@@ -78,51 +82,55 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
     const vaultLocations = await getVLocationByIds(selectedVIds)
 
     const auditData = {
-      type: AuditType.EDIT,
-      securityRelated: false
+      activityType: AuditType.MOVED,
+      securityRelated: false,
+      subjectId: null,
+      subjectResource: null
     }
 
     const allAudits = async (itemId: number): Promise<any> => {
       const itemRef = selectedItems[itemId]?.itemNumber
-      const itemAudit = {
+      const itemAudit: AuditData = {
         ...auditData,
         resource: constants.R_ITEMS,
         dataId: itemId
       }
-      const audits = [
-        {
-          ...itemAudit,
-          activityDetail: `Vault Location changed to ${vaultLocation?.name}`
-        },
-        {
-          ...itemAudit,
-          activityDetail: `item added to VaultLocation ${vaultLocation?.name}`
-        },
-        {
-          ...auditData,
-          activityDetail: `item ${itemRef} added to VaultLocation`,
-          resource: constants.R_VAULT_LOCATION,
-          dataId: vaultLocationId
-        }
-      ]
+      const audits: AuditData[] = []
+      // log removal first
       if (!id) {
         audits.push(
           ...[
             {
               ...itemAudit,
-              activityDetail: `item Removed from ${
+              activityDetail: `Removed from ${
                 vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
-              }`
+              } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`
             },
             {
               ...auditData,
-              activityDetail: `item ${itemRef} removed from previous VaultLocation`,
+              activityDetail: `${itemRef} removed`,
               resource: constants.R_VAULT_LOCATION,
               dataId: selectedItems[itemId]?.vaultLocation
             }
           ]
         )
       }
+      // now log putting in new locaiton
+      audits.push(
+        ...[
+          {
+            ...itemAudit,
+            activityDetail: `Moved to ${vaultLocation?.name}`
+          },
+          {
+            ...auditData,
+            activityDetail: `${itemRef} added`,
+            resource: constants.R_VAULT_LOCATION,
+            dataId: vaultLocationId
+          }
+        ]
+      )
+
       return audits.map(async (auditData) => {
         if (auditData) {
           await audit(auditData)

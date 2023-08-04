@@ -31,6 +31,7 @@ import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
+import { type AuditData } from '../../utils/audit'
 
 interface ShowActionsProps {
   handleOpen: (open: DestructionModal) => void
@@ -73,6 +74,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const audit = useAudit()
   const refresh = useRefresh()
   const [update] = useUpdate()
+  const notify = useNotify()
 
   const dispatched: boolean =
     !hasWritePermission ||
@@ -98,6 +100,20 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
   }
 
+  const sendReceiptReceived = async (): Promise<void> => {
+    await update(constants.R_DISPATCH, {
+      id: record.id,
+      data: {
+        receiptReceived: nowDate()
+      },
+      previousData: record
+    })
+    refresh()
+    notify('Receipt Received', {
+      type: 'success'
+    })
+  }
+
   const sendHastener = async (): Promise<void> => {
     await update(constants.R_DISPATCH, {
       id: record.id,
@@ -108,11 +124,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
     refresh()
     await audit({
-      type: AuditType.EDIT,
+      activityType: AuditType.EDIT,
       activityDetail: 'Hastener sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,
-      dataId: record.id
+      dataId: record.id,
+      subjectId: null,
+      subjectResource: null
     })
   }
 
@@ -120,39 +138,45 @@ const Footer = (props: FooterProps): React.ReactElement => {
 
   return (
     <>
-      <FlexBox justifyContent='end' padding={2}>
-        {dispatched && (
+      <FlexBox flexDirection='column' gap='6px' marginBottom='20px'>
+        <FlexBox justifyContent='space-around'>
           <Button
             variant='outlined'
-            label='Print Hastener'
+            label='Print Receipt'
             onClick={() => {
-              handleOpen('hastener')
+              handleOpen('dispatch')
             }}
           />
-        )}
-        {dispatched && !receiptReceived && (
-          <Button
-            variant='outlined'
-            label='Record Hastener Sent'
-            onClick={sendHastener as any}
-          />
-        )}
-        <Button
-          variant='outlined'
-          label='Print Receipt'
-          onClick={() => {
-            handleOpen('dispatch')
-          }}
-        />
-        {!dispatched && (
-          <>
+          {dispatched ? (
+            <Button
+              variant='outlined'
+              label='Print Hastener'
+              onClick={() => {
+                handleOpen('hastener')
+              }}
+            />
+          ) : (
             <Button
               variant='contained'
               label='Dispatch'
               disabled={!record.reportPrintedAt}
               onClick={handleDispatch}
             />
-          </>
+          )}
+        </FlexBox>
+        {dispatched && !receiptReceived && (
+          <FlexBox justifyContent='space-around'>
+            <Button
+              variant='outlined'
+              label='Record Hastener Sent'
+              onClick={sendHastener as any}
+            />
+            <Button
+              variant='outlined'
+              label='Receipt Note Received'
+              onClick={sendReceiptReceived as any}
+            />
+          </FlexBox>
         )}
       </FlexBox>
       <Confirm
@@ -193,23 +217,27 @@ export default function DispatchShow(): React.ReactElement {
   }
 
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
-    const audiData = {
-      type: AuditType.SENT,
+    const audiData: AuditData = {
+      activityType: AuditType.SENT,
       activityDetail: `Dispatch Sent in ${record.reference}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
-      dataId: itemId
+      dataId: itemId,
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
-    const audiData = {
-      type: AuditType.SENT,
+    const audiData: AuditData = {
+      activityType: AuditType.SENT,
       activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,
-      dataId: parseInt(id as string)
+      dataId: parseInt(id as string),
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)

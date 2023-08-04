@@ -35,7 +35,9 @@ const lifeCycles = (
         provider,
         year,
         R_DISPATCH,
-        'reference'
+        'reference',
+        undefined,
+        'RN'
       )
 
       const withRef = await dataProvider.update<Dispatch>(R_DISPATCH, {
@@ -46,9 +48,11 @@ const lifeCycles = (
         }
       })
       await audit({
-        type: AuditType.CREATE,
+        activityType: AuditType.CREATE,
         resource: R_DISPATCH,
-        dataId: record.data.id
+        dataId: record.data.id,
+        subjectId: null,
+        subjectResource: null
       })
       return { ...record, data: withRef.data }
     } catch (error) {

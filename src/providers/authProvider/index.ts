@@ -57,9 +57,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
           setToken(token, salt)
           await audit({
-            type: AuditType.LOGIN,
+            activityType: AuditType.LOGIN,
             resource: null,
-            dataId: null
+            dataId: null,
+            subjectId: null,
+            subjectResource: null
           })
           return await Promise.resolve(data)
         } else {
@@ -71,9 +73,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     },
     logout: async (): Promise<void> => {
       await audit({
-        type: AuditType.LOGOUT,
+        activityType: AuditType.LOGOUT,
         resource: null,
-        dataId: null
+        dataId: null,
+        subjectId: null,
+        subjectResource: null
       })
       removeToken()
       await Promise.resolve()

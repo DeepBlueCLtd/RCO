@@ -21,6 +21,7 @@ import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import FlexBox from '../../components/FlexBox'
 import SourceInput from '../../components/SourceInput'
 import HistoryButton from '../../components/HistoryButton'
+import ItemHistory from './ItemHistory'
 
 interface ShowFormProps {
   setRecord: React.Dispatch<React.SetStateAction<Item | undefined>>
@@ -38,7 +39,7 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
   const pageTitle = 'View Item'
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <Box sx={{ padding: '10px', flex: 2 }}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_ITEM /> {pageTitle}
       </Typography>
@@ -380,7 +381,10 @@ export default function ItemShow(): React.ReactElement {
           <ItemShowActions handleOpen={handleOpen} record={record} />
         )
       }>
-      <ShowForm setRecord={setRecord} />
+      <FlexBox columnGap={0} padding='10px' alignItems='start'>
+        <ShowForm setRecord={setRecord} />
+        <ItemHistory />
+      </FlexBox>
       <ResourceHistoryModal
         filter={filter}
         open={open}

@@ -213,7 +213,7 @@ export default function UserShow(): React.ReactElement {
         data.filter((audit) => {
           return (
             audit.user === record?.id ||
-            audit.subject === record?.id ||
+            audit.subjectId === record?.id ||
             (audit.dataId === record?.id && audit.resource === R_USERS)
           )
         })
