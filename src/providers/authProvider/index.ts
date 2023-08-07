@@ -58,8 +58,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           setToken(token, salt)
           await audit({
             activityType: AuditType.LOGIN,
-            resource: null,
-            dataId: null,
+            resource: constants.R_USERS,
+            dataId: user.id,
             subjectId: null,
             subjectResource: null
           })
@@ -72,10 +72,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       }
     },
     logout: async (): Promise<void> => {
+      const user = getUser()
       await audit({
         activityType: AuditType.LOGOUT,
-        resource: null,
-        dataId: null,
+        resource: constants.R_USERS,
+        dataId: user?.id ?? null,
         subjectId: null,
         subjectResource: null
       })
