@@ -394,7 +394,6 @@ const createRoutes = (
     typeof permissions !== 'undefined'
       ? permissions
       : { read: false, write: false, all: undefined }
-  console.log(permissions, name)
   const routes: React.ReactElement[] = []
   const {
     create = ReferenceDataCreate,
@@ -402,7 +401,6 @@ const createRoutes = (
     list = ReferenceDataList,
     show = ReferenceDataShow
   } = elements
-  console.log(permissions, 'permissions--->', name)
   if (read === true || all === '*') {
     routes.push(
       ...[
