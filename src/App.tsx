@@ -53,6 +53,7 @@ function App(): React.ReactElement {
     undefined
   )
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
+  const [authChanged, setAuthChanged] = useState<boolean>(false)
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
@@ -106,6 +107,9 @@ function App(): React.ReactElement {
     const onStorageChange = (event: any): void => {
       if (event.key === constants.LOGGING_ENABLED) {
         setLoggingPref(event.newValue === 'true')
+      }
+      if (event.key === constants.AUTH_STATE_CHANGED) {
+        setAuthChanged((prev) => !prev)
       }
     }
 
@@ -165,7 +169,7 @@ function App(): React.ReactElement {
     }
   }, [])
 
-  useEffect(handleGetProvider, [loggingPref])
+  useEffect(handleGetProvider, [loggingPref, authChanged])
 
   useEffect(() => {
     async function getConfigData(): Promise<void> {
@@ -196,6 +200,8 @@ function App(): React.ReactElement {
     read: canAccess(permissions, 'reference-data', { read: true }),
     write: canAccess(permissions, 'reference-data', { write: true })
   }
+
+  const userPermission = permissions[constants.R_USERS] ?? permissions['*']
 
   return (
     <Suspense fallback={LoadingPage}>
@@ -282,7 +288,7 @@ function App(): React.ReactElement {
             )}
           </Route>
           <Route path='/user'>
-            {...createRoutes(constants.R_USERS, users, referenceDataPermission)}
+            {...createRoutes(constants.R_USERS, users, userPermission)}
           </Route>
           <Route path='/audit'>
             {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
@@ -384,21 +390,20 @@ const createRoutes = (
   permissions?: Permission
 ): React.ReactNode[] => {
   const cName: string = name
-  const { read, write } =
+  const { read, write, all } =
     typeof permissions !== 'undefined'
       ? permissions
-      : { read: false, write: false }
-
+      : { read: false, write: false, all: undefined }
+  console.log(permissions, name)
   const routes: React.ReactElement[] = []
-
   const {
     create = ReferenceDataCreate,
     edit = ReferenceDataEdit,
     list = ReferenceDataList,
     show = ReferenceDataShow
   } = elements
-
-  if (read === true) {
+  console.log(permissions, 'permissions--->', name)
+  if (read === true || all === '*') {
     routes.push(
       ...[
         <Route
@@ -414,7 +419,7 @@ const createRoutes = (
       ]
     )
   }
-  if (write === true) {
+  if (write === true || all === '*') {
     routes.push(
       ...[
         <Route
