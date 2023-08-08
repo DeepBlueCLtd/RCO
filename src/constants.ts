@@ -78,6 +78,7 @@ export type ResourceTypes =
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
+export const AUTH_STATE_CHANGED = 'AUTH_STATE_CHANGED'
 
 // icons
 export const ICON_BATCH = Layers
