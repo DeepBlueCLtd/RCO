@@ -75,12 +75,7 @@ interface Props {
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
   const { notify } = useContext(NotificationContext)
-  const {
-    reset,
-    getValues,
-    setValue,
-    formState: { errors }
-  } = useFormContext()
+  const { reset, getValues, setValue } = useFormContext()
   const { id } = useParams()
   const vaultLocationsAudit = useVaultLocationAudit()
   const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
@@ -200,9 +195,6 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
-            if (Object.keys(errors).length === 0) {
-              setValue('consecPages', incrementFormat(getValues('consecPages')))
-            }
           }}
           transform={transformProtectionValues}
           mutationOptions={{
@@ -215,6 +207,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
                   .plus({ days: 1 })
                   .toISO()
               )
+              setValue('consecPages', incrementFormat(getValues('consecPages')))
             }
           }}
         />
