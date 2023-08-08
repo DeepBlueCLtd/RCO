@@ -1,10 +1,15 @@
 import { SaveButton, Toolbar, useCreatePath, useRedirect } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useContext, useEffect, useRef } from 'react'
-import { ITEM_CLONE, ITEM_SAVE, R_ITEMS, SAVE_EVENT } from '../../../constants'
+import {
+  ITEM_CLONE,
+  ITEM_SAVE,
+  R_BATCHES,
+  SAVE_EVENT
+} from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button, type ButtonBaseActions } from '@mui/material'
@@ -82,6 +87,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const saveNewButtonRef = useRef<ButtonBaseActions>(null)
   const redirect = useRedirect()
   const createPath = useCreatePath()
+  const location = useLocation()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -127,7 +133,9 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     itemId?: number,
     clone = false
   ): Promise<void> => {
-    const path = createPath({ resource: R_ITEMS, id, type: 'show' })
+    const searchParams = new URLSearchParams(location.search)
+    const batchId = parseInt(searchParams.get('batch') as string)
+    const path = createPath({ resource: R_BATCHES, id: batchId, type: 'show' })
 
     await vaultLocationsAudit(
       vaultLocationId ?? getValues('vaultLocation'),
