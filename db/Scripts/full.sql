@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS item(
        endDate TEXT NOT NULL,
        batch INTEGER NOT NULL,
        itemNumber TEXT NOT NULL,
-       consecPages TEXT,
+       consecSheets TEXT,
        vaultLocation INTEGER NOT NULL,
        remarks TEXT,
        protectiveMarking INTEGER NOT NULL,
