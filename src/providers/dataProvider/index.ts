@@ -239,6 +239,16 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
   create: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows`
+
+    params.data = Object.keys(params.data).reduce((acc: any, key) => {
+      if (typeof params.data[key] === 'boolean') {
+        acc[key] = params.data[key] ? 1 : 0
+      } else {
+        acc[key] = params.data[key]
+      }
+      return acc
+    }, {})
+
     return await axios.post(url, { fields: params.data }).then((response) => {
       return {
         data: { id: response.data.data.lastInsertRowid, ...params.data }

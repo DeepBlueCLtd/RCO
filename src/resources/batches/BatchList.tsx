@@ -126,8 +126,8 @@ export default function BatchList(): React.ReactElement {
       variant='outlined'
       reference={constants.R_PROJECTS}
       source='project'
-      label={configData?.projectName}
       key={configData?.projectsName}
+      inputProps={{ label: configData?.projectName }}
     />,
     <DateFilter
       key='createdAt'

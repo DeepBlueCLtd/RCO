@@ -65,7 +65,7 @@ const filters = [
     label='Security Related'
   />,
   <DateFilter key='createdAt' source='dateTime' label='Created At' />,
-  <SourceInput key='subject' source='subject' reference={constants.R_USERS} />
+  <SourceInput key='subject' source='subjectId' reference={constants.R_USERS} />
 ]
 
 const resourcesRefKey: Record<string, string> = {
@@ -186,7 +186,7 @@ export default function AuditList({
           />
         )}
         <SourceField
-          source='subject'
+          source='subjectId'
           reference={constants.R_USERS}
           link='show'
         />
