@@ -131,8 +131,8 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   />
                   <TextField
                     {...style}
-                    source='consecPages'
-                    label='Consec/Pages'
+                    source='consecSheets'
+                    label='Consec/Sheets'
                   />
                 </ItemsReport>
                 <ReportSignature id={userId} />

@@ -90,7 +90,12 @@ const Details = (): React.ReactElement => {
           reference={constants.R_MEDIA_TYPE}
           inputProps={{ sx, disabled: true }}
         />
-        <TextInput label='Consec/Pages' source='consecPages' sx={sx} disabled />
+        <TextInput
+          label='Consec/Sheets'
+          source='consecSheets'
+          sx={sx}
+          disabled
+        />
         <DateInput source='startDate' label='Start' sx={sx} disabled />
         <DateInput source='endDate' label='End' sx={sx} disabled />
       </FlexBox>

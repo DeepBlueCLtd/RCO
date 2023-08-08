@@ -65,7 +65,7 @@ export const generateItemForTesting = ({
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
-    consecPages: 'consec-pages-1',
+    consecSheets: 'consec-sheets-1',
     musterRemarks: 'muster-remarks-1'
   }
 }

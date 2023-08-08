@@ -92,14 +92,14 @@ const CoreForm = (props: Props): React.ReactElement => {
         <TextInput
           multiline
           disabled={disabled}
-          label='Consec/Pages'
-          source='consecPages'
+          label='Consec/Sheets'
+          source='consecSheets'
           sx={sx}
         />
         <Card sx={{ ...sx, margin: '8px 0 20px' }}>
           {!(disabled === true) && (
             <CardContent sx={{ padding: '12px !important' }}>
-              Consec/Pages should contain one of the following:
+              Consec/Sheets should contain one of the following:
               <ul>
                 <li>
                   The Consec/Serial reference (<strong>125/2022</strong> or
