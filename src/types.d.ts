@@ -169,7 +169,8 @@ interface Item extends ResourceWithCreation {
   startDate: string | null
   batch: Batch['id']
   itemNumber: string
-  consecPages?: string
+  // originator reference number (consec) or number of sheets (optional)
+  consecSheets?: string
   endDate: string | null
   vaultLocation: VaultLocation['id']
   remarks: string

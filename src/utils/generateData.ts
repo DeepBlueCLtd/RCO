@@ -221,7 +221,7 @@ export const generateItems = (
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
-      consecPages: `consec-pages-${i + 1}`,
+      consecSheets: `consec-sheets-${i + 1}`,
       createdBy: user
       // project: batch.project,
       // platform: batch.platform

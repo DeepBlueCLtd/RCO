@@ -201,7 +201,10 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           onClick={() => {
             clone = true
             if (Object.keys(errors).length === 0) {
-              setValue('consecPages', incrementFormat(getValues('consecPages')))
+              setValue(
+                'consecSheets',
+                incrementFormat(getValues('consecSheets'))
+              )
             }
           }}
           transform={transformProtectionValues}
