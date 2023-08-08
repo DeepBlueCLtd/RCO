@@ -132,6 +132,13 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
             onSuccess={({ id }: { id: number }) => {
               setItemId(id)
               refresh()
+              redirect(
+                createPath({
+                  resource: constants.R_BATCHES,
+                  type: 'show',
+                  id: batch?.id
+                })
+              )
             }}
             openRemarks={openRemarks}
             setOpenRemarks={setOpenRemarks}
