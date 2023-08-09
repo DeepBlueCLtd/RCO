@@ -145,16 +145,16 @@ const getFilters = (resource?: string): React.ReactElement[] => {
   if (resource === constants.R_ALL_ITEMS) {
     filters.push(
       <BooleanFilter<Item>
-        source='destruction'
+        source='destructionDate'
         label='Destroyed'
-        fieldName='destruction'
+        fieldName='destructionDate'
         key='destruction'
         resource={constants.R_ITEMS}
       />,
       <BooleanFilter<Item>
-        source='dispatchJob'
+        source='dispatchedDate'
         label='Dispatched'
-        fieldName='dispatchJob'
+        fieldName='dispatchedDate'
         key='dispatch'
         resource={constants.R_ITEMS}
       />
