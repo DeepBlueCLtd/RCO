@@ -8,8 +8,7 @@ import {
   useCreatePath,
   useDataProvider,
   useRecordContext,
-  useRedirect,
-  useRefresh
+  useRedirect
 } from 'react-admin'
 import { useLocation, useParams } from 'react-router-dom'
 import { isNumber } from '../../../utils/number'
@@ -47,7 +46,6 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const record = useRecordContext<Item>()
   const dataProvider = useDataProvider()
   const [itemId, setItemId] = useState<Item['id']>()
-  const refresh = useRefresh()
   const [openRemarks, setOpenRemarks] = useState(false)
 
   const onSave = (event: React.SyntheticEvent): void => {
@@ -131,7 +129,6 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
           <ItemFormToolbar
             onSuccess={({ id }: { id: number }) => {
               setItemId(id)
-              refresh()
             }}
             openRemarks={openRemarks}
             setOpenRemarks={setOpenRemarks}
