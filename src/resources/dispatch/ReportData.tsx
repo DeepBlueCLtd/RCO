@@ -75,7 +75,7 @@ const ItemListBox = (): React.ReactElement => {
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <TextField source='consecPages' label='Consec/Sheets' />
+        <TextField source='consecSheets' label='Consec/Sheets' />
         <SourceField
           reference={constants.R_PROTECTIVE_MARKING}
           source='protectiveMarking'

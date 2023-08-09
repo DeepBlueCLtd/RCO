@@ -15,6 +15,7 @@ import {
   TableRow
 } from '@mui/material'
 import AppIcon from '../assets/rco_transparent.png'
+import * as constants from '../constants'
 
 export default function Login(): React.ReactElement {
   const login = useLogin()
@@ -25,9 +26,17 @@ export default function Login(): React.ReactElement {
     const formData = new FormData(event.currentTarget)
     const username = formData.get('username') as string
     const password = formData.get('password') as string
-    login({ username, password }).catch(() => {
-      notify('Invalid email or password', { type: 'error' })
-    })
+    login({ username, password })
+      .catch(() => {
+        notify('Invalid email or password', { type: 'error' })
+      })
+      .then(() => {
+        const storageEvent = new StorageEvent('storage', {
+          key: constants.AUTH_STATE_CHANGED
+        })
+        window.dispatchEvent(storageEvent)
+      })
+      .catch(console.error)
   }
 
   return (
