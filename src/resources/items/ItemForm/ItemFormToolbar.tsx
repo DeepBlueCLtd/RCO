@@ -210,7 +210,10 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
                   .plus({ days: 1 })
                   .toISO()
               )
-              setValue('consecPages', incrementFormat(getValues('consecPages')))
+              setValue(
+                'consecSheets',
+                incrementFormat(getValues('consecSheets'))
+              )
             }
           }}
         />
