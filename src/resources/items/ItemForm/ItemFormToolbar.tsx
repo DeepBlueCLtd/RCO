@@ -1,16 +1,17 @@
-import { SaveButton, Toolbar, useCreatePath, useRedirect } from 'react-admin'
+import { SaveButton, Toolbar, useRedirect } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
 import { useContext, useEffect, useRef } from 'react'
-import { ITEM_CLONE, ITEM_SAVE, R_ITEMS, SAVE_EVENT } from '../../../constants'
+import { ITEM_CLONE, ITEM_SAVE, SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
 import { Button, type ButtonBaseActions } from '@mui/material'
 import { DateTime } from 'luxon'
 import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 import { Context as NotificationContext } from '../../../context/NotificationContext'
+import * as constants from '../../../constants'
 
 // eslint-disable-next-line
 type Events = {
@@ -75,18 +76,13 @@ interface Props {
 const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
   const { notify } = useContext(NotificationContext)
-  const {
-    reset,
-    getValues,
-    setValue,
-    formState: { errors }
-  } = useFormContext()
+  const { reset, getValues, setValue } = useFormContext()
   const { id } = useParams()
   const vaultLocationsAudit = useVaultLocationAudit()
   const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
   const saveNewButtonRef = useRef<ButtonBaseActions>(null)
   const redirect = useRedirect()
-  const createPath = useCreatePath()
+  const location = useLocation()
 
   const saveHandler = (e: string): void => {
     if (clone) {
@@ -132,7 +128,9 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
     itemId?: number,
     clone = false
   ): Promise<void> => {
-    const path = createPath({ resource: R_ITEMS, id, type: 'show' })
+    const searchParams = new URLSearchParams(location.search)
+    const batchId = parseInt(searchParams.get('batch') as string)
+    const path = `/${constants.R_ITEMS}/create?batch=${batchId}`
 
     await vaultLocationsAudit(
       vaultLocationId ?? getValues('vaultLocation'),
@@ -183,7 +181,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
 
   function incrementFormat(input: string): string {
     return input.replace(
-      /^([^0-9]*)(\b\d{1,3}\b)/,
+      /(\D*)(\b\d{1,3}\b)/,
       (_: string, other: string, num: string) => {
         return other + (Number(num) + 1).toString().padStart(num.length, '0')
       }
@@ -200,12 +198,6 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           title='Store this item, then create a new copy'
           onClick={() => {
             clone = true
-            if (Object.keys(errors).length === 0) {
-              setValue(
-                'consecSheets',
-                incrementFormat(getValues('consecSheets'))
-              )
-            }
           }}
           transform={transformProtectionValues}
           mutationOptions={{
@@ -218,6 +210,10 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
                   .plus({ days: 1 })
                   .toISO()
               )
+              const cSheets = getValues('consecSheets')
+              if (cSheets) {
+                setValue('consecSheets', incrementFormat(cSheets))
+              }
             }
           }}
         />
