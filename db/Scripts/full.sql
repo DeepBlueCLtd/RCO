@@ -201,8 +201,8 @@ CREATE TABLE IF NOT EXISTS dispatch(
 CREATE TABLE IF NOT EXISTS item(
        id INTEGER PRIMARY KEY,
        mediaType INTEGER NOT NULL,
-       startDate TEXT NOT NULL,
-       endDate TEXT NOT NULL,
+       startDate TEXT,
+       endDate TEXT,
        batch INTEGER NOT NULL,
        itemNumber TEXT NOT NULL,
        consecSheets TEXT,
