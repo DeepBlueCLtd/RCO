@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -16,21 +16,27 @@ import CoreForm from './CoreForm'
 import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
-import { DateTime } from 'luxon'
 
 const schema = yup.object({
   mediaType: yup.number().required(),
-  startDate: yup.date().required(),
+  startDate: yup.date().nullable(),
   endDate: yup
     .date()
-    .required()
-    .test(
-      'endDate',
-      'End date must be greater than start date',
-      function (value) {
-        return dayjs(value).diff(this.parent.startDate) > 0
-      }
-    ),
+    .nullable()
+    .when('startDate', {
+      is: (sDate: Date) => Boolean(sDate),
+      then: (schema) =>
+        schema
+          .required()
+          .test(
+            'endDate',
+            'End date must be greater than start date',
+            function (value: Date) {
+              return dayjs(value).diff(this.parent.startDate) > 0
+            }
+          ),
+      otherwise: (schema) => schema.optional()
+    }),
   batch: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required(),
@@ -72,26 +78,9 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     }
   }, [])
 
-  const { startDate, endDate } = useMemo((): {
-    startDate: string
-    endDate: string
-  } => {
-    const dateTime = DateTime.local().set({
-      hour: 0,
-      minute: 0,
-      second: 0
-    })
-    return {
-      startDate: dateTime.toString(),
-      endDate: dateTime.plus({ days: 1 }).toString()
-    }
-  }, [])
-
   const defaultValues: Partial<Item> = {
     itemNumber: '',
-    loanedTo: undefined,
-    startDate,
-    endDate
+    loanedTo: undefined
   }
 
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
