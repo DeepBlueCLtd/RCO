@@ -289,7 +289,10 @@ const loadDefaultData = async (
     vault: constants.R_VAULT
   }
 
-  const dataprovider: DataProvider = await getDataProvider(false, false)
+  const dataprovider: DataProvider = await getDataProvider(
+    false,
+    !!process.env.MOCK ?? false
+  )
 
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
