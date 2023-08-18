@@ -55,9 +55,13 @@ const getActivityDetail = (
   difference: Record<string, any>,
   editRemarks: Record<string, any>
 ): string => {
-  const activityDetail = `Previous values: ${JSON.stringify(difference)}${
-    editRemarks ? `, Remarks: ${JSON.stringify(editRemarks)}` : ''
-  }`
+  const stringify = (data: any): string =>
+    JSON.stringify(data).replace(/"/g, '\\"')
+
+  const activityDetail = `{"Previous values": ${stringify(difference)}${
+    editRemarks ? `, "Remarks": ${stringify(editRemarks)}` : ''
+  }, "subjectId": 1}`
+
   return activityDetail
 }
 

@@ -43,6 +43,8 @@ import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
+// true for mock, false for REST
+const MOCK = !!process.env.MOCK
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
@@ -57,19 +59,27 @@ function App(): React.ReactElement {
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
-      checktDefault()
-        .then((provider) => {
-          if (provider !== null) {
+      if (!MOCK) {
+        getDataProvider(loggingPref, MOCK)
+          .then((provider) => {
             populate(provider)
-          } else {
-            getDataProvider(loggingPref)
-              .then((provider) => {
-                populate(provider)
-              })
-              .catch(console.log)
-          }
-        })
-        .catch(console.log)
+          })
+          .catch(console.log)
+      } else {
+        checktDefault()
+          .then((provider) => {
+            if (provider !== null) {
+              populate(provider)
+            } else {
+              getDataProvider(loggingPref, MOCK)
+                .then((provider) => {
+                  populate(provider)
+                })
+                .catch(console.log)
+            }
+          })
+          .catch(console.log)
+      }
     }
   }
 
@@ -328,8 +338,8 @@ function App(): React.ReactElement {
           name={constants.R_ITEMS}
           options={{
             filter: {
-              dispatchedDate: undefined,
-              destructionDate: undefined
+              dispatchedDate: null,
+              destructionDate: null
             },
             resource: constants.R_ITEMS,
             sort: {

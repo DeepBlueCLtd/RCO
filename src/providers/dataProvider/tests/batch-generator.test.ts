@@ -84,7 +84,7 @@ describe('generateBatchId', () => {
   let id: number
 
   beforeAll(async () => {
-    provider = await getDataProvider(false)
+    provider = await getDataProvider(false, true)
   })
 
   beforeEach(() => {
@@ -130,7 +130,7 @@ describe('generateBatchId for values greater than 9', () => {
   let provider: DataProvider
 
   beforeAll(async () => {
-    provider = await getDataProvider(false)
+    provider = await getDataProvider(false, false)
     for (let i = 0; i < 20; i++) {
       await generateBatch(
         i,

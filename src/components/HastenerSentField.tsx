@@ -11,7 +11,7 @@ export default function HastenerSentField(props: Props): React.ReactElement {
   const { source } = props
   const { dispatchedAt } = useRecordContext<Dispatch>()
 
-  if (typeof dispatchedAt === 'undefined') return <></>
+  if (typeof dispatchedAt === 'undefined' || dispatchedAt === null) return <></>
 
   const diff: number =
     DateTime.now()

@@ -126,7 +126,8 @@ CREATE TABLE IF NOT EXISTS audit (
        label TEXT NOT NULL,
        activityDetail TEXT,
        securityRelated INTEGER,
-       subject INTEGER,
+       subjectId INTEGER,
+       subjectResource: TEXT,
 
        FOREIGN KEY (user) REFERENCES user(id),
        FOREIGN KEY (subject) REFERENCES user(id),
@@ -137,8 +138,6 @@ CREATE TABLE IF NOT EXISTS audit (
 --Resource table - Batch
 CREATE TABLE IF NOT EXISTS batch (
        id INTEGER PRIMARY KEY,
-       startDate TEXT NOT NULL,
-       endDate TEXT NOT NULL,
        batchNumber TEXT NOT NULL,
        yearOfReceipt TEXT NOT NULL,
        project INT,
@@ -146,8 +145,6 @@ CREATE TABLE IF NOT EXISTS batch (
        organisation INT NOT NULL,
        vault TEXT NOT NULL,
        department INT NOT NULL,
-       protectiveMarking INT NOT NULL,
-       protectionString TEXT NOT NULL,
        remarks TEXT,
        receiptNotes TEXT,
        createdAt TEXT NOT NULL,
@@ -162,37 +159,6 @@ CREATE TABLE IF NOT EXISTS batch (
        FOREIGN KEY (vault) REFERENCES vault(id)
 ) WITHOUT ROWID;
 
--- DDL for Table batchCode
-
-CREATE TABLE if not exists batchCode (
-    id INTEGER PRIMARY KEY,
-    batch INTEGER NOT NULL,
-    catCode TEXT NOT NULL,
-    FOREIGN KEY (batch) REFERENCES batch(id),
-    FOREIGN KEY (catCode) REFERENCES catCode(id)
-);
-
--- DDL for Table batchHandle
-
-CREATE TABLE if not exists batchHandle (
-    id INTEGER PRIMARY KEY,
-    batch INTEGER NOT NULL,
-    catHandle TEXT NOT NULL,
-    FOREIGN KEY (batch) REFERENCES batch(id),
-    FOREIGN KEY (catHandle) REFERENCES catHandle(id)
-);
-
--- DDL for Table batchCave
-
-CREATE TABLE if not exists batchCave (
-    id INTEGER PRIMARY KEY,
-    batch INTEGER NOT NULL,
-    catCave TEXT NOT NULL,
-    FOREIGN KEY (batch) REFERENCES batch(id),
-    FOREIGN KEY (catCave) REFERENCES catCave(id)
-);
-
-
 -- Resource table - Destruction
 CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
@@ -201,6 +167,7 @@ CREATE TABLE IF NOT EXISTS destruction(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
+       reportPrintedAt TEXT,
        finalisedAt TEXT,
        finalisedBy TEXT,
        remarks TEXT,
@@ -217,12 +184,14 @@ CREATE TABLE IF NOT EXISTS dispatch(
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
-       remarks TEXT NOT NULL,
+       reportPrintedAt TEXT,
        dispatchedAt TEXT,
        toName TEXT NOT NULL,
        toAddress INTEGER NOT NULL,
        receiptReceived TEXT,
        lastHastenerSent TEXT,
+
+       remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (address) REFERENCES address(id)
@@ -232,16 +201,16 @@ CREATE TABLE IF NOT EXISTS dispatch(
 CREATE TABLE IF NOT EXISTS item(
        id INTEGER PRIMARY KEY,
        mediaType INTEGER NOT NULL,
-       startDate TEXT NOT NULL,
-       endDate TEXT NOT NULL,
+       startDate TEXT,
+       endDate TEXT,
        batch INTEGER NOT NULL,
        itemNumber TEXT NOT NULL,
-       consecPages TEXT,
+       consecSheets TEXT,
        vaultLocation INTEGER NOT NULL,
-       remarks TEXT NOT NULL,
+       remarks TEXT,
        protectiveMarking INTEGER NOT NULL,
        protectionString TEXT NOT NULL,
-       musterRemarks TEXT NOT NULL,
+       musterRemarks TEXT,
        loanedTo INTEGER,
        loanedDate TEXT,
        
@@ -249,7 +218,6 @@ CREATE TABLE IF NOT EXISTS item(
        dispatchedDate TEXT,
        destruction INTEGER,
        destructionDate TEXT,
-
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,

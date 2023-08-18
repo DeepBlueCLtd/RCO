@@ -52,7 +52,11 @@ export default function VaultLocationList(): React.ReactElement {
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        <BooleanField source='active' label='Active Vault Location' />
+        <BooleanField
+          source='active'
+          label='Active Vault Location'
+          looseValue
+        />
         <FunctionField
           label='History'
           render={(record: IntegerReferenceItem) => {
