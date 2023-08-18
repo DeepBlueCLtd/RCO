@@ -105,7 +105,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
         }
       })
 
-      notify(`${items.length} items dispatched!`, { type: 'success' })
+      notify(`${items.length} items added to dispatch`, { type: 'success' })
       successCallback()
     }
   }

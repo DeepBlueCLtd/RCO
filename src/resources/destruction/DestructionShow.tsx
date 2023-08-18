@@ -160,7 +160,7 @@ export default function DestructionShow(): React.ReactElement {
   const DestroyAudits = async (item: Item): Promise<void> => {
     const audiData: AuditData = {
       activityType: AuditType.DESTROY,
-      activityDetail: `Destroyed in ${record.reference}`,
+      activityDetail: `Destroyed in ${record.name}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id,
@@ -243,7 +243,7 @@ export default function DestructionShow(): React.ReactElement {
             component={'div'}
             actions={<ShowActions handleOpen={handleOpen} />}>
             <SimpleShowLayout>
-              <TextField source='name' />
+              <TextField source='name' label='Reference' />
               <DateField source='finalisedAt' />
               <Finalised />
               <TextField source='remarks' />

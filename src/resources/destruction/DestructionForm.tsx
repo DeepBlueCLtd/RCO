@@ -151,7 +151,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
       <TextFields
         fullWidth
         value={name}
-        label='name'
+        label='Reference'
         disabled={disabledFields.includes('name')}
       />
       <TextInput sx={{ width: '100%' }} source='remarks' />
