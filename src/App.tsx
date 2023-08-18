@@ -59,7 +59,7 @@ function App(): React.ReactElement {
   const [configData, setConfigData] = useState<ConfigData | undefined>()
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
-      if (MOCK) {
+      if (!MOCK) {
         getDataProvider(loggingPref, MOCK)
           .then((provider) => {
             populate(provider)

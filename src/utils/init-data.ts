@@ -291,7 +291,7 @@ const loadDefaultData = async (
 
   const dataprovider: DataProvider = await getDataProvider(
     false,
-    !!process.env.MOCK ?? false
+    !!process.env.MOCK
   )
 
   for (const [key, value] of Object.entries(defaultData)) {
