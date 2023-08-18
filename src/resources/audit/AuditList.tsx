@@ -71,8 +71,8 @@ const filters = [
 const resourcesRefKey: Record<string, string> = {
   [constants.R_BATCHES]: 'batchNumber',
   [constants.R_ITEMS]: 'itemNumber',
-  [constants.R_DESTRUCTION]: 'reference',
-  [constants.R_DISPATCH]: 'reference',
+  [constants.R_DESTRUCTION]: 'name',
+  [constants.R_DISPATCH]: 'name',
   [constants.R_ADDRESSES]: 'id',
   [constants.R_PROJECTS]: 'name',
   [constants.R_PLATFORMS]: 'name',

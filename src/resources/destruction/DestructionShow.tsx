@@ -164,7 +164,7 @@ export default function DestructionShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id,
-      subjectId: id ? Number(id) : null,
+      subjectId: record.id,
       subjectResource: constants.R_ITEMS
     }
     await audit(audiData)

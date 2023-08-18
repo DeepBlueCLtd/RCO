@@ -630,7 +630,7 @@ export default function ItemList(
                 link={false}
                 source='destruction'
                 reference={constants.R_DESTRUCTION}
-                sourceField='reference'
+                sourceField='name'
                 key={'destruction'}
               />,
               <DateField source='destructionDate' key={'destructionDate'} />,
@@ -638,7 +638,7 @@ export default function ItemList(
                 link={false}
                 source='dispatchJob'
                 reference={constants.R_DISPATCH}
-                sourceField='reference'
+                sourceField='name'
                 label='Dispatch'
                 key={'dispatchJob'}
               />,
