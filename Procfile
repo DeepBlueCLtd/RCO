@@ -1,1 +1,1 @@
-web: yarn dev:mock
+web: yarn dev:mock --host 0.0.0.0 --base ./ --port $PORT
