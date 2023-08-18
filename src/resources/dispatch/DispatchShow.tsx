@@ -219,7 +219,7 @@ export default function DispatchShow(): React.ReactElement {
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData: AuditData = {
       activityType: AuditType.SENT,
-      activityDetail: `Dispatch Sent in ${record.reference}`,
+      activityDetail: `Dispatch Sent in ${record.name}`,
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId,
