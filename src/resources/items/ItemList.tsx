@@ -145,14 +145,14 @@ const getFilters = (resource?: string): React.ReactElement[] => {
   if (resource === constants.R_ALL_ITEMS) {
     filters.push(
       <BooleanFilter<Item>
-        source='destructionDate'
+        source='destruction'
         label='Destroyed'
         fieldName='destructionDate'
         key='destruction'
         resource={constants.R_ITEMS}
       />,
       <BooleanFilter<Item>
-        source='dispatchedDate'
+        source='dispatchJob'
         label='Dispatched'
         fieldName='dispatchedDate'
         key='dispatch'
@@ -191,12 +191,21 @@ const getItemStates = (
   } else {
     const filteredData = data.filter((item) => selectedIds.includes(item.id))
     return {
-      noneLoanedVal: filteredData.every((f) => f.loanedTo === undefined),
-      allLoanedVal: filteredData.every((f) => f.loanedTo !== undefined),
-      anyDestructed: filteredData.some((f) => f.destruction !== undefined),
-      anyLoaned: filteredData.some((f) => f.loanedTo !== undefined),
-      anyDispatched: filteredData.some((f) => f.dispatchJob !== undefined),
-      allDispatched: filteredData.every((f) => f.dispatchedDate !== undefined)
+      noneLoanedVal: filteredData.every(
+        (f) => f.loanedTo === undefined || f.loanedTo === null
+      ),
+      allLoanedVal: filteredData.every(
+        (f) => f.loanedTo !== undefined && f.loanedTo !== null
+      ),
+      anyDestructed: filteredData.some(
+        (f) => f.destruction !== undefined && f.destruction !== null
+      ),
+      anyLoaned: filteredData.some(
+        (f) => f.loanedTo !== undefined && f.loanedTo !== null
+      ),
+      anyDispatched: filteredData.some(
+        (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
+      )
     }
   }
 }
@@ -311,7 +320,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids: selectedIds,
       data: {
-        dispatchJob: undefined
+        dispatchJob: null
       }
     })
     notify(`${selectedIds.length} items removed from dispatch`)
@@ -345,8 +354,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids: selectedIds,
       data: {
-        dispatchJob: undefined,
-        dispatchedDate: undefined
+        dispatchJob: null,
+        dispatchedDate: null
       }
     })
     refresh()

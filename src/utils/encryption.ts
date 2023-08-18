@@ -14,8 +14,8 @@ export const decryptPassword = (
   hashedPassword: string,
   salt: string
 ): string => {
-  const password: string = hashedPassword
-  const decryptedData = decryptData(`${password}`)
+  if (!salt) return hashedPassword
+  const decryptedData = decryptData(`${hashedPassword}`)
   const decryptedPassword = decryptedData.substring(
     0,
     decryptedData.length - salt.length
