@@ -67,10 +67,10 @@ export default function DispatchItems(props: Props): React.ReactElement {
   }, [])
 
   const onDispatch = async (): Promise<void> => {
-    const { reference } = items.find(
+    const { name } = items.find(
       (job) => job.id === parseInt(dispatchId as string)
     ) ?? {
-      reference: undefined
+      name: undefined
     }
     if (typeof dispatchId !== 'undefined') {
       const items = data
@@ -79,7 +79,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
           const { itemNumber } = item
           const audiData = {
             activityType: AuditType.EDIT,
-            activityDetail: `Add item to dispatch ${reference}`,
+            activityDetail: `Add item to dispatch ${name}`,
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id,
@@ -91,7 +91,9 @@ export default function DispatchItems(props: Props): React.ReactElement {
             ...audiData,
             activityDetail: `Add item ${itemNumber} to dispatch`,
             resource: constants.R_DISPATCH,
-            dataId: dispatchId as number
+            dataId: dispatchId as number,
+            subjectId: item.id,
+            subjectResource: constants.R_ITEMS
           })
           return item.id
         })
@@ -130,7 +132,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
               label={label}>
               {items.map((item) => (
                 <MenuItem key={item.id} value={String(item.id)}>
-                  {item.reference}-{item.remarks}
+                  {item.name}-{item.remarks}
                 </MenuItem>
               ))}
             </Select>

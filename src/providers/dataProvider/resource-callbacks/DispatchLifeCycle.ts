@@ -31,11 +31,11 @@ const lifeCycles = (
 
       const year: string = new Date().getFullYear().toString()
 
-      const reference: string = await generateReference<Dispatch>(
+      const name: string = await generateReference<Dispatch>(
         provider,
         year,
         R_DISPATCH,
-        'reference',
+        'name',
         undefined,
         'RN'
       )
@@ -44,7 +44,7 @@ const lifeCycles = (
         id,
         previousData: data,
         data: {
-          reference
+          name
         }
       })
       await audit({

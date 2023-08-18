@@ -34,23 +34,22 @@ export default function DestroyRestoreItems(props: Props): React.ReactElement {
 
   const onRemove = async (): Promise<void> => {
     const promisees = data.map(async (item) => {
-      console.log(typeof item.destruction)
       const { id, destruction } = item
 
       const {
-        data: { reference }
+        data: { name }
       } = await dataProvider.getOne<Destruction>(constants.R_DESTRUCTION, {
         id: destruction
       })
 
       await audit({
         activityType: AuditType.EDIT,
-        activityDetail: `Remove item from destruction ${reference}`,
+        activityDetail: `Remove item from destruction ${name}`,
         securityRelated: false,
         resource: constants.R_ITEMS,
         dataId: id,
-        subjectId: null,
-        subjectResource: null
+        subjectId: item.id,
+        subjectResource: constants.R_ITEMS
       })
     })
     await Promise.all(promisees)

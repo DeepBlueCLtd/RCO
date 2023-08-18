@@ -38,7 +38,7 @@ export default function PendingReceiptNotes(): React.ReactElement {
       rowStyle={rowStyle}
       resource={constants.R_DISPATCH}
       fields={[
-        { source: 'reference' },
+        { source: 'name' },
         { source: 'dispatchedAt', component: DateField },
         { source: 'lastHastenerSent', component: HastenerSentField }
       ]}

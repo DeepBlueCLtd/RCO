@@ -162,8 +162,8 @@ export default function DestructionShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id,
-      subjectId: null,
-      subjectResource: null
+      subjectId: Number(id) ?? null,
+      subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
   }
@@ -175,8 +175,8 @@ export default function DestructionShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DESTRUCTION,
       dataId: parseInt(id as string),
-      subjectId: null,
-      subjectResource: null
+      subjectId: Number(id) ?? null,
+      subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
     const ids = itemsAdded.map((item: Item) => item.id)
@@ -240,7 +240,7 @@ export default function DestructionShow(): React.ReactElement {
             component={'div'}
             actions={<ShowActions handleOpen={handleOpen} />}>
             <SimpleShowLayout>
-              <TextField source='reference' />
+              <TextField source='name' />
               <DateField source='finalisedAt' />
               <Finalised />
               <TextField source='remarks' />

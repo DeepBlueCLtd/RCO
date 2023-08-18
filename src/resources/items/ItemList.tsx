@@ -297,14 +297,16 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dataId: itemId,
         resource: constants.R_DISPATCH,
         // TODO: put the item number in for subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: itemId,
+        subjectResource: constants.R_ITEMS
       }
       await audit(auditData)
       await audit({
         ...auditData,
         activityDetail: 'Dispatch Item removed',
-        resource: constants.R_ITEMS
+        resource: constants.R_ITEMS,
+        subjectId: null,
+        subjectResource: null
       })
     })
 

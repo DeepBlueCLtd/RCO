@@ -185,10 +185,20 @@ export default function AuditList({
             }}
           />
         )}
-        <SourceField
-          source='subject'
-          reference={constants.R_USERS}
-          link='show'
+        <FunctionField
+          label='Subject'
+          render={(record: Audit) => {
+            return (
+              <SourceField
+                source='subjectId'
+                {...(record.subjectResource === constants.R_ITEMS
+                  ? { sourceField: 'itemNumber' }
+                  : null)}
+                reference={record.subjectResource ?? undefined}
+                link='show'
+              />
+            )
+          }}
         />
       </DatagridConfigurable>
     </List>
