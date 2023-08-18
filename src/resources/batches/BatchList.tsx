@@ -126,8 +126,8 @@ export default function BatchList(): React.ReactElement {
       variant='outlined'
       reference={constants.R_PROJECTS}
       source='project'
-      label={configData?.projectName}
       key={configData?.projectsName}
+      inputProps={{ label: configData?.projectName }}
     />,
     <DateFilter
       key='createdAt'
@@ -157,7 +157,11 @@ export default function BatchList(): React.ReactElement {
         preferenceKey={preferenceKey}>
         <TextField source='id' />
         <TextField label='Reference' source='batchNumber' />
-        <SourceField source='department' label='Department' />
+        <SourceField
+          source='department'
+          label='Department'
+          reference={constants.R_DEPARTMENT}
+        />
         <SourceField
           source='project'
           reference={constants.R_PROJECTS}

@@ -20,7 +20,7 @@ export default function BooleanFilter<T extends RaRecord>(
   const filterKey = `${[fieldName]}_${nullable ? 'eq' : 'neq'}`
   const { data = [], isLoading } = useGetList<T>(resource, {
     filter: {
-      [filterKey]: undefined
+      [filterKey]: null
     }
   })
 

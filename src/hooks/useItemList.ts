@@ -23,10 +23,10 @@ export default function useItemList(): UseItemList {
     const vlocations: number[] = []
     data?.forEach((record: Item) => {
       const { loanedTo, vaultLocation } = record
-      if (typeof loanedTo !== 'undefined') {
+      if (typeof loanedTo !== 'undefined' && loanedTo) {
         uids.push(loanedTo)
       }
-      if (typeof vaultLocation !== 'undefined') {
+      if (typeof vaultLocation !== 'undefined' && vaultLocation) {
         vlocations.push(vaultLocation)
       }
     })

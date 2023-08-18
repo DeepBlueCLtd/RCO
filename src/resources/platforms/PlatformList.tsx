@@ -77,7 +77,7 @@ export default function PlatformList(props: Props): React.ReactElement {
       <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField source='id' label='ID' />
         <TextField source='name' />
-        <BooleanField source='active' label='Active Platform' />
+        <BooleanField source='active' label='Active Platform' looseValue />
         <FunctionField
           label='History'
           render={(record: IntegerReferenceItem) => {

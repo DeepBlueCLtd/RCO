@@ -75,9 +75,9 @@ export default function DestroyItems(props: Props): React.ReactElement {
         .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
           return (
             ids.includes(id) &&
-            typeof loanedTo === 'undefined' &&
-            typeof loanedDate === 'undefined' &&
-            typeof destructionDate === 'undefined'
+            (loanedTo === null || typeof loanedTo === 'undefined') &&
+            (loanedDate === null || typeof loanedDate === 'undefined') &&
+            (destructionDate === null || typeof destructionDate === 'undefined')
           )
         })
         .map(async (item) => {
