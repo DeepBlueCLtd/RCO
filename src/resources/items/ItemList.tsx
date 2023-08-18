@@ -60,7 +60,9 @@ const omitColumns: Array<keyof Item> = [
   'musterRemarks',
   'loanedTo',
   'batch',
-  'protectionString'
+  'protectionString',
+  'destruction',
+  'dispatchJob'
   // 'project',
   // 'platform'
 ]
@@ -155,6 +157,23 @@ const getFilters = (resource?: string): React.ReactElement[] => {
         source='dispatchJob'
         label='Dispatched'
         fieldName='dispatchedDate'
+        key='dispatch'
+        resource={constants.R_ITEMS}
+      />
+    )
+  } else if (resource === constants.R_ITEMS) {
+    filters.push(
+      <BooleanFilter<Item>
+        source='destruction'
+        label='Marked for destruction'
+        fieldName='destruction'
+        key='destruction'
+        resource={constants.R_ITEMS}
+      />,
+      <BooleanFilter<Item>
+        source='dispatchJob'
+        label='Marked for dispatch'
+        fieldName='dispatchJob'
         key='dispatch'
         resource={constants.R_ITEMS}
       />
@@ -553,6 +572,21 @@ export default function ItemList(
       source='protectionString'
       label='Protection'
       key={'protectionString'}
+    />,
+    <SourceField
+      link={false}
+      source='destruction'
+      reference={constants.R_DESTRUCTION}
+      sourceField='name'
+      key={'destruction'}
+    />,
+    <SourceField
+      link={false}
+      source='dispatchJob'
+      reference={constants.R_DISPATCH}
+      sourceField='name'
+      label='Dispatch'
+      key={'dispatchJob'}
     />
   ]
   return (
@@ -626,23 +660,8 @@ export default function ItemList(
 
         {resource !== constants.R_ITEMS
           ? [
-              <SourceField
-                link={false}
-                source='destruction'
-                reference={constants.R_DESTRUCTION}
-                sourceField='reference'
-                key={'destruction'}
-              />,
               <DateField source='destructionDate' key={'destructionDate'} />,
-              <SourceField
-                link={false}
-                source='dispatchJob'
-                reference={constants.R_DISPATCH}
-                sourceField='reference'
-                label='Dispatch'
-                key={'dispatchJob'}
-              />,
-              <DateField source='dispatchedDate' key={'dispatchJob'} />,
+              <DateField source='dispatchedDate' key={'dispatchDate'} />,
               ...CommonEndFields
             ]
           : CommonEndFields}
