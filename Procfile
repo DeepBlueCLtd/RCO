@@ -1,1 +1,1 @@
-web: yarn dev:mock --host 0.0.0.0 --base ./ --port 5173
+web: yarn dev:mock --host 0.0.0.0 --base ./
