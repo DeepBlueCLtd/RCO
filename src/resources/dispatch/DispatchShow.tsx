@@ -219,7 +219,7 @@ export default function DispatchShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId,
-      subjectId: Number(id) ?? null,
+      subjectId: id ? Number(id) : null,
       subjectResource: constants.R_DISPATCH
     }
     await audit(audiData)
@@ -232,7 +232,7 @@ export default function DispatchShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DISPATCH,
       dataId: parseInt(id as string),
-      subjectId: Number(id) ?? null,
+      subjectId: id ? Number(id) : null,
       subjectResource: constants.R_ITEMS
     }
     await audit(audiData)

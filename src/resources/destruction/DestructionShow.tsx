@@ -162,7 +162,7 @@ export default function DestructionShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id,
-      subjectId: Number(id) ?? null,
+      subjectId: id ? Number(id) : null,
       subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
@@ -175,7 +175,7 @@ export default function DestructionShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DESTRUCTION,
       dataId: parseInt(id as string),
-      subjectId: Number(id) ?? null,
+      subjectId: id ? Number(id) : null,
       subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
