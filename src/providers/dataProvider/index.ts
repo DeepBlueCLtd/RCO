@@ -264,7 +264,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
     return await axios.put(url, { fields: editData }).then((response) => {
       return {
-        data: { id: response.data.data.lastInsertRowid, ...params.data }
+        data: { id: params.id, ...params.data }
       }
     })
   },
