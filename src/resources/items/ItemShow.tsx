@@ -248,7 +248,7 @@ interface StatusTextProps {
 interface ActionLinkProps {
   actionText: string
   linkPathname: string
-  text: string
+  text: string | null
 }
 
 const ActionLink = ({

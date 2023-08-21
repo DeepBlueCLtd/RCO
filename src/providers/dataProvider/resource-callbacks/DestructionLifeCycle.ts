@@ -19,7 +19,9 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
         resource: R_DESTRUCTION,
         dataId: id,
         subjectId: null,
-        subjectResource: null
+        subjectResource: null,
+        activityDetail: null,
+        securityRelated: null
       })
       return record
     } catch (error) {

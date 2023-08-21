@@ -93,7 +93,8 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
       const itemAudit: AuditData = {
         ...auditData,
         resource: constants.R_ITEMS,
-        dataId: itemId
+        dataId: itemId,
+        activityDetail: null
       }
       const audits: AuditData[] = []
       // log removal first

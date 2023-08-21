@@ -66,7 +66,14 @@ export const generateItemForTesting = ({
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
     consecSheets: 'consec-sheets-1',
-    musterRemarks: 'muster-remarks-1'
+    musterRemarks: 'muster-remarks-1',
+    loanedDate: null,
+    loanedTo: null,
+    destruction: null,
+    destructionDate: null,
+    dispatchedDate: null,
+    dispatchJob: null,
+    protectionString: null
   }
 }
 
@@ -117,7 +124,10 @@ export const generateUserForTesting = ({
   name,
   adminRights,
   active
-}: UserProps = {}): Omit<User, 'id' | 'createdAt' | 'createdBy'> => ({
+}: UserProps = {}): Omit<
+  User,
+  'id' | 'createdAt' | 'createdBy' | 'departedDate'
+> => ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
   password: 'abcd',

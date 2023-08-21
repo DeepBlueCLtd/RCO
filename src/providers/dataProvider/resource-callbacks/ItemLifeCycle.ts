@@ -69,7 +69,9 @@ const lifeCycles = (
         resource: R_ITEMS,
         dataId: id,
         subjectId: null,
-        subjectResource: null
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       emitter.emit(SAVE_EVENT, itemNumber)
       return { ...record, data: withItemRef.data }
