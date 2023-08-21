@@ -49,7 +49,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
     setLoading(true)
     dataProvider
       .getList<Destruction>(constants.R_DESTRUCTION, {
-        filter: { finalisedAt: undefined },
+        filter: { finalisedAt: null },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,
