@@ -94,10 +94,17 @@ export default function DestructionForm(props: Props): React.ReactElement {
     const { remarks } = data
     try {
       const reference = getReference(lastId, year)
+      const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
+        reference,
+        remarks,
+        finalisedAt: null,
+        finalisedBy: null,
+        reportPrintedAt: null
+      }
       await create(
         constants.R_DESTRUCTION,
         {
-          data: { reference, remarks }
+          data: newD
         },
         {
           onSuccess: () => {
