@@ -43,6 +43,7 @@ jobs:
         run: npm run build
         env:
           VITE_KEY: 68adsqf-poac-154s-adqkc-05s8q2c5a65s
+          MOCK: true
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
