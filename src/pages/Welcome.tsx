@@ -40,9 +40,7 @@ export default function Welcome(): React.ReactElement {
     sort: { field: 'id', order: 'ASC' }
   })
   const usersHaveLoan: Array<User['id']> = []
-  data?.forEach((d) =>
-    d.loanedTo !== undefined ? usersHaveLoan.push(d.loanedTo) : null
-  )
+  data?.forEach((d) => (d.loanedTo ? usersHaveLoan.push(d.loanedTo) : null))
   const uniqueUsers = [...new Set(usersHaveLoan)]
   const configData = useConfigData()
   const redirect = useRedirect()

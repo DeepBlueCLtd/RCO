@@ -139,7 +139,6 @@ export default function ProtectionRefInput<
     const selectedData = multiple
       ? selectedItems?.map((item: RefTable) => item[source]) ?? []
       : selectedItems?.[0]?.[source]
-    console.log({ selectedData })
     setData(selectedData)
     setPrevValue(selectedData)
     setProtectionValues(selectedData)

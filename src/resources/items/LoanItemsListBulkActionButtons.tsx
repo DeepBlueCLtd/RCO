@@ -141,7 +141,7 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
     const selectedItems: number[] = []
     const userNames = items.map((item) => {
       selectedItems.push(item.id)
-      if (item.loanedTo !== undefined) {
+      if (item.loanedTo) {
         const user = usersById[item.loanedTo]
         return user?.name
       }

@@ -22,7 +22,9 @@ export default (
       resource,
       dataId: record.data.id,
       subjectId: null,
-      subjectResource: null
+      subjectResource: null,
+      activityDetail: null,
+      securityRelated: null
     })
     return record
   },
