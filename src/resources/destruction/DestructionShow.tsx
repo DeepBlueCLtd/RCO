@@ -160,13 +160,14 @@ export default function DestructionShow(): React.ReactElement {
   const DestroyAudits = async (item: Item): Promise<void> => {
     const audiData: AuditData = {
       activityType: AuditType.DESTROY,
-      activityDetail: `Destroyed in ${record.name}`,
+      activityDetail: 'Destroyed',
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id,
       subjectId: record.id,
-      subjectResource: constants.R_ITEMS
+      subjectResource: constants.R_DESTRUCTION
     }
+    console.log('audit item', audiData)
     await audit(audiData)
   }
 
@@ -189,17 +190,7 @@ export default function DestructionShow(): React.ReactElement {
         destructionDate: nowDate()
       }
     })
-    itemsAdded
-      .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
-        return (
-          ids.includes(id) &&
-          typeof loanedTo === 'undefined' &&
-          loanedTo !== null &&
-          typeof loanedDate === 'undefined' &&
-          typeof destructionDate === 'undefined'
-        )
-      })
-      .forEach(DestroyAudits as any)
+    itemsAdded.forEach(DestroyAudits as any)
     notify('Element destroyed', { type: 'success' })
   }
 
