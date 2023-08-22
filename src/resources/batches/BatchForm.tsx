@@ -68,11 +68,20 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
 
 const BatchForm = (
   props: FormProps & { isShow?: boolean }
-): React.ReactElement => {
+): React.ReactElement | null => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
+  const { data: enduring } = useGetList(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 3 },
+    filter: { enduring: true }
+  })
+
+  const { data: projects } = useGetList(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 10 },
+    sort: { field: 'id', order: 'DESC' }
+  })
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -90,6 +99,12 @@ const BatchForm = (
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
+  if (enduring === undefined || projects === undefined) return null
+
+  const choices = [...enduring, ...projects].map((d) => ({
+    name: d.name,
+    id: d.id
+  }))
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
   }
@@ -111,18 +126,15 @@ const BatchForm = (
             reference={constants.R_PLATFORMS}>
             <AutocompleteInput optionText='name' sx={sx} disabled={isShow} />
           </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
+          <AutocompleteInput
             source='project'
-            reference={constants.R_PROJECTS}>
-            <AutocompleteInput
-              label={configData?.projectName}
-              optionText='name'
-              sx={sx}
-              defaultValue={projectId !== undefined ? projectId : null}
-              disabled={isShow}
-            />
-          </ReferenceInput>
+            label={configData?.projectName}
+            optionText='name'
+            choices={choices}
+            sx={sx}
+            defaultValue={projectId !== undefined ? projectId : null}
+            disabled={isShow}
+          />
         </FlexBox>
         <FlexBox marginBottom='20px' alignItems='center'>
           <DatePicker
