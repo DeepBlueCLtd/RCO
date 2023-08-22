@@ -16,7 +16,8 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField
+  TextField,
+  FunctionField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -44,9 +45,8 @@ import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
-import LocationField from './LocationField'
-import ItemListData, { type DataType } from './ItemListData'
 import { useLocation } from 'react-router-dom'
+import useItemList from '../../hooks/useItemList'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -522,9 +522,8 @@ export default function ItemList(
   const { resource } = options ?? {}
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
-  const sKey = searchParams.get('filter')
-    ? 'filtered-item-list'
-    : 'items-items-list'
+  const filterInSearch = searchParams.get('filter')
+  const sKey = filterInSearch ? 'filtered-item-list' : 'items-items-list'
   const {
     datagridConfigurableProps,
     children,
@@ -543,19 +542,11 @@ export default function ItemList(
       }
     }
   }
-  const [data, setData] = useState<DataType>()
-  const CommonEndFields = [
-    <TextField source='remarks' key={'remarks'} />,
-    <TextField source='musterRemarks' key={'musterRemarks'} />,
-    <TextField
-      source='protectionString'
-      label='Protection'
-      key={'protectionString'}
-    />
-  ]
   return (
     <List
-      disableSyncWithLocation
+      {...(filterInSearch
+        ? { disableSyncWithLocation: false }
+        : { disableSyncWithLocation: true })}
       sx={sx}
       hasCreate={false}
       actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
@@ -573,7 +564,44 @@ export default function ItemList(
       }
       storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
-      <ItemListData setData={setData} />
+      <ItemListData
+        bulkActionButtons={bulkActionButtons}
+        preferenceKey={preferenceKey}
+        resource={resource}
+        storeKey={storeKey}
+      />
+    </List>
+  )
+}
+
+interface Props {
+  preferenceKey: string
+  bulkActionButtons:
+    | false
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | undefined
+  resource: string
+  storeKey: string
+}
+
+const ItemListData = ({
+  preferenceKey,
+  bulkActionButtons,
+  resource,
+  storeKey
+}: Props): React.ReactElement => {
+  const { users, vaultLocations } = useItemList()
+  const CommonEndFields = [
+    <TextField source='remarks' key={'remarks'} />,
+    <TextField source='musterRemarks' key={'musterRemarks'} />,
+    <TextField
+      source='protectionString'
+      label='Protection'
+      key={'protectionString'}
+    />
+  ]
+  return (
+    <>
       <ResetDateFilter source='createdAt' />
       <ResetDateRangeFilter
         source='date_range'
@@ -591,7 +619,21 @@ export default function ItemList(
         <TextField source='itemNumber' label='Reference' />
         <TextField source='id' />
         <TextField source='createdAt' label='Created' />
-        <LocationField label='Location' {...data} />
+        <FunctionField
+          label='Location'
+          render={(record: Item) => {
+            if (record?.loanedTo) {
+              return users?.[record.loanedTo]?.name
+            }
+            if (record?.destructionDate) {
+              return 'DESTROYED'
+            }
+            if (record?.dispatchedDate) {
+              return 'SENT'
+            }
+            return vaultLocations?.[record?.vaultLocation]?.name
+          }}
+        />
         <SourceField
           link={false}
           source='mediaType'
@@ -647,6 +689,6 @@ export default function ItemList(
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
       </DatagridConfigurableWithShow>
-    </List>
+    </>
   )
 }
