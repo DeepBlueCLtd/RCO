@@ -87,7 +87,7 @@ interface User extends ResourceWithCreation {
   active: boolean
   role: UserRole
   staffNumber: string
-  departedDate?: string
+  departedDate: string | null
 }
 
 interface Audit extends RCOResource {
@@ -104,9 +104,9 @@ interface Audit extends RCOResource {
   // what kind of change was made (human-friendly)
   label: string
   // summary of change
-  activityDetail?: string
+  activityDetail: string | null
   // should this audit entry be included in security review?
-  securityRelated?: boolean
+  securityRelated: boolean | null
   // the "other" resource that this event relates to
   subjectId: string | number | null
   // the resource type of the subject
@@ -156,8 +156,8 @@ interface Batch extends ResourceWithCreation {
   batchNumber: string
   yearOfReceipt: string
   department: Department['id']
-  project?: Project['id']
-  platform?: Platform['id']
+  project: Project['id'] | null
+  platform: Platform['id'] | null
   organisation: Organisation['id']
   remarks: string
   receiptNotes: string
@@ -170,7 +170,7 @@ interface Item extends ResourceWithCreation {
   batch: Batch['id']
   itemNumber: string
   // originator reference number (consec) or number of sheets (optional)
-  consecSheets?: string
+  consecSheets: string | null
   endDate: string | null
   vaultLocation: VaultLocation['id']
   remarks: string
@@ -182,15 +182,15 @@ interface Item extends ResourceWithCreation {
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
-  loanedTo?: User['id']
-  loanedDate?: string
+  loanedTo: User['id'] | null
+  loanedDate: string | null
   // dispatch details
-  dispatchJob?: Dispatch['id']
-  dispatchedDate?: string
+  dispatchJob: Dispatch['id'] | null
+  dispatchedDate: string | null
   // destruction details
-  destruction?: Destruction['id']
-  destructionDate?: string
-  protectionString?: string
+  destruction: Destruction['id'] | null
+  destructionDate: string | null
+  protectionString: string | null
 }
 
 interface RCOStore {
@@ -230,10 +230,10 @@ interface Destruction {
   name: string
   createdAt: string
   createdBy: User['id']
-  finalisedAt?: string
-  finalisedBy?: User['id']
+  finalisedAt: string | null
+  finalisedBy: User['id'] | null
   remarks: string
-  reportPrintedAt?: string
+  reportPrintedAt: string | null
 }
 
 interface ActivityType {
@@ -255,12 +255,12 @@ interface Dispatch {
   createdAt: string
   createdBy: User['id']
   remarks: string
-  dispatchedAt?: string
+  dispatchedAt: string | null
   toName: string
   toAddress: Address['id']
-  receiptReceived?: string
-  lastHastenerSent?: string
-  reportPrintedAt?: string
+  receiptReceived: string | null
+  lastHastenerSent: string | null
+  reportPrintedAt: string | null
 }
 
 /** per instance config data. It is just intended to be one row deep */

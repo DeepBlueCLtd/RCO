@@ -81,7 +81,7 @@ export default function ProtectionRefInput<
 
   const { data: selectedItems = [] } = useGetList<RefTable>(refTable, {
     filter: {
-      [resource]: record?.id
+      [resource]: process.env.MOCK ? record?.id : record?.id ?? null
     }
   })
 

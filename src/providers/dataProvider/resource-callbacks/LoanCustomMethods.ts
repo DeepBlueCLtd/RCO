@@ -32,7 +32,8 @@ export const customMethods = (
           resource: R_ITEMS,
           dataId: item,
           subjectId: id,
-          subjectResource: R_USERS
+          subjectResource: R_USERS,
+          securityRelated: null
         })
       })
       await Promise.all(promisees)
@@ -54,7 +55,7 @@ export const customMethods = (
       const promisees = itemsData.map(async (item) => {
         const { loanedTo, id } = item
 
-        if (loanedTo !== undefined) {
+        if (loanedTo) {
           const { name } = userById[loanedTo]
           await audit({
             dataId: id,
@@ -62,7 +63,8 @@ export const customMethods = (
             activityDetail: `Item returned from ${name}`,
             resource: R_ITEMS,
             subjectId: loanedTo,
-            subjectResource: R_USERS
+            subjectResource: R_USERS,
+            securityRelated: null
           })
         }
       })

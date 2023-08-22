@@ -169,8 +169,8 @@ export const generateBatch = (
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department,
-      project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
-      platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
+      project: isNull() ? null : generateRandomNumber(1, projects - 1),
+      platform: isNull() ? null : generateRandomNumber(1, platforms - 1),
       vault: Math.random() >= 0.5 ? 'LEGACY' : 'VAULT',
       organisation,
       remarks: `remarks-batch-${i}`,
@@ -219,7 +219,14 @@ export const generateItems = (
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       consecSheets: `consec-sheets-${i + 1}`,
-      createdBy: user
+      createdBy: user,
+      loanedDate: null,
+      loanedTo: null,
+      dispatchedDate: null,
+      dispatchJob: null,
+      destruction: null,
+      destructionDate: null,
+      protectionString: null
       // project: batch.project,
       // platform: batch.platform
     }
@@ -250,7 +257,8 @@ export const generateUsers = (length: number): User[] => {
       staffNumber: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
-      createdAt: nowDate()
+      createdAt: nowDate(),
+      departedDate: null
     }
     users.push(obj)
   }

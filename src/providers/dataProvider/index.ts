@@ -262,9 +262,9 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     // remove the id property
     const { id, ...editData } = params.data
 
-    return await axios.put(url, { fields: editData }).then((response) => {
+    return await axios.put(url, { fields: editData }).then(() => {
       return {
-        data: { id: response.data.data.lastInsertRowid, ...params.data }
+        data: { id: params.id, ...params.data }
       }
     })
   },

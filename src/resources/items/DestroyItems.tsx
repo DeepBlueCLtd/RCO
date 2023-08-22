@@ -47,9 +47,12 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   useEffect(() => {
     setLoading(true)
+    // note: we need to provide `undefined` for mock backend, and `null`
+    // for SQLite
+    const nullFilter = process.env.MOCK ? undefined : null
     dataProvider
       .getList<Destruction>(constants.R_DESTRUCTION, {
-        filter: { finalisedAt: undefined },
+        filter: { finalisedAt: nullFilter },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,

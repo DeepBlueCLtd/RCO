@@ -61,7 +61,9 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
             resource: constants.R_USERS,
             dataId: user.id,
             subjectId: null,
-            subjectResource: null
+            subjectResource: null,
+            securityRelated: null,
+            activityDetail: null
           })
           return await Promise.resolve(data)
         } else {
@@ -78,7 +80,9 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         resource: constants.R_USERS,
         dataId: user?.id ?? null,
         subjectId: null,
-        subjectResource: null
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       removeToken()
       await Promise.resolve()
