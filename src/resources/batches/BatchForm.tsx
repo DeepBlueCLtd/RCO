@@ -73,16 +73,19 @@ const BatchForm = (
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
-  const { data: enduringProjects } = useGetList(constants.R_PROJECTS, {
+  const { data: enduringProjects } = useGetList<Project>(constants.R_PROJECTS, {
     pagination: { page: 1, perPage: 10 },
     filter: { enduring: true }
   })
 
-  const { data: nonEnduringProjects } = useGetList(constants.R_PROJECTS, {
-    pagination: { page: 1, perPage: 30 },
-    filter: { enduring: false },
-    sort: { field: 'id', order: 'DESC' }
-  })
+  const { data: nonEnduringProjects } = useGetList<Project>(
+    constants.R_PROJECTS,
+    {
+      pagination: { page: 1, perPage: 40 },
+      filter: { enduring: false },
+      sort: { field: 'id', order: 'DESC' }
+    }
+  )
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -103,15 +106,11 @@ const BatchForm = (
   if (enduringProjects === undefined || nonEnduringProjects === undefined)
     return null
 
-  const spacerTxt = '======='
-  const spacer = { name: spacerTxt, id: spacerTxt }
-
-  const choices = [...enduringProjects, spacer, ...nonEnduringProjects].map(
-    (d) => ({
-      name: d.name,
-      id: d.id
-    })
-  )
+  const choices = [...enduringProjects, ...nonEnduringProjects].map((d) => ({
+    name: d.name,
+    id: d.id,
+    enduring: d.enduring
+  }))
 
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
@@ -140,7 +139,7 @@ const BatchForm = (
             optionText='name'
             choices={choices}
             sx={sx}
-            getOptionDisabled={(option) => option.id === spacerTxt}
+            groupBy={(option) => (option.enduring ? 'Enduring' : 'Regular')}
             defaultValue={projectId !== undefined ? projectId : null}
             disabled={isShow}
           />
