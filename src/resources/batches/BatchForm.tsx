@@ -73,13 +73,14 @@ const BatchForm = (
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
-  const { data: enduring } = useGetList(constants.R_PROJECTS, {
-    pagination: { page: 1, perPage: 3 },
+  const { data: enduringProjects } = useGetList(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 10 },
     filter: { enduring: true }
   })
 
-  const { data: projects } = useGetList(constants.R_PROJECTS, {
-    pagination: { page: 1, perPage: 10 },
+  const { data: nonEnduringProjects } = useGetList(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 30 },
+    filter: { enduring: false },
     sort: { field: 'id', order: 'DESC' }
   })
 
@@ -99,12 +100,19 @@ const BatchForm = (
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
-  if (enduring === undefined || projects === undefined) return null
+  if (enduringProjects === undefined || nonEnduringProjects === undefined)
+    return null
 
-  const choices = [...enduring, ...projects].map((d) => ({
-    name: d.name,
-    id: d.id
-  }))
+  const spacerTxt = '======='
+  const spacer = { name: spacerTxt, id: spacerTxt }
+
+  const choices = [...enduringProjects, spacer, ...nonEnduringProjects].map(
+    (d) => ({
+      name: d.name,
+      id: d.id
+    })
+  )
+
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
   }
@@ -132,6 +140,7 @@ const BatchForm = (
             optionText='name'
             choices={choices}
             sx={sx}
+            getOptionDisabled={(option) => option.id === spacerTxt}
             defaultValue={projectId !== undefined ? projectId : null}
             disabled={isShow}
           />
