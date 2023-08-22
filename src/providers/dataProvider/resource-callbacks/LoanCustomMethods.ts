@@ -20,7 +20,7 @@ export const customMethods = (
       })
 
       const {
-        data: { name, id }
+        data: { id }
       } = await provider.getOne<User>(R_USERS, {
         id: holder
       })
@@ -28,7 +28,7 @@ export const customMethods = (
       const promisees = items.map(async (item) => {
         await audit({
           activityType: AuditType.LOAN,
-          activityDetail: `Item loaned to ${name}.`,
+          activityDetail: 'Item loaned',
           resource: R_ITEMS,
           dataId: item,
           subjectId: id,
@@ -56,11 +56,10 @@ export const customMethods = (
         const { loanedTo, id } = item
 
         if (loanedTo) {
-          const { name } = userById[loanedTo]
           await audit({
             dataId: id,
             activityType: AuditType.RETURN,
-            activityDetail: `Item returned from ${name}`,
+            activityDetail: 'Item returned',
             resource: R_ITEMS,
             subjectId: loanedTo,
             subjectResource: R_USERS,
