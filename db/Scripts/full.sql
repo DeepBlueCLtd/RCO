@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS batch (
 CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
 
-       reference TEXT NOT NULL,
+       name TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS destruction(
 CREATE TABLE IF NOT EXISTS dispatch(
        id INTEGER PRIMARY KEY,
 
-       reference TEXT,
+       name TEXT,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
