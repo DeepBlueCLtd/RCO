@@ -26,6 +26,9 @@ export const customMethods = (
       })
 
       const promisees = items.map(async (item) => {
+        // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
+        // TODO: so, on the user page history we will see a history of what they have loaned
+
         await audit({
           activityType: AuditType.LOAN,
           activityDetail: 'Item loaned',
@@ -56,6 +59,7 @@ export const customMethods = (
         const { loanedTo, id } = item
 
         if (loanedTo) {
+          // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
           await audit({
             dataId: id,
             activityType: AuditType.RETURN,

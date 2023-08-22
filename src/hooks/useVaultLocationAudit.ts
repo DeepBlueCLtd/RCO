@@ -95,10 +95,14 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         resource: constants.R_ITEMS,
         dataId: itemId,
         activityDetail: null
+        // TODO: TAHA - we should includeh the VAULT LOCATION id and R_VAULT_LOCATIONS for this.
       }
       const audits: AuditData[] = []
       // log removal first
       if (!id) {
+        // TODO: TAHA - for `itemAudit` the subject should be the OLD vault lcoation, and for
+        // TODO: `auditData` the subject should be the item
+
         audits.push(
           ...[
             {
@@ -117,6 +121,8 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         )
       }
       // now log putting in new locaiton
+      // TODO: TAHA - for `itemAudit` the subject should be the NEW vault lcoation, and for
+      // TODO: `auditData` the subject should be the item
       audits.push(
         ...[
           {

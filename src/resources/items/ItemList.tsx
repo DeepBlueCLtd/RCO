@@ -303,9 +303,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityType: AuditType.EDIT,
         activityDetail: 'Item removed',
         securityRelated: false,
+        // TODO: TAHA - the next line should be the id of the dispatch (not the item)
         dataId: itemId,
         resource: constants.R_DISPATCH,
-        // TODO: put the item number in for subject
         subjectId: itemId,
         subjectResource: constants.R_ITEMS
       }
@@ -314,6 +314,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         ...auditData,
         activityDetail: 'Dispatch Item removed',
         resource: constants.R_ITEMS,
+        // TODO: TAHA - the subject for this is the dispatch id, and R_DISPATCH
         subjectId: null,
         subjectResource: null
       })
