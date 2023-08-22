@@ -147,7 +147,7 @@ const loadDefaultData = async (
   const project: Project[] = []
   project.push(
     ...generateEnduringProjects(enduringProjectNames, user),
-    ...generateProject(isHigh === true ? 60 : 10, user, 3)
+    ...generateProject(isHigh === true ? 100 : 60, user, 3)
   )
 
   const vault = generateVault()
