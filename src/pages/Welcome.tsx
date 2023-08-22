@@ -34,10 +34,15 @@ const useStyles = makeStyles({
 })
 
 export default function Welcome(): React.ReactElement {
+  const filter = process.env.MOCK
+    ? { loanedTo_neq: undefined }
+    : { loanedTo_neq: null }
+
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
   const { data } = useGetList<Item>(constants.R_ITEMS, {
-    sort: { field: 'id', order: 'ASC' }
+    sort: { field: 'id', order: 'ASC' },
+    filter
   })
   const usersHaveLoan: Array<User['id']> = []
   data?.forEach((d) => (d.loanedTo ? usersHaveLoan.push(d.loanedTo) : null))
