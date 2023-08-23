@@ -22,7 +22,7 @@ export default function ReferenceDataList({
   name
 }: PropType): React.ReactElement {
   const cName: string = name
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>()
   const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const { hasAccess } = useCanAccess()

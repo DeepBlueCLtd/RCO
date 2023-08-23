@@ -150,19 +150,19 @@ export default function AuditList({
           }
         }}>
         <SourceField source='user' reference={constants.R_USERS} link='show' />
-        <DateField source='dateTime' label='Date Time' showTime />;
-        <TextField source='label' label='Activity Type' />
-        <TextField
+        <DateField<Audit> source='dateTime' label='Date Time' showTime />;
+        <TextField<Audit> source='label' label='Activity Type' />
+        <TextField<Audit>
           source='activityDetail'
           label='Activity Details'
           sx={{ wordBreak: 'break-all', display: 'inline-block' }}
         />
-        <TextField source='securityRelated' label='Security Related' />
-        <TextField source='resource' label='Resource' />
+        <TextField<Audit> source='securityRelated' label='Security Related' />
+        <TextField<Audit> source='resource' label='Resource' />
         {!omit.includes('dataId') && (
-          <FunctionField
+          <FunctionField<Audit>
             label='Name'
-            render={(record: Audit) => {
+            render={(record) => {
               return (
                 <>
                   {record.resource !== null ? (
@@ -187,9 +187,9 @@ export default function AuditList({
         )}
         {/* Note: the following function is flexible, so it is able to show
         source value for different kinds of resource */}
-        <FunctionField
+        <FunctionField<Audit>
           label='Subject'
-          render={(record: Audit) => {
+          render={(record) => {
             return (
               <SourceField
                 source='subjectId'

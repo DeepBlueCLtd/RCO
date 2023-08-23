@@ -32,9 +32,9 @@ const Actions = (): React.ReactElement => {
   return (
     <TopToolbar>
       <Show sx={{ marginRight: 'auto' }} actions={false}>
-        <FunctionField
+        <FunctionField<Batch>
           source='batchNumber'
-          render={(record: Batch) => record?.batchNumber}
+          render={(record) => record?.batchNumber}
           sx={(theme: Theme) => ({
             width: '150px',
             fontWeight: 'bold',

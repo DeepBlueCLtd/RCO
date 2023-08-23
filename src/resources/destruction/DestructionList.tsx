@@ -29,14 +29,14 @@ export default function DestructionList(): React.ReactElement {
   return (
     <List>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='name' label='Reference' />
-        <DateField source='createdAt' />
+        <TextField<Destruction> source='name' label='Reference' />
+        <DateField<Destruction> source='createdAt' />
         <SourceField source='createdBy' reference={constants.R_USERS} />
-        <DateField source='finalisedAt' />
+        <DateField<Destruction> source='finalisedAt' />
         <SourceField source='finalisedBy' reference={constants.R_USERS} />
-        <FunctionField
+        <FunctionField<Destruction>
           label='History'
-          render={(record: Destruction) => {
+          render={(record) => {
             return (
               <HistoryButton
                 onClick={(e) => {
@@ -48,7 +48,7 @@ export default function DestructionList(): React.ReactElement {
             )
           }}
         />
-        <TextField source='remarks' />
+        <TextField<Destruction> source='remarks' />
       </Datagrid>
       <ResourceHistoryModal
         filter={filter}

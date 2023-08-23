@@ -305,7 +305,7 @@ const loadDefaultData = async (
         }
       } else
         for (const val of value) {
-          await dataprovider.create<typeof value>(map[key], {
+          await dataprovider.create<(typeof value)[0]>(map[key], {
             data: val
           })
         }

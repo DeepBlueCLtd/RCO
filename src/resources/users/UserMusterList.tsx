@@ -58,7 +58,9 @@ const Title = (): React.ReactElement => {
   )
 }
 
-export default function UserMusterList(props: Props): React.ReactElement {
+export default function UserMusterList<T extends User>(
+  props: Props
+): React.ReactElement {
   const { open, onClose } = props
   const { selectedIds } = useListContext()
   const userIds: number[] = selectedIds
@@ -71,7 +73,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
           return (
             <React.Fragment key={userId}>
               <Box padding={'20px'} key={index}>
-                <Show
+                <Show<T>
                   component={'div'}
                   id={userId}
                   resource={constants.R_USERS}
@@ -103,7 +105,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   headStyle={{
                     fontSize: '12px'
                   }}>
-                  <TextField
+                  <TextField<Item>
                     {...style}
                     source='itemNumber'
                     label='Item Number'
@@ -124,12 +126,12 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     {...style}
                     label={`${configData?.projectName} & Platform`}
                   />
-                  <DateField
+                  <DateField<Item>
                     {...style}
                     source='loanedDate'
                     label='Loaned Date'
                   />
-                  <TextField
+                  <TextField<Item>
                     {...style}
                     source='consecSheets'
                     label='Consec/Sheets'

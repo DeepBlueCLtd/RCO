@@ -128,13 +128,13 @@ const Details = (): React.ReactElement => {
       </legend>
       <FlexBox sx={{ padding: '10px 0' }}>
         <ValueField label='Name' sx={sx}>
-          <TextField variant='h6' source='name' />
+          <TextField<Project> variant='h6' source='name' />
         </ValueField>
         <ValueField label='Start' sx={sx}>
-          <DateField source='startDate' />
+          <DateField<Project> source='startDate' />
         </ValueField>
         <ValueField label='End' sx={sx}>
-          <DateField source='endDate' />
+          <DateField<Project> source='endDate' />
         </ValueField>
       </FlexBox>
     </Box>
@@ -159,7 +159,7 @@ const Remarks = (): React.ReactElement => {
         </Typography>
       </legend>
       <FlexBox sx={sx}>
-        <TextField source='remarks' />
+        <TextField<Project> source='remarks' />
       </FlexBox>
     </Box>
   )
@@ -185,7 +185,7 @@ const Created = (): React.ReactElement => {
       </legend>
       <FlexBox sx={{ padding: '10px 0' }}>
         <ValueField label='Created at' sx={sx}>
-          <DateField source='createdAt' />
+          <DateField<Project> source='createdAt' />
         </ValueField>
         <ValueField label='Created by' sx={sx}>
           <SourceField source='createdBy' reference={constants.R_USERS} />
