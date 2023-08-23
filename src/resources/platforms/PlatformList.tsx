@@ -25,7 +25,7 @@ export default function PlatformList(props: Props): React.ReactElement {
   const cName: string = name
   const basePath: string = `/${cName}`
   const { hasAccess } = useCanAccess()
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const filter = useMemo(

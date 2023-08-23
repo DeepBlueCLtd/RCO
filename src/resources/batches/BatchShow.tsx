@@ -50,7 +50,7 @@ const ItemActions = ({
   const batch: string = id
 
   return (
-    <StyledTopToolbar preferenceKey={preferenceKey}>
+    <StyledTopToolbar>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <CreateButton
           label='ADD ITEM'

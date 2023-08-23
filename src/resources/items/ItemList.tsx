@@ -169,15 +169,15 @@ interface ItemActionsProps {
 }
 
 const ItemActions = (props: ItemActionsProps): React.ReactElement => {
-  const { filter } = props
+  const { filter, preferenceKey } = props
   return (
-    <StyledTopToolbar {...props}>
+    <StyledTopToolbar>
       <ItemAssetReport
         storeKey='items-asset-report'
         filterDefaultValues={filter}
       />
       <FilterButton />
-      <SelectColumnsButton {...props} />
+      <SelectColumnsButton preferenceKey={preferenceKey} />
     </StyledTopToolbar>
   )
 }
