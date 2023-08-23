@@ -29,7 +29,7 @@ const ListActions = ({
 }: SelectColumnsButtonProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   return (
-    <StyledTopToolbar preferenceKey={preferenceKey}>
+    <StyledTopToolbar>
       {hasAccess(constants.R_BATCHES, { write: true }) ? (
         <CreateButton label='ADD NEW BATCH' />
       ) : (
