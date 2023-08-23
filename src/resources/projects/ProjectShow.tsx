@@ -73,7 +73,7 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
           <EditButton />
           <CreateButton
             label='Add new batch'
-            to={`/batch/create?project=${projectId}`}
+            to={`/${constants.R_BATCHES}/create?project=${projectId}`}
           />
         </>
       ) : null}
