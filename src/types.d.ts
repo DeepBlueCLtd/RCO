@@ -124,6 +124,7 @@ interface Project extends ResourceWithCreation {
   remarks: string
   startDate: string
   endDate: string
+  enduring: boolean | null
 }
 
 type Department = StringReferenceItem
