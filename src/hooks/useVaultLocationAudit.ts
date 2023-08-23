@@ -112,8 +112,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
               activityDetail: `Removed from ${
                 vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
               } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`,
-              subjectId:
-                vaultLocations?.[selectedItems[itemId]?.vaultLocation]?.id,
+              subjectId: selectedItems[itemId]?.vaultLocation,
               subjectResource: constants.R_VAULT_LOCATION
             },
             {
