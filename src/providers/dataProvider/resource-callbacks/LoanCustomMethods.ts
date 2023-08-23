@@ -29,7 +29,7 @@ export const customMethods = (
         // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
         // TODO: so, on the user page history we will see a history of what they have loaned
 
-        await audit({
+        const auditLoan = {
           activityType: AuditType.LOAN,
           activityDetail: 'Item loaned',
           resource: R_ITEMS,
@@ -37,6 +37,15 @@ export const customMethods = (
           subjectId: id,
           subjectResource: R_USERS,
           securityRelated: null
+        }
+
+        await audit(auditLoan)
+        await audit({
+          ...auditLoan,
+          resource: R_USERS,
+          subjectId: item,
+          subjectResource: R_ITEMS,
+          dataId: holder
         })
       })
       await Promise.all(promisees)
@@ -60,7 +69,7 @@ export const customMethods = (
 
         if (loanedTo) {
           // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
-          await audit({
+          const loanReturnAudit = {
             dataId: id,
             activityType: AuditType.RETURN,
             activityDetail: 'Item returned',
@@ -68,6 +77,15 @@ export const customMethods = (
             subjectId: loanedTo,
             subjectResource: R_USERS,
             securityRelated: null
+          }
+
+          await audit(loanReturnAudit)
+          await audit({
+            ...loanReturnAudit,
+            dataId: loanedTo,
+            resource: R_USERS,
+            subjectId: id,
+            subjectResource: R_ITEMS
           })
         }
       })

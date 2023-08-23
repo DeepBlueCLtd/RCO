@@ -94,7 +94,9 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         ...auditData,
         resource: constants.R_ITEMS,
         dataId: itemId,
-        activityDetail: null
+        activityDetail: null,
+        subjectId: vaultLocationId,
+        subjectResource: constants.R_VAULT_LOCATION
         // TODO: TAHA - we should includeh the VAULT LOCATION id and R_VAULT_LOCATIONS for this.
       }
       const audits: AuditData[] = []
@@ -109,13 +111,18 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
               ...itemAudit,
               activityDetail: `Removed from ${
                 vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
-              } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`
+              } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`,
+              subjectId:
+                vaultLocations?.[selectedItems[itemId]?.vaultLocation]?.id,
+              subjectResource: constants.R_VAULT_LOCATION
             },
             {
               ...auditData,
               activityDetail: `${itemRef} removed`,
               resource: constants.R_VAULT_LOCATION,
-              dataId: selectedItems[itemId]?.vaultLocation
+              dataId: selectedItems[itemId]?.vaultLocation,
+              subjectResource: constants.R_ITEMS,
+              subjectId: itemId
             }
           ]
         )
@@ -127,13 +134,17 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         ...[
           {
             ...itemAudit,
-            activityDetail: `Moved to ${vaultLocation?.name}`
+            activityDetail: `Moved to ${vaultLocation?.name}`,
+            subjectId: vaultLocation?.id,
+            subjectResource: constants.R_VAULT_LOCATION
           },
           {
             ...auditData,
             activityDetail: `${itemRef} added`,
             resource: constants.R_VAULT_LOCATION,
-            dataId: vaultLocationId
+            dataId: vaultLocationId,
+            subjectId: itemId,
+            subjectResource: constants.R_ITEMS
           }
         ]
       )

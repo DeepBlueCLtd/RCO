@@ -299,12 +299,16 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   const removeFromDispatch = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
+      const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
+        id: itemId
+      })
+
       const auditData = {
         activityType: AuditType.EDIT,
         activityDetail: 'Item removed',
         securityRelated: false,
         // TODO: TAHA - the next line should be the id of the dispatch (not the item)
-        dataId: itemId,
+        dataId: data.dispatchJob,
         resource: constants.R_DISPATCH,
         subjectId: itemId,
         subjectResource: constants.R_ITEMS
@@ -315,8 +319,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityDetail: 'Dispatch Item removed',
         resource: constants.R_ITEMS,
         // TODO: TAHA - the subject for this is the dispatch id, and R_DISPATCH
-        subjectId: null,
-        subjectResource: null
+        subjectId: data.dispatchJob,
+        subjectResource: constants.R_DISPATCH
       })
     })
 
@@ -332,6 +336,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   const returnDispatchedItems = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
+      const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
+        id: itemId
+      })
       const auditData = {
         activityType: AuditType.EDIT,
         activityDetail: 'Item returned',
@@ -339,8 +346,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dataId: itemId,
         resource: constants.R_DISPATCH,
         // TODO: include the item as subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: itemId,
+        subjectResource: constants.R_ITEMS
       }
       await audit(auditData)
       await audit({
@@ -349,8 +356,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS,
         // TODO: include the dispatch as subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: data.dispatchJob,
+        subjectResource: constants.R_DISPATCH
       })
     })
 
