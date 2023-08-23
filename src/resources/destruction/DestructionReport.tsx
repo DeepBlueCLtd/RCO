@@ -248,7 +248,7 @@ const TablesData = (): React.ReactElement => {
           margin: '20px 0'
         }}>
         It is certified that the {total} above mentioned item(s) of{' '}
-        {record.reference} has been destroyed in the presence of:-
+        {record.name} has been destroyed in the presence of:-
       </Typography>
       <SignatureForms />
     </Box>
@@ -273,7 +273,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>
           <Typography variant='h5' textAlign='center' margin='10px'>
-            <TextField source='reference' />
+            <TextField source='name' />
           </Typography>
           <Typography variant='h6' textAlign='center' margin='10px'>
             CERTIFICATE OF DESTRUCTION OF DOCUMENTS

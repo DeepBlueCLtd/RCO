@@ -69,7 +69,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
       <>
         {userIds.map((userId, index) => {
           return (
-            <>
+            <React.Fragment key={userId}>
               <Box padding={'20px'} key={index}>
                 <Show
                   component={'div'}
@@ -140,7 +140,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
               {selectedIds.length !== index + 1 && (
                 <div className='pagebreak' />
               )}
-            </>
+            </React.Fragment>
           )
         })}
       </>

@@ -20,20 +20,32 @@ export const customMethods = (
       })
 
       const {
-        data: { name, id }
+        data: { id }
       } = await provider.getOne<User>(R_USERS, {
         id: holder
       })
 
       const promisees = items.map(async (item) => {
-        await audit({
+        // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
+        // TODO: so, on the user page history we will see a history of what they have loaned
+
+        const auditLoan = {
           activityType: AuditType.LOAN,
-          activityDetail: `Item loaned to ${name}.`,
+          activityDetail: 'Item loaned',
           resource: R_ITEMS,
           dataId: item,
           subjectId: id,
           subjectResource: R_USERS,
           securityRelated: null
+        }
+
+        await audit(auditLoan)
+        await audit({
+          ...auditLoan,
+          resource: R_USERS,
+          subjectId: item,
+          subjectResource: R_ITEMS,
+          dataId: holder
         })
       })
       await Promise.all(promisees)
@@ -56,15 +68,24 @@ export const customMethods = (
         const { loanedTo, id } = item
 
         if (loanedTo) {
-          const { name } = userById[loanedTo]
-          await audit({
+          // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
+          const loanReturnAudit = {
             dataId: id,
             activityType: AuditType.RETURN,
-            activityDetail: `Item returned from ${name}`,
+            activityDetail: 'Item returned',
             resource: R_ITEMS,
             subjectId: loanedTo,
             subjectResource: R_USERS,
             securityRelated: null
+          }
+
+          await audit(loanReturnAudit)
+          await audit({
+            ...loanReturnAudit,
+            dataId: loanedTo,
+            resource: R_USERS,
+            subjectId: id,
+            subjectResource: R_ITEMS
           })
         }
       })

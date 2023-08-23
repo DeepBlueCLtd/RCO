@@ -12,7 +12,7 @@ import { useMemo, useState } from 'react'
 import HistoryButton from '../../components/HistoryButton'
 
 export default function DestructionList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const [record, setRecord] = useState<Destruction>()
 
   const filter = useMemo(
@@ -29,7 +29,7 @@ export default function DestructionList(): React.ReactElement {
   return (
     <List>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='reference' />
+        <TextField source='name' label='Reference' />
         <DateField source='createdAt' />
         <SourceField source='createdBy' reference={constants.R_USERS} />
         <DateField source='finalisedAt' />

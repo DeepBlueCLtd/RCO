@@ -228,7 +228,7 @@ interface RCOStore {
 
 interface Destruction {
   readonly id: number
-  reference: string
+  name: string
   createdAt: string
   createdBy: User['id']
   finalisedAt: string | null
@@ -252,7 +252,7 @@ interface Address {
 
 interface Dispatch {
   id: number
-  reference: string
+  name: string
   createdAt: string
   createdBy: User['id']
   remarks: string

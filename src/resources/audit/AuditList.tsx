@@ -71,8 +71,8 @@ const filters = [
 const resourcesRefKey: Record<string, string> = {
   [constants.R_BATCHES]: 'batchNumber',
   [constants.R_ITEMS]: 'itemNumber',
-  [constants.R_DESTRUCTION]: 'reference',
-  [constants.R_DISPATCH]: 'reference',
+  [constants.R_DESTRUCTION]: 'name',
+  [constants.R_DISPATCH]: 'name',
   [constants.R_ADDRESSES]: 'id',
   [constants.R_PROJECTS]: 'name',
   [constants.R_PLATFORMS]: 'name',
@@ -185,10 +185,22 @@ export default function AuditList({
             }}
           />
         )}
-        <SourceField
-          source='subjectId'
-          reference={constants.R_USERS}
-          link='show'
+        {/* Note: the following function is flexible, so it is able to show
+        source value for different kinds of resource */}
+        <FunctionField
+          label='Subject'
+          render={(record: Audit) => {
+            return (
+              <SourceField
+                source='subjectId'
+                {...(record.subjectResource === constants.R_ITEMS
+                  ? { sourceField: 'itemNumber' }
+                  : null)}
+                reference={record.subjectResource ?? undefined}
+                link='show'
+              />
+            )
+          }}
         />
       </DatagridConfigurable>
     </List>
