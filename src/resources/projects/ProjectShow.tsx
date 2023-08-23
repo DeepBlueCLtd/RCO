@@ -8,6 +8,7 @@ import {
   Typography
 } from '@mui/material'
 import {
+  BooleanField,
   CreateButton,
   DateField,
   EditButton,
@@ -135,6 +136,9 @@ const Details = (): React.ReactElement => {
         </ValueField>
         <ValueField label='End' sx={sx}>
           <DateField source='endDate' />
+        </ValueField>
+        <ValueField label='Enduring' sx={sx}>
+          <BooleanField source='enduring' looseValue />
         </ValueField>
       </FlexBox>
     </Box>
