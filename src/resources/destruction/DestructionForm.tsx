@@ -54,7 +54,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const notify = useNotify()
   const [update] = useUpdate()
 
-  const getReference = (lastId: number, year: number): string => {
+  const getName = (lastId: number, year: number): string => {
     const id = lastId + 1
     return `DC/V/${id}/${year}`
   }
@@ -93,9 +93,9 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const onSubmit = async (data: any): Promise<void> => {
     const { remarks } = data
     try {
-      const reference = getReference(lastId, year)
+      const name = getName(lastId, year)
       const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
-        reference,
+        name,
         remarks,
         finalisedAt: null,
         finalisedBy: null,
@@ -120,7 +120,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   if (typeof loading !== 'undefined' && loading) return <></>
 
-  const reference = getReference(lastId, year)
+  const name = getName(lastId, year)
 
   const updateJob = async (data: Destruction): Promise<void> => {
     await update(
@@ -157,9 +157,9 @@ export default function DestructionForm(props: Props): React.ReactElement {
       />
       <TextFields
         fullWidth
-        value={reference}
+        value={name}
         label='Reference'
-        disabled={disabledFields.includes('reference')}
+        disabled={disabledFields.includes('name')}
       />
       <TextInput sx={{ width: '100%' }} source='remarks' />
     </SimpleForm>

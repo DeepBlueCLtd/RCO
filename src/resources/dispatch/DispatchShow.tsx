@@ -46,7 +46,7 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   return (
     <>
       <TopToolbar>
-        <TopToolbarField<Dispatch> source='reference' />
+        <TopToolbarField<Dispatch> source='name' />
         {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
           <EditButton />
         )}
@@ -219,12 +219,12 @@ export default function DispatchShow(): React.ReactElement {
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData: AuditData = {
       activityType: AuditType.SENT,
-      activityDetail: `Dispatch Sent in ${record.reference}`,
+      activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId,
-      subjectId: null,
-      subjectResource: null
+      subjectId: record.id,
+      subjectResource: constants.R_DISPATCH
     }
     await audit(audiData)
   }
@@ -236,8 +236,8 @@ export default function DispatchShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DISPATCH,
       dataId: parseInt(id as string),
-      subjectId: null,
-      subjectResource: null
+      subjectId: id ? Number(id) : null,
+      subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)
