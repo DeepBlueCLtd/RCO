@@ -532,9 +532,8 @@ export default function ItemList(
   const { resource } = options ?? {}
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
-  const sKey = searchParams.get('filter')
-    ? 'filtered-item-list'
-    : 'items-items-list'
+  const filterInSearch = searchParams.get('filter')
+  const sKey = filterInSearch ? 'filtered-item-list' : 'items-items-list'
   const {
     datagridConfigurableProps,
     children,
@@ -555,7 +554,9 @@ export default function ItemList(
   }
   return (
     <List
-      disableSyncWithLocation
+      {...(filterInSearch
+        ? { disableSyncWithLocation: false }
+        : { disableSyncWithLocation: true })}
       sx={sx}
       hasCreate={false}
       actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
