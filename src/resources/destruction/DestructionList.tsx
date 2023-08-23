@@ -12,7 +12,7 @@ import { useMemo, useState } from 'react'
 import HistoryButton from '../../components/HistoryButton'
 
 export default function DestructionList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const [record, setRecord] = useState<Destruction>()
 
   const filter = useMemo(
