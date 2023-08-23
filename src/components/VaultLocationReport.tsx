@@ -21,6 +21,7 @@ import * as constants from '../constants'
 import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
+import React from 'react'
 
 type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
@@ -127,7 +128,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
         <>
           {selectedIds.map((id, index) => {
             return (
-              <>
+              <React.Fragment key={id}>
                 <Box padding={'20px'} key={id}>
                   <Typography variant='h4' textAlign='center' margin='10px'>
                     RCO - Location Muster List
@@ -170,7 +171,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                 {selectedIds.length !== index + 1 && (
                   <div className='pagebreak' />
                 )}
-              </>
+              </React.Fragment>
             )
           })}
         </>
