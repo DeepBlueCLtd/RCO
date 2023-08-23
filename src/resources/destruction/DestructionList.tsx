@@ -29,7 +29,7 @@ export default function DestructionList(): React.ReactElement {
   return (
     <List>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='reference' />
+        <TextField source='name' label='Reference' />
         <DateField source='createdAt' />
         <SourceField source='createdBy' reference={constants.R_USERS} />
         <DateField source='finalisedAt' />

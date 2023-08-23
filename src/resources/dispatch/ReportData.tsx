@@ -16,7 +16,7 @@ const DispatchDetail = (): React.ReactElement => {
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
       <FieldWithLabel
         label='Serial No.'
-        source='reference'
+        source='name'
         labelStyles={{ fontSize: '1rem' }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />

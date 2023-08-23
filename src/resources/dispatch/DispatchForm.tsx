@@ -58,7 +58,7 @@ export default function DispatchForm(props: Props): React.ReactElement {
       {showForm && (
         <>
           <FlexBox>
-            <TextInput sx={sx} disabled source='reference' />
+            <TextInput sx={sx} disabled source='name' />
             <SourceInput
               sx={sx}
               disabled
