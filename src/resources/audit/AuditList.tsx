@@ -197,7 +197,8 @@ export default function AuditList({
             return (
               <SourceField<Audit>
                 source='subjectId'
-                {...(record.subjectResource === constants.R_ITEMS
+                {...(record.subjectResource &&
+                resourcesRefKey[record.subjectResource]
                   ? { sourceField: 'itemNumber' }
                   : null)}
                 reference={record.subjectResource ?? undefined}
