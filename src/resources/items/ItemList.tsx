@@ -644,13 +644,13 @@ const ItemListData = ({
             return vaultLocations?.[record?.vaultLocation]?.name
           }}
         />
-        <SourceField
+        <SourceField<Item>
           link={false}
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <SourceField
+        <SourceField<Item>
           link='show'
           source='loanedTo'
           reference={constants.R_USERS}
@@ -658,16 +658,16 @@ const ItemListData = ({
         />
         <DateField<Item> showTime source='startDate' />
         <DateField<Item> showTime source='endDate' />
-        <SourceField
+        <SourceField<Item>
           link={false}
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
         />
-        <SourceField
+        <SourceField<Item>
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField
+        <SourceField<Item>
           link={false}
           source='batch'
           reference={constants.R_BATCHES}
@@ -676,7 +676,7 @@ const ItemListData = ({
 
         {resource !== constants.R_ITEMS
           ? [
-              <SourceField
+              <SourceField<Item>
                 link={false}
                 source='destruction'
                 reference={constants.R_DESTRUCTION}
@@ -687,7 +687,7 @@ const ItemListData = ({
                 source='destructionDate'
                 key={'destructionDate'}
               />,
-              <SourceField
+              <SourceField<Item>
                 link={false}
                 source='dispatchJob'
                 reference={constants.R_DISPATCH}

@@ -33,13 +33,13 @@ const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
   return (
     <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
       <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField
+        <SourceField<Item>
           textProps={{ ...style }}
           source='id'
           reference={constants.R_PROJECTS}
         />
         ,{' '}
-        <SourceField
+        <SourceField<Item>
           textProps={{ ...style }}
           source='id'
           reference={constants.R_PLATFORMS}
@@ -110,14 +110,14 @@ export default function UserMusterList<T extends User>(
                     source='itemNumber'
                     label='Item Number'
                   />
-                  <SourceField
+                  <SourceField<Item>
                     textProps={{ ...style }}
                     link='show'
                     source='mediaType'
                     reference={constants.R_MEDIA_TYPE}
                     label='Media type'
                   />
-                  <SourceField
+                  <SourceField<Item>
                     textProps={{ ...style }}
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}

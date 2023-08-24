@@ -31,9 +31,15 @@ export default function DestructionList(): React.ReactElement {
       <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField<Destruction> source='name' label='Reference' />
         <DateField<Destruction> source='createdAt' />
-        <SourceField source='createdBy' reference={constants.R_USERS} />
+        <SourceField<Destruction>
+          source='createdBy'
+          reference={constants.R_USERS}
+        />
         <DateField<Destruction> source='finalisedAt' />
-        <SourceField source='finalisedBy' reference={constants.R_USERS} />
+        <SourceField<Destruction>
+          source='finalisedBy'
+          reference={constants.R_USERS}
+        />
         <FunctionField<Destruction>
           label='History'
           render={(record) => {

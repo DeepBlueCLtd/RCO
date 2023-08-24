@@ -149,7 +149,11 @@ export default function AuditList({
             padding: '12px'
           }
         }}>
-        <SourceField source='user' reference={constants.R_USERS} link='show' />
+        <SourceField<Audit>
+          source='user'
+          reference={constants.R_USERS}
+          link='show'
+        />
         <DateField<Audit> source='dateTime' label='Date Time' showTime />;
         <TextField<Audit> source='label' label='Activity Type' />
         <TextField<Audit>
@@ -166,7 +170,7 @@ export default function AuditList({
               return (
                 <>
                   {record.resource !== null ? (
-                    <SourceField
+                    <SourceField<Audit>
                       source='dataId'
                       reference={record.resource}
                       sourceField={resourcesRefKey[record.resource]}
@@ -178,7 +182,7 @@ export default function AuditList({
                       }}
                     />
                   ) : (
-                    <TextField source='dataId' label='Item' />
+                    <TextField<Audit> source='dataId' label='Item' />
                   )}
                 </>
               )
@@ -191,7 +195,7 @@ export default function AuditList({
           label='Subject'
           render={(record) => {
             return (
-              <SourceField
+              <SourceField<Audit>
                 source='subjectId'
                 {...(record.subjectResource === constants.R_ITEMS
                   ? { sourceField: 'itemNumber' }

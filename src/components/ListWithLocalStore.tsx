@@ -1,13 +1,13 @@
 import { List, type ListProps } from 'react-admin'
 import useLocalStore from '../hooks/useLocalStore'
 interface ListChildProps {
-  storeKey: string
+  storeKey: string | false
   resource: string
 }
 
 export const ListChildStore = (props: ListChildProps): React.ReactElement => {
   const { storeKey, resource } = props
-  useLocalStore(storeKey, resource)
+  useLocalStore(storeKey as string, resource)
   return <></>
 }
 

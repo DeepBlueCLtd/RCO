@@ -188,7 +188,10 @@ const Created = (): React.ReactElement => {
           <DateField<Project> source='createdAt' />
         </ValueField>
         <ValueField label='Created by' sx={sx}>
-          <SourceField source='createdBy' reference={constants.R_USERS} />
+          <SourceField<Project>
+            source='createdBy'
+            reference={constants.R_USERS}
+          />
         </ValueField>
       </FlexBox>
     </Box>
