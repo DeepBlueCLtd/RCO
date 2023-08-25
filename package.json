@@ -43,7 +43,7 @@
     "query-string": "^8.1.0",
     "ra-data-local-forage": "^4.8.4",
     "react": "^18.2.0",
-    "react-admin": "^4.8.3",
+    "react-admin": "4.13.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.9.0",
     "soul-cli": "^0.6.0",

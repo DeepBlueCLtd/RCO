@@ -155,28 +155,28 @@ export default function BatchList(): React.ReactElement {
         rowClick='show'
         bulkActionButtons={false}
         preferenceKey={preferenceKey}>
-        <TextField source='id' />
-        <TextField label='Reference' source='batchNumber' />
-        <SourceField
+        <TextField<Batch> source='id' />
+        <TextField<Batch> label='Reference' source='batchNumber' />
+        <SourceField<Batch>
           source='department'
           label='Department'
           reference={constants.R_DEPARTMENT}
         />
-        <SourceField
+        <SourceField<Batch>
           source='project'
           reference={constants.R_PROJECTS}
           label={configData?.projectName}
         />
-        <SourceField
+        <SourceField<Batch>
           source='platform'
           reference={constants.R_PLATFORMS}
           label='Platform'
         />
-        <SourceField source='organisation' label='Organisation' />
-        <SourceField source='vault' reference={constants.R_VAULT} />
-        <TextField source='remarks' />
-        <TextField source='receiptNotes' />
-        <TextField source='createdAt' label='Created' />
+        <SourceField<Batch> source='organisation' label='Organisation' />
+        <SourceField<Batch> source='vault' reference={constants.R_VAULT} />
+        <TextField<Batch> source='remarks' />
+        <TextField<Batch> source='receiptNotes' />
+        <TextField<Batch> source='createdAt' label='Created' />
       </DatagridConfigurable>
     </List>
   )

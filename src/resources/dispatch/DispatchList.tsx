@@ -60,11 +60,11 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
       <Datagrid
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>
-        <TextField source='name' />
-        <DateField source='dispatchedAt' />
-        <TextField source='toName' />
-        <TextField source='remarks' />
-        <TextField source='receiptReceived' />
+        <TextField<Dispatch> source='name' />
+        <DateField<Dispatch> source='dispatchedAt' />
+        <TextField<Dispatch> source='toName' />
+        <TextField<Dispatch> source='remarks' />
+        <TextField<Dispatch> source='receiptReceived' />
       </Datagrid>
     </List>
   )

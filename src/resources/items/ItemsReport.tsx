@@ -116,14 +116,17 @@ export default function ItemsReport(
           children
         ) : (
           <>
-            <TextField source='itemNumber' label='Item Number' />
-            <SourceField
+            <TextField<Item> source='itemNumber' label='Item Number' />
+            <SourceField<Item>
               link='show'
               source='mediaType'
               reference={constants.R_MEDIA_TYPE}
               label='Media type'
             />
-            <SourceField source='vaultLocation' reference='vaultLocation' />
+            <SourceField<Item>
+              source='vaultLocation'
+              reference='vaultLocation'
+            />
           </>
         )}
       </Datagrid>
@@ -270,15 +273,15 @@ export function ItemAssetReport(props: Props): React.ReactElement {
             </CardContent>
           </Card>
           <ItemsReport filter={filters} {...props}>
-            <TextField source='itemNumber' label='Item Number' />
-            <SourceField
+            <TextField<Item> source='itemNumber' label='Item Number' />
+            <SourceField<Item>
               link='show'
               source='mediaType'
               reference={constants.R_MEDIA_TYPE}
               label='Media type'
             />{' '}
-            <TextField source='remarks' label='Remark' />
-            <TextField source='consecSheets' label='Consec/Sheets' />
+            <TextField<Item> source='remarks' label='Remark' />
+            <TextField<Item> source='consecSheets' label='Consec/Sheets' />
           </ItemsReport>
         </Box>
       </Printable>

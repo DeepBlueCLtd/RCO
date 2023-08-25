@@ -80,13 +80,13 @@ export default function ReferenceDataShow({
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <ValueField label='Id'>
-            <TextField variant='h6' source='id' />
+            <TextField<VaultLocation> variant='h6' source='id' />
           </ValueField>
           <ValueField label='name'>
-            <TextField variant='h6' source='name' />
+            <TextField<VaultLocation> variant='h6' source='name' />
           </ValueField>
           <ValueField label='active'>
-            <BooleanField source='active' looseValue />
+            <BooleanField<VaultLocation> source='active' looseValue />
           </ValueField>
         </CardContent>
       </Card>

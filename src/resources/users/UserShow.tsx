@@ -264,15 +264,18 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='itemNumber' label='Reference' />
-      <SourceField
+      <TextField<Item> source='itemNumber' label='Reference' />
+      <SourceField<Item>
         link='show'
         source='mediaType'
         reference={constants.R_MEDIA_TYPE}
         label='Media type'
       />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <TextField source='remarks' />
+      <SourceField<Item>
+        source='protectiveMarking'
+        reference='protectiveMarking'
+      />
+      <TextField<Item> source='remarks' />
     </DatagridConfigurable>
   )
 }

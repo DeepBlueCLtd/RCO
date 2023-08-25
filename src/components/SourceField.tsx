@@ -7,8 +7,8 @@ import {
 } from 'react-admin'
 import { R_USERS } from '../constants'
 
-interface SourceFieldProps {
-  source: string
+interface SourceFieldProps<T> {
+  source: keyof T
   label?: string | false
   reference?: string
   sourceField?: string
@@ -16,7 +16,21 @@ interface SourceFieldProps {
   link?: LinkToType
 }
 
-const SourceField = (props: SourceFieldProps): React.ReactElement => {
+const SourceField = <
+  T extends
+    | Audit
+    | Dispatch
+    | Item
+    | User
+    | Batch
+    | VaultLocation
+    | Destruction
+    | Project
+    | ProtectiveMarking
+    | MediaType
+>(
+  props: SourceFieldProps<T>
+): React.ReactElement => {
   const {
     source,
     label,
@@ -28,8 +42,8 @@ const SourceField = (props: SourceFieldProps): React.ReactElement => {
   return (
     <ReferenceField
       link={link}
-      source={source}
-      reference={reference !== undefined ? reference : source}
+      source={source as string}
+      reference={reference !== undefined ? reference : (source as string)}
       label={label}>
       {reference !== undefined && reference === R_USERS ? (
         <FunctionField

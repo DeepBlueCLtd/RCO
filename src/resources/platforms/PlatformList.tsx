@@ -75,12 +75,16 @@ export default function PlatformList(props: Props): React.ReactElement {
       filters={filters}
       resource='platform'>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='id' label='ID' />
-        <TextField source='name' />
-        <BooleanField source='active' label='Active Platform' looseValue />
-        <FunctionField
+        <TextField<Platform> source='id' label='ID' />
+        <TextField<Platform> source='name' />
+        <BooleanField<Platform>
+          source='active'
+          label='Active Platform'
+          looseValue
+        />
+        <FunctionField<Platform>
           label='History'
-          render={(record: IntegerReferenceItem) => {
+          render={(record) => {
             return (
               <HistoryButton
                 onClick={(e) => {

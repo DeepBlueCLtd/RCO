@@ -43,14 +43,14 @@ interface FormProps {
 // -- SQL Data Types
 // ------------------------
 
-interface MediaType extends RCOResource {
-  name: string
-  active: boolean
-}
-
 /** an entity, with an id unique to that table */
 interface RCOResource {
   readonly id: number
+}
+
+type MediaType = RCOResource & {
+  name: string
+  active: boolean
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
@@ -64,22 +64,22 @@ interface ActiveItem {
   active: boolean
 }
 
-interface IntegerReferenceItem extends ActiveItem {
+type IntegerReferenceItem = ActiveItem & {
   id: number
 }
 
-interface StringReferenceItem extends ActiveItem {
+type StringReferenceItem = ActiveItem & {
   id: string
 }
 
 /** an entity for which we track instance creation */
-interface ResourceWithCreation extends RCOResource {
+type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
   createdBy: User['id']
 }
 
-interface User extends ResourceWithCreation {
+type User = ResourceWithCreation & {
   name: string
   password: string
   adminRights: boolean
@@ -90,7 +90,7 @@ interface User extends ResourceWithCreation {
   departedDate: string | null
 }
 
-interface Audit extends RCOResource {
+type Audit = RCOResource & {
   // the user making the change
   user: User['id']
   // when this happened
@@ -113,12 +113,12 @@ interface Audit extends RCOResource {
   subjectResource: string | null
 }
 
-interface Platform extends RCOResource {
+type Platform = RCOResource & {
   name: string
   active: boolean
 }
 
-interface Project extends ResourceWithCreation {
+type Project = ResourceWithCreation & {
   readonly id: number
   name: string
   remarks: string
@@ -153,7 +153,7 @@ interface ItemHandling {
   catHandle: CatHandle['id']
 }
 
-interface Batch extends ResourceWithCreation {
+type Batch = ResourceWithCreation & {
   batchNumber: string
   yearOfReceipt: string
   department: Department['id']
@@ -165,7 +165,7 @@ interface Batch extends ResourceWithCreation {
   vault: Vault['id']
 }
 
-interface Item extends ResourceWithCreation {
+type Item = ResourceWithCreation & {
   mediaType: MediaType['id']
   startDate: string | null
   batch: Batch['id']
@@ -265,7 +265,7 @@ interface Dispatch {
 }
 
 /** per instance config data. It is just intended to be one row deep */
-interface ConfigData extends RCOResource {
+type ConfigData = RCOResource & {
   /** singular name for project resource
    * test value: `Project`
    */

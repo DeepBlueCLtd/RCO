@@ -5,10 +5,10 @@ export default function AddressList(): React.ReactElement {
   return (
     <List resource={R_ADDRESSES} hasCreate>
       <Datagrid rowClick='show'>
-        <TextField source='fullAddress' />
-        <BooleanField source='active' looseValue />
-        <DateField source='createdAt' />
-        <TextField source='remarks' />
+        <TextField<Address> source='fullAddress' />
+        <BooleanField<Address> source='active' looseValue />
+        <DateField<Address> source='createdAt' />
+        <TextField<Address> source='Remarks' />
       </Datagrid>
     </List>
   )

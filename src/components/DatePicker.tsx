@@ -44,7 +44,7 @@ export default function DatePicker(props: Props): React.ReactElement {
       field.value === '' &&
       typeof format !== 'undefined'
     ) {
-      field.onChange(dayjs(new Date()).format(format))
+      field.value = dayjs(new Date()).format(format)
       return new Date()
     }
     if (typeof format === 'undefined') {
