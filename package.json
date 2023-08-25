@@ -12,7 +12,7 @@
     "dev:mock": "cross-env MOCK=true vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "serve:soul": "dotenv -- cross-env soul -d ./db/RCO2.sqlite -p ${PORT:-4000}",
+    "serve:soul": "soul -d ./db/RCO2.sqlite -p $PORT",
     "lint": "eslint . --fix --max-warnings=0",
     "serve": "node server.mjs",
     "format": "prettier . --write",
