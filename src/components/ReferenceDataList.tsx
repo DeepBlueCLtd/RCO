@@ -22,7 +22,7 @@ export default function ReferenceDataList({
   name
 }: PropType): React.ReactElement {
   const cName: string = name
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>()
   const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const { hasAccess } = useCanAccess()
@@ -58,15 +58,15 @@ export default function ReferenceDataList({
           return `/${cName}/${cID}/show`
         }}>
         <TextField source='id' label='ID' />
-        <FunctionField
+        <FunctionField<IntegerReferenceItem>
           style={{ cursor: 'pointer' }}
-          render={({ name }: any) => `${name as string}`}
+          render={({ name }) => `${name }`}
           label='Name'
         />
         {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}
-        <FunctionField
+        <FunctionField<IntegerReferenceItem>
           label='History'
-          render={(record: IntegerReferenceItem) => {
+          render={(record) => {
             return (
               <HistoryButton
                 onClick={(e) => {

@@ -53,7 +53,9 @@ const ResourceHistoryModal = ({
           ...filter
         }}
         data={data}
-        omit={['resource', 'dataId', 'securityRelated', 'subject']}
+        /* don't hide any columns, we have the `easy-to-read` view on 
+        ItemShow
+        omit={['resource', 'dataId', 'securityRelated', 'subject']} */
         actions={
           <ListActions
             buttons={<FullAuditListButton onClick={showFullReport} />}

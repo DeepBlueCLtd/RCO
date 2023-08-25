@@ -234,10 +234,10 @@ export default function DestructionShow(): React.ReactElement {
             component={'div'}
             actions={<ShowActions handleOpen={handleOpen} />}>
             <SimpleShowLayout>
-              <TextField source='name' label='Reference' />
-              <DateField source='finalisedAt' />
+              <TextField<Destruction> source='name' label='Reference' />
+              <DateField<Destruction> source='finalisedAt' />
               <Finalised />
-              <TextField source='remarks' />
+              <TextField<Destruction> source='remarks' />
             </SimpleShowLayout>
             <Footer handleOpen={handleOpen} destroy={destroy} />
           </Show>

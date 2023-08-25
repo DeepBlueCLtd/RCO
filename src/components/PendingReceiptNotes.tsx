@@ -3,7 +3,7 @@ import Recent from './Recent'
 import * as constants from '../constants'
 import { DateField, type Identifier, useGetList, useTheme } from 'react-admin'
 import HastenerSentField from './HastenerSentField'
-import { type SimplePaletteColorOptions, type SxProps } from '@mui/material'
+import { type SxProps } from '@mui/material'
 
 const rowStyle = (dispatch: Dispatch): SxProps => {
   const { dispatchedAt, lastHastenerSent } = dispatch
@@ -17,8 +17,7 @@ const rowStyle = (dispatch: Dispatch): SxProps => {
   const style =
     weeks >= 4
       ? {
-          backgroundColor: (theme.palette?.error as SimplePaletteColorOptions)
-            .light
+          backgroundColor: theme as string
         }
       : {}
   return style

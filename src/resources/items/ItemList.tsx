@@ -591,7 +591,7 @@ interface Props {
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>
     | undefined
   resource: string
-  storeKey: string
+  storeKey: string | false
 }
 
 const ItemListData = ({
@@ -602,9 +602,9 @@ const ItemListData = ({
 }: Props): React.ReactElement => {
   const { users, vaultLocations } = useItemList()
   const CommonEndFields = [
-    <TextField source='remarks' key={'remarks'} />,
-    <TextField source='musterRemarks' key={'musterRemarks'} />,
-    <TextField
+    <TextField<Item> source='remarks' key={'remarks'} />,
+    <TextField<Item> source='musterRemarks' key={'musterRemarks'} />,
+    <TextField<Item>
       source='protectionString'
       label='Protection'
       key={'protectionString'}
@@ -626,12 +626,12 @@ const ItemListData = ({
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField source='itemNumber' label='Reference' />
-        <TextField source='id' />
-        <TextField source='createdAt' label='Created' />
-        <FunctionField
+        <TextField<Item> source='itemNumber' label='Reference' />
+        <TextField<Item> source='id' />
+        <TextField<Item> source='createdAt' label='Created' />
+        <FunctionField<Item>
           label='Location'
-          render={(record: Item) => {
+          render={(record) => {
             if (record?.loanedTo) {
               return users?.[record.loanedTo]?.name
             }
@@ -644,30 +644,30 @@ const ItemListData = ({
             return vaultLocations?.[record?.vaultLocation]?.name
           }}
         />
-        <SourceField
+        <SourceField<Item>
           link={false}
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <SourceField
+        <SourceField<Item>
           link='show'
           source='loanedTo'
           reference={constants.R_USERS}
           label='Loaned to'
         />
-        <DateField showTime source='startDate' />
-        <DateField showTime source='endDate' />
-        <SourceField
+        <DateField<Item> showTime source='startDate' />
+        <DateField<Item> showTime source='endDate' />
+        <SourceField<Item>
           link={false}
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
         />
-        <SourceField
+        <SourceField<Item>
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField
+        <SourceField<Item>
           link={false}
           source='batch'
           reference={constants.R_BATCHES}
@@ -676,15 +676,18 @@ const ItemListData = ({
 
         {resource !== constants.R_ITEMS
           ? [
-              <SourceField
+              <SourceField<Item>
                 link={false}
                 source='destruction'
                 reference={constants.R_DESTRUCTION}
                 sourceField='name'
                 key={'destruction'}
               />,
-              <DateField source='destructionDate' key={'destructionDate'} />,
-              <SourceField
+              <DateField<Item>
+                source='destructionDate'
+                key={'destructionDate'}
+              />,
+              <SourceField<Item>
                 link={false}
                 source='dispatchJob'
                 reference={constants.R_DISPATCH}
@@ -692,7 +695,7 @@ const ItemListData = ({
                 label='Dispatch'
                 key={'dispatchJob'}
               />,
-              <DateField source='dispatchedDate' key={'dispatchJob'} />,
+              <DateField<Item> source='dispatchedDate' key={'dispatchJob'} />,
               ...CommonEndFields
             ]
           : CommonEndFields}
