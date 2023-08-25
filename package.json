@@ -46,7 +46,7 @@
     "react-admin": "4.13.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.9.0",
-    "soul-cli": "^0.6.0",
+    "soul-cli": "^0.6.1",
     "vite": "^4.2.0",
     "vite-plugin-babel-macros": "^1.0.6",
     "vite-plugin-environment": "^1.1.3",
