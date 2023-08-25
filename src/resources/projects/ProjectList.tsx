@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  BooleanField,
   CreateButton,
   DatagridConfigurable,
   DateField,
@@ -62,6 +63,7 @@ export default function ProjectList(): React.ReactElement {
         <TextField<Project> source='createdAt' label='Created' />
         <DateField<Project> source='startDate' label='Start' />
         <DateField<Project> source='endDate' label='End' />
+        <BooleanField<Project> source='enduring' looseValue />
       </DatagridConfigurable>
     </List>
   )

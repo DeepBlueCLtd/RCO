@@ -10,6 +10,7 @@ import {
   useRedirect
 } from 'react-admin'
 import BatchForm from './BatchForm'
+import * as constants from '../../constants'
 
 const BatchList = React.lazy(async () => await import('./BatchList'))
 const BatchShow = React.lazy(async () => await import('./BatchShow'))
@@ -20,7 +21,7 @@ const BatchCreate = (): React.ReactElement => {
     <Create
       mutationOptions={{
         onSuccess: (d: { batchNumber: string; id: number }): void => {
-          redirect(`/batch/${d?.id}/show`)
+          redirect(`/${constants.R_BATCHES}/${d?.id}/show`)
         }
       }}>
       <BatchForm />

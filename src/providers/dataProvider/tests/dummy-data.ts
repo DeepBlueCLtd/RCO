@@ -92,7 +92,8 @@ export const generateProjectForTesting = ({
     remarks: 'dummy-remarks-1',
     startDate: DateTime.now().toFormat('yyyy-MM-dd'),
     endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
-    createdBy: 1
+    createdBy: 1,
+    enduring: false
   }
 }
 
