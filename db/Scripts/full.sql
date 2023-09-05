@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS user (
        salt TEXT,
        adminRights INTEGER NOT NULL,
        active INTEGER NOT NULL,
-       roles TEXT NOT NULL, /*Should be a json array string. Ex.: "['rco-user', 'rco-power-user']" or "['rco-user']" or "[]"*/
+       role TEXT NOT NULL,  /* Should be string Ex.: 'rco-user, 'rco-power-user' */
        staffNumber TEXT NOT NULL,
        departedDate TEXT,
        createdAt TEXT NOT NULL,
