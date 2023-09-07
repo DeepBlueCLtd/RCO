@@ -267,6 +267,7 @@ export const generateItems = (
       id: offset + i,
       createdAt: nowDate(),
       mediaType: generateRandomNumber(1, mediaType - 1),
+      legacyMediaType: generateRandomNumber(1, mediaType - 1),
       batch: idOfBatch,
       itemNumber: `${batchNumber}/${itemReference}`,
       startDate:

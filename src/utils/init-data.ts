@@ -162,17 +162,32 @@ const loadDefaultData = async (
     resource: constants.R_DEPARTMENT
   })
 
-  const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
+  const vaultLocationCore = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Vault Location',
     length: isHigh === true ? 200 : 50,
     alternateInactive: true,
     isHigh
   })
 
-  const mediaType = getActiveReferenceData<IntegerReferenceItem>({
+  const vaultLocation: VaultLocation[] = vaultLocationCore.map(
+    (item): VaultLocation => {
+      return {
+        shelfSize: null,
+        ...item
+      }
+    }
+  )
+
+  const mediaTypeCore = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Media',
     alternateInactive: true,
     length: 30
+  })
+  const mediaType: MediaType[] = mediaTypeCore.map((item): MediaType => {
+    return {
+      itemSize: null,
+      ...item
+    }
   })
 
   const protectiveMarking = getActiveReferenceData<IntegerReferenceItem>({

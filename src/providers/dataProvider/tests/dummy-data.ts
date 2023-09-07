@@ -50,6 +50,7 @@ export const generateItemForTesting = ({
   return {
     ...(id !== undefined ? { id } : null),
     mediaType: mediaType ?? 1,
+    legacyMediaType: null,
     startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()
