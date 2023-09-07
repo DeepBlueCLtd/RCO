@@ -21,7 +21,7 @@ import { Typography } from '@mui/material'
 import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
-  yearOfReceipt: yup.string().required(),
+  yearOfReceipt: yup.number().required(),
   department: yup.string().nullable(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
