@@ -7,7 +7,7 @@ import {
 } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import dayjs from 'dayjs'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { type TextInputProps, useInput } from 'react-admin'
 
 type Props = Omit<TextInputProps, 'format'> & {
@@ -32,21 +32,21 @@ const useStyles = makeStyles((theme: Theme) => {
 })
 
 export default function DatePicker(props: Props): React.ReactElement {
-  const { label, dataPickerProps, format, source, onChange } = props
+  const { label, dataPickerProps, format, source } = props
   const [error, setError] = useState<string | null>('')
-  const { field, fieldState } = useInput({ source, onChange })
+  const { field, fieldState } = useInput({ source })
   const styles = useStyles()
+
+  const initialFieldValue = field.value
+
+  useEffect(() => {
+    if (initialFieldValue === '' && typeof format !== 'undefined') {
+      field.onChange(dayjs(new Date()).format(format))
+    }
+  }, [field, format, initialFieldValue])
 
   const value: Date | null = useMemo(() => {
     if (field.value instanceof Date) return field.value
-    if (
-      typeof field.value === 'string' &&
-      field.value === '' &&
-      typeof format !== 'undefined'
-    ) {
-      field.value = dayjs(new Date()).format(format)
-      return new Date()
-    }
     if (typeof format === 'undefined') {
       return new Date(field.value)
     }
@@ -74,7 +74,6 @@ export default function DatePicker(props: Props): React.ReactElement {
   const onError = (error: any): void => {
     setError(error)
   }
-
   const rootStyle: string = styles.root
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
