@@ -51,6 +51,7 @@ interface RCOResource {
 type MediaType = RCOResource & {
   name: string
   active: boolean
+  itemSize: number | null
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
@@ -133,7 +134,9 @@ type ProtectiveMarking = IntegerReferenceItem
 type CatCode = StringReferenceItem
 type CatHandle = StringReferenceItem
 type CatCave = StringReferenceItem
-type VaultLocation = IntegerReferenceItem
+type VaultLocation = IntegerReferenceItem & {
+  shelfSize: number | null
+}
 
 type Vault = StringReferenceItem
 
@@ -156,10 +159,10 @@ interface ItemHandling {
 type Batch = ResourceWithCreation & {
   batchNumber: string
   yearOfReceipt: string
-  department: Department['id']
+  department: Department['id'] | null
   project: Project['id'] | null
   platform: Platform['id'] | null
-  organisation: Organisation['id']
+  organisation: Organisation['id'] | null
   remarks: string
   receiptNotes: string
   vault: Vault['id']
@@ -167,6 +170,7 @@ type Batch = ResourceWithCreation & {
 
 type Item = ResourceWithCreation & {
   mediaType: MediaType['id']
+  legacyMediaType: MediaType['id'] | null
   startDate: string | null
   batch: Batch['id']
   itemNumber: string
@@ -202,7 +206,7 @@ interface RCOStore {
   organisation: Organisation[]
   department: Department[]
   vaultLocation: VaultLocation[]
-  mediaType: IntegerReferenceItem[]
+  mediaType: MediaType[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
   catHandle: CatHandle[]

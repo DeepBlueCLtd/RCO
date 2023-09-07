@@ -22,10 +22,10 @@ import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
-  department: yup.string().nonNullable().required(),
+  department: yup.string().nullable(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
-  organisation: yup.string().nonNullable().required(),
+  organisation: yup.string().nullable(),
   vault: yup.string()
 })
 
