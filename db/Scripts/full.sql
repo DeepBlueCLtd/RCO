@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS vaultLocation(
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
        active INTEGER NOT NULL
+       shelfSize INTEGER
 ) WITHOUT ROWID;
 
 -- Meta table - department
@@ -85,6 +86,7 @@ CREATE TABLE IF NOT EXISTS mediaType(
        id INTEGER PRIMARY KEY,
        active INTEGER NOT NULL,
        name TEXT NOT NULL
+       itemSize INTEGER /* storage volume required */
 ) WITHOUT ROWID;
 
 
@@ -202,6 +204,7 @@ CREATE TABLE IF NOT EXISTS dispatch(
 CREATE TABLE IF NOT EXISTS item(
        id INTEGER PRIMARY KEY,
        mediaType INTEGER NOT NULL,
+       legacyMediaType INTEGER, /* not present for new data */
        startDate TEXT,
        endDate TEXT,
        batch INTEGER NOT NULL,
@@ -224,6 +227,7 @@ CREATE TABLE IF NOT EXISTS item(
        createdBy INT NOT NULL,
 
        FOREIGN KEY (mediaType) REFERENCES mediaType(id),
+       FOREIGN KEY (legacyMediaType) REFERENCES mediaType(id),
        FOREIGN KEY (batch) REFERENCES batch(id),
        FOREIGN KEY (vaultLocation) REFERENCES vaultLocation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
