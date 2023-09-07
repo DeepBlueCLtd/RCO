@@ -156,10 +156,10 @@ interface ItemHandling {
 type Batch = ResourceWithCreation & {
   batchNumber: string
   yearOfReceipt: string
-  department: Department['id']
+  department: Department['id'] | null
   project: Project['id'] | null
   platform: Platform['id'] | null
-  organisation: Organisation['id']
+  organisation: Organisation['id'] | null
   remarks: string
   receiptNotes: string
   vault: Vault['id']
