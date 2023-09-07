@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS protectiveMarking(
 CREATE TABLE IF NOT EXISTS vaultLocation(
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
-       active INTEGER NOT NULL
+       active INTEGER NOT NULL,
        shelfSize INTEGER
 ) WITHOUT ROWID;
 
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS project (
 CREATE TABLE IF NOT EXISTS mediaType(
        id INTEGER PRIMARY KEY,
        active INTEGER NOT NULL,
-       name TEXT NOT NULL
+       name TEXT NOT NULL,
        itemSize INTEGER /* storage volume required */
 ) WITHOUT ROWID;
 
