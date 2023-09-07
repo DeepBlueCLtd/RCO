@@ -60,7 +60,7 @@ export default function ReferenceDataList({
         <TextField source='id' label='ID' />
         <FunctionField<IntegerReferenceItem>
           style={{ cursor: 'pointer' }}
-          render={({ name }) => `${name }`}
+          render={({ name }) => `${name}`}
           label='Name'
         />
         {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}

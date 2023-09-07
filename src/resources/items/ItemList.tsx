@@ -60,7 +60,9 @@ const omitColumns: Array<keyof Item> = [
   'musterRemarks',
   'loanedTo',
   'batch',
-  'protectionString'
+  'protectionString',
+  'destruction',
+  'dispatchJob'
   // 'project',
   // 'platform'
 ]
@@ -155,6 +157,23 @@ const getFilters = (resource?: string): React.ReactElement[] => {
         source='dispatchJob'
         label='Dispatched'
         fieldName='dispatchedDate'
+        key='dispatch'
+        resource={constants.R_ITEMS}
+      />
+    )
+  } else if (resource === constants.R_ITEMS) {
+    filters.push(
+      <BooleanFilter<Item>
+        source='destruction'
+        label='Marked for destruction'
+        fieldName='destruction'
+        key='destruction'
+        resource={constants.R_ITEMS}
+      />,
+      <BooleanFilter<Item>
+        source='dispatchJob'
+        label='Marked for dispatch'
+        fieldName='dispatchJob'
         key='dispatch'
         resource={constants.R_ITEMS}
       />

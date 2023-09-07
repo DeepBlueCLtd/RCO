@@ -30,7 +30,6 @@ export default function ItemHistory(): React.ReactElement {
           <DateField source='dateTime' label='Date' />
           <TextField<Audit> source='activityType' label='Status' />
           <TextField<Audit> source='activityDetail' label='Remarks' />
-          <SourceField<Audit> source='user' reference={constants.R_USERS} />
           <FunctionField<Audit>
             label='Subject'
             render={(record) => {
@@ -46,6 +45,7 @@ export default function ItemHistory(): React.ReactElement {
               )
             }}
           />
+          <SourceField<Audit> source='user' reference={constants.R_USERS} />
         </Datagrid>
       </List>
     </FieldSet>
