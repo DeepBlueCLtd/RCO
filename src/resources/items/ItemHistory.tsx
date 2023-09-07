@@ -28,7 +28,6 @@ export default function ItemHistory(): React.ReactElement {
         }}>
         <Datagrid bulkActionButtons={false}>
           <DateField source='dateTime' label='Date' />
-
           <TextField<Audit> source='activityType' label='Status' />
           <TextField<Audit> source='activityDetail' label='Remarks' />
           <FunctionField<Audit>
