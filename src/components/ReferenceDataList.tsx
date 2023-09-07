@@ -58,15 +58,15 @@ export default function ReferenceDataList({
           return `/${cName}/${cID}/show`
         }}>
         <TextField source='id' label='ID' />
-        <FunctionField
+        <FunctionField<IntegerReferenceItem>
           style={{ cursor: 'pointer' }}
-          render={({ name }: any) => `${name as string}`}
+          render={({ name }) => `${name}`}
           label='Name'
         />
         {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}
-        <FunctionField
+        <FunctionField<IntegerReferenceItem>
           label='History'
-          render={(record: IntegerReferenceItem) => {
+          render={(record) => {
             return (
               <HistoryButton
                 onClick={(e) => {

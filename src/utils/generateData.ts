@@ -49,6 +49,36 @@ export function generateRandomDateInRange(
   return randomDate.toJSDate().toString()
 }
 
+function generateDateForEnduringProjects(): {
+  startDate: string
+  endDate: string
+} {
+  const startYear = 1980
+  const endYear = 2060
+
+  const startDate = DateTime.fromObject({
+    year: startYear,
+    month: 1,
+    day: 1
+  }).toMillis()
+
+  const endDate = DateTime.fromObject({
+    year: endYear,
+    month: 12,
+    day: 31
+  }).toMillis()
+
+  const randomTimestamp = Math.random() * (endDate - startDate) + startDate
+  const randomStartDate = DateTime.fromMillis(randomTimestamp)
+  const randomDays = Math.floor(Math.random() * 3650) + 1
+  const randomEndDate = randomStartDate.plus({ days: randomDays })
+
+  return {
+    startDate: randomStartDate.toString(),
+    endDate: randomEndDate.toString()
+  }
+}
+
 function setMinuteToStep(date: string, step = 15): string {
   const luxonDate = DateTime.fromJSDate(new Date(date))
   const updatedDate = luxonDate.minus({
@@ -91,9 +121,13 @@ export const generatePlatform = (
   return platforms
 }
 
-export const generateProject = (length: number, user: number): Project[] => {
+export const generateProject = (
+  length: number,
+  user: number,
+  offset: number
+): Project[] => {
   const projects: Project[] = []
-  for (let i = 1; i <= length; i++) {
+  for (let i = offset; i <= offset + length; i++) {
     const [startDate, endDate] = generateRandomDate()
     const obj: Project = {
       id: i,
@@ -102,7 +136,31 @@ export const generateProject = (length: number, user: number): Project[] => {
       startDate: startDate.toString(),
       endDate: endDate.toString(),
       remarks: `project-remarks-${i}`,
-      createdBy: user
+      createdBy: user,
+      enduring: false
+    }
+    projects.push(obj)
+  }
+  return projects
+}
+
+export const generateEnduringProjects = (
+  names: string[],
+  user: number
+): Project[] => {
+  const projects: Project[] = []
+  const length = names.length
+  for (let i = 0; i < length; i++) {
+    const { startDate, endDate } = generateDateForEnduringProjects()
+    const obj: Project = {
+      id: i,
+      createdAt: nowDate(),
+      name: names[i],
+      startDate,
+      endDate,
+      remarks: `project-remarks-${i}`,
+      createdBy: user,
+      enduring: true
     }
     projects.push(obj)
   }
@@ -169,8 +227,8 @@ export const generateBatch = (
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department,
-      project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
-      platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
+      project: isNull() ? null : generateRandomNumber(1, projects - 1),
+      platform: isNull() ? null : generateRandomNumber(1, platforms - 1),
       vault: Math.random() >= 0.5 ? 'LEGACY' : 'VAULT',
       organisation,
       remarks: `remarks-batch-${i}`,
@@ -209,6 +267,7 @@ export const generateItems = (
       id: offset + i,
       createdAt: nowDate(),
       mediaType: generateRandomNumber(1, mediaType - 1),
+      legacyMediaType: generateRandomNumber(1, mediaType - 1),
       batch: idOfBatch,
       itemNumber: `${batchNumber}/${itemReference}`,
       startDate:
@@ -219,7 +278,14 @@ export const generateItems = (
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       consecSheets: `consec-sheets-${i + 1}`,
-      createdBy: user
+      createdBy: user,
+      loanedDate: null,
+      loanedTo: null,
+      dispatchedDate: null,
+      dispatchJob: null,
+      destruction: null,
+      destructionDate: null,
+      protectionString: null
       // project: batch.project,
       // platform: batch.platform
     }
@@ -250,7 +316,8 @@ export const generateUsers = (length: number): User[] => {
       staffNumber: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
-      createdAt: nowDate()
+      createdAt: nowDate(),
+      departedDate: null
     }
     users.push(obj)
   }

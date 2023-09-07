@@ -18,7 +18,6 @@ import {
   useUpdate
 } from 'react-admin'
 import { Chip, Typography, Button, Modal } from '@mui/material'
-import { decryptPassword } from '../../utils/encryption'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -132,15 +131,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               source='name'
               variant='outlined'
               sx={{ width: '100%' }}
-            />
-            <TextInput
-              disabled
-              source='password'
-              variant='outlined'
-              sx={{ width: '100%' }}
-              format={(password) =>
-                record !== undefined && decryptPassword(password, record.salt)
-              }
             />
             <FlexBox>
               <Chip label={record?.role} />
@@ -264,15 +254,18 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='itemNumber' label='Reference' />
-      <SourceField
+      <TextField<Item> source='itemNumber' label='Reference' />
+      <SourceField<Item>
         link='show'
         source='mediaType'
         reference={constants.R_MEDIA_TYPE}
         label='Media type'
       />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <TextField source='remarks' />
+      <SourceField<Item>
+        source='protectiveMarking'
+        reference='protectiveMarking'
+      />
+      <TextField<Item> source='remarks' />
     </DatagridConfigurable>
   )
 }

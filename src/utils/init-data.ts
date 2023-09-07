@@ -7,7 +7,8 @@ import {
   generateItems,
   generateRandomDateInRange,
   generateUsers,
-  generateVault
+  generateVault,
+  generateEnduringProjects
 } from './generateData'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
@@ -135,9 +136,20 @@ const loadDefaultData = async (
 ): Promise<DataProvider> => {
   await localForage.clear()
 
+  const enduringProjectNames = [
+    'RECYCLING (ENDURING)',
+    'DESTRUCTION (ENDURING)',
+    'TEST MEDIA (ENDURING)'
+  ]
+
   const user = typeof userId === 'undefined' ? users[0].id : userId
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
-  const project = generateProject(isHigh === true ? 60 : 10, user)
+  const project: Project[] = []
+  project.push(
+    ...generateEnduringProjects(enduringProjectNames, user),
+    ...generateProject(isHigh === true ? 100 : 60, user, 3)
+  )
+
   const vault = generateVault()
 
   const organisation = getActiveReferenceData<StringReferenceItem>({
@@ -150,17 +162,32 @@ const loadDefaultData = async (
     resource: constants.R_DEPARTMENT
   })
 
-  const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
+  const vaultLocationCore = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Vault Location',
     length: isHigh === true ? 200 : 50,
     alternateInactive: true,
     isHigh
   })
 
-  const mediaType = getActiveReferenceData<IntegerReferenceItem>({
+  const vaultLocation: VaultLocation[] = vaultLocationCore.map(
+    (item): VaultLocation => {
+      return {
+        shelfSize: null,
+        ...item
+      }
+    }
+  )
+
+  const mediaTypeCore = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Media',
     alternateInactive: true,
     length: 30
+  })
+  const mediaType: MediaType[] = mediaTypeCore.map((item): MediaType => {
+    return {
+      itemSize: null,
+      ...item
+    }
   })
 
   const protectiveMarking = getActiveReferenceData<IntegerReferenceItem>({
@@ -305,7 +332,7 @@ const loadDefaultData = async (
         }
       } else
         for (const val of value) {
-          await dataprovider.create<typeof value>(map[key], {
+          await dataprovider.create<(typeof value)[0]>(map[key], {
             data: val
           })
         }

@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  BooleanField,
   CreateButton,
   DatagridConfigurable,
   DateField,
@@ -57,11 +58,12 @@ export default function ProjectList(): React.ReactElement {
         omit={omitColumns}
         rowClick='show'
         bulkActionButtons={false}>
-        <TextField source='name' />
-        <TextField source='remarks' />
-        <TextField source='createdAt' label='Created' />
-        <DateField source='startDate' label='Start' />
-        <DateField source='endDate' label='End' />
+        <TextField<Project> source='name' />
+        <TextField<Project> source='remarks' />
+        <TextField<Project> source='createdAt' label='Created' />
+        <DateField<Project> source='startDate' label='Start' />
+        <DateField<Project> source='endDate' label='End' />
+        <BooleanField<Project> source='enduring' looseValue />
       </DatagridConfigurable>
     </List>
   )

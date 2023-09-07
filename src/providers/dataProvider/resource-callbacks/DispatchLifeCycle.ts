@@ -52,7 +52,9 @@ const lifeCycles = (
         resource: R_DISPATCH,
         dataId: record.data.id,
         subjectId: null,
-        subjectResource: null
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       return { ...record, data: withRef.data }
     } catch (error) {

@@ -248,7 +248,7 @@ interface StatusTextProps {
 interface ActionLinkProps {
   actionText: string
   linkPathname: string
-  text: string
+  text: string | null
 }
 
 const ActionLink = ({
@@ -315,7 +315,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
       {source === 'loanedTo' ? (
         <Typography sx={sx} variant='h5'>
           {statusText}
-          <SourceField
+          <SourceField<Item>
             link='show'
             source={source}
             reference={constants.R_USERS}
@@ -350,7 +350,7 @@ const ItemShowActions = ({
 
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField source='itemNumber' />
+      <TopToolbarField<Item> source='itemNumber' />
       <StatusText record={record} />
       {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
       <HistoryButton

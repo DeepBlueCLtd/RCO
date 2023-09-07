@@ -71,8 +71,8 @@ const filters = [
 const resourcesRefKey: Record<string, string> = {
   [constants.R_BATCHES]: 'batchNumber',
   [constants.R_ITEMS]: 'itemNumber',
-  [constants.R_DESTRUCTION]: 'reference',
-  [constants.R_DISPATCH]: 'reference',
+  [constants.R_DESTRUCTION]: 'name',
+  [constants.R_DISPATCH]: 'name',
   [constants.R_ADDRESSES]: 'id',
   [constants.R_PROJECTS]: 'name',
   [constants.R_PLATFORMS]: 'name',
@@ -149,24 +149,28 @@ export default function AuditList({
             padding: '12px'
           }
         }}>
-        <SourceField source='user' reference={constants.R_USERS} link='show' />
-        <DateField source='dateTime' label='Date Time' showTime />;
-        <TextField source='label' label='Activity Type' />
-        <TextField
+        <SourceField<Audit>
+          source='user'
+          reference={constants.R_USERS}
+          link='show'
+        />
+        <DateField<Audit> source='dateTime' label='Date Time' showTime />;
+        <TextField<Audit> source='label' label='Activity Type' />
+        <TextField<Audit>
           source='activityDetail'
           label='Activity Details'
           sx={{ wordBreak: 'break-all', display: 'inline-block' }}
         />
-        <TextField source='securityRelated' label='Security Related' />
-        <TextField source='resource' label='Resource' />
+        <TextField<Audit> source='securityRelated' label='Security Related' />
+        <TextField<Audit> source='resource' label='Resource' />
         {!omit.includes('dataId') && (
-          <FunctionField
+          <FunctionField<Audit>
             label='Name'
-            render={(record: Audit) => {
+            render={(record) => {
               return (
                 <>
                   {record.resource !== null ? (
-                    <SourceField
+                    <SourceField<Audit>
                       source='dataId'
                       reference={record.resource}
                       sourceField={resourcesRefKey[record.resource]}
@@ -178,7 +182,7 @@ export default function AuditList({
                       }}
                     />
                   ) : (
-                    <TextField source='dataId' label='Item' />
+                    <TextField<Audit> source='dataId' label='Item' />
                   )}
                 </>
               )
@@ -187,13 +191,14 @@ export default function AuditList({
         )}
         {/* Note: the following function is flexible, so it is able to show
         source value for different kinds of resource */}
-        <FunctionField
+        <FunctionField<Audit>
           label='Subject'
-          render={(record: Audit) => {
+          render={(record) => {
             return (
-              <SourceField
+              <SourceField<Audit>
                 source='subjectId'
-                {...(record.subjectResource === constants.R_ITEMS
+                {...(record.subjectResource &&
+                resourcesRefKey[record.subjectResource]
                   ? { sourceField: 'itemNumber' }
                   : null)}
                 reference={record.subjectResource ?? undefined}

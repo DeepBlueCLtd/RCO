@@ -3,7 +3,6 @@ import { type ToolbarProps, TopToolbar } from 'react-admin'
 
 interface Props extends ToolbarProps {
   children: React.ReactElement | React.ReactElement[]
-  preferenceKey?: string
 }
 
 export default function StyledTopToolbar(props: Props): React.ReactElement {

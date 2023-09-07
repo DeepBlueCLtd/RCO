@@ -4,7 +4,7 @@ import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import SourceInput from './SourceInput'
 import ProtectionRefInput from './ProtectionRefInput'
-import { useDataProvider, type RaRecord } from 'react-admin'
+import { type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useConfigData } from '../utils/useConfigData'
 import { useEffect, useState } from 'react'
@@ -26,8 +26,7 @@ export default function ProtectionBlockInputs<
 >(props: Props): React.ReactElement {
   const { disabled, markingSource, isEdit, id, refTables, isRemarksOpen } =
     props
-  const { setValue, watch, getValues } = useFormContext()
-  const dataProvider = useDataProvider()
+  const { setValue } = useFormContext()
   const configData = useConfigData()
   const [codeChanges, setCodeChanges] = useState<string[] | undefined>()
   const [caveChanges, setCaveChanges] = useState<string[] | undefined>()
@@ -45,27 +44,6 @@ export default function ProtectionBlockInputs<
       shouldDirty: true
     })
   }
-
-  const setProtectiveMarking = (id: number): void => {
-    if (!id) return
-    dataProvider
-      .getOne(constants.R_PROTECTIVE_MARKING, { id })
-      .then(({ data: pMarking }) => {
-        setValue('pMarking', pMarking.name)
-      })
-      .catch(console.error)
-  }
-
-  useEffect(() => {
-    const subscription = watch((data, { name }): void => {
-      if (name === 'protectiveMarking') {
-        setProtectiveMarking(data.protectiveMarking)
-      }
-    })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [watch])
 
   const formatChanges = (changes: string[] | undefined): string => {
     if (Array.isArray(changes)) {
@@ -99,10 +77,6 @@ export default function ProtectionBlockInputs<
       setValue('prevProtectionValues', detailData)
     }
   }
-
-  useEffect(() => {
-    setProtectiveMarking(getValues('protectiveMarking'))
-  }, [])
 
   useEffect(() => {
     setPrevValues()

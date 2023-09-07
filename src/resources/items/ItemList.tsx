@@ -16,7 +16,8 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField
+  TextField,
+  FunctionField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -44,9 +45,8 @@ import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
-import LocationField from './LocationField'
-import ItemListData, { type DataType } from './ItemListData'
 import { useLocation } from 'react-router-dom'
+import useItemList from '../../hooks/useItemList'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -188,15 +188,15 @@ interface ItemActionsProps {
 }
 
 const ItemActions = (props: ItemActionsProps): React.ReactElement => {
-  const { filter } = props
+  const { filter, preferenceKey } = props
   return (
-    <StyledTopToolbar {...props}>
+    <StyledTopToolbar>
       <ItemAssetReport
         storeKey='items-asset-report'
         filterDefaultValues={filter}
       />
       <FilterButton />
-      <SelectColumnsButton {...props} />
+      <SelectColumnsButton preferenceKey={preferenceKey} />
     </StyledTopToolbar>
   )
 }
@@ -318,13 +318,17 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   const removeFromDispatch = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
+      const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
+        id: itemId
+      })
+
       const auditData = {
         activityType: AuditType.EDIT,
         activityDetail: 'Item removed',
         securityRelated: false,
-        dataId: itemId,
+        // TODO: TAHA - the next line should be the id of the dispatch (not the item)
+        dataId: data.dispatchJob,
         resource: constants.R_DISPATCH,
-        // TODO: put the item number in for subject
         subjectId: itemId,
         subjectResource: constants.R_ITEMS
       }
@@ -333,8 +337,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         ...auditData,
         activityDetail: 'Dispatch Item removed',
         resource: constants.R_ITEMS,
-        subjectId: null,
-        subjectResource: null
+        // TODO: TAHA - the subject for this is the dispatch id, and R_DISPATCH
+        subjectId: data.dispatchJob,
+        subjectResource: constants.R_DISPATCH
       })
     })
 
@@ -350,6 +355,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   const returnDispatchedItems = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
+      const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
+        id: itemId
+      })
       const auditData = {
         activityType: AuditType.EDIT,
         activityDetail: 'Item returned',
@@ -357,8 +365,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dataId: itemId,
         resource: constants.R_DISPATCH,
         // TODO: include the item as subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: itemId,
+        subjectResource: constants.R_ITEMS
       }
       await audit(auditData)
       await audit({
@@ -367,8 +375,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS,
         // TODO: include the dispatch as subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: data.dispatchJob,
+        subjectResource: constants.R_DISPATCH
       })
     })
 
@@ -543,9 +551,8 @@ export default function ItemList(
   const { resource } = options ?? {}
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
-  const sKey = searchParams.get('filter')
-    ? 'filtered-item-list'
-    : 'items-items-list'
+  const filterInSearch = searchParams.get('filter')
+  const sKey = filterInSearch ? 'filtered-item-list' : 'items-items-list'
   const {
     datagridConfigurableProps,
     children,
@@ -564,34 +571,11 @@ export default function ItemList(
       }
     }
   }
-  const [data, setData] = useState<DataType>()
-  const CommonEndFields = [
-    <TextField source='remarks' key={'remarks'} />,
-    <TextField source='musterRemarks' key={'musterRemarks'} />,
-    <TextField
-      source='protectionString'
-      label='Protection'
-      key={'protectionString'}
-    />,
-    <SourceField
-      link={false}
-      source='destruction'
-      reference={constants.R_DESTRUCTION}
-      sourceField='name'
-      key={'destruction'}
-    />,
-    <SourceField
-      link={false}
-      source='dispatchJob'
-      reference={constants.R_DISPATCH}
-      sourceField='name'
-      label='Dispatch'
-      key={'dispatchJob'}
-    />
-  ]
   return (
     <List
-      disableSyncWithLocation
+      {...(filterInSearch
+        ? { disableSyncWithLocation: false }
+        : { disableSyncWithLocation: true })}
       sx={sx}
       hasCreate={false}
       actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
@@ -609,7 +593,44 @@ export default function ItemList(
       }
       storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
-      <ItemListData setData={setData} />
+      <ItemListData
+        bulkActionButtons={bulkActionButtons}
+        preferenceKey={preferenceKey}
+        resource={resource}
+        storeKey={storeKey}
+      />
+    </List>
+  )
+}
+
+interface Props {
+  preferenceKey: string
+  bulkActionButtons:
+    | false
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | undefined
+  resource: string
+  storeKey: string | false
+}
+
+const ItemListData = ({
+  preferenceKey,
+  bulkActionButtons,
+  resource,
+  storeKey
+}: Props): React.ReactElement => {
+  const { users, vaultLocations } = useItemList()
+  const CommonEndFields = [
+    <TextField<Item> source='remarks' key={'remarks'} />,
+    <TextField<Item> source='musterRemarks' key={'musterRemarks'} />,
+    <TextField<Item>
+      source='protectionString'
+      label='Protection'
+      key={'protectionString'}
+    />
+  ]
+  return (
+    <>
       <ResetDateFilter source='createdAt' />
       <ResetDateRangeFilter
         source='date_range'
@@ -624,34 +645,48 @@ export default function ItemList(
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField source='itemNumber' label='Reference' />
-        <TextField source='id' />
-        <TextField source='createdAt' label='Created' />
-        <LocationField label='Location' {...data} />
-        <SourceField
+        <TextField<Item> source='itemNumber' label='Reference' />
+        <TextField<Item> source='id' />
+        <TextField<Item> source='createdAt' label='Created' />
+        <FunctionField<Item>
+          label='Location'
+          render={(record) => {
+            if (record?.loanedTo) {
+              return users?.[record.loanedTo]?.name
+            }
+            if (record?.destructionDate) {
+              return 'DESTROYED'
+            }
+            if (record?.dispatchedDate) {
+              return 'SENT'
+            }
+            return vaultLocations?.[record?.vaultLocation]?.name
+          }}
+        />
+        <SourceField<Item>
           link={false}
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <SourceField
+        <SourceField<Item>
           link='show'
           source='loanedTo'
           reference={constants.R_USERS}
           label='Loaned to'
         />
-        <DateField showTime source='startDate' />
-        <DateField showTime source='endDate' />
-        <SourceField
+        <DateField<Item> showTime source='startDate' />
+        <DateField<Item> showTime source='endDate' />
+        <SourceField<Item>
           link={false}
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
         />
-        <SourceField
+        <SourceField<Item>
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField
+        <SourceField<Item>
           link={false}
           source='batch'
           reference={constants.R_BATCHES}
@@ -660,14 +695,32 @@ export default function ItemList(
 
         {resource !== constants.R_ITEMS
           ? [
-              <DateField source='destructionDate' key={'destructionDate'} />,
-              <DateField source='dispatchedDate' key={'dispatchDate'} />,
+              <SourceField<Item>
+                link={false}
+                source='destruction'
+                reference={constants.R_DESTRUCTION}
+                sourceField='name'
+                key={'destruction'}
+              />,
+              <DateField<Item>
+                source='destructionDate'
+                key={'destructionDate'}
+              />,
+              <SourceField<Item>
+                link={false}
+                source='dispatchJob'
+                reference={constants.R_DISPATCH}
+                sourceField='name'
+                label='Dispatch'
+                key={'dispatchJob'}
+              />,
+              <DateField<Item> source='dispatchedDate' key={'dispatchJob'} />,
               ...CommonEndFields
             ]
           : CommonEndFields}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
       </DatagridConfigurableWithShow>
-    </List>
+    </>
   )
 }

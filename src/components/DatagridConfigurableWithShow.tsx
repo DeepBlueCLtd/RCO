@@ -35,7 +35,7 @@ const PreviewButton = ({
 
 interface Props {
   resource: ResourceTypes
-  storeKey?: string
+  storeKey?: string | false
 }
 
 export default function DatagridConfigurableWithShow(
@@ -63,7 +63,7 @@ export default function DatagridConfigurableWithShow(
       }
     }
   }
-  const sx = itemsStoreKeys.includes(storeKey) ? styles : null
+  const sx = itemsStoreKeys.includes(storeKey as string) ? styles : null
 
   return (
     <DatagridConfigurable

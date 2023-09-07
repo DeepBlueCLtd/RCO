@@ -28,13 +28,15 @@ export default function ItemHistory(): React.ReactElement {
         }}>
         <Datagrid bulkActionButtons={false}>
           <DateField source='dateTime' label='Date' />
-          <TextField source='activityType' label='Status' />
-          <TextField source='activityDetail' label='Remarks' />
-          <FunctionField
+
+          <TextField<Audit> source='activityType' label='Status' />
+          <TextField<Audit> source='activityDetail' label='Remarks' />
+          <SourceField<Audit> source='user' reference={constants.R_USERS} />
+          <FunctionField<Audit>
             label='Subject'
-            render={(record: Audit) => {
+            render={(record) => {
               return (
-                <SourceField
+                <SourceField<Audit>
                   source='subjectId'
                   {...(record.subjectResource === constants.R_ITEMS
                     ? { sourceField: 'itemNumber' }
@@ -45,7 +47,7 @@ export default function ItemHistory(): React.ReactElement {
               )
             }}
           />
-          <SourceField source='user' reference={constants.R_USERS} />
+          <SourceField<Audit> source='user' reference={constants.R_USERS} />
         </Datagrid>
       </List>
     </FieldSet>

@@ -50,6 +50,7 @@ export const generateItemForTesting = ({
   return {
     ...(id !== undefined ? { id } : null),
     mediaType: mediaType ?? 1,
+    legacyMediaType: null,
     startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()
@@ -66,7 +67,14 @@ export const generateItemForTesting = ({
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
     consecSheets: 'consec-sheets-1',
-    musterRemarks: 'muster-remarks-1'
+    musterRemarks: 'muster-remarks-1',
+    loanedDate: null,
+    loanedTo: null,
+    destruction: null,
+    destructionDate: null,
+    dispatchedDate: null,
+    dispatchJob: null,
+    protectionString: null
   }
 }
 
@@ -85,7 +93,8 @@ export const generateProjectForTesting = ({
     remarks: 'dummy-remarks-1',
     startDate: DateTime.now().toFormat('yyyy-MM-dd'),
     endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
-    createdBy: 1
+    createdBy: 1,
+    enduring: false
   }
 }
 
@@ -117,7 +126,10 @@ export const generateUserForTesting = ({
   name,
   adminRights,
   active
-}: UserProps = {}): Omit<User, 'id' | 'createdAt' | 'createdBy'> => ({
+}: UserProps = {}): Omit<
+  User,
+  'id' | 'createdAt' | 'createdBy' | 'departedDate'
+> => ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
   password: 'abcd',

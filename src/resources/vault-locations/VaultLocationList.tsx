@@ -10,7 +10,7 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import HistoryButton from '../../components/HistoryButton'
 
 export default function VaultLocationList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const [openMusterList, setOpenMusterList] = useState(false)
   const [record, setRecord] = useState<IntegerReferenceItem>()
 
@@ -46,18 +46,18 @@ export default function VaultLocationList(): React.ReactElement {
       <DatagridConfigurableWithShow
         resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
-        <TextField source='id' label='ID' />
-        <FunctionField
+        <TextField<VaultLocation> source='id' label='ID' />
+        <FunctionField<VaultLocation>
           style={{ cursor: 'pointer' }}
           render={({ name }: any) => `${name as string}`}
           label='Name'
         />
-        <BooleanField
+        <BooleanField<VaultLocation>
           source='active'
           label='Active Vault Location'
           looseValue
         />
-        <FunctionField
+        <FunctionField<VaultLocation>
           label='History'
           render={(record: IntegerReferenceItem) => {
             return (

@@ -22,10 +22,10 @@ import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   yearOfReceipt: yup.string().required(),
-  department: yup.string().nonNullable().required(),
+  department: yup.string().nullable(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
-  organisation: yup.string().nonNullable().required(),
+  organisation: yup.string().nullable(),
   vault: yup.string()
 })
 
@@ -68,11 +68,24 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
 
 const BatchForm = (
   props: FormProps & { isShow?: boolean }
-): React.ReactElement => {
+): React.ReactElement | null => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
+  const { data: enduringProjects } = useGetList<Project>(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 10 },
+    filter: { enduring: true }
+  })
+
+  const { data: nonEnduringProjects } = useGetList<Project>(
+    constants.R_PROJECTS,
+    {
+      pagination: { page: 1, perPage: 40 },
+      filter: { enduring: false },
+      sort: { field: 'id', order: 'DESC' }
+    }
+  )
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
@@ -89,6 +102,15 @@ const BatchForm = (
   }, [])
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
+
+  if (enduringProjects === undefined || nonEnduringProjects === undefined)
+    return null
+
+  const choices = [...enduringProjects, ...nonEnduringProjects].map((d) => ({
+    name: d.name,
+    id: d.id,
+    enduring: d.enduring
+  }))
 
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
@@ -111,18 +133,16 @@ const BatchForm = (
             reference={constants.R_PLATFORMS}>
             <AutocompleteInput optionText='name' sx={sx} disabled={isShow} />
           </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
+          <AutocompleteInput
             source='project'
-            reference={constants.R_PROJECTS}>
-            <AutocompleteInput
-              label={configData?.projectName}
-              optionText='name'
-              sx={sx}
-              defaultValue={projectId !== undefined ? projectId : null}
-              disabled={isShow}
-            />
-          </ReferenceInput>
+            label={configData?.projectName}
+            optionText='name'
+            choices={choices}
+            sx={sx}
+            groupBy={(option) => (option.enduring ? 'Enduring' : 'Regular')}
+            defaultValue={projectId !== undefined ? projectId : null}
+            disabled={isShow}
+          />
         </FlexBox>
         <FlexBox marginBottom='20px' alignItems='center'>
           <DatePicker

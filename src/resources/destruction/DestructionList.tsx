@@ -12,7 +12,7 @@ import { useMemo, useState } from 'react'
 import HistoryButton from '../../components/HistoryButton'
 
 export default function DestructionList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const [record, setRecord] = useState<Destruction>()
 
   const filter = useMemo(
@@ -29,14 +29,20 @@ export default function DestructionList(): React.ReactElement {
   return (
     <List>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='name' label='Reference' />
-        <DateField source='createdAt' />
-        <SourceField source='createdBy' reference={constants.R_USERS} />
-        <DateField source='finalisedAt' />
-        <SourceField source='finalisedBy' reference={constants.R_USERS} />
-        <FunctionField
+        <TextField<Destruction> source='name' label='Reference' />
+        <DateField<Destruction> source='createdAt' />
+        <SourceField<Destruction>
+          source='createdBy'
+          reference={constants.R_USERS}
+        />
+        <DateField<Destruction> source='finalisedAt' />
+        <SourceField<Destruction>
+          source='finalisedBy'
+          reference={constants.R_USERS}
+        />
+        <FunctionField<Destruction>
           label='History'
-          render={(record: Destruction) => {
+          render={(record) => {
             return (
               <HistoryButton
                 onClick={(e) => {
@@ -48,7 +54,7 @@ export default function DestructionList(): React.ReactElement {
             )
           }}
         />
-        <TextField source='remarks' />
+        <TextField<Destruction> source='remarks' />
       </Datagrid>
       <ResourceHistoryModal
         filter={filter}

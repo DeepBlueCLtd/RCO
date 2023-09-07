@@ -21,6 +21,7 @@ import * as constants from '../constants'
 import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
+import React from 'react'
 
 type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
@@ -127,7 +128,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
         <>
           {selectedIds.map((id, index) => {
             return (
-              <>
+              <React.Fragment key={id}>
                 <Box padding={'20px'} key={id}>
                   <Typography variant='h4' textAlign='center' margin='10px'>
                     RCO - Location Muster List
@@ -151,26 +152,32 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     filter={{ vaultLocation: id, loanedTo: undefined }}
                     {...props}
                     footer={ProtectiveMarking}>
-                    <TextField source='itemNumber' label='Item Number' />
-                    <SourceField
+                    <TextField<Item> source='itemNumber' label='Item Number' />
+                    <SourceField<Item>
                       link='show'
                       source='mediaType'
                       reference={constants.R_MEDIA_TYPE}
                       label='Media type'
                     />
-                    <TextField source='consecSheets' label='Consec/Sheets' />
-                    <SourceField
+                    <TextField<Item>
+                      source='consecSheets'
+                      label='Consec/Sheets'
+                    />
+                    <SourceField<Item>
                       source='protectiveMarking'
                       reference={constants.R_PROTECTIVE_MARKING}
                     />
-                    <TextField source='musterRemarks' label='Muster remarks' />
+                    <TextField<Item>
+                      source='musterRemarks'
+                      label='Muster remarks'
+                    />
                   </ItemsReport>
                   <ReportSignature id={id} />
                 </Box>
                 {selectedIds.length !== index + 1 && (
                   <div className='pagebreak' />
                 )}
-              </>
+              </React.Fragment>
             )
           })}
         </>

@@ -25,14 +25,17 @@ export default function BatchReport(props: Props): React.ReactElement {
           Batch details:
         </Typography>
         <SimpleShowLayout>
-          <TextField source='batchNumber' />
-          <DateField source='createdAt' />
-          <SourceField
+          <TextField<Batch> source='batchNumber' />
+          <DateField<Batch> source='createdAt' />
+          <SourceField<Batch>
             source='project'
             reference={constants.R_PROJECTS}
             label={configData?.projectName}
           />
-          <SourceField source='platform' reference={constants.R_PLATFORMS} />
+          <SourceField<Batch>
+            source='platform'
+            reference={constants.R_PLATFORMS}
+          />
         </SimpleShowLayout>
       </Show>
 

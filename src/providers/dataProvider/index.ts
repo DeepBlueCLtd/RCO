@@ -63,7 +63,7 @@ export const getDataProvider = async (
 ): Promise<CustomDataProvider & DataProvider<string>> => {
   const provider = !MOCK
     ? dataProvider(
-        process.env.VITE_API_URL ?? 'http://localhost:4000/api/tables'
+        process.env.VITE_API_URL ?? 'http://localhost:8000/api/tables'
       )
     : await localForageDataProvider({
         prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
@@ -262,9 +262,9 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     // remove the id property
     const { id, ...editData } = params.data
 
-    return await axios.put(url, { fields: editData }).then((response) => {
+    return await axios.put(url, { fields: editData }).then(() => {
       return {
-        data: { id: response.data.data.lastInsertRowid, ...params.data }
+        data: { id: params.id, ...params.data }
       }
     })
   },

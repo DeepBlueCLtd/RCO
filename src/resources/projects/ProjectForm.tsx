@@ -1,5 +1,5 @@
 import React from 'react'
-import { DateInput, SimpleForm, TextInput } from 'react-admin'
+import { BooleanInput, DateInput, SimpleForm, TextInput } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
@@ -65,6 +65,7 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
         variant='outlined'
         sx={{ width: '100%' }}
       />
+      {isEdit && <BooleanInput source='enduring' />}
     </SimpleForm>
   )
 }

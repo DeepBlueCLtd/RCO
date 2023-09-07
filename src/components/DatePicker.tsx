@@ -32,9 +32,9 @@ const useStyles = makeStyles((theme: Theme) => {
 })
 
 export default function DatePicker(props: Props): React.ReactElement {
-  const { label, dataPickerProps, format, ...rest } = props
+  const { label, dataPickerProps, format, source, onChange } = props
   const [error, setError] = useState<string | null>('')
-  const { field, fieldState } = useInput(rest)
+  const { field, fieldState } = useInput({ source, onChange })
   const styles = useStyles()
 
   const value: Date | null = useMemo(() => {
@@ -44,7 +44,7 @@ export default function DatePicker(props: Props): React.ReactElement {
       field.value === '' &&
       typeof format !== 'undefined'
     ) {
-      field.onChange(dayjs(new Date()).format(format))
+      field.value = dayjs(new Date()).format(format)
       return new Date()
     }
     if (typeof format === 'undefined') {

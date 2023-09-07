@@ -88,7 +88,9 @@ const lifeCycles = (
         resource: R_BATCHES,
         dataId: record.data.id,
         subjectId: null,
-        subjectResource: null
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       return { ...record, data: withRef.data }
     } catch (error) {
