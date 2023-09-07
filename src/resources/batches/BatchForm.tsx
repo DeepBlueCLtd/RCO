@@ -89,7 +89,7 @@ const BatchForm = (
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
-    yearOfReceipt: '',
+    yearOfReceipt: new Date().getFullYear(),
     remarks: ''
   }
 

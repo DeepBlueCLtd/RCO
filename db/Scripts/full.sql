@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS audit (
 CREATE TABLE IF NOT EXISTS batch (
        id INTEGER PRIMARY KEY,
        batchNumber TEXT NOT NULL,
-       yearOfReceipt TEXT NOT NULL,
+       yearOfReceipt NUMBER NOT NULL,
        project INT,
        platform INT,
        organisation TEXT,

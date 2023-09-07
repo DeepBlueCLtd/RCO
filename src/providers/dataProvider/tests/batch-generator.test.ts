@@ -10,7 +10,7 @@ interface BatchType {
 const batches: Record<string, BatchType> = {
   [constants.R_BATCHES]: { data: [] }
 }
-const year = '2025'
+const year = 2025
 
 const mockProvider = {
   async getList(resource: string, filter: any) {
@@ -49,7 +49,7 @@ jest.mock('..', () => {
 const generateBatch = async (
   id: number,
   provider: DataProvider,
-  year: string,
+  year: number,
   batchNumber: string | undefined,
   user: number
 ): Promise<void> => {
@@ -113,15 +113,6 @@ describe('generateBatchId', () => {
       await generateBatch(id, provider, year, undefined, 1)
       const result = await generateBatchId(provider, year)
       expect(result).toBe('3')
-    })
-  })
-
-  describe('when an invalid value is provided for year (non-integer)', () => {
-    it('should throw a TypeError', async () => {
-      const year = 'aaa'
-      await expect(
-        async () => await generateBatchId(provider, year)
-      ).rejects.toThrow(TypeError)
     })
   })
 })

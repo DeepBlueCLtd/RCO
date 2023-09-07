@@ -21,7 +21,7 @@ export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
   return {
     ...(id !== undefined ? { id } : null),
     batchNumber: `V1/${year}`,
-    yearOfReceipt: String(year),
+    yearOfReceipt: year,
     department: '1-department',
     project: 1,
     platform: 1,
