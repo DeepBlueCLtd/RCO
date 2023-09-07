@@ -11,7 +11,7 @@ const UserShow = React.lazy(async () => await import('./UserShow'))
 const transform = (data: any): TransformData => {
   const updatedData = {
     ...data,
-    password: bcrypt.hashSync(data.password, data.name)
+    password: bcrypt.hashSync(data.password)
   }
   return updatedData
 }

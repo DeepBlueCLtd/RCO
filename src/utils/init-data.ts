@@ -24,7 +24,7 @@ export const encryptedUsers = (isHigh?: boolean): User[] => {
   const mappedUsers = userList.map((user) => {
     const updatedUser = {
       ...user,
-      password: bcrypt.hashSync(user.password, user.name)
+      password: bcrypt.hashSync(user.password)
     }
     return updatedUser
   })
