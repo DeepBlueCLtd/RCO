@@ -37,6 +37,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
 
   return (
     <SimpleForm
+      record={{ ...record, password: '' }}
       toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
