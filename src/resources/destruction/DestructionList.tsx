@@ -10,6 +10,24 @@ import * as constants from '../../constants'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useMemo, useState } from 'react'
 import HistoryButton from '../../components/HistoryButton'
+import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+
+const filters = [
+  <NullUndefinedFilter
+    label='Destroyed'
+    source='id_neq'
+    fieldName='finalisedAt'
+    resource={constants.R_DESTRUCTION}
+    key='destroyed'
+  />,
+  <NullUndefinedFilter
+    label='Not Destroyed'
+    source='id_eq'
+    fieldName='finalisedAt'
+    resource={constants.R_DESTRUCTION}
+    key='not_destroyed'
+  />
+]
 
 export default function DestructionList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>(false)
@@ -27,7 +45,7 @@ export default function DestructionList(): React.ReactElement {
     setOpen(open)
   }
   return (
-    <List>
+    <List filters={filters}>
       <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField<Destruction> source='name' label='Reference' />
         <DateField<Destruction> source='createdAt' />

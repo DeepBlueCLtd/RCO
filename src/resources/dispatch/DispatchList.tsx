@@ -14,6 +14,31 @@ import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import { useLocation } from 'react-router-dom'
+import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+
+const filters = [
+  <NullUndefinedFilter
+    label='Dispatched'
+    source='id_neq'
+    fieldName='dispatchedAt'
+    resource={constants.R_DISPATCH}
+    key='dispatched'
+  />,
+  <NullUndefinedFilter
+    label='Not Dispatched'
+    source='id_eq'
+    fieldName='dispatchedAt'
+    resource={constants.R_DISPATCH}
+    key='not_dispatched'
+  />,
+  <NullUndefinedFilter
+    label='Pending Receipt Note'
+    source='id'
+    fieldName='receiptReceived'
+    resource={constants.R_DISPATCH}
+    key='pendingReceipt'
+  />
+]
 
 const BulkActions = (): React.ReactElement => {
   const { selectedIds } = useListContext<Dispatch>()
@@ -56,7 +81,7 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
     : 'simple-dispatch-list'
 
   return (
-    <List hasCreate storeKey={storeKey}>
+    <List hasCreate storeKey={storeKey} filters={filters}>
       <Datagrid
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>
