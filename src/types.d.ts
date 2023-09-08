@@ -158,7 +158,7 @@ interface ItemHandling {
 
 type Batch = ResourceWithCreation & {
   batchNumber: string
-  yearOfReceipt: string
+  yearOfReceipt: number
   department: Department['id'] | null
   project: Project['id'] | null
   platform: Platform['id'] | null

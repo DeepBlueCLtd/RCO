@@ -95,7 +95,7 @@ const getItemReferenceNumber = (batch: Batch, items: Item[]): string => {
   })
 }
 
-const generateBatchId = (year: string, batch: Batch[]): string => {
+const generateBatchId = (year: number, batch: Batch[]): string => {
   const yearsFound = batch.filter((b) => b.yearOfReceipt === year)
   return (yearsFound.length + 1).toLocaleString('en-US', {
     minimumIntegerDigits: 2,
@@ -211,7 +211,7 @@ export const generateBatch = (
   }
 
   for (let i = 1; i <= length; i++) {
-    const year = String(generateRandomNumber(2020, 2023))
+    const year = generateRandomNumber(2020, 2023)
 
     const department = `${generateRandomNumber(1, departments - 1)}-${
       ID_FIX[constants.R_DEPARTMENT]
