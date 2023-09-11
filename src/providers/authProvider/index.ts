@@ -6,13 +6,10 @@ import {
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
 import { AuditType } from '../../utils/activity-types'
-import {
-  decryptData,
-  decryptPassword,
-  encryptData,
-  generateSalt
-} from '../../utils/encryption'
+import { decryptData, encryptData, generateSalt } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
+import bcrypt from 'bcryptjs'
+
 export const getUser = (): User | undefined => {
   const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
   const salt = localStorage.getItem(constants.SALT)
@@ -45,15 +42,12 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       })
       const user = data.data.find((item: any) => item.name === username)
       if (user !== undefined) {
-        const salt: string = user.salt
-        const userHashedPassword: string = user.password
-        const decryptedPassword = decryptPassword(userHashedPassword, salt)
-        if (password === decryptedPassword) {
+        if (bcrypt.compareSync(password, user.password)) {
           const clonedUser: Omit<User, 'password'> & { password?: string } = {
             ...user
           }
           delete clonedUser.password
-          const salt: string = generateSalt()
+          const salt = generateSalt()
           const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
           setToken(token, salt)
           await audit({
