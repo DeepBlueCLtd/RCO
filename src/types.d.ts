@@ -233,6 +233,7 @@ interface RCOStore {
 interface Destruction {
   readonly id: number
   name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
   finalisedAt: string | null
@@ -257,6 +258,7 @@ interface Address {
 interface Dispatch {
   id: number
   name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
   remarks: string
