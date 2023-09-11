@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS batch (
        FOREIGN KEY (department) REFERENCES department(id),
        FOREIGN KEY (organisation) REFERENCES organisation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
-       FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (vault) REFERENCES vault(id)
 ) WITHOUT ROWID;
 
@@ -166,6 +166,7 @@ CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
 
        name TEXT NOT NULL,
+       vault TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -175,7 +176,8 @@ CREATE TABLE IF NOT EXISTS destruction(
        remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
-       FOREIGN KEY (finalisedBy) REFERENCES user(id)
+       FOREIGN KEY (finalisedBy) REFERENCES user(id),
+       FOREIGN KEY (vault) REFERENCES vault(id)
  ) WITHOUT ROWID;
 
 -- Resource table - Dispatch
@@ -183,6 +185,7 @@ CREATE TABLE IF NOT EXISTS dispatch(
        id INTEGER PRIMARY KEY,
 
        name TEXT,
+       vault TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -196,7 +199,8 @@ CREATE TABLE IF NOT EXISTS dispatch(
        remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
-       FOREIGN KEY (address) REFERENCES address(id)
+       FOREIGN KEY (address) REFERENCES address(id),
+       FOREIGN KEY (vault) REFERENCES vault(id)
  ) WITHOUT ROWID;
 
 -- Resource table - Item
