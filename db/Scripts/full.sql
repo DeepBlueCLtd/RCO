@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS batch (
        remarks TEXT,
        receiptNotes TEXT,
        createdAt TEXT NOT NULL,
-       createdBy INT NOT NULL,
+       createdBy INT, 
 
        FOREIGN KEY (project) REFERENCES project(id),
        FOREIGN KEY (platform) REFERENCES platform(id),

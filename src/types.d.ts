@@ -77,7 +77,7 @@ type StringReferenceItem = ActiveItem & {
 type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
-  createdBy: User['id']
+  createdBy: User['id'] | null // allow null, since some legacy data doesn't have created by
 }
 
 type User = ResourceWithCreation & {
