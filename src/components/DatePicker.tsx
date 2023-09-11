@@ -41,7 +41,7 @@ export default function DatePicker(props: Props): React.ReactElement {
 
   useEffect(() => {
     if (initialFieldValue === '' && typeof format !== 'undefined') {
-      field.onChange(dayjs(new Date()).format(format))
+      field.onChange(Number(dayjs(new Date()).format(format)))
     }
   }, [field, format, initialFieldValue])
 
@@ -50,7 +50,7 @@ export default function DatePicker(props: Props): React.ReactElement {
     if (typeof format === 'undefined') {
       return new Date(field.value)
     }
-    return dayjs(field.value, format).toDate()
+    return dayjs(String(field.value), format).toDate()
   }, [field.value])
 
   const errorMessage = error ?? fieldState.error?.message
@@ -64,7 +64,7 @@ export default function DatePicker(props: Props): React.ReactElement {
       return
     }
     if (typeof format !== 'undefined') {
-      field.onChange(dayjs(value).format(format))
+      field.onChange(Number(dayjs(value).format(format)))
     } else {
       field.onChange(dayjs(value).toDate())
     }
