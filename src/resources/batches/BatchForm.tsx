@@ -8,7 +8,8 @@ import {
   useGetList,
   type TextInputProps,
   ReferenceInput,
-  AutocompleteInput
+  AutocompleteInput,
+  DateInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -19,9 +20,10 @@ import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
 import { useConfigData } from '../../utils/useConfigData'
+import SourceInput from '../../components/SourceInput'
 
 const schema = yup.object({
-  yearOfReceipt: yup.string().required(),
+  yearOfReceipt: yup.number().required(),
   department: yup.string().nullable(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
@@ -89,7 +91,6 @@ const BatchForm = (
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
-    yearOfReceipt: '',
     remarks: ''
   }
 
@@ -114,6 +115,22 @@ const BatchForm = (
 
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
+  }
+
+  const Created = (): React.ReactElement => {
+    const sx = {
+      width: '100%'
+    }
+    return (
+      <FlexBox>
+        <DateInput source='createdAt' sx={sx} disabled />
+        <SourceInput
+          source='createdBy'
+          reference={constants.R_USERS}
+          inputProps={{ sx, disabled: true }}
+        />
+      </FlexBox>
+    )
   }
 
   return (
@@ -217,6 +234,7 @@ const BatchForm = (
             </>
           )}
         </FlexBox>
+        <Created />
         <TextInput
           multiline
           source='remarks'

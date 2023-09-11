@@ -77,7 +77,7 @@ type StringReferenceItem = ActiveItem & {
 type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
-  createdBy: User['id']
+  createdBy: User['id'] | null // allow null, since some legacy data doesn't have created by
 }
 
 type User = ResourceWithCreation & {
@@ -158,7 +158,7 @@ interface ItemHandling {
 
 type Batch = ResourceWithCreation & {
   batchNumber: string
-  yearOfReceipt: string
+  yearOfReceipt: number
   department: Department['id'] | null
   project: Project['id'] | null
   platform: Platform['id'] | null

@@ -264,7 +264,7 @@ function DestructionItemList(
 
   const destroyed: boolean = useMemo(() => {
     const permission = hasAccess(constants.R_ITEMS, { write: true })
-    return !permission || typeof data?.finalisedAt !== 'undefined'
+    return permission && !!data?.finalisedAt
   }, [data])
 
   const bulkActionButtons: false | React.ReactElement = destroyed ? (

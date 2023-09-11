@@ -28,7 +28,7 @@ const compareVersions = (v1: string, v2: string): number => {
 
 export const generateBatchId = async (
   provider: DataProvider,
-  year: string
+  year: number
 ): Promise<string> => {
   if (!isNumber(year)) throw new TypeError('Year invalid')
   const batches = await provider.getList(R_BATCHES, {
@@ -73,7 +73,7 @@ const lifeCycles = (
     try {
       const { data } = record
       const { id, yearOfReceipt: year } = data
-      const yearVal: string = year
+      const yearVal = year
       const idVal: string = await generateBatchId(provider, year)
       const batchNumber = `V${idVal}/${yearVal}`
       const withRef = await dataProvider.update<Batch>(R_BATCHES, {
