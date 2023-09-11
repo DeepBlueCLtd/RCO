@@ -219,7 +219,7 @@ interface RCOStore {
   batch: Batch[]
   item: Item[]
   destruction: Destruction[]
-  dispatche: Dispatch[]
+  dispatch: Dispatch[]
   vault: Vault[]
   // bridging tables
   itemCode: ItemCode[]

@@ -251,7 +251,7 @@ const loadDefaultData = async (
   )
 
   const audit: Audit[] = []
-  const dispatche: Dispatch[] = []
+  const dispatch: Dispatch[] = []
   const destruction: Destruction[] = []
 
   const configDataItem: ConfigData = {
@@ -282,7 +282,7 @@ const loadDefaultData = async (
     catCave,
     audit,
     destruction,
-    dispatche,
+    dispatch,
     address,
     configData,
     vault,
@@ -310,7 +310,7 @@ const loadDefaultData = async (
     catCave: constants.R_CAT_CAVE,
     audit: constants.R_AUDIT,
     destruction: constants.R_DESTRUCTION,
-    dispatche: constants.R_DISPATCH,
+    dispatch: constants.R_DISPATCH,
     address: constants.R_ADDRESSES,
     configData: constants.R_CONFIG,
     vault: constants.R_VAULT
