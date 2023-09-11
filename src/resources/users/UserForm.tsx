@@ -8,7 +8,6 @@ import {
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { decryptPassword } from '../../utils/encryption'
 import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
@@ -45,16 +44,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <TextInput
-        source='password'
-        variant='outlined'
-        sx={{ width: '100%' }}
-        format={(password) => {
-          if (password?.length === 88)
-            return decryptPassword(password, record.salt)
-          else return password !== null ? password : ''
-        }}
-      />
+      <TextInput source='password' variant='outlined' sx={{ width: '100%' }} />
       <FlexBox>
         <SelectInput
           label='Role'
