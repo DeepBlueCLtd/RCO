@@ -62,7 +62,7 @@ export default function Login(): React.ReactElement {
             <TableHead>
               <TableRow>
                 <TableCell align='center' sx={{ fontWeight: '600' }}>
-                  User
+                  Staff Number
                 </TableCell>
                 <TableCell align='center' sx={{ fontWeight: '600' }}>
                   Password
@@ -71,11 +71,11 @@ export default function Login(): React.ReactElement {
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell align='center'>ian</TableCell>
+                <TableCell align='center'>d-1</TableCell>
                 <TableCell align='center'>admin</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell align='center'>jason</TableCell>
+                <TableCell align='center'>d-2</TableCell>
                 <TableCell align='center'>user</TableCell>
               </TableRow>
             </TableBody>
