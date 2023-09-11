@@ -24,9 +24,9 @@ export default function Login(): React.ReactElement {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const username = formData.get('username') as string
+    const staffNumber = formData.get('staffNumber') as string
     const password = formData.get('password') as string
-    login({ username, password })
+    login({ staffNumber, password })
       .catch(() => {
         notify('Invalid email or password', { type: 'error' })
       })
@@ -62,7 +62,7 @@ export default function Login(): React.ReactElement {
             <TableHead>
               <TableRow>
                 <TableCell align='center' sx={{ fontWeight: '600' }}>
-                  User
+                  Staff Number
                 </TableCell>
                 <TableCell align='center' sx={{ fontWeight: '600' }}>
                   Password
@@ -71,11 +71,11 @@ export default function Login(): React.ReactElement {
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell align='center'>ian</TableCell>
+                <TableCell align='center'>d-1</TableCell>
                 <TableCell align='center'>admin</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell align='center'>jason</TableCell>
+                <TableCell align='center'>d-2</TableCell>
                 <TableCell align='center'>user</TableCell>
               </TableRow>
             </TableBody>
@@ -115,9 +115,9 @@ export default function Login(): React.ReactElement {
               required
               fullWidth
               id='username'
-              label='Username'
-              name='username'
-              autoComplete='username'
+              label='Staff Number'
+              name='staffNumber'
+              autoComplete='staffNumber'
               autoFocus
             />
             <TextField

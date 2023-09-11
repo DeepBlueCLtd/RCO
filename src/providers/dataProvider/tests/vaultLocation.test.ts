@@ -31,7 +31,7 @@ describe('CRUD operations vault location', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
