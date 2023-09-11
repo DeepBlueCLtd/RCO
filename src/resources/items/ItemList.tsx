@@ -53,6 +53,7 @@ const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 const omitColumns: Array<keyof Item> = [
   'id',
   'createdAt',
+  'createdBy',
   'remarks',
   'startDate',
   'endDate',
@@ -647,7 +648,8 @@ const ItemListData = ({
         omit={omitColumns}>
         <TextField<Item> source='itemNumber' label='Reference' />
         <TextField<Item> source='id' />
-        <TextField<Item> source='createdAt' label='Created' />
+        <TextField<Item> source='createdAt' label='Created At' />
+        <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
         <FunctionField<Item>
           label='Location'
           render={(record) => {
