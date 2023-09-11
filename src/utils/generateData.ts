@@ -233,7 +233,7 @@ export const generateBatch = (
       organisation,
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
-      createdBy: user
+      createdBy: !isNull() ? null : user
     }
     batches.push(obj)
   }
