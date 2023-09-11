@@ -34,13 +34,15 @@ const removeToken = (): void => {
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
-    login: async ({ username, password }) => {
+    login: async ({ staffNumber, password }) => {
       const data = await dataProvider.getList(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
-        filter: { name: username }
+        filter: { staffNumber }
       })
-      const user = data.data.find((item: any) => item.name === username)
+      const user = data.data.find(
+        (item: any) => item.staffNumber === staffNumber
+      )
       if (user !== undefined) {
         if (bcrypt.compareSync(password, user.password)) {
           const clonedUser: Omit<User, 'password'> & { password?: string } = {
