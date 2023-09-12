@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   SelectInput,
   type SelectInputProps,
@@ -21,6 +21,7 @@ import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
 import { useConfigData } from '../../utils/useConfigData'
 import SourceInput from '../../components/SourceInput'
+import { DateTime } from 'luxon'
 
 const schema = yup.object({
   yearOfReceipt: yup.number().required(),
@@ -74,16 +75,26 @@ const BatchForm = (
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
+  const compareDate = useMemo(
+    () => DateTime.now().minus({ years: 2 }).toISO(),
+    []
+  )
   const { data: enduringProjects } = useGetList<Project>(constants.R_PROJECTS, {
     pagination: { page: 1, perPage: 10 },
-    filter: { enduring: true }
+    filter: {
+      enduring: true
+    }
   })
 
   const { data: nonEnduringProjects } = useGetList<Project>(
     constants.R_PROJECTS,
     {
       pagination: { page: 1, perPage: 40 },
-      filter: { enduring: false },
+      filter: {
+        enduring: false,
+        active: true,
+        endDate_gte: compareDate
+      },
       sort: { field: 'id', order: 'DESC' }
     }
   )
