@@ -19,18 +19,18 @@ import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 const filters = [
   <NullUndefinedFilter
     label='Dispatched'
-    source='dispatchedAt_neq'
+    source='dispatchedAt__notnull'
     key='dispatched'
   />,
   <NullUndefinedFilter
     label='Not Dispatched'
-    source='dispatchedAt_eq'
+    source='dispatchedAt__null'
     key='not_dispatched'
   />,
   <NullUndefinedFilter
     label='Pending Receipt Note'
     source='id'
-    key='pendingReceipt'
+    key='pendingReceipt__null'
   />
 ]
 
