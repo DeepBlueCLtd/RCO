@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS project (
        startDate TEXT NOT NULL,
        endDate TEXT NOT NULL,
        enduring INTEGER NOT NULL,
+       active INTEGER NOT NULL,
        FOREIGN KEY (createdBy) REFERENCES user(id)
 ) WITHOUT ROWID;
 

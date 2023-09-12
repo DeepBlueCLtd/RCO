@@ -64,6 +64,7 @@ export default function ProjectList(): React.ReactElement {
         <DateField<Project> source='startDate' label='Start' />
         <DateField<Project> source='endDate' label='End' />
         <BooleanField<Project> source='enduring' looseValue />
+        <BooleanField<Project> source='active' looseValue />
         <TextField<Project> source='createdAt' label='Created at' />
         <SourceField<Project>
           source='createdBy'

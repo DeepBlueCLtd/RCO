@@ -126,6 +126,7 @@ type Project = ResourceWithCreation & {
   startDate: string
   endDate: string
   enduring: boolean | null
+  active: boolean
 }
 
 type Department = StringReferenceItem
