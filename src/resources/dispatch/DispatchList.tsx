@@ -29,8 +29,8 @@ const filters = [
   />,
   <NullUndefinedFilter
     label='Pending Receipt Note'
-    source='id'
-    key='pendingReceipt__null'
+    source='receiptReceived__null'
+    key='receiptPending'
   />
 ]
 
