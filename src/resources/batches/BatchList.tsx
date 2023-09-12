@@ -46,7 +46,8 @@ const omitColumns: string[] = [
   'remarks',
   'id',
   'receiptNotes',
-  'createdAt'
+  'createdAt',
+  'createdBy'
 ]
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
@@ -176,7 +177,8 @@ export default function BatchList(): React.ReactElement {
         <SourceField<Batch> source='vault' reference={constants.R_VAULT} />
         <TextField<Batch> source='remarks' />
         <TextField<Batch> source='receiptNotes' />
-        <TextField<Batch> source='createdAt' label='Created' />
+        <TextField<Batch> source='createdAt' label='Created At' />
+        <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
       </DatagridConfigurable>
     </List>
   )

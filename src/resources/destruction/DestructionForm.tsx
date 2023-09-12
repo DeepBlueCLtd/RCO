@@ -16,6 +16,7 @@ import DatePicker from '../../components/DatePicker'
 import TextFields from '@mui/material/TextField'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { ConditionalReferenceInput } from '../batches/BatchForm'
 
 interface Props {
   isEdit?: boolean
@@ -91,7 +92,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   }
 
   const onSubmit = async (data: any): Promise<void> => {
-    const { remarks } = data
+    const { remarks, vault } = data
     try {
       const name = getName(lastId, year)
       const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
@@ -99,7 +100,8 @@ export default function DestructionForm(props: Props): React.ReactElement {
         remarks,
         finalisedAt: null,
         finalisedBy: null,
-        reportPrintedAt: null
+        reportPrintedAt: null,
+        vault
       }
       await create(
         constants.R_DESTRUCTION,
@@ -160,6 +162,12 @@ export default function DestructionForm(props: Props): React.ReactElement {
         value={name}
         label='Reference'
         disabled={disabledFields.includes('name')}
+      />
+      <ConditionalReferenceInput
+        source='vault'
+        reference={constants.R_VAULT}
+        inputProps={{ helperText: false }}
+        active
       />
       <TextInput sx={{ width: '100%' }} source='remarks' />
     </SimpleForm>

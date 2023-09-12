@@ -77,7 +77,7 @@ type StringReferenceItem = ActiveItem & {
 type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
-  createdBy: User['id']
+  createdBy: User['id'] | null // allow null, since some legacy data doesn't have created by
 }
 
 type User = ResourceWithCreation & {
@@ -219,7 +219,7 @@ interface RCOStore {
   batch: Batch[]
   item: Item[]
   destruction: Destruction[]
-  dispatche: Dispatch[]
+  dispatch: Dispatch[]
   vault: Vault[]
   // bridging tables
   itemCode: ItemCode[]
@@ -233,6 +233,7 @@ interface RCOStore {
 interface Destruction {
   readonly id: number
   name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
   finalisedAt: string | null
@@ -257,6 +258,7 @@ interface Address {
 interface Dispatch {
   id: number
   name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
   remarks: string

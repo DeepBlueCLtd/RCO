@@ -7,10 +7,11 @@ import {
 } from 'react-admin'
 import React from 'react'
 import SourceInput from '../../components/SourceInput'
-import { R_ADDRESSES, R_USERS } from '../../constants'
+import { R_ADDRESSES, R_USERS, R_VAULT } from '../../constants'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import FlexBox from '../../components/FlexBox'
+import { ConditionalReferenceInput } from '../batches/BatchForm'
 
 interface Props {
   show?: boolean
@@ -79,6 +80,12 @@ export default function DispatchForm(props: Props): React.ReactElement {
           </FlexBox>
         </>
       )}
+      <ConditionalReferenceInput
+        source='vault'
+        reference={R_VAULT}
+        inputProps={{ helperText: false }}
+        active
+      />
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
     </SimpleForm>
   )

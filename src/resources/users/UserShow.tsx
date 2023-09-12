@@ -42,7 +42,7 @@ const style = {
 
 interface Props {
   handleClose: () => void
-  record?: User & { salt: string }
+  record?: User
 }
 
 const DepartOrganisation = ({
@@ -82,7 +82,7 @@ interface UserShowCompType {
 }
 
 const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
-  const { record, isLoading } = useShowContext<User & { salt: string }>()
+  const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
