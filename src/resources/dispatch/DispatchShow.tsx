@@ -79,7 +79,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const dispatched: boolean =
     !hasWritePermission ||
     (typeof record?.dispatchedAt !== 'undefined' &&
-      record?.dispatchedAt !== null)
+      record?.dispatchedAt !== null &&
+      record?.dispatchedAt !== 'null')
 
   const receiptReceived: boolean =
     !hasWritePermission ||

@@ -11,16 +11,17 @@ import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useMemo, useState } from 'react'
 import HistoryButton from '../../components/HistoryButton'
 import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+import { ConditionalDateField } from '../dispatch/DispatchList'
 
 const filters = [
   <NullUndefinedFilter
     label='Destroyed'
-    source='finalisedAt__notnull'
+    source={process.env.MOCK ? 'finalisedAt_neq' : 'finalisedAt__notnull'}
     key='destroyed'
   />,
   <NullUndefinedFilter
     label='Not Destroyed'
-    source='finalisedAt__null'
+    source={process.env.MOCK ? 'finalisedAt_eq' : 'finalisedAt__null'}
     key='not_destroyed'
   />
 ]
@@ -44,7 +45,7 @@ export default function DestructionList(): React.ReactElement {
     <List filters={filters}>
       <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField<Destruction> source='name' label='Reference' />
-        <DateField<Destruction> source='createdAt' />
+        <ConditionalDateField label='Finalised at' source='finalisedAt' />
         <SourceField<Destruction>
           source='createdBy'
           reference={constants.R_USERS}
