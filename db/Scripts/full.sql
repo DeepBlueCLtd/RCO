@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS project (
        name TEXT NOT NULL,
        remarks TEXT,
        createdAt TEXT NOT NULL,
-       createdBy INT NOT NULL,
+       createdBy INT,
        startDate TEXT NOT NULL,
        endDate TEXT NOT NULL,
        enduring INTEGER NOT NULL,
