@@ -14,7 +14,7 @@ const NullUndefinedFilter = (props: Props): React.ReactElement => {
   useEffect(() => {
     setFilters(
       {
-        ...filterValues,
+        ...displayedFilters,
         [source]: process.env.MOCK ? undefined : null,
         ...filterValues
       },

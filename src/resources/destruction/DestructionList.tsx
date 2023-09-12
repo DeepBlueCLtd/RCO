@@ -15,16 +15,12 @@ import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 const filters = [
   <NullUndefinedFilter
     label='Destroyed'
-    source='id_neq'
-    fieldName='finalisedAt'
-    resource={constants.R_DESTRUCTION}
+    source='finalisedAt_neq'
     key='destroyed'
   />,
   <NullUndefinedFilter
     label='Not Destroyed'
-    source='id_eq'
-    fieldName='finalisedAt'
-    resource={constants.R_DESTRUCTION}
+    source='finalisedAt_eq'
     key='not_destroyed'
   />
 ]
