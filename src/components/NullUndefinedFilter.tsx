@@ -15,6 +15,7 @@ const NullUndefinedFilter = (props: Props): React.ReactElement => {
     setFilters(
       {
         ...filterValues,
+        // NOTE: react-admin doesn't re-query backend if right-hand value is null
         [source]: 'dummy'
       },
       displayedFilters
