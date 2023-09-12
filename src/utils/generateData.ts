@@ -137,7 +137,8 @@ export const generateProject = (
       endDate: endDate.toString(),
       remarks: `project-remarks-${i}`,
       createdBy: user,
-      enduring: false
+      enduring: false,
+      active: Math.random() > 0.4
     }
     projects.push(obj)
   }
@@ -160,7 +161,8 @@ export const generateEnduringProjects = (
       endDate,
       remarks: `project-remarks-${i}`,
       createdBy: user,
-      enduring: true
+      enduring: true,
+      active: true
     }
     projects.push(obj)
   }

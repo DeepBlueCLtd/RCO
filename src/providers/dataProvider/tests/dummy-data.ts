@@ -94,7 +94,8 @@ export const generateProjectForTesting = ({
     startDate: DateTime.now().toFormat('yyyy-MM-dd'),
     endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
     createdBy: 1,
-    enduring: false
+    enduring: false,
+    active: true
   }
 }
 

@@ -16,8 +16,9 @@ import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
+import SourceField from '../../components/SourceField'
 
-const omitColumns: string[] = ['createdAt']
+const omitColumns: string[] = ['createdAt', 'createdBy']
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
@@ -60,10 +61,15 @@ export default function ProjectList(): React.ReactElement {
         bulkActionButtons={false}>
         <TextField<Project> source='name' />
         <TextField<Project> source='remarks' />
-        <TextField<Project> source='createdAt' label='Created' />
         <DateField<Project> source='startDate' label='Start' />
         <DateField<Project> source='endDate' label='End' />
         <BooleanField<Project> source='enduring' looseValue />
+        <BooleanField<Project> source='active' looseValue />
+        <TextField<Project> source='createdAt' label='Created at' />
+        <SourceField<Project>
+          source='createdBy'
+          reference={constants.R_USERS}
+        />
       </DatagridConfigurable>
     </List>
   )
