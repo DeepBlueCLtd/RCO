@@ -15,12 +15,12 @@ import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 const filters = [
   <NullUndefinedFilter
     label='Destroyed'
-    source='finalisedAt_neq'
+    source='finalisedAt_notnull'
     key='destroyed'
   />,
   <NullUndefinedFilter
     label='Not Destroyed'
-    source='finalisedAt_eq'
+    source='finalisedAt_null'
     key='not_destroyed'
   />
 ]
