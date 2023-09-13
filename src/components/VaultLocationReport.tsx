@@ -131,7 +131,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
               <React.Fragment key={id}>
                 <Box padding={'20px'} key={id}>
                   <Typography variant='h4' textAlign='center' margin='10px'>
-                    RCO - Location Muster List
+                    VAL - Location Muster List
                   </Typography>
                   <Typography variant='h5' textAlign='center' margin='10px'>
                     100% Muster List for {locations?.[id]?.name}, printed{' '}

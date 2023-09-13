@@ -103,7 +103,7 @@ export default function Login(): React.ReactElement {
               }}
             />
             <Typography component='h1' variant='h5'>
-              Welcome to RCO
+              Welcome to VAL
             </Typography>
           </div>
           <Box
