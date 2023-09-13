@@ -53,7 +53,7 @@ export const SideMenus = (): React.ReactElement => {
         <Menu.ResourceItem name={constants.R_BATCHES} />
       )}
       {accessStates.itemsHasAccess && (
-        <Menu.ResourceItem name={constants.R_ITEMS} />
+        <Menu.ResourceItem name={constants.R_RICH_ITEMS} />
       )}
       {accessStates.vaultLocationHasAccess && (
         <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />

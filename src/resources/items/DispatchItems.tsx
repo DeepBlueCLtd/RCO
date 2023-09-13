@@ -47,9 +47,10 @@ export default function DispatchItems(props: Props): React.ReactElement {
 
   useEffect(() => {
     setLoading(true)
+    const nullFilter = process.env.MOCK ? 'null' : null
     dataProvider
       .getList<Dispatch>(constants.R_DISPATCH, {
-        filter: { dispatchedAt: 'null' },
+        filter: { dispatchedAt: nullFilter },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,

@@ -143,6 +143,20 @@ const getFilters = (resource?: string): React.ReactElement[] => {
       fieldName='loanedTo'
       key='loaned'
       resource={constants.R_ITEMS}
+    />,
+    <SourceInput
+      source='project'
+      key='project'
+      sort={sort('id')}
+      reference={constants.R_PROJECTS}
+      optionField='name'
+    />,
+    <SourceInput
+      source='platform'
+      key='platform'
+      sort={sort('id')}
+      reference={constants.R_PLATFORMS}
+      optionField='name'
     />
   ]
   if (resource === constants.R_ALL_ITEMS) {
@@ -265,7 +279,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     dispatch: true
   }
 
-  const { selectedIds } = useListContext<Item>()
+  const { selectedIds } = useListContext<RichItem>()
   const isSelected = selectedIds.length > 0
   const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
     ids: selectedIds
@@ -580,7 +594,7 @@ export default function ItemList(
       sx={sx}
       hasCreate={false}
       actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
-      resource={constants.R_ITEMS}
+      resource={constants.R_RICH_ITEMS}
       filter={props?.filter ?? options?.filter}
       sort={options?.sort}
       perPage={100}
@@ -639,18 +653,18 @@ const ItemListData = ({
         endSource='startDate_lte'
       />
       <DatagridConfigurableWithShow
-        resource={constants.R_ITEMS}
+        resource={constants.R_RICH_ITEMS}
         storeKey={storeKey}
         bulkActionButtons={
           bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField<Item> source='itemNumber' label='Reference' />
-        <TextField<Item> source='id' />
-        <TextField<Item> source='createdAt' label='Created At' />
+        <TextField<RichItem> source='itemNumber' label='Reference' />
+        <TextField<RichItem> source='id' />
+        <TextField<RichItem> source='createdAt' label='Created At' />
         <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
-        <FunctionField<Item>
+        <FunctionField<RichItem>
           label='Location'
           render={(record) => {
             if (record?.loanedTo) {
@@ -665,50 +679,60 @@ const ItemListData = ({
             return vaultLocations?.[record?.vaultLocation]?.name
           }}
         />
-        <SourceField<Item>
+        <SourceField<RichItem>
           link={false}
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <SourceField<Item>
+        <SourceField<RichItem>
           link='show'
           source='loanedTo'
           reference={constants.R_USERS}
           label='Loaned to'
         />
-        <DateField<Item> showTime source='startDate' />
-        <DateField<Item> showTime source='endDate' />
-        <SourceField<Item>
+        <DateField<RichItem> showTime source='startDate' />
+        <DateField<RichItem> showTime source='endDate' />
+        <SourceField<RichItem>
           link={false}
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
         />
-        <SourceField<Item>
+        <SourceField<RichItem>
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField<Item>
+        <SourceField<RichItem>
           link={false}
           source='batch'
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
+        <SourceField<RichItem>
+          link='show'
+          source='platform'
+          reference={constants.R_PLATFORMS}
+        />
+        <SourceField<RichItem>
+          link='show'
+          source='project'
+          reference={constants.R_PROJECTS}
+        />
 
-        {resource !== constants.R_ITEMS
+        {resource !== constants.R_RICH_ITEMS
           ? [
-              <SourceField<Item>
+              <SourceField<RichItem>
                 link={false}
                 source='destruction'
                 reference={constants.R_DESTRUCTION}
                 sourceField='name'
                 key={'destruction'}
               />,
-              <DateField<Item>
+              <DateField<RichItem>
                 source='destructionDate'
                 key={'destructionDate'}
               />,
-              <SourceField<Item>
+              <SourceField<RichItem>
                 link={false}
                 source='dispatchJob'
                 reference={constants.R_DISPATCH}
@@ -716,7 +740,10 @@ const ItemListData = ({
                 label='Dispatch'
                 key={'dispatchJob'}
               />,
-              <DateField<Item> source='dispatchedDate' key={'dispatchJob'} />,
+              <DateField<RichItem>
+                source='dispatchedDate'
+                key={'dispatchJob'}
+              />,
               ...CommonEndFields
             ]
           : CommonEndFields}

@@ -347,12 +347,13 @@ const ItemShowActions = ({
   record
 }: ItemShowProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
       <TopToolbarField<Item> source='itemNumber' />
       <StatusText record={record} />
-      {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
+      {hasAccess(constants.R_ITEMS, { write: true }) && (
+        <EditButton to={`/${constants.R_RICH_ITEMS}/${record.id}`} />
+      )}
       <HistoryButton
         onClick={() => {
           handleOpen(true)

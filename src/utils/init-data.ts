@@ -7,7 +7,8 @@ import {
   generateRandomDateInRange,
   generateUsers,
   generateVault,
-  generateEnduringProjects
+  generateEnduringProjects,
+  generateRichItems
 } from './generateData'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
@@ -247,6 +248,8 @@ const loadDefaultData = async (
     item
   )
 
+  const richItem = generateRichItems(item, project, platform)
+
   const audit: Audit[] = []
   const dispatch: Dispatch[] = []
   const destruction: Destruction[] = []
@@ -288,9 +291,9 @@ const loadDefaultData = async (
     itemHandle: [],
     batchCode: [],
     batchCave: [],
-    batchHandle: []
+    batchHandle: [],
+    richItem
   }
-
   const map: Record<string, constants.ResourceTypes> = {
     user: constants.R_USERS,
     batch: constants.R_BATCHES,
@@ -310,7 +313,8 @@ const loadDefaultData = async (
     dispatch: constants.R_DISPATCH,
     address: constants.R_ADDRESSES,
     configData: constants.R_CONFIG,
-    vault: constants.R_VAULT
+    vault: constants.R_VAULT,
+    richItem: constants.R_RICH_ITEMS
   }
 
   const dataprovider: DataProvider = await getDataProvider(

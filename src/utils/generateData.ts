@@ -325,3 +325,20 @@ export const generateUsers = (length: number): User[] => {
   }
   return users
 }
+
+export const generateRichItems = (
+  items: Item[],
+  projects: Project[],
+  platforms: Platform[]
+): RichItem[] => {
+  const richItems: RichItem[] = []
+  for (const item of items) {
+    richItems.push({
+      ...item,
+      id: item.id,
+      platform: generateRandomNumber(0, platforms.length),
+      project: generateRandomNumber(0, projects.length)
+    })
+  }
+  return richItems
+}
