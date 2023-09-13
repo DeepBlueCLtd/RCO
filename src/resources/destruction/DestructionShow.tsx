@@ -50,7 +50,9 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const finalised =
-    typeof record?.finalisedAt !== 'undefined' && record?.finalisedAt !== null
+    typeof record?.finalisedAt !== 'undefined' &&
+    record?.finalisedAt !== null &&
+    record?.finalisedAt !== 'null'
 
   return (
     <>
@@ -83,7 +85,9 @@ const Footer = (props: FooterProps): React.ReactElement => {
 
   const destroyed: boolean =
     !hasWritePermission ||
-    (typeof record?.finalisedAt !== 'undefined' && record?.finalisedAt !== null)
+    (typeof record?.finalisedAt !== 'undefined' &&
+      record?.finalisedAt !== null &&
+      record?.finalisedAt !== 'null')
 
   const handleDestroy = (): void => {
     setOpen(true)
@@ -167,7 +171,6 @@ export default function DestructionShow(): React.ReactElement {
       subjectId: record.id,
       subjectResource: constants.R_DESTRUCTION
     }
-    console.log('audit item', audiData)
     await audit(audiData)
   }
 

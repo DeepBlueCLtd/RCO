@@ -49,7 +49,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
     setLoading(true)
     // note: we need to provide `undefined` for mock backend, and `null`
     // for SQLite
-    const nullFilter = process.env.MOCK ? undefined : null
+    const nullFilter = process.env.MOCK ? 'null' : null
     dataProvider
       .getList<Destruction>(constants.R_DESTRUCTION, {
         filter: { finalisedAt: nullFilter },

@@ -7,13 +7,33 @@ import {
   useListContext,
   useDataProvider,
   useNotify,
-  useRefresh
+  useRefresh,
+  useRecordContext
 } from 'react-admin'
 import { Button } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import { useLocation } from 'react-router-dom'
+import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+
+const filters = [
+  <NullUndefinedFilter
+    label='Dispatched'
+    source={process.env.MOCK ? 'dispatchedAt_neq' : 'dispatchedAt__notnull'}
+    key='dispatched'
+  />,
+  <NullUndefinedFilter
+    label='Not Dispatched'
+    source={process.env.MOCK ? 'dispatchedAt_eq' : 'dispatchedAt__null'}
+    key='not_dispatched'
+  />,
+  <NullUndefinedFilter
+    label='Pending Receipt Note'
+    source={process.env.MOCK ? 'receiptReceived_eq' : 'receiptReceived__null'}
+    key='receiptPending'
+  />
+]
 
 const BulkActions = (): React.ReactElement => {
   const { selectedIds } = useListContext<Dispatch>()
@@ -56,16 +76,32 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
     : 'simple-dispatch-list'
 
   return (
-    <List hasCreate storeKey={storeKey}>
+    <List hasCreate storeKey={storeKey} filters={filters}>
       <Datagrid
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>
         <TextField<Dispatch> source='name' />
-        <DateField<Dispatch> source='dispatchedAt' />
+        <ConditionalDateField label='Dispatched At' source='dispatchedAt' />
         <TextField<Dispatch> source='toName' />
         <TextField<Dispatch> source='remarks' />
         <TextField<Dispatch> source='receiptReceived' />
       </Datagrid>
     </List>
+  )
+}
+
+export const ConditionalDateField = ({
+  label,
+  source
+}: {
+  label: string
+  source: string
+}): React.ReactElement => {
+  const dispatch = useRecordContext<Dispatch>()
+
+  return dispatch.dispatchedAt !== 'null' ? (
+    <DateField source={source} label={label} />
+  ) : (
+    <></>
   )
 }

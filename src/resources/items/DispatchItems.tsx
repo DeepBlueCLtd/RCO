@@ -49,7 +49,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
     setLoading(true)
     dataProvider
       .getList<Dispatch>(constants.R_DISPATCH, {
-        filter: { dispatchedAt: undefined },
+        filter: { dispatchedAt: 'null' },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,

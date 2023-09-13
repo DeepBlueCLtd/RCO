@@ -44,7 +44,8 @@ const lifeCycles = (
         id,
         previousData: data,
         data: {
-          name
+          name,
+          ...(process.env.MOCK ? { dispatchedAt: 'null' } : null)
         }
       })
       await audit({
