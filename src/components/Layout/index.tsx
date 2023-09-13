@@ -175,7 +175,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => {
         />
       </span>
       <Box flex={1} />
-      [RCO]
+      [VAL]
       <Box flex={1} />
     </AppBar>
   )

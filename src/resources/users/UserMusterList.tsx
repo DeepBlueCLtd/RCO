@@ -53,7 +53,7 @@ const Title = (): React.ReactElement => {
   const record = useRecordContext()
   return (
     <Typography fontSize='18px' variant='h4' textAlign='center' margin='10px'>
-      RCO - Loans to {record.name}
+      VAL - Loans to {record.name}
     </Typography>
   )
 }

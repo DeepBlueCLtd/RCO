@@ -250,7 +250,7 @@ export function ItemAssetReport(props: Props): React.ReactElement {
       <Printable open={open} onClose={handleOpen(false)}>
         <Box padding={'20px'}>
           <Typography variant='h4' textAlign='center' margin='10px'>
-            RCO Asset Report
+            VAL Asset Report
           </Typography>
           <Card>
             <CardContent>
