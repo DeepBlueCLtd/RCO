@@ -103,7 +103,7 @@ export default function UserList(props: Props): React.ReactElement {
           label='Admin Rights'
           looseValue
         />
-        <BooleanField label='Active' source='departedDate' looseValue />
+        <TextField label='Departure' source='departedDate' />
         <ChipField />
       </DatagridConfigurableWithShow>
       <UserMusterList<User> open={open} onClose={handleOpen(false)} />
