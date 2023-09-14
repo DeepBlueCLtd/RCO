@@ -27,6 +27,7 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
+import { checkIfUserIsActive } from '../../utils/helper'
 
 const style = {
   position: 'absolute',
@@ -55,7 +56,7 @@ const DepartOrganisation = ({
     update(R_USERS, {
       id: record?.id,
       previousData: record,
-      data: { active: false, departedDate: nowDate() }
+      data: { departedDate: nowDate() }
     }).catch(console.log)
     handleClose()
   }
@@ -105,7 +106,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const cannotDepart = (): boolean => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
-      (record?.active as unknown as number) === 0 ||
+      (record !== undefined && !checkIfUserIsActive(record)) ||
       !hasWriteAccess
     )
   }
@@ -143,7 +144,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
             </FlexBox>
             <FlexBox>
               <BooleanInput disabled source='adminRights' />
-              <BooleanInput disabled source='active' />
             </FlexBox>
             <FlexBox justifyContent='center'>
               <Button

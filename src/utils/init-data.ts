@@ -16,6 +16,7 @@ import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
 import { type DataProvider } from 'react-admin'
 import bcrypt from 'bcryptjs'
+import { checkIfUserIsActive } from './helper'
 
 const generatedUsers = [...generateUsers(200), ...users]
 
@@ -103,7 +104,7 @@ const assignItemsToRandomActiveUser = (
   users: User[],
   items: Item[]
 ): Record<string, number[]> => {
-  const activeUsers = users.filter((user) => user.active)
+  const activeUsers = users.filter((user) => checkIfUserIsActive(user))
   const randomItems: Record<number, number[]> = {}
 
   for (const item of items) {
