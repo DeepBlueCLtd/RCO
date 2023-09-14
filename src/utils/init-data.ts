@@ -248,8 +248,6 @@ const loadDefaultData = async (
     item
   )
 
-  const richItem = generateRichItems(item, project, platform)
-
   const audit: Audit[] = []
   const dispatch: Dispatch[] = []
   const destruction: Destruction[] = []
@@ -266,7 +264,7 @@ const loadDefaultData = async (
   }
   const configData: ConfigData[] = [configDataItem]
 
-  const defaultData: RCOStore = {
+  const defaultData: Omit<RCOStore, 'richItem'> = {
     user: encryptedUsers(isHigh),
     batch,
     item,
@@ -291,8 +289,7 @@ const loadDefaultData = async (
     itemHandle: [],
     batchCode: [],
     batchCave: [],
-    batchHandle: [],
-    richItem
+    batchHandle: []
   }
   const map: Record<string, constants.ResourceTypes> = {
     user: constants.R_USERS,
@@ -313,8 +310,7 @@ const loadDefaultData = async (
     dispatch: constants.R_DISPATCH,
     address: constants.R_ADDRESSES,
     configData: constants.R_CONFIG,
-    vault: constants.R_VAULT,
-    richItem: constants.R_RICH_ITEMS
+    vault: constants.R_VAULT
   }
 
   const dataprovider: DataProvider = await getDataProvider(
@@ -322,6 +318,7 @@ const loadDefaultData = async (
     !!process.env.MOCK
   )
 
+  await generateRichItems(dataprovider, { project, platform, item })
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
       if (key === constants.R_ITEMS) {

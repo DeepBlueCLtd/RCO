@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
+import { type DataProvider } from 'react-admin'
 
 const skipStartDate = (): boolean => {
   return Math.random() < 0.05
@@ -326,10 +327,67 @@ export const generateUsers = (length: number): User[] => {
   return users
 }
 
-export const generateRichItems = (
+interface Params {
+  project: Project[]
+  platform: Platform[]
+  item: Item[]
+}
+
+export const generateRichItems = async (
+  dataProvider: DataProvider,
+  data?: Params
+): Promise<void> => {
+  const params = {
+    pagination: { page: 1, perPage: 1000 },
+    sort: { field: 'id', order: 'ASC' },
+    filter: {}
+  }
+  const fetchedRichItems = (
+    await dataProvider.getList<RichItem>(constants.R_RICH_ITEMS, params)
+  ).data.map((item) => item.id)
+  if (fetchedRichItems.length > 0)
+    await dataProvider.deleteMany<RichItem>(constants.R_RICH_ITEMS, {
+      ids: fetchedRichItems
+    })
+
+  const richItems: RichItem[] = []
+
+  if (data === undefined) {
+    const { data: fetchedItems } = await dataProvider.getList<Item>(
+      constants.R_ITEMS,
+      params
+    )
+    const { data: fetchedProjects } = await dataProvider.getList<Project>(
+      constants.R_PROJECTS,
+      params
+    )
+    const { data: fetchedPlatforms } = await dataProvider.getList<Platform>(
+      constants.R_PLATFORMS,
+      params
+    )
+    richItems.push(
+      ...richItemsGenerate(fetchedItems, fetchedPlatforms, fetchedProjects)
+    )
+  } else {
+    const { project, platform, item } = data
+    richItems.push(...richItemsGenerate(item, platform, project))
+  }
+
+  const promises = richItems.map(async (richItem) =>
+    await dataProvider.create<RichItem>(constants.R_RICH_ITEMS, { data: richItem })
+  )
+
+  try {
+    await Promise.all(promises)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const richItemsGenerate = (
   items: Item[],
-  projects: Project[],
-  platforms: Platform[]
+  platforms: Platform[],
+  projects: Project[]
 ): RichItem[] => {
   const richItems: RichItem[] = []
   for (const item of items) {
