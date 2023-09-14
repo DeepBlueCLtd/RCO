@@ -63,9 +63,8 @@ const omitColumns: Array<keyof Item> = [
   'batch',
   'protectionString',
   'destruction',
-  'dispatchJob'
-  // 'project',
-  // 'platform'
+  'dispatchJob',
+  'legacyMediaType'
 ]
 
 const getFilters = (resource?: string): React.ReactElement[] => {
@@ -101,6 +100,12 @@ const getFilters = (resource?: string): React.ReactElement[] => {
       key='mediaType'
       source='mediaType'
       reference={constants.R_MEDIA_TYPE}
+    />,
+    <SourceInput
+      key='legacyMediaType'
+      source='legacyMediaType'
+      reference={constants.R_MEDIA_TYPE}
+      label='Legacy Media Type'
     />,
     <DateRangePicker
       startSource='endDate_gte'
@@ -684,6 +689,12 @@ const ItemListData = ({
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
+        />
+        <SourceField<Item>
+          link={false}
+          source='legacyMediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Legacy Media type'
         />
         <SourceField<RichItem>
           link='show'
