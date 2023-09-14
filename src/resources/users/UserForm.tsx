@@ -28,7 +28,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     name: '',
     password: '',
     adminRights: false,
-    active: true,
     role: 'rco-user'
   }
   const { record } = useEditContext()
@@ -58,7 +57,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
       </FlexBox>
       <FlexBox>
         <BooleanInput source='adminRights' />
-        <BooleanInput defaultValue={true} source='active' />
       </FlexBox>
     </SimpleForm>
   )

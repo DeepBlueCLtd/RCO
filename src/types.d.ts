@@ -84,8 +84,6 @@ type User = ResourceWithCreation & {
   name: string
   password: string
   adminRights: boolean
-  /** whether items can still be loaned to this user */
-  active: boolean
   role: UserRole
   staffNumber: string
   departedDate: string | null

@@ -314,7 +314,9 @@ export const generateUsers = (length: number): User[] => {
       name: `user-${i + 1}`,
       password: 'user',
       adminRights: generateRandomNumber(0, 100) > 50,
-      active,
+      ...(active
+        ? { departedDate: null }
+        : { departedDate: generateRandomDate()[0].toString() }),
       staffNumber: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
