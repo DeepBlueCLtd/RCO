@@ -373,9 +373,11 @@ export const generateRichItems = async (
     richItems.push(...richItemsGenerate(item, platform, project))
   }
 
-  const promises = richItems.map(async (richItem) =>
-    await dataProvider.create<RichItem>(constants.R_RICH_ITEMS, { data: richItem })
-  )
+  const promises = richItems.map(async (richItem) => {
+    await dataProvider.create<RichItem>(constants.R_RICH_ITEMS, {
+      data: richItem
+    })
+  })
 
   try {
     await Promise.all(promises)
