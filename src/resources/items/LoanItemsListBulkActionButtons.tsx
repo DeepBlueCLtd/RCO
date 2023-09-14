@@ -121,7 +121,8 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
           <SourceInput
             source='holder'
             reference={constants.R_USERS}
-            filter={{ active: true }}
+            filter={{ departedDate: null }}
+            sort={{ field: 'staffNumber', order: 'ASC' }}
           />
         </SimpleForm>
       </Create>
