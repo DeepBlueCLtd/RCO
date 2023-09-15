@@ -19,7 +19,9 @@ const lifeCycles = (
     return withCreatedByAt(record)
   },
   beforeUpdate: async (record: UpdateParams<User>) => {
-    const departed = record.previousData.active && record.data.active === false
+    const departed =
+      record.previousData.departedDate === null &&
+      record.data.departedDate !== null
     const returned =
       record.previousData.departedDate !== undefined &&
       record.data.departedDate === undefined

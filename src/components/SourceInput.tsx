@@ -19,7 +19,7 @@ export default function SourceInput<T extends Record<string, any>>(
 
   const optionText = (item: T): string => {
     return rest.reference === R_USERS
-      ? `${item[optionField]} (${item.staffNumber})`
+      ? `${item.staffNumber} (${item[optionField]})`
       : (item[optionField] as string)
   }
 
