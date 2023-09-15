@@ -86,7 +86,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const handleLogOut = (): void => {
     logout()
       .then(() => {
-        redirect('/')
+        redirect('/login')
         const storageEvent = new StorageEvent('storage', {
           key: constants.AUTH_STATE_CHANGED
         })

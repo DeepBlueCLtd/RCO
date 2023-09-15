@@ -51,6 +51,7 @@ export default function Welcome(): React.ReactElement {
   const redirect = useRedirect()
 
   if (loading) return <></>
+  if (!hasAccess('welcome-page', { read: true })) redirect('/login')
 
   return (
     <div className={styles.root}>
