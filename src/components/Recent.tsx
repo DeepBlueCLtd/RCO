@@ -147,7 +147,7 @@ export default function Recent<T extends Batch | User | Dispatch>(
           empty={<></>}>
           <Datagrid
             rowStyle={rowStyle}
-            header={() => null}
+            /* include headers header={() => null} */
             bulkActionButtons={false}
             rowClick={rowClick ?? 'show'}>
             {fields.map((column, index) => (

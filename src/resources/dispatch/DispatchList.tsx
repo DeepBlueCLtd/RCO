@@ -81,20 +81,33 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>
         <TextField<Dispatch> source='name' />
+        <TextField<Dispatch> source='toName' />
+        <TextField<Dispatch> source='remarks' />
         <ConditionalDateField<Dispatch>
           label='Dispatched At'
           source='dispatchedAt'
           resource={constants.R_DISPATCH}
         />
-        <TextField<Dispatch> source='toName' />
-        <TextField<Dispatch> source='remarks' />
-        <TextField<Dispatch> source='receiptReceived' />
+        <ConditionalDateField<Dispatch>
+          label='Receipt Received'
+          source='receiptReceived'
+          resource={constants.R_DISPATCH}
+        />
+        <ConditionalDateField<Dispatch>
+          label='Last Hastener Sent'
+          source='lastHastenerSent'
+          resource={constants.R_DISPATCH}
+        />
       </Datagrid>
     </List>
   )
 }
 
-interface Props<T> { label: string; source: keyof T; resource: any }
+interface Props<T> {
+  label: string
+  source: keyof T
+  resource: any
+}
 
 export const ConditionalDateField = <T extends Dispatch | Destruction>({
   label,
