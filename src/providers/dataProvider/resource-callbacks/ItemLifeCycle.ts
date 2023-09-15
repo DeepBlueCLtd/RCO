@@ -14,10 +14,19 @@ import { AuditType } from '../../../utils/activity-types'
 import { R_BATCHES, R_ITEMS, SAVE_EVENT } from '../../../constants'
 import { type CreateParams, type UpdateParams } from 'react-admin'
 import { emitter } from '../../../resources/items/ItemForm/ItemFormToolbar'
+import { generateRichItems } from '../../../utils/generateData'
 
 const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => ({
+  afterUpdate: async (result, dataProvider) => {
+    if (process.env.MOCK) await generateRichItems(dataProvider)
+    return result
+  },
+  afterUpdateMany: async (result, dataProvider) => {
+    if (process.env.MOCK) await generateRichItems(dataProvider)
+    return result
+  },
   beforeCreate: async (
     record: CreateParams<Item>
     // dataProvider: DataProvider

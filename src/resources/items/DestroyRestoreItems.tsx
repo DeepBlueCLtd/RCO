@@ -47,15 +47,13 @@ export default function DestroyRestoreItems(props: Props): React.ReactElement {
       })
     })
     await Promise.all(promisees)
-
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids,
       data: {
-        destruction: undefined,
-        destructionDate: undefined
+        destruction: null,
+        destructionDate: null
       }
     })
-
     notify(`${ids.length} items removed from destruction`)
     successCallback()
   }

@@ -333,15 +333,15 @@ function App(): React.ReactElement {
           {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
         />
         <Resource
-          key={constants.R_ITEMS}
+          key={constants.R_RICH_ITEMS}
           icon={constants.ICON_ITEM}
-          name={constants.R_ITEMS}
+          name={constants.R_RICH_ITEMS}
           options={{
             filter: {
               dispatchedDate: null,
               destructionDate: null
             },
-            resource: constants.R_ITEMS,
+            resource: constants.R_RICH_ITEMS,
             sort: {
               field: 'id',
               order: 'DESC'

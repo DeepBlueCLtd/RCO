@@ -69,7 +69,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         .catch(console.log)
     } else {
       if (typeof id === 'undefined') {
-        redirect(createPath({ resource: constants.R_ITEMS, type: 'list' }))
+        redirect(createPath({ resource: constants.R_RICH_ITEMS, type: 'list' }))
       }
     }
   }, [])
@@ -107,6 +107,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         <constants.ICON_ITEM /> {pageTitle}
       </Typography>
       <SimpleForm
+        resource={constants.R_ITEMS}
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
         defaultValues={defaultValues}

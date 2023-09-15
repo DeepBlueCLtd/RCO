@@ -197,6 +197,11 @@ type Item = ResourceWithCreation & {
   protectionString: string | null
 }
 
+type RichItem = Item & {
+  project: Project['id']
+  platform: Platform['id']
+}
+
 interface RCOStore {
   // lookup tables
   platform: Platform[]
@@ -227,6 +232,7 @@ interface RCOStore {
   batchCode: BatchCode[]
   batchCave: BatchCave[]
   batchHandle: BatchHandling[]
+  richItem: RichItem[]
 }
 
 interface Destruction {

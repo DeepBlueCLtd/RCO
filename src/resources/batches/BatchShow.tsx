@@ -54,7 +54,7 @@ const ItemActions = ({
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <CreateButton
           label='ADD ITEM'
-          to={`/${constants.R_ITEMS}/create?batch=${batch}`}
+          to={`/${constants.R_RICH_ITEMS}/create?batch=${batch}`}
         />
       ) : (
         <></>
