@@ -7,7 +7,8 @@ import {
   generateRandomDateInRange,
   generateUsers,
   generateVault,
-  generateEnduringProjects
+  generateEnduringProjects,
+  generateRichItems
 } from './generateData'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
@@ -264,7 +265,7 @@ const loadDefaultData = async (
   }
   const configData: ConfigData[] = [configDataItem]
 
-  const defaultData: RCOStore = {
+  const defaultData: Omit<RCOStore, 'richItem'> = {
     user: encryptedUsers(isHigh),
     batch,
     item,
@@ -291,7 +292,6 @@ const loadDefaultData = async (
     batchCave: [],
     batchHandle: []
   }
-
   const map: Record<string, constants.ResourceTypes> = {
     user: constants.R_USERS,
     batch: constants.R_BATCHES,
@@ -319,6 +319,7 @@ const loadDefaultData = async (
     !!process.env.MOCK
   )
 
+  await generateRichItems(dataprovider, { project, platform, item })
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
       if (key === constants.R_ITEMS) {

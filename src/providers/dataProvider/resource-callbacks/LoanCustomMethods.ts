@@ -10,8 +10,12 @@ export const customMethods = (
   const audit = trackEvent(provider)
 
   return {
-    loanItems: async (items: Array<Item['id']>, holder: number) => {
-      await provider.updateMany<Item>(R_ITEMS, {
+    loanItems: async function (
+      this: DataProvider,
+      items: Array<Item['id']>,
+      holder: number
+    ) {
+      await this.updateMany<Item>(R_ITEMS, {
         ids: items,
         data: {
           loanedTo: holder,
@@ -21,7 +25,7 @@ export const customMethods = (
 
       const {
         data: { id }
-      } = await provider.getOne<User>(R_USERS, {
+      } = await this.getOne<User>(R_USERS, {
         id: holder
       })
 
@@ -50,13 +54,13 @@ export const customMethods = (
       })
       await Promise.all(promisees)
     },
-    returnItems: async (items: Array<Item['id']>) => {
+    returnItems: async function (this: DataProvider, items: Array<Item['id']>) {
       const userById: Record<number, User> = {}
-      const { data: itemsData } = await provider.getMany<Item>(R_ITEMS, {
+      const { data: itemsData } = await this.getMany<Item>(R_ITEMS, {
         ids: items
       })
       const usersIds = itemsData.map((item) => item.loanedTo) as number[]
-      const { data: usersData } = await provider.getMany<User>(R_USERS, {
+      const { data: usersData } = await this.getMany<User>(R_USERS, {
         ids: usersIds
       })
 
@@ -89,7 +93,7 @@ export const customMethods = (
           })
         }
       })
-      await provider.updateMany(R_ITEMS, {
+      await this.updateMany(R_ITEMS, {
         ids: items,
         data: {
           loanedTo: null,

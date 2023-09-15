@@ -174,9 +174,15 @@ export default function AuditList({
                       source='dataId'
                       reference={record.resource}
                       sourceField={resourcesRefKey[record.resource]}
-                      link={(record) => {
-                        if (referenceItems.includes(record.resource)) {
+                      link={() => {
+                        if (
+                          record.resource &&
+                          referenceItems.includes(record.resource)
+                        ) {
                           return `/${record.resource}/${record.dataId}/show`
+                        }
+                        if (record.resource === constants.R_ITEMS) {
+                          return `/${constants.R_RICH_ITEMS}/${record.dataId}/show`
                         }
                         return 'show'
                       }}
