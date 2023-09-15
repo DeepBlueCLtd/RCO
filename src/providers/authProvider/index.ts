@@ -84,11 +84,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
-      await Promise.resolve()
-      // const token = getUser()
-      // token !== undefined
-      //   ? await Promise.resolve()
-      //   : await Promise.reject(new Error('Token not found'))
+      // await Promise.resolve()
+      const token = getUser()
+      token !== undefined
+        ? await Promise.resolve(true)
+        : await Promise.reject(new Error('Token not found'))
     },
     checkError: async (error): Promise<any> => {
       const status = error.status
@@ -118,8 +118,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           throw new Error('You are not a registered user.')
         }
       } catch (error) {
-        const permissions = getPermissionsByRoles('user')
-        return await Promise.resolve(permissions)
+        throw new Error('You are not a registered user.')
       }
     }
   }

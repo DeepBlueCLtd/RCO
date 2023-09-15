@@ -16,18 +16,20 @@ const resourceRoutes: ResourceRoutes = {
 }
 
 describe('protected routes ', () => {
-  it('routes for unauthorized user', () => {
-    const permissions = getPermissionsByRoles('user')
-    const { create, list, show, edit } = protectedRoutes(
-      permissions,
-      constants.R_ITEMS,
-      resourceRoutes
-    )
-    expect(list).toBeDefined()
-    expect(show).toBeDefined()
-    expect(create).toBeUndefined()
-    expect(edit).toBeUndefined()
-  })
+  // no longer required as unauthorized users can't see any data
+
+  // it('routes for unauthorized user', () => {
+  //   const permissions = getPermissionsByRoles('user')
+  //   const { create, list, show, edit } = protectedRoutes(
+  //     permissions,
+  //     constants.R_ITEMS,
+  //     resourceRoutes
+  //   )
+  //   expect(list).toBeDefined()
+  //   expect(show).toBeDefined()
+  //   expect(create).toBeUndefined()
+  //   expect(edit).toBeUndefined()
+  // })
 
   it('routes for authorized user', () => {
     const permissions = getPermissionsByRoles('rco-user')
