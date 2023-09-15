@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon'
+
 export const transformProtectionValues = (
   data: Record<string, any>
 ): Record<string, any> => {
@@ -7,4 +9,11 @@ export const transformProtectionValues = (
     protectionString: `${catCode} ${catHandle} ${catCave}`
   }
   return item
+}
+
+export const checkIfUserIsActive = (user: User): boolean => {
+  if (user.departedDate) {
+    return DateTime.fromJSDate(new Date(user.departedDate)) > DateTime.now()
+  }
+  return true
 }

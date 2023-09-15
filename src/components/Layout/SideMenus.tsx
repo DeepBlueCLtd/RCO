@@ -34,7 +34,8 @@ export const SideMenus = (): React.ReactElement => {
       usersHasAccess: hasAccess(constants.R_USERS, { read: true }),
       referenceDataHasAccess: hasAccess('reference-data', { read: true }),
       destructionHasAccess: hasAccess(constants.R_DESTRUCTION, { read: true }),
-      dispatchHasAccess: hasAccess(constants.R_DISPATCH, { read: true })
+      dispatchHasAccess: hasAccess(constants.R_DISPATCH, { read: true }),
+      welcomeHasAccess: hasAccess('welcome-page', { read: true })
     }
   }, [loading])
 
@@ -42,7 +43,9 @@ export const SideMenus = (): React.ReactElement => {
 
   return (
     <Menu className={styles.root}>
-      <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Home />} />
+      {accessStates.welcomeHasAccess && (
+        <MenuItemLink to={'/'} primaryText='Welcome' leftIcon={<Home />} />
+      )}
       {accessStates.platformsHasAccess && (
         <Menu.ResourceItem name={constants.R_PLATFORMS} />
       )}

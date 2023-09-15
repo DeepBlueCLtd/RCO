@@ -1,15 +1,7 @@
 import * as constants from '../../constants'
-type UserRoles = UserRole | 'user'
+type UserRoles = UserRole
 
 const permissions: Record<UserRoles, ResourcePermissions> = {
-  user: {
-    [constants.R_PROJECTS]: { read: true, write: false, delete: false },
-    [constants.R_BATCHES]: { read: true, write: false, delete: false },
-    [constants.R_ITEMS]: { read: true, write: false, delete: false },
-    [constants.R_ADDRESSES]: { read: true, write: false, delete: false },
-    [constants.R_ALL_ITEMS]: { read: true, write: false, delete: false },
-    'reference-data': { read: false, write: false, delete: false }
-  },
   'rco-user': {
     [constants.R_PROJECTS]: { read: true, write: true, delete: false },
     [constants.R_BATCHES]: { read: true, write: true, delete: false },
@@ -20,7 +12,8 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
     [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
     [constants.R_DESTRUCTION]: { read: true, write: true, delete: false },
     [constants.R_DISPATCH]: { read: true, write: true, delete: false },
-    'reference-data': { read: true, write: false, delete: false }
+    'reference-data': { read: true, write: false, delete: false },
+    'welcome-page': { read: true }
   },
   'rco-power-user': {
     '*': { all: '*' }
