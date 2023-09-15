@@ -35,10 +35,11 @@ import { type AuditData } from '../../utils/audit'
 
 interface ShowActionsProps {
   handleOpen: (open: DestructionModal) => void
+  showEdit: boolean
 }
 
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
-  const { handleOpen } = props
+  const { handleOpen, showEdit } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const dispatched = typeof record?.dispatchedAt !== 'undefined'
@@ -46,15 +47,18 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   return (
     <>
       <TopToolbar>
-        <TopToolbarField<Dispatch> source='name' />
-        {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
-          <EditButton />
-        )}
-        <HistoryButton
-          onClick={() => {
-            handleOpen('history')
-          }}
-        />
+        <FlexBox>
+          <TopToolbarField<Dispatch> source='name' />
+          {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
+            <EditButton />
+          )}
+          <HistoryButton
+            onClick={() => {
+              handleOpen('history')
+            }}
+          />
+          {showEdit && <EditButton />}
+        </FlexBox>
       </TopToolbar>
     </>
   )
@@ -291,7 +295,16 @@ export default function DispatchShow(): React.ReactElement {
             }}
           />
           <Show
-            actions={<ShowActions handleOpen={handleOpen} />}
+            actions={
+              <ShowActions
+                handleOpen={handleOpen}
+                showEdit={
+                  record?.dispatchedAt === null ||
+                  record?.dispatchedAt === undefined ||
+                  record?.dispatchedAt === 'null'
+                }
+              />
+            }
             component={'div'}>
             <DispatchForm show />
             <Footer handleOpen={handleOpen} dispatch={dispatch} />
