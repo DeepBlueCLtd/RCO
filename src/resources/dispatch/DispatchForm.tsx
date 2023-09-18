@@ -106,7 +106,8 @@ export default function DispatchForm(props: Props): React.ReactElement {
         source='vault'
         reference={R_VAULT}
         inputProps={{ helperText: false }}
-        active
+        show={show}
+        {...(edit ? { active: true } : null)}
       />
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
     </SimpleForm>
