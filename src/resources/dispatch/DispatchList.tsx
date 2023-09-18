@@ -116,7 +116,7 @@ export const ConditionalDateField = <T extends Dispatch | Destruction>({
 }: Props<T>): React.ReactElement => {
   const data = useRecordContext(resource)
 
-  return data[source as string] !== 'null' ? (
+  return data[source as string] !== 'null' && !!data[source as string] ? (
     <DateField source={source as string} label={label} />
   ) : (
     <></>
