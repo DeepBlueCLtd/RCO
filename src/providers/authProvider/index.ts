@@ -11,24 +11,43 @@ import { getPermissionsByRoles } from './permissions'
 import bcrypt from 'bcryptjs'
 
 export const getUser = (): User | undefined => {
-  const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
-  const salt = localStorage.getItem(constants.SALT)
-  if (encryptedUser !== null && salt !== null) {
-    const decryptedData = decryptData(`${encryptedUser}`)
+  const encryptedUser = getCookie(constants.TOKEN_KEY)
+  const salt = getCookie(constants.SALT)
+  if (encryptedUser && salt) {
+    const decryptedData = decryptData(encryptedUser)
     return JSON.parse(
       decryptedData.substring(0, decryptedData.length - salt.length)
     )
   }
+  return undefined
+}
+
+const getCookie = (name: string): string | null => {
+  const cookies = document.cookie.split('; ')
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].split('=')
+    if (cookie[0] === name) {
+      return decodeURIComponent(cookie[1])
+    }
+  }
+  return null
 }
 
 const setToken = (token: string, salt: string): void => {
-  localStorage.setItem(constants.TOKEN_KEY, token)
-  localStorage.setItem(constants.SALT, salt)
+  const date = new Date()
+  date.setTime(date.getTime() + 1 * 60 * 60 * 1000)
+  const expires = date.toUTCString()
+  document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
+  document.cookie = `${constants.SALT}=${salt}; expires=${expires}; path=/`
 }
 
-const removeToken = (): void => {
-  localStorage.removeItem(constants.TOKEN_KEY)
-  localStorage.removeItem(constants.SALT)
+export const removeToken = (): void => {
+  removeCookie(constants.TOKEN_KEY)
+  removeCookie(constants.SALT)
+}
+
+const removeCookie = (name: string): void => {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
 }
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
