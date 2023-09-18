@@ -241,6 +241,7 @@ export default function DestructionShow(): React.ReactElement {
               <DateField<Destruction> source='finalisedAt' />
               <Finalised />
               <TextField<Destruction> source='remarks' />
+              <TextField<Destruction> source='vault' />
             </SimpleShowLayout>
             <Footer handleOpen={handleOpen} destroy={destroy} />
           </Show>
