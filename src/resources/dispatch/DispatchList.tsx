@@ -83,31 +83,41 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
         <TextField<Dispatch> source='name' />
         <TextField<Dispatch> source='toName' />
         <TextField<Dispatch> source='remarks' />
-        <ConditionalDateField label='Dispatched At' source='dispatchedAt' />
-        <ConditionalDateField
+        <ConditionalDateField<Dispatch>
+          label='Dispatched At'
+          source='dispatchedAt'
+          resource={constants.R_DISPATCH}
+        />
+        <ConditionalDateField<Dispatch>
           label='Receipt Received'
           source='receiptReceived'
+          resource={constants.R_DISPATCH}
         />
-        <ConditionalDateField
+        <ConditionalDateField<Dispatch>
           label='Last Hastener Sent'
           source='lastHastenerSent'
+          resource={constants.R_DISPATCH}
         />
       </Datagrid>
     </List>
   )
 }
 
-export const ConditionalDateField = ({
-  label,
-  source
-}: {
+interface Props<T> {
   label: string
-  source: string
-}): React.ReactElement => {
-  const dispatch = useRecordContext<Dispatch>()
+  source: keyof T
+  resource: any
+}
 
-  return dispatch.dispatchedAt !== 'null' ? (
-    <DateField source={source} label={label} />
+export const ConditionalDateField = <T extends Dispatch | Destruction>({
+  label,
+  source,
+  resource
+}: Props<T>): React.ReactElement => {
+  const data = useRecordContext(resource)
+
+  return data[source as string] !== 'null' ? (
+    <DateField source={source as string} label={label} />
   ) : (
     <></>
   )
