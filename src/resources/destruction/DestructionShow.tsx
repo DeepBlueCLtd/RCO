@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import {
   Button,
-  DateField,
   Show,
   SimpleShowLayout,
   TextField,
@@ -31,6 +30,7 @@ import { AuditType } from '../../utils/activity-types'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
 import { type AuditData } from '../../utils/audit'
+import { ConditionalDateField } from '../dispatch/DispatchList'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -238,7 +238,11 @@ export default function DestructionShow(): React.ReactElement {
             actions={<ShowActions handleOpen={handleOpen} />}>
             <SimpleShowLayout>
               <TextField<Destruction> source='name' label='Reference' />
-              <DateField<Destruction> source='finalisedAt' />
+              <ConditionalDateField<Destruction>
+                label='Finalised at'
+                source='finalisedAt'
+                resource={constants.R_DESTRUCTION}
+              />
               <Finalised />
               <TextField<Destruction> source='remarks' />
             </SimpleShowLayout>
