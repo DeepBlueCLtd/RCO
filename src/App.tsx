@@ -12,6 +12,8 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { AllInbox, Groups } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
+import { useForm } from 'react-hook-form'
+import bcrypt from 'bcryptjs'
 
 // pages
 import Welcome from './pages/Welcome'
@@ -41,10 +43,34 @@ import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
+import { Button, Modal, TextField } from '@mui/material'
+import { Box } from '@mui/system'
+
+const style = {
+  backgroundColor: 'white',
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  p: 4
+}
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 // true for mock, false for REST
 const MOCK = !!process.env.MOCK
+
+interface PasswordForm {
+  newPassword: string
+  retypePassword: string
+}
+
+const buttonPrimaryStyle = {
+  backgroundColor: '#1F3860',
+  '&:hover': {
+    backgroundColor: '#1F3860'
+  }
+}
 
 function App(): React.ReactElement {
   const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
@@ -57,6 +83,14 @@ function App(): React.ReactElement {
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const [authChanged, setAuthChanged] = useState<boolean>(false)
   const [configData, setConfigData] = useState<ConfigData | undefined>()
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors }
+  } = useForm<PasswordForm>({ mode: 'onChange' })
+  const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
+
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
       if (!MOCK) {
@@ -102,6 +136,27 @@ function App(): React.ReactElement {
             window.history.replaceState({}, '', window.location.pathname)
           })
           .catch(console.log)
+      }
+    }
+  }
+
+  const onSubmit = async (data: PasswordForm): Promise<void> => {
+    const { newPassword } = data
+    if (
+      dataProvider !== undefined &&
+      authProvider !== undefined &&
+      authProvider.getIdentity
+    ) {
+      const user = await authProvider.getIdentity()
+
+      if (user) {
+        const hashedPassword = bcrypt.hashSync(newPassword)
+        await dataProvider.update<User>(constants.R_USERS, {
+          id: user.id,
+          previousData: user,
+          data: { password: hashedPassword }
+        })
+        setResetPasswordOpen(false)
       }
     }
   }
@@ -179,6 +234,27 @@ function App(): React.ReactElement {
     }
   }, [])
 
+  useEffect(() => {
+    const fetchUserId = async (): Promise<void> => {
+      if (dataProvider && authProvider && authProvider.getIdentity) {
+        const user = await authProvider.getIdentity()
+
+        if (user) {
+          const { data } = await dataProvider.getOne<User>(constants.R_USERS, {
+            id: Number(user.id)
+          })
+
+          if (!data.password) {
+            setResetPasswordOpen(true)
+          } else {
+            setResetPasswordOpen(false)
+          }
+        }
+      }
+    }
+    fetchUserId().catch(console.log)
+  }, [dataProvider, authProvider, authChanged])
+
   useEffect(handleGetProvider, [loggingPref, authChanged])
 
   useEffect(() => {
@@ -214,164 +290,216 @@ function App(): React.ReactElement {
   const userPermission = permissions[constants.R_USERS] ?? permissions['*']
 
   return (
-    <Suspense fallback={LoadingPage}>
-      <Admin
-        dashboard={Welcome}
-        dataProvider={dataProvider}
-        loginPage={Login}
-        authProvider={authProvider}
-        layout={MyLayout}
-        theme={rcoTheme}
-        disableTelemetry>
-        <Resource
-          key={constants.R_VAULT_LOCATION}
-          name={constants.R_VAULT_LOCATION}
-          icon={AllInbox}
-          options={{ label: 'Vault Locations' }}
-          {...protectedRoutes(
-            permissions,
-            constants.R_VAULT_LOCATION,
-            vaultlocations
-          )}
-        />
-        <Resource
-          key={constants.R_USERS}
-          name={constants.R_USERS}
-          icon={Groups}
-          {...protectedRoutes(permissions, constants.R_USERS, users)}
-        />
-        <CustomRoutes key='routes'>
-          <Route path='/protectiveMarking'>
-            {...createRoutes(
-              constants.R_PROTECTIVE_MARKING,
-              undefined,
-              referenceDataPermission
+    <div>
+      <Modal open={resetPasswordOpen}>
+        <Box sx={style}>
+          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              type='password'
+              fullWidth
+              margin='normal'
+              {...register('newPassword', {
+                required: { value: true, message: 'This is a required field' },
+                minLength: {
+                  value: 8,
+                  message: 'Password should be 8 characters long'
+                }
+              })}
+              error={Boolean(errors.newPassword)}
+              helperText={errors.newPassword?.message}
+              placeholder='New password'
+            />
+            <TextField
+              type='password'
+              fullWidth
+              margin='normal'
+              {...register('retypePassword', {
+                required: { value: true, message: 'This is a required field' },
+                minLength: {
+                  value: 8,
+                  message: 'Password should be 8 characters long'
+                },
+                validate: {
+                  passWordEqual: (value) =>
+                    value === getValues('newPassword') ||
+                    'Passwords should match'
+                }
+              })}
+              error={Boolean(errors.retypePassword)}
+              helperText={errors.retypePassword?.message}
+              placeholder='Re-type password'
+            />
+
+            <Button type='submit' variant='contained' sx={buttonPrimaryStyle}>
+              Submit
+            </Button>
+          </form>
+        </Box>
+      </Modal>
+      <Suspense fallback={LoadingPage}>
+        <Admin
+          dashboard={Welcome}
+          dataProvider={dataProvider}
+          loginPage={Login}
+          authProvider={authProvider}
+          layout={MyLayout}
+          theme={rcoTheme}
+          disableTelemetry>
+          <Resource
+            key={constants.R_VAULT_LOCATION}
+            name={constants.R_VAULT_LOCATION}
+            icon={AllInbox}
+            options={{ label: 'Vault Locations' }}
+            {...protectedRoutes(
+              permissions,
+              constants.R_VAULT_LOCATION,
+              vaultlocations
             )}
-          </Route>
-          <Route path='/catCode'>
-            {...createRoutes(
-              constants.R_CAT_CODE,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/catHandle'>
-            {...createRoutes(
-              constants.R_CAT_HANDLE,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/catCave'>
-            {...createRoutes(
-              constants.R_CAT_CAVE,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/department'>
-            {...createRoutes(
-              constants.R_DEPARTMENT,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/organisation'>
-            {...createRoutes(
-              constants.R_ORGANISATION,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/mediaType'>
-            {...createRoutes(
-              constants.R_MEDIA_TYPE,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/platform'>
-            {...createRoutes(
-              constants.R_PLATFORMS,
-              platforms,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/user'>
-            {...createRoutes(constants.R_USERS, users, userPermission)}
-          </Route>
-          <Route path='/audit'>
-            {...createRoutes(constants.R_AUDIT, audit, referenceDataPermission)}
-          </Route>
-          <Route path='/vault'>
-            {...createRoutes(
-              constants.R_VAULT,
-              undefined,
-              referenceDataPermission
-            )}
-          </Route>
-          <Route path='/reference-data' element={<ReferenceData />} />
-        </CustomRoutes>
-        <Resource
-          key={constants.R_ADDRESSES}
-          icon={constants.ICON_ADDRESSES}
-          name={constants.R_ADDRESSES}
-          {...protectedRoutes(permissions, constants.R_ADDRESSES, addresses)}
-        />
-        <Resource
-          key={constants.R_PROJECTS}
-          icon={constants.ICON_PROJECT}
-          name={constants.R_PROJECTS}
-          options={{ label: configData?.projectsName }}
-          {...protectedRoutes(permissions, constants.R_PROJECTS, projects)}
-        />
-        <Resource
-          key={constants.R_BATCHES}
-          icon={constants.ICON_BATCH}
-          name={constants.R_BATCHES}
-          options={{ configData }}
-          {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
-        />
-        <Resource
-          key={constants.R_RICH_ITEMS}
-          icon={constants.ICON_ITEM}
-          name={constants.R_RICH_ITEMS}
-          options={{
-            filter: {
-              dispatchedDate: null,
-              destructionDate: null
-            },
-            resource: constants.R_RICH_ITEMS,
-            sort: {
-              field: 'id',
-              order: 'DESC'
-            },
-            label: 'Live Items'
-          }}
-          {...protectedRoutes(permissions, constants.R_ITEMS, items)}
-        />
-        <Resource
-          key={constants.R_ALL_ITEMS}
-          icon={constants.ICON_ALL_ITEM}
-          name={constants.R_ALL_ITEMS}
-          options={{ label: 'All Items', resource: constants.R_ALL_ITEMS }}
-          {...protectedRoutes(permissions, constants.R_ALL_ITEMS, items)}
-        />
-        <Resource
-          key={constants.R_DISPATCH}
-          icon={constants.ICON_DISPATCH}
-          name={constants.R_DISPATCH}
-          options={{ configData }}
-          {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
-        />
-        <Resource
-          key={constants.R_DESTRUCTION}
-          icon={constants.ICON_DESTRUCTION}
-          name={constants.R_DESTRUCTION}
-          {...protectedRoutes(permissions, constants.R_ITEMS, destruction)}
-        />
-      </Admin>
-    </Suspense>
+          />
+          <Resource
+            key={constants.R_USERS}
+            name={constants.R_USERS}
+            icon={Groups}
+            {...protectedRoutes(permissions, constants.R_USERS, users)}
+          />
+          <CustomRoutes key='routes'>
+            <Route path='/protectiveMarking'>
+              {...createRoutes(
+                constants.R_PROTECTIVE_MARKING,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/catCode'>
+              {...createRoutes(
+                constants.R_CAT_CODE,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/catHandle'>
+              {...createRoutes(
+                constants.R_CAT_HANDLE,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/catCave'>
+              {...createRoutes(
+                constants.R_CAT_CAVE,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/department'>
+              {...createRoutes(
+                constants.R_DEPARTMENT,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/organisation'>
+              {...createRoutes(
+                constants.R_ORGANISATION,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/mediaType'>
+              {...createRoutes(
+                constants.R_MEDIA_TYPE,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/platform'>
+              {...createRoutes(
+                constants.R_PLATFORMS,
+                platforms,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/user'>
+              {...createRoutes(constants.R_USERS, users, userPermission)}
+            </Route>
+            <Route path='/audit'>
+              {...createRoutes(
+                constants.R_AUDIT,
+                audit,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/vault'>
+              {...createRoutes(
+                constants.R_VAULT,
+                undefined,
+                referenceDataPermission
+              )}
+            </Route>
+            <Route path='/reference-data' element={<ReferenceData />} />
+          </CustomRoutes>
+          <Resource
+            key={constants.R_ADDRESSES}
+            icon={constants.ICON_ADDRESSES}
+            name={constants.R_ADDRESSES}
+            {...protectedRoutes(permissions, constants.R_ADDRESSES, addresses)}
+          />
+          <Resource
+            key={constants.R_PROJECTS}
+            icon={constants.ICON_PROJECT}
+            name={constants.R_PROJECTS}
+            options={{ label: configData?.projectsName }}
+            {...protectedRoutes(permissions, constants.R_PROJECTS, projects)}
+          />
+          <Resource
+            key={constants.R_BATCHES}
+            icon={constants.ICON_BATCH}
+            name={constants.R_BATCHES}
+            options={{ configData }}
+            {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
+          />
+          <Resource
+            key={constants.R_RICH_ITEMS}
+            icon={constants.ICON_ITEM}
+            name={constants.R_RICH_ITEMS}
+            options={{
+              filter: {
+                dispatchedDate: null,
+                destructionDate: null
+              },
+              resource: constants.R_RICH_ITEMS,
+              sort: {
+                field: 'id',
+                order: 'DESC'
+              },
+              label: 'Live Items'
+            }}
+            {...protectedRoutes(permissions, constants.R_ITEMS, items)}
+          />
+          <Resource
+            key={constants.R_ALL_ITEMS}
+            icon={constants.ICON_ALL_ITEM}
+            name={constants.R_ALL_ITEMS}
+            options={{ label: 'All Items', resource: constants.R_ALL_ITEMS }}
+            {...protectedRoutes(permissions, constants.R_ALL_ITEMS, items)}
+          />
+          <Resource
+            key={constants.R_DISPATCH}
+            icon={constants.ICON_DISPATCH}
+            name={constants.R_DISPATCH}
+            options={{ configData }}
+            {...protectedRoutes(permissions, constants.R_DISPATCH, dispatch)}
+          />
+          <Resource
+            key={constants.R_DESTRUCTION}
+            icon={constants.ICON_DESTRUCTION}
+            name={constants.R_DESTRUCTION}
+            {...protectedRoutes(permissions, constants.R_ITEMS, destruction)}
+          />
+        </Admin>
+      </Suspense>
+    </div>
   )
 }
 

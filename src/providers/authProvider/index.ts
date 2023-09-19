@@ -9,6 +9,7 @@ import { AuditType } from '../../utils/activity-types'
 import { decryptData, encryptData, generateSalt } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
 import bcrypt from 'bcryptjs'
+import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
 
 export const getUser = (): User | undefined => {
   const encryptedUser = getCookie(constants.TOKEN_KEY)
@@ -50,6 +51,28 @@ const removeCookie = (name: string): void => {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
 }
 
+const createUserToken = async (
+  user: User,
+  audit: AuditFunctionType
+): Promise<void> => {
+  const clonedUser: User = {
+    ...user
+  }
+  delete clonedUser.password
+  const salt = generateSalt()
+  const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
+  setToken(token, salt)
+  await audit({
+    activityType: AuditType.LOGIN,
+    resource: constants.R_USERS,
+    dataId: user.id,
+    subjectId: null,
+    subjectResource: null,
+    securityRelated: null,
+    activityDetail: null
+  })
+}
+
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
@@ -63,24 +86,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         (item: any) => item.staffNumber === staffNumber
       )
       if (user !== undefined) {
-        if (bcrypt.compareSync(password, user.password)) {
-          const clonedUser: Omit<User, 'password'> & { password?: string } = {
-            ...user
-          }
-          delete clonedUser.password
-          const salt = generateSalt()
-          const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
-          setToken(token, salt)
-          await audit({
-            activityType: AuditType.LOGIN,
-            resource: constants.R_USERS,
-            dataId: user.id,
-            subjectId: null,
-            subjectResource: null,
-            securityRelated: null,
-            activityDetail: null
-          })
+        if (user.password && bcrypt.compareSync(password, user.password)) {
+          await createUserToken(user, audit)
           return await Promise.resolve(data)
+        } else if (!user.password && password === user.staffNumber) {
+          await createUserToken(user, audit)
         } else {
           throw new Error('Wrong password')
         }
