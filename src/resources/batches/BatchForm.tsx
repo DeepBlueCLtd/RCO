@@ -39,18 +39,18 @@ interface Props {
   source: string
   inputProps?: SelectInputProps | TextInputProps
   active?: boolean
+  show?: boolean
 }
 
 export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
-  const { source, reference, inputProps = {}, active } = props
+  const { source, reference, inputProps = {}, active, show = false } = props
   const filter = active !== undefined && active ? { active: true } : {}
   const { data, isLoading } = useGetList<T>(reference, {
     filter
   })
-  const boolIsLoading: boolean = isLoading
-  if (boolIsLoading) return null
+  if (isLoading) return null
   if (data === undefined) return null
   const choices = data.map((d) => ({ name: d.name, id: d.id }))
   return data?.length === 1 ? (
@@ -64,7 +64,12 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
       {...inputProps}
     />
   ) : (
-    <AutocompleteInput source={source} choices={choices} sx={sx} />
+    <AutocompleteInput
+      source={source}
+      {...(show ? { disabled: true } : null)}
+      choices={choices}
+      sx={sx}
+    />
   )
 }
 
