@@ -25,6 +25,15 @@ const schema = yup.object({
     )
 })
 
+const styles = {
+  '& .MuiSwitch-root': {
+    display: 'none'
+  },
+  '& .MuiSwitch-input': {
+    display: 'none'
+  }
+}
+
 export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
   const defaultValues = {
     name: '',
@@ -65,7 +74,14 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
         variant='outlined'
         sx={{ width: '100%' }}
       />
-      {isEdit && <BooleanInput source='enduring' />}
+      <BooleanInput source='enduring' defaultValue={false} />
+      <BooleanInput
+        hidden
+        source='active'
+        defaultValue={true}
+        sx={styles}
+        label={false}
+      />
     </SimpleForm>
   )
 }
