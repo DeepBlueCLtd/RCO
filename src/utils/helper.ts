@@ -21,7 +21,9 @@ export const checkIfUserIsActive = (user: User): boolean => {
 
 const getIp = async (): Promise<string | undefined> => {
   try {
-    const data = await axios.get('http://localhost:8000/api/ip')
+    const data = await axios.get(
+      `${process.env.VITE_API_URL ?? 'http://localhost:8000/api'}/ip`
+    )
     return data.data?.ip
   } catch (error) {
     return undefined
