@@ -1,10 +1,4 @@
-import {
-  Datagrid,
-  DateField,
-  FunctionField,
-  List,
-  TextField
-} from 'react-admin'
+import { Datagrid, FunctionField, List, TextField } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import ResourceHistoryModal from '../../components/ResourceHistory'
@@ -54,7 +48,6 @@ export default function DestructionList(): React.ReactElement {
           source='createdBy'
           reference={constants.R_USERS}
         />
-        <DateField<Destruction> source='finalisedAt' />
         <SourceField<Destruction>
           source='finalisedBy'
           reference={constants.R_USERS}
