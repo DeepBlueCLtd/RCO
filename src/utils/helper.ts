@@ -21,7 +21,7 @@ export const checkIfUserIsActive = (user: User): boolean => {
 
 const getIp = async (): Promise<string | undefined> => {
   try {
-    const data = await axios.get('https://api.ipify.org?format=json')
+    const data = await axios.get('http://localhost:8000/api/ip')
     return data.data?.ip
   } catch (error) {
     return undefined
