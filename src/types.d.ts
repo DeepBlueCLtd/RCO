@@ -110,6 +110,8 @@ type Audit = RCOResource & {
   subjectId: string | number | null
   // the resource type of the subject
   subjectResource: string | null
+  // the ip address of the client
+  ip?: string
 }
 
 type Platform = RCOResource & {
