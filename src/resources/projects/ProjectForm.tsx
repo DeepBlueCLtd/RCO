@@ -31,7 +31,20 @@ const styles = {
   },
   '& .MuiSwitch-input': {
     display: 'none'
+  },
+  '.MuiFormHelperText-root': {
+    maxWidth: '20px'
   }
+}
+
+const helperTextStyles = {
+  color: 'rgba(0, 0, 0, 0.6)',
+  fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+  fontWeight: '400px',
+  fontSize: '0.75rem',
+  lineHeight: 1.66,
+  letterSpacing: '0.03333em',
+  maxWidth: '500px'
 }
 
 export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
@@ -74,7 +87,14 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
         variant='outlined'
         sx={{ width: '100%' }}
       />
-      <BooleanInput source='enduring' defaultValue={false} />
+      <FlexBox sx={{ alignItems: 'center]' }}>
+        <BooleanInput source='enduring' defaultValue={false} />
+        <p style={helperTextStyles}>
+          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+          commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus
+          et
+        </p>
+      </FlexBox>
       <BooleanInput
         hidden
         source='active'
