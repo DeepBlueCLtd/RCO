@@ -90,9 +90,10 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
       <FlexBox sx={{ alignItems: 'center]' }}>
         <BooleanInput source='enduring' defaultValue={false} />
         <p style={helperTextStyles}>
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
-          commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus
-          et
+          This is enduring if it is a placeholder for a task that is conducted
+          repeatedly, and will not be re-created each time. If it is enduring it
+          should be give start/end dates covering a long period (such as
+          2020-2040).
         </p>
       </FlexBox>
       <BooleanInput
