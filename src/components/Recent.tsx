@@ -61,20 +61,16 @@ interface Props<T> extends DatagridProps {
   rowStyle?: (data: T) => SxProps
 }
 
-function Column<T>(props: Field<T>): React.ReactElement {
+function Column<T extends Batch | User | Dispatch>(
+  props: Field<T>
+): React.ReactElement {
   const { source, reference, component } = props
   if (typeof component !== 'undefined') {
     return React.createElement(component, { source })
   }
 
   if (typeof reference !== 'undefined') {
-    return (
-      <SourceField
-        link={false}
-        source={source as string}
-        reference={reference}
-      />
-    )
+    return <SourceField<T> link={false} source={source} reference={reference} />
   }
   return <TextField source={source as string} />
 }
@@ -123,7 +119,9 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
     </Box>
   )
 }
-export default function Recent<T>(props: Props<T>): React.ReactElement {
+export default function Recent<T extends Batch | User | Dispatch>(
+  props: Props<T>
+): React.ReactElement {
   const {
     resource,
     itemsCount = 5,
@@ -149,11 +147,11 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
           empty={<></>}>
           <Datagrid
             rowStyle={rowStyle}
-            header={() => null}
+            /* include headers header={() => null} */
             bulkActionButtons={false}
             rowClick={rowClick ?? 'show'}>
             {fields.map((column, index) => (
-              <Column key={index} {...column} />
+              <Column<T> key={index} {...column} />
             ))}
           </Datagrid>
         </List>

@@ -130,7 +130,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   ): Promise<void> => {
     const searchParams = new URLSearchParams(location.search)
     const batchId = parseInt(searchParams.get('batch') as string)
-    const path = `/${constants.R_ITEMS}/create?batch=${batchId}`
+    const path = `/${constants.R_RICH_ITEMS}/create?batch=${batchId}`
 
     await vaultLocationsAudit(
       vaultLocationId ?? getValues('vaultLocation'),

@@ -31,7 +31,7 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField source='batchNumber' />
+      <TopToolbarField<Batch> source='batchNumber' />
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
       <HistoryButton
         onClick={() => {
@@ -50,11 +50,11 @@ const ItemActions = ({
   const batch: string = id
 
   return (
-    <StyledTopToolbar preferenceKey={preferenceKey}>
+    <StyledTopToolbar>
       {hasAccess(constants.R_ITEMS, { write: true }) ? (
         <CreateButton
           label='ADD ITEM'
-          to={`/${constants.R_ITEMS}/create?batch=${batch}`}
+          to={`/${constants.R_RICH_ITEMS}/create?batch=${batch}`}
         />
       ) : (
         <></>

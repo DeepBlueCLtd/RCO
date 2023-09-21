@@ -31,11 +31,11 @@ const lifeCycles = (
 
       const year: string = new Date().getFullYear().toString()
 
-      const reference: string = await generateReference<Dispatch>(
+      const name: string = await generateReference<Dispatch>(
         provider,
         year,
         R_DISPATCH,
-        'reference',
+        'name',
         undefined,
         'RN'
       )
@@ -44,7 +44,8 @@ const lifeCycles = (
         id,
         previousData: data,
         data: {
-          reference
+          name,
+          ...(process.env.MOCK ? { dispatchedAt: 'null' } : null)
         }
       })
       await audit({
@@ -52,7 +53,9 @@ const lifeCycles = (
         resource: R_DISPATCH,
         dataId: record.data.id,
         subjectId: null,
-        subjectResource: null
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       return { ...record, data: withRef.data }
     } catch (error) {

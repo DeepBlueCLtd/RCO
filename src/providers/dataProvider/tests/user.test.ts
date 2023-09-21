@@ -11,6 +11,7 @@ import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
 import { clear, generateUserForTesting } from './dummy-data'
 import { AuditType } from '../../../utils/activity-types'
+import { generateRandomDate } from '../../../utils/generateData'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const TO_CLEAR: ResourceTypes[] = [R_USERS, R_AUDIT]
@@ -26,7 +27,7 @@ describe('CRUD operations on User', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
@@ -47,6 +48,7 @@ describe('CRUD operations on User', () => {
   })
 
   it('should create user', async () => {
+    const randomDepartDate = generateRandomDate()[0].toString()
     const userListBeforeCreate = await provider.getList<User>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
@@ -57,7 +59,7 @@ describe('CRUD operations on User', () => {
 
     const createdUser = (
       await provider.create<User>(R_USERS, {
-        data: generateUserForTesting()
+        data: generateUserForTesting({ departedDate: randomDepartDate })
       })
     ).data
 
@@ -80,11 +82,16 @@ describe('CRUD operations on User', () => {
     expect(fetchedUser.id).toBeDefined()
     expect(fetchedUser).toBeDefined()
 
-    const shouldMatchUser = generateUserForTesting({ id: createdUser.id })
+    const shouldMatchUser = generateUserForTesting({
+      id: createdUser.id,
+      departedDate: randomDepartDate
+    })
     expect(fetchedUser).toMatchObject(shouldMatchUser)
   })
 
   it('should update user', async () => {
+    const randomDepartDate = generateRandomDate()[0].toString()
+
     const createdUser = (
       await provider.create<User>(R_USERS, {
         data: generateUserForTesting()
@@ -100,7 +107,7 @@ describe('CRUD operations on User', () => {
         id: createdUser.id,
         name: 'dummy-user',
         adminRights: false,
-        active: false
+        departedDate: randomDepartDate
       })
     })
     const fetchedUser = (
@@ -113,7 +120,7 @@ describe('CRUD operations on User', () => {
       id: createdUser.id,
       name: 'dummy-user',
       adminRights: false,
-      active: false
+      departedDate: randomDepartDate
     })
 
     expect(fetchedUser).toMatchObject(shouldMatchUser)

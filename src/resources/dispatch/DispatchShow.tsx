@@ -35,10 +35,11 @@ import { type AuditData } from '../../utils/audit'
 
 interface ShowActionsProps {
   handleOpen: (open: DestructionModal) => void
+  showEdit: boolean
 }
 
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
-  const { handleOpen } = props
+  const { handleOpen, showEdit } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const dispatched = typeof record?.dispatchedAt !== 'undefined'
@@ -46,15 +47,18 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   return (
     <>
       <TopToolbar>
-        <TopToolbarField<Dispatch> source='reference' />
-        {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
-          <EditButton />
-        )}
-        <HistoryButton
-          onClick={() => {
-            handleOpen('history')
-          }}
-        />
+        <FlexBox>
+          <TopToolbarField<Dispatch> source='name' />
+          {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
+            <EditButton />
+          )}
+          <HistoryButton
+            onClick={() => {
+              handleOpen('history')
+            }}
+          />
+          {showEdit && <EditButton />}
+        </FlexBox>
       </TopToolbar>
     </>
   )
@@ -79,12 +83,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const dispatched: boolean =
     !hasWritePermission ||
     (typeof record?.dispatchedAt !== 'undefined' &&
-      record?.dispatchedAt !== null)
+      record?.dispatchedAt !== null &&
+      record?.dispatchedAt !== 'null')
 
   const receiptReceived: boolean =
     !hasWritePermission ||
     (typeof record?.receiptReceived !== 'undefined' &&
-      record?.dispatchedAt !== null)
+      record?.receiptReceived !== null)
 
   const handleDispatch = (): void => {
     setOpen(true)
@@ -219,12 +224,12 @@ export default function DispatchShow(): React.ReactElement {
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
     const audiData: AuditData = {
       activityType: AuditType.SENT,
-      activityDetail: `Dispatch Sent in ${record.reference}`,
+      activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: itemId,
-      subjectId: null,
-      subjectResource: null
+      subjectId: record.id,
+      subjectResource: constants.R_DISPATCH
     }
     await audit(audiData)
   }
@@ -236,8 +241,8 @@ export default function DispatchShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DISPATCH,
       dataId: parseInt(id as string),
-      subjectId: null,
-      subjectResource: null
+      subjectId: id ? Number(id) : null,
+      subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)
@@ -290,7 +295,16 @@ export default function DispatchShow(): React.ReactElement {
             }}
           />
           <Show
-            actions={<ShowActions handleOpen={handleOpen} />}
+            actions={
+              <ShowActions
+                handleOpen={handleOpen}
+                showEdit={
+                  record?.dispatchedAt === null ||
+                  record?.dispatchedAt === undefined ||
+                  record?.dispatchedAt === 'null'
+                }
+              />
+            }
             component={'div'}>
             <DispatchForm show />
             <Footer handleOpen={handleOpen} dispatch={dispatch} />

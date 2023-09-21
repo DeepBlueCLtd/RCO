@@ -1,4 +1,10 @@
-import { Datagrid, DateField, List, TextField } from 'react-admin'
+import {
+  Datagrid,
+  DateField,
+  FunctionField,
+  List,
+  TextField
+} from 'react-admin'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
@@ -22,9 +28,24 @@ export default function ItemHistory(): React.ReactElement {
         }}>
         <Datagrid bulkActionButtons={false}>
           <DateField source='dateTime' label='Date' />
-          <TextField source='activityType' label='Status' />
-          <TextField source='activityDetail' label='Remarks' />
-          <SourceField source='user' reference={constants.R_USERS} />
+          <TextField<Audit> source='activityType' label='Status' />
+          <TextField<Audit> source='activityDetail' label='Remarks' />
+          <FunctionField<Audit>
+            label='Subject'
+            render={(record) => {
+              return (
+                <SourceField<Audit>
+                  source='subjectId'
+                  {...(record.subjectResource === constants.R_ITEMS
+                    ? { sourceField: 'itemNumber' }
+                    : null)}
+                  reference={record.subjectResource ?? undefined}
+                  link='show'
+                />
+              )
+            }}
+          />
+          <SourceField<Audit> source='user' reference={constants.R_USERS} />
         </Datagrid>
       </List>
     </FieldSet>

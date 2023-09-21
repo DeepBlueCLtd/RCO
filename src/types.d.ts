@@ -43,14 +43,15 @@ interface FormProps {
 // -- SQL Data Types
 // ------------------------
 
-interface MediaType extends RCOResource {
-  name: string
-  active: boolean
-}
-
 /** an entity, with an id unique to that table */
 interface RCOResource {
   readonly id: number
+}
+
+type MediaType = RCOResource & {
+  name: string
+  active: boolean
+  itemSize: number | null
 }
 
 /** a generic type, used for our assorted reference data lists. Once the
@@ -64,33 +65,31 @@ interface ActiveItem {
   active: boolean
 }
 
-interface IntegerReferenceItem extends ActiveItem {
+type IntegerReferenceItem = ActiveItem & {
   id: number
 }
 
-interface StringReferenceItem extends ActiveItem {
+type StringReferenceItem = ActiveItem & {
   id: string
 }
 
 /** an entity for which we track instance creation */
-interface ResourceWithCreation extends RCOResource {
+type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
-  createdBy: User['id']
+  createdBy: User['id'] | null // allow null, since some legacy data doesn't have created by
 }
 
-interface User extends ResourceWithCreation {
+type User = ResourceWithCreation & {
   name: string
   password: string
   adminRights: boolean
-  /** whether items can still be loaned to this user */
-  active: boolean
   role: UserRole
   staffNumber: string
-  departedDate?: string
+  departedDate: string | null
 }
 
-interface Audit extends RCOResource {
+type Audit = RCOResource & {
   // the user making the change
   user: User['id']
   // when this happened
@@ -104,26 +103,30 @@ interface Audit extends RCOResource {
   // what kind of change was made (human-friendly)
   label: string
   // summary of change
-  activityDetail?: string
+  activityDetail: string | null
   // should this audit entry be included in security review?
-  securityRelated?: boolean
+  securityRelated: boolean | null
   // the "other" resource that this event relates to
   subjectId: string | number | null
   // the resource type of the subject
   subjectResource: string | null
+  // the ip address of the client
+  ip?: string
 }
 
-interface Platform extends RCOResource {
+type Platform = RCOResource & {
   name: string
   active: boolean
 }
 
-interface Project extends ResourceWithCreation {
+type Project = ResourceWithCreation & {
   readonly id: number
   name: string
   remarks: string
   startDate: string
   endDate: string
+  enduring: boolean | null
+  active: boolean
 }
 
 type Department = StringReferenceItem
@@ -132,7 +135,9 @@ type ProtectiveMarking = IntegerReferenceItem
 type CatCode = StringReferenceItem
 type CatHandle = StringReferenceItem
 type CatCave = StringReferenceItem
-type VaultLocation = IntegerReferenceItem
+type VaultLocation = IntegerReferenceItem & {
+  shelfSize: number | null
+}
 
 type Vault = StringReferenceItem
 
@@ -152,25 +157,26 @@ interface ItemHandling {
   catHandle: CatHandle['id']
 }
 
-interface Batch extends ResourceWithCreation {
+type Batch = ResourceWithCreation & {
   batchNumber: string
-  yearOfReceipt: string
-  department: Department['id']
-  project?: Project['id']
-  platform?: Platform['id']
-  organisation: Organisation['id']
+  yearOfReceipt: number
+  department: Department['id'] | null
+  project: Project['id'] | null
+  platform: Platform['id'] | null
+  organisation: Organisation['id'] | null
   remarks: string
   receiptNotes: string
   vault: Vault['id']
 }
 
-interface Item extends ResourceWithCreation {
+type Item = ResourceWithCreation & {
   mediaType: MediaType['id']
+  legacyMediaType: MediaType['id'] | null
   startDate: string | null
   batch: Batch['id']
   itemNumber: string
   // originator reference number (consec) or number of sheets (optional)
-  consecSheets?: string
+  consecSheets: string | null
   endDate: string | null
   vaultLocation: VaultLocation['id']
   remarks: string
@@ -182,15 +188,20 @@ interface Item extends ResourceWithCreation {
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
-  loanedTo?: User['id']
-  loanedDate?: string
+  loanedTo: User['id'] | null
+  loanedDate: string | null
   // dispatch details
-  dispatchJob?: Dispatch['id']
-  dispatchedDate?: string
+  dispatchJob: Dispatch['id'] | null
+  dispatchedDate: string | null
   // destruction details
-  destruction?: Destruction['id']
-  destructionDate?: string
-  protectionString?: string
+  destruction: Destruction['id'] | null
+  destructionDate: string | null
+  protectionString: string | null
+}
+
+type RichItem = Item & {
+  project: Project['id']
+  platform: Platform['id']
 }
 
 interface RCOStore {
@@ -201,7 +212,7 @@ interface RCOStore {
   organisation: Organisation[]
   department: Department[]
   vaultLocation: VaultLocation[]
-  mediaType: IntegerReferenceItem[]
+  mediaType: MediaType[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
   catHandle: CatHandle[]
@@ -214,7 +225,7 @@ interface RCOStore {
   batch: Batch[]
   item: Item[]
   destruction: Destruction[]
-  dispatche: Dispatch[]
+  dispatch: Dispatch[]
   vault: Vault[]
   // bridging tables
   itemCode: ItemCode[]
@@ -223,17 +234,19 @@ interface RCOStore {
   batchCode: BatchCode[]
   batchCave: BatchCave[]
   batchHandle: BatchHandling[]
+  richItem: RichItem[]
 }
 
 interface Destruction {
   readonly id: number
-  reference: string
+  name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
-  finalisedAt?: string
-  finalisedBy?: User['id']
+  finalisedAt: string | null
+  finalisedBy: User['id'] | null
   remarks: string
-  reportPrintedAt?: string
+  reportPrintedAt: string | null
 }
 
 interface ActivityType {
@@ -251,20 +264,21 @@ interface Address {
 
 interface Dispatch {
   id: number
-  reference: string
+  name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
   remarks: string
-  dispatchedAt?: string
+  dispatchedAt: string | null
   toName: string
   toAddress: Address['id']
-  receiptReceived?: string
-  lastHastenerSent?: string
-  reportPrintedAt?: string
+  receiptReceived: string | null
+  lastHastenerSent: string | null
+  reportPrintedAt: string | null
 }
 
 /** per instance config data. It is just intended to be one row deep */
-interface ConfigData extends RCOResource {
+type ConfigData = RCOResource & {
   /** singular name for project resource
    * test value: `Project`
    */

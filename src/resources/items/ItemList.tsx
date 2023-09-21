@@ -16,7 +16,8 @@ import {
   Pagination,
   type SelectColumnsButtonProps,
   DateField,
-  TextField
+  TextField,
+  FunctionField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -44,15 +45,15 @@ import DispatchItems from './DispatchItems'
 import List from '../../components/ListWithLocalStore'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
-import LocationField from './LocationField'
-import ItemListData, { type DataType } from './ItemListData'
 import { useLocation } from 'react-router-dom'
+import useItemList from '../../hooks/useItemList'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
 const omitColumns: Array<keyof Item> = [
   'id',
   'createdAt',
+  'createdBy',
   'remarks',
   'startDate',
   'endDate',
@@ -60,9 +61,10 @@ const omitColumns: Array<keyof Item> = [
   'musterRemarks',
   'loanedTo',
   'batch',
-  'protectionString'
-  // 'project',
-  // 'platform'
+  'protectionString',
+  'destruction',
+  'dispatchJob',
+  'legacyMediaType'
 ]
 
 const getFilters = (resource?: string): React.ReactElement[] => {
@@ -98,6 +100,12 @@ const getFilters = (resource?: string): React.ReactElement[] => {
       key='mediaType'
       source='mediaType'
       reference={constants.R_MEDIA_TYPE}
+    />,
+    <SourceInput
+      key='legacyMediaType'
+      source='legacyMediaType'
+      reference={constants.R_MEDIA_TYPE}
+      label='Legacy Media Type'
     />,
     <DateRangePicker
       startSource='endDate_gte'
@@ -140,6 +148,20 @@ const getFilters = (resource?: string): React.ReactElement[] => {
       fieldName='loanedTo'
       key='loaned'
       resource={constants.R_ITEMS}
+    />,
+    <SourceInput
+      source='project'
+      key='project'
+      sort={sort('id')}
+      reference={constants.R_PROJECTS}
+      optionField='name'
+    />,
+    <SourceInput
+      source='platform'
+      key='platform'
+      sort={sort('id')}
+      reference={constants.R_PLATFORMS}
+      optionField='name'
     />
   ]
   if (resource === constants.R_ALL_ITEMS) {
@@ -159,6 +181,23 @@ const getFilters = (resource?: string): React.ReactElement[] => {
         resource={constants.R_ITEMS}
       />
     )
+  } else if (resource === constants.R_ITEMS) {
+    filters.push(
+      <BooleanFilter<Item>
+        source='destruction'
+        label='Marked for destruction'
+        fieldName='destruction'
+        key='destruction'
+        resource={constants.R_ITEMS}
+      />,
+      <BooleanFilter<Item>
+        source='dispatchJob'
+        label='Marked for dispatch'
+        fieldName='dispatchJob'
+        key='dispatch'
+        resource={constants.R_ITEMS}
+      />
+    )
   }
   return filters
 }
@@ -169,15 +208,15 @@ interface ItemActionsProps {
 }
 
 const ItemActions = (props: ItemActionsProps): React.ReactElement => {
-  const { filter } = props
+  const { filter, preferenceKey } = props
   return (
-    <StyledTopToolbar {...props}>
+    <StyledTopToolbar>
       <ItemAssetReport
         storeKey='items-asset-report'
         filterDefaultValues={filter}
       />
       <FilterButton />
-      <SelectColumnsButton {...props} />
+      <SelectColumnsButton preferenceKey={preferenceKey} />
     </StyledTopToolbar>
   )
 }
@@ -245,7 +284,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     dispatch: true
   }
 
-  const { selectedIds } = useListContext<Item>()
+  const { selectedIds } = useListContext<RichItem>()
   const isSelected = selectedIds.length > 0
   const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
     ids: selectedIds
@@ -299,21 +338,28 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   const removeFromDispatch = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
+      const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
+        id: itemId
+      })
+
       const auditData = {
         activityType: AuditType.EDIT,
         activityDetail: 'Item removed',
         securityRelated: false,
-        dataId: itemId,
+        // TODO: TAHA - the next line should be the id of the dispatch (not the item)
+        dataId: data.dispatchJob,
         resource: constants.R_DISPATCH,
-        // TODO: put the item number in for subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: itemId,
+        subjectResource: constants.R_ITEMS
       }
       await audit(auditData)
       await audit({
         ...auditData,
         activityDetail: 'Dispatch Item removed',
-        resource: constants.R_ITEMS
+        resource: constants.R_ITEMS,
+        // TODO: TAHA - the subject for this is the dispatch id, and R_DISPATCH
+        subjectId: data.dispatchJob,
+        subjectResource: constants.R_DISPATCH
       })
     })
 
@@ -329,6 +375,9 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
 
   const returnDispatchedItems = async (): Promise<void> => {
     selectedIds.map(async (itemId) => {
+      const { data } = await dataProvider.getOne<Item>(constants.R_ITEMS, {
+        id: itemId
+      })
       const auditData = {
         activityType: AuditType.EDIT,
         activityDetail: 'Item returned',
@@ -336,8 +385,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dataId: itemId,
         resource: constants.R_DISPATCH,
         // TODO: include the item as subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: itemId,
+        subjectResource: constants.R_ITEMS
       }
       await audit(auditData)
       await audit({
@@ -346,8 +395,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS,
         // TODO: include the dispatch as subject
-        subjectId: null,
-        subjectResource: null
+        subjectId: data.dispatchJob,
+        subjectResource: constants.R_DISPATCH
       })
     })
 
@@ -522,9 +571,8 @@ export default function ItemList(
   const { resource } = options ?? {}
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
-  const sKey = searchParams.get('filter')
-    ? 'filtered-item-list'
-    : 'items-items-list'
+  const filterInSearch = searchParams.get('filter')
+  const sKey = filterInSearch ? 'filtered-item-list' : 'items-items-list'
   const {
     datagridConfigurableProps,
     children,
@@ -543,23 +591,15 @@ export default function ItemList(
       }
     }
   }
-  const [data, setData] = useState<DataType>()
-  const CommonEndFields = [
-    <TextField source='remarks' key={'remarks'} />,
-    <TextField source='musterRemarks' key={'musterRemarks'} />,
-    <TextField
-      source='protectionString'
-      label='Protection'
-      key={'protectionString'}
-    />
-  ]
   return (
     <List
-      disableSyncWithLocation
+      {...(filterInSearch
+        ? { disableSyncWithLocation: false }
+        : { disableSyncWithLocation: true })}
       sx={sx}
       hasCreate={false}
       actions={<ItemActions preferenceKey={preferenceKey} filter={filter} />}
-      resource={constants.R_ITEMS}
+      resource={constants.R_RICH_ITEMS}
       filter={props?.filter ?? options?.filter}
       sort={options?.sort}
       perPage={100}
@@ -573,7 +613,44 @@ export default function ItemList(
       }
       storeKey={storeKey ?? `${options.resource}-store-key`}
       {...rest}>
-      <ItemListData setData={setData} />
+      <ItemListData
+        bulkActionButtons={bulkActionButtons}
+        preferenceKey={preferenceKey}
+        resource={resource}
+        storeKey={storeKey}
+      />
+    </List>
+  )
+}
+
+interface Props {
+  preferenceKey: string
+  bulkActionButtons:
+    | false
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | undefined
+  resource: string
+  storeKey: string | false
+}
+
+const ItemListData = ({
+  preferenceKey,
+  bulkActionButtons,
+  resource,
+  storeKey
+}: Props): React.ReactElement => {
+  const { users, vaultLocations } = useItemList()
+  const CommonEndFields = [
+    <TextField<Item> source='remarks' key={'remarks'} />,
+    <TextField<Item> source='musterRemarks' key={'musterRemarks'} />,
+    <TextField<Item>
+      source='protectionString'
+      label='Protection'
+      key={'protectionString'}
+    />
+  ]
+  return (
+    <>
       <ResetDateFilter source='createdAt' />
       <ResetDateRangeFilter
         source='date_range'
@@ -581,72 +658,109 @@ export default function ItemList(
         endSource='startDate_lte'
       />
       <DatagridConfigurableWithShow
-        resource={constants.R_ITEMS}
+        resource={constants.R_RICH_ITEMS}
         storeKey={storeKey}
         bulkActionButtons={
           bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField source='itemNumber' label='Reference' />
-        <TextField source='id' />
-        <TextField source='createdAt' label='Created' />
-        <LocationField label='Location' {...data} />
-        <SourceField
+        <TextField<RichItem> source='itemNumber' label='Reference' />
+        <TextField<RichItem> source='id' />
+        <TextField<RichItem> source='createdAt' label='Created At' />
+        <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
+        <FunctionField<RichItem>
+          label='Location'
+          render={(record) => {
+            if (record?.loanedTo) {
+              return users?.[record.loanedTo]?.name
+            }
+            if (record?.destructionDate) {
+              return 'DESTROYED'
+            }
+            if (record?.dispatchedDate) {
+              return 'SENT'
+            }
+            return vaultLocations?.[record?.vaultLocation]?.name
+          }}
+        />
+        <SourceField<RichItem>
           link={false}
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <SourceField
+        <SourceField<Item>
+          link={false}
+          source='legacyMediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Legacy Media type'
+        />
+        <SourceField<RichItem>
           link='show'
           source='loanedTo'
           reference={constants.R_USERS}
           label='Loaned to'
         />
-        <DateField showTime source='startDate' />
-        <DateField showTime source='endDate' />
-        <SourceField
+        <DateField<RichItem> showTime source='startDate' />
+        <DateField<RichItem> showTime source='endDate' />
+        <SourceField<RichItem>
           link={false}
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
         />
-        <SourceField
+        <SourceField<RichItem>
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField
+        <SourceField<RichItem>
           link={false}
           source='batch'
           reference={constants.R_BATCHES}
           sourceField='batchNumber'
         />
+        <SourceField<RichItem>
+          link='show'
+          source='platform'
+          reference={constants.R_PLATFORMS}
+        />
+        <SourceField<RichItem>
+          link='show'
+          source='project'
+          reference={constants.R_PROJECTS}
+        />
 
-        {resource !== constants.R_ITEMS
+        {resource !== constants.R_RICH_ITEMS
           ? [
-              <SourceField
+              <SourceField<RichItem>
                 link={false}
                 source='destruction'
                 reference={constants.R_DESTRUCTION}
-                sourceField='reference'
+                sourceField='name'
                 key={'destruction'}
               />,
-              <DateField source='destructionDate' key={'destructionDate'} />,
-              <SourceField
+              <DateField<RichItem>
+                source='destructionDate'
+                key={'destructionDate'}
+              />,
+              <SourceField<RichItem>
                 link={false}
                 source='dispatchJob'
                 reference={constants.R_DISPATCH}
-                sourceField='reference'
+                sourceField='name'
                 label='Dispatch'
                 key={'dispatchJob'}
               />,
-              <DateField source='dispatchedDate' key={'dispatchJob'} />,
+              <DateField<RichItem>
+                source='dispatchedDate'
+                key={'dispatchJob'}
+              />,
               ...CommonEndFields
             ]
           : CommonEndFields}
         {/* <SourceField source='project' reference={constants.R_PROJECTS} /> */}
         {/* <SourceField source='platform' reference={constants.R_PLATFORMS} /> */}
       </DatagridConfigurableWithShow>
-    </List>
+    </>
   )
 }

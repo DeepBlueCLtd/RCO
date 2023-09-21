@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   SelectInput,
   type SelectInputProps,
@@ -8,7 +8,8 @@ import {
   useGetList,
   type TextInputProps,
   ReferenceInput,
-  AutocompleteInput
+  AutocompleteInput,
+  DateInput
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -19,13 +20,15 @@ import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
 import { useConfigData } from '../../utils/useConfigData'
+import SourceInput from '../../components/SourceInput'
+import { DateTime } from 'luxon'
 
 const schema = yup.object({
-  yearOfReceipt: yup.string().required(),
-  department: yup.string().nonNullable().required(),
+  yearOfReceipt: yup.number().required(),
+  department: yup.string().nullable(),
   project: yup.number().nullable(),
   platform: yup.number().nullable(),
-  organisation: yup.string().nonNullable().required(),
+  organisation: yup.string().nullable(),
   vault: yup.string()
 })
 
@@ -36,21 +39,20 @@ interface Props {
   source: string
   inputProps?: SelectInputProps | TextInputProps
   active?: boolean
+  show?: boolean
 }
 
 export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
-  const { source, reference, inputProps = {}, active } = props
+  const { source, reference, inputProps = {}, active, show = false } = props
   const filter = active !== undefined && active ? { active: true } : {}
   const { data, isLoading } = useGetList<T>(reference, {
     filter
   })
-  const boolIsLoading: boolean = isLoading
-  if (boolIsLoading) return null
+  if (isLoading) return null
   if (data === undefined) return null
   const choices = data.map((d) => ({ name: d.name, id: d.id }))
-
   return data?.length === 1 ? (
     <SelectInput
       source={source}
@@ -62,21 +64,50 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
       {...inputProps}
     />
   ) : (
-    <AutocompleteInput source={source} choices={choices} sx={sx} />
+    <AutocompleteInput
+      source={source}
+      {...(show ? { disabled: true } : null)}
+      choices={choices}
+      sx={sx}
+    />
   )
 }
 
 const BatchForm = (
   props: FormProps & { isShow?: boolean }
-): React.ReactElement => {
+): React.ReactElement | null => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
 
+  // check that date is in the last two years
+  const compareDate = useMemo(
+    () => DateTime.now().minus({ years: 2 }).toISO(),
+    []
+  )
+  const { data: enduringProjects } = useGetList<Project>(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 10 },
+    filter: {
+      enduring: true
+    }
+  })
+
+  const { data: nonEnduringProjects } = useGetList<Project>(
+    constants.R_PROJECTS,
+    {
+      pagination: { page: 1, perPage: 40 },
+      filter: {
+        enduring: false,
+        active: true,
+        endDate_gte: compareDate // only offer recent projects
+      },
+      sort: { field: 'id', order: 'DESC' }
+    }
+  )
+
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
-    yearOfReceipt: '',
     remarks: ''
   }
 
@@ -90,8 +121,33 @@ const BatchForm = (
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
 
+  if (enduringProjects === undefined || nonEnduringProjects === undefined)
+    return null
+
+  const choices = [...enduringProjects, ...nonEnduringProjects].map((d) => ({
+    name: d.name,
+    id: d.id,
+    enduring: d.enduring
+  }))
+
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
+  }
+
+  const Created = (): React.ReactElement => {
+    const sx = {
+      width: '100%'
+    }
+    return (
+      <FlexBox>
+        <DateInput source='createdAt' sx={sx} disabled />
+        <SourceInput
+          source='createdBy'
+          reference={constants.R_USERS}
+          inputProps={{ sx, disabled: true }}
+        />
+      </FlexBox>
+    )
   }
 
   return (
@@ -111,18 +167,16 @@ const BatchForm = (
             reference={constants.R_PLATFORMS}>
             <AutocompleteInput optionText='name' sx={sx} disabled={isShow} />
           </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
+          <AutocompleteInput
             source='project'
-            reference={constants.R_PROJECTS}>
-            <AutocompleteInput
-              label={configData?.projectName}
-              optionText='name'
-              sx={sx}
-              defaultValue={projectId !== undefined ? projectId : null}
-              disabled={isShow}
-            />
-          </ReferenceInput>
+            label={configData?.projectName}
+            optionText='name'
+            choices={choices}
+            sx={sx}
+            groupBy={(option) => (option.enduring ? 'Enduring' : 'Regular')}
+            defaultValue={projectId !== undefined ? projectId : null}
+            disabled={isShow}
+          />
         </FlexBox>
         <FlexBox marginBottom='20px' alignItems='center'>
           <DatePicker
@@ -197,6 +251,7 @@ const BatchForm = (
             </>
           )}
         </FlexBox>
+        <Created />
         <TextInput
           multiline
           source='remarks'

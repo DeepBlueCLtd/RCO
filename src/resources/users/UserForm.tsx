@@ -8,7 +8,6 @@ import {
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { decryptPassword } from '../../utils/encryption'
 import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
@@ -24,12 +23,11 @@ const schema = yup.object({
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   const defaultValues: Omit<
     User,
-    'id' | 'createdAt' | 'createdBy' | 'staffNumber'
+    'id' | 'createdAt' | 'createdBy' | 'staffNumber' | 'departedDate'
   > = {
     name: '',
     password: '',
     adminRights: false,
-    active: true,
     role: 'rco-user'
   }
   const { record } = useEditContext()
@@ -37,6 +35,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
 
   return (
     <SimpleForm
+      record={{ ...record, password: '' }}
       toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
@@ -44,16 +43,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <TextInput
-        source='password'
-        variant='outlined'
-        sx={{ width: '100%' }}
-        format={(password) => {
-          if (password?.length === 88)
-            return decryptPassword(password, record.salt)
-          else return password !== null ? password : ''
-        }}
-      />
+      <TextInput source='password' variant='outlined' sx={{ width: '100%' }} />
       <FlexBox>
         <SelectInput
           label='Role'
@@ -67,7 +57,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
       </FlexBox>
       <FlexBox>
         <BooleanInput source='adminRights' />
-        <BooleanInput defaultValue={true} source='active' />
       </FlexBox>
     </SimpleForm>
   )

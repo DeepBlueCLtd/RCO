@@ -113,12 +113,13 @@ export const auditForUpdatedChanges = async (
   if (Object.keys(difference).length > 0) {
     const activityDetail = getActivityDetail(difference, editRemarks)
     await audit({
-      ...auditData,
       activityDetail,
       resource,
       dataId,
       subjectId: null,
-      subjectResource: null
+      subjectResource: null,
+      securityRelated: null,
+      ...auditData
     })
   }
   return record

@@ -1,29 +1,17 @@
 import React from 'react'
 import { Create, Edit, type TransformData } from 'react-admin'
 import UserForm from './UserForm'
-import {
-  decryptPassword,
-  encryptData,
-  generateSalt
-} from '../../utils/encryption'
+
 import * as constants from '../../constants'
+import bcrypt from 'bcryptjs'
 
 const UserList = React.lazy(async () => await import('./UserList'))
 const UserShow = React.lazy(async () => await import('./UserShow'))
 
-const transform = (data: any, options: any): TransformData => {
-  const salt: string = generateSalt()
-  let userPassword
-  if (options !== undefined && data.password.length === 88) {
-    const { previousData } = options
-    userPassword = decryptPassword(previousData.password, previousData.salt)
-  } else {
-    userPassword = data.password
-  }
+const transform = (data: any): TransformData => {
   const updatedData = {
     ...data,
-    salt,
-    password: encryptData(`${userPassword}${salt}`)
+    password: bcrypt.hashSync(data.password)
   }
   return updatedData
 }

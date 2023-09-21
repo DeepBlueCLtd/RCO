@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import {
   Button,
-  DateField,
   Show,
   SimpleShowLayout,
   TextField,
@@ -31,6 +30,7 @@ import { AuditType } from '../../utils/activity-types'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
 import { type AuditData } from '../../utils/audit'
+import { ConditionalDateField } from '../dispatch/DispatchList'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -50,7 +50,9 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const finalised =
-    typeof record?.finalisedAt !== 'undefined' && record?.finalisedAt !== null
+    typeof record?.finalisedAt !== 'undefined' &&
+    record?.finalisedAt !== null &&
+    record?.finalisedAt !== 'null'
 
   return (
     <>
@@ -83,7 +85,9 @@ const Footer = (props: FooterProps): React.ReactElement => {
 
   const destroyed: boolean =
     !hasWritePermission ||
-    (typeof record?.finalisedAt !== 'undefined' && record?.finalisedAt !== null)
+    (typeof record?.finalisedAt !== 'undefined' &&
+      record?.finalisedAt !== null &&
+      record?.finalisedAt !== 'null')
 
   const handleDestroy = (): void => {
     setOpen(true)
@@ -160,12 +164,12 @@ export default function DestructionShow(): React.ReactElement {
   const DestroyAudits = async (item: Item): Promise<void> => {
     const audiData: AuditData = {
       activityType: AuditType.DESTROY,
-      activityDetail: `Destroyed in ${record.reference}`,
+      activityDetail: 'Destroyed',
       securityRelated: false,
       resource: constants.R_ITEMS,
       dataId: item.id,
-      subjectId: null,
-      subjectResource: null
+      subjectId: record.id,
+      subjectResource: constants.R_DESTRUCTION
     }
     await audit(audiData)
   }
@@ -177,8 +181,8 @@ export default function DestructionShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DESTRUCTION,
       dataId: parseInt(id as string),
-      subjectId: null,
-      subjectResource: null
+      subjectId: id ? Number(id) : null,
+      subjectResource: constants.R_ITEMS
     }
     await audit(audiData)
     const ids = itemsAdded.map((item: Item) => item.id)
@@ -189,17 +193,7 @@ export default function DestructionShow(): React.ReactElement {
         destructionDate: nowDate()
       }
     })
-    itemsAdded
-      .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
-        return (
-          ids.includes(id) &&
-          typeof loanedTo === 'undefined' &&
-          loanedTo !== null &&
-          typeof loanedDate === 'undefined' &&
-          typeof destructionDate === 'undefined'
-        )
-      })
-      .forEach(DestroyAudits as any)
+    itemsAdded.forEach(DestroyAudits as any)
     notify('Element destroyed', { type: 'success' })
   }
 
@@ -243,10 +237,15 @@ export default function DestructionShow(): React.ReactElement {
             component={'div'}
             actions={<ShowActions handleOpen={handleOpen} />}>
             <SimpleShowLayout>
-              <TextField source='reference' />
-              <DateField source='finalisedAt' />
+              <TextField<Destruction> source='name' label='Reference' />
+              <ConditionalDateField<Destruction>
+                label='Finalised at'
+                source='finalisedAt'
+                resource={constants.R_DESTRUCTION}
+              />
               <Finalised />
-              <TextField source='remarks' />
+              <TextField<Destruction> source='remarks' />
+              <TextField<Destruction> source='vault' />
             </SimpleShowLayout>
             <Footer handleOpen={handleOpen} destroy={destroy} />
           </Show>
@@ -273,7 +272,7 @@ function DestructionItemList(
 
   const destroyed: boolean = useMemo(() => {
     const permission = hasAccess(constants.R_ITEMS, { write: true })
-    return !permission || typeof data?.finalisedAt !== 'undefined'
+    return permission && !!data?.finalisedAt
   }, [data])
 
   const bulkActionButtons: false | React.ReactElement = destroyed ? (

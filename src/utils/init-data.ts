@@ -1,5 +1,4 @@
 import users from '../providers/dataProvider/defaults/users'
-import { generateSalt, encryptData } from './encryption'
 import {
   generatePlatform,
   generateProject,
@@ -7,7 +6,9 @@ import {
   generateItems,
   generateRandomDateInRange,
   generateUsers,
-  generateVault
+  generateVault,
+  generateEnduringProjects,
+  generateRichItems
 } from './generateData'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
@@ -15,18 +16,17 @@ import localForage from 'localforage'
 import { DateTime } from 'luxon'
 import { getDataProvider } from '../providers/dataProvider'
 import { type DataProvider } from 'react-admin'
+import bcrypt from 'bcryptjs'
+import { checkIfUserIsActive } from './helper'
 
 const generatedUsers = [...generateUsers(200), ...users]
 
 export const encryptedUsers = (isHigh?: boolean): User[] => {
   const userList = isHigh === true ? generatedUsers : users
   const mappedUsers = userList.map((user) => {
-    const salt: string = generateSalt()
-    const userPassword: string = user.password
     const updatedUser = {
       ...user,
-      salt,
-      password: encryptData(`${userPassword}${salt}`)
+      password: bcrypt.hashSync(user.password)
     }
     return updatedUser
   })
@@ -105,7 +105,7 @@ const assignItemsToRandomActiveUser = (
   users: User[],
   items: Item[]
 ): Record<string, number[]> => {
-  const activeUsers = users.filter((user) => user.active)
+  const activeUsers = users.filter((user) => checkIfUserIsActive(user))
   const randomItems: Record<number, number[]> = {}
 
   for (const item of items) {
@@ -135,9 +135,20 @@ const loadDefaultData = async (
 ): Promise<DataProvider> => {
   await localForage.clear()
 
+  const enduringProjectNames = [
+    'RECYCLING (ENDURING)',
+    'DESTRUCTION (ENDURING)',
+    'TEST MEDIA (ENDURING)'
+  ]
+
   const user = typeof userId === 'undefined' ? users[0].id : userId
   const platform = generatePlatform(isHigh === true ? 60 : 10, isHigh === true)
-  const project = generateProject(isHigh === true ? 60 : 10, user)
+  const project: Project[] = []
+  project.push(
+    ...generateEnduringProjects(enduringProjectNames, user),
+    ...generateProject(isHigh === true ? 100 : 60, user, 3)
+  )
+
   const vault = generateVault()
 
   const organisation = getActiveReferenceData<StringReferenceItem>({
@@ -150,17 +161,32 @@ const loadDefaultData = async (
     resource: constants.R_DEPARTMENT
   })
 
-  const vaultLocation = getActiveReferenceData<IntegerReferenceItem>({
+  const vaultLocationCore = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Vault Location',
     length: isHigh === true ? 200 : 50,
     alternateInactive: true,
     isHigh
   })
 
-  const mediaType = getActiveReferenceData<IntegerReferenceItem>({
+  const vaultLocation: VaultLocation[] = vaultLocationCore.map(
+    (item): VaultLocation => {
+      return {
+        shelfSize: null,
+        ...item
+      }
+    }
+  )
+
+  const mediaTypeCore = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Media',
     alternateInactive: true,
     length: 30
+  })
+  const mediaType: MediaType[] = mediaTypeCore.map((item): MediaType => {
+    return {
+      itemSize: null,
+      ...item
+    }
   })
 
   const protectiveMarking = getActiveReferenceData<IntegerReferenceItem>({
@@ -224,7 +250,7 @@ const loadDefaultData = async (
   )
 
   const audit: Audit[] = []
-  const dispatche: Dispatch[] = []
+  const dispatch: Dispatch[] = []
   const destruction: Destruction[] = []
 
   const configDataItem: ConfigData = {
@@ -239,7 +265,7 @@ const loadDefaultData = async (
   }
   const configData: ConfigData[] = [configDataItem]
 
-  const defaultData: RCOStore = {
+  const defaultData: Omit<RCOStore, 'richItem'> = {
     user: encryptedUsers(isHigh),
     batch,
     item,
@@ -255,7 +281,7 @@ const loadDefaultData = async (
     catCave,
     audit,
     destruction,
-    dispatche,
+    dispatch,
     address,
     configData,
     vault,
@@ -266,7 +292,6 @@ const loadDefaultData = async (
     batchCave: [],
     batchHandle: []
   }
-
   const map: Record<string, constants.ResourceTypes> = {
     user: constants.R_USERS,
     batch: constants.R_BATCHES,
@@ -283,7 +308,7 @@ const loadDefaultData = async (
     catCave: constants.R_CAT_CAVE,
     audit: constants.R_AUDIT,
     destruction: constants.R_DESTRUCTION,
-    dispatche: constants.R_DISPATCH,
+    dispatch: constants.R_DISPATCH,
     address: constants.R_ADDRESSES,
     configData: constants.R_CONFIG,
     vault: constants.R_VAULT
@@ -294,6 +319,7 @@ const loadDefaultData = async (
     !!process.env.MOCK
   )
 
+  await generateRichItems(dataprovider, { project, platform, item })
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
       if (key === constants.R_ITEMS) {
@@ -305,7 +331,7 @@ const loadDefaultData = async (
         }
       } else
         for (const val of value) {
-          await dataprovider.create<typeof value>(map[key], {
+          await dataprovider.create<(typeof value)[0]>(map[key], {
             data: val
           })
         }

@@ -33,13 +33,13 @@ const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
   return (
     <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
       <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField
+        <SourceField<Item>
           textProps={{ ...style }}
           source='id'
           reference={constants.R_PROJECTS}
         />
         ,{' '}
-        <SourceField
+        <SourceField<Item>
           textProps={{ ...style }}
           source='id'
           reference={constants.R_PLATFORMS}
@@ -53,12 +53,14 @@ const Title = (): React.ReactElement => {
   const record = useRecordContext()
   return (
     <Typography fontSize='18px' variant='h4' textAlign='center' margin='10px'>
-      RCO - Loans to {record.name}
+      VAL - Loans to {record.name}
     </Typography>
   )
 }
 
-export default function UserMusterList(props: Props): React.ReactElement {
+export default function UserMusterList<T extends User>(
+  props: Props
+): React.ReactElement {
   const { open, onClose } = props
   const { selectedIds } = useListContext()
   const userIds: number[] = selectedIds
@@ -69,9 +71,9 @@ export default function UserMusterList(props: Props): React.ReactElement {
       <>
         {userIds.map((userId, index) => {
           return (
-            <>
+            <React.Fragment key={userId}>
               <Box padding={'20px'} key={index}>
-                <Show
+                <Show<T>
                   component={'div'}
                   id={userId}
                   resource={constants.R_USERS}
@@ -103,19 +105,19 @@ export default function UserMusterList(props: Props): React.ReactElement {
                   headStyle={{
                     fontSize: '12px'
                   }}>
-                  <TextField
+                  <TextField<Item>
                     {...style}
                     source='itemNumber'
                     label='Item Number'
                   />
-                  <SourceField
+                  <SourceField<Item>
                     textProps={{ ...style }}
                     link='show'
                     source='mediaType'
                     reference={constants.R_MEDIA_TYPE}
                     label='Media type'
                   />
-                  <SourceField
+                  <SourceField<Item>
                     textProps={{ ...style }}
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}
@@ -124,12 +126,12 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     {...style}
                     label={`${configData?.projectName} & Platform`}
                   />
-                  <DateField
+                  <DateField<Item>
                     {...style}
                     source='loanedDate'
                     label='Loaned Date'
                   />
-                  <TextField
+                  <TextField<Item>
                     {...style}
                     source='consecSheets'
                     label='Consec/Sheets'
@@ -140,7 +142,7 @@ export default function UserMusterList(props: Props): React.ReactElement {
               {selectedIds.length !== index + 1 && (
                 <div className='pagebreak' />
               )}
-            </>
+            </React.Fragment>
           )
         })}
       </>

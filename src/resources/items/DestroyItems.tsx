@@ -47,9 +47,12 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   useEffect(() => {
     setLoading(true)
+    // note: we need to provide `undefined` for mock backend, and `null`
+    // for SQLite
+    const nullFilter = process.env.MOCK ? 'null' : null
     dataProvider
       .getList<Destruction>(constants.R_DESTRUCTION, {
-        filter: { finalisedAt: null },
+        filter: { finalisedAt: nullFilter },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,
@@ -66,11 +69,11 @@ export default function DestroyItems(props: Props): React.ReactElement {
       })
   }, [])
 
-  const onDestroy = async (): Promise<void> => {
+  const onAddToDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
-      const { reference, id: destructionJobId } = items.find(
+      const { id: destructionJobId } = items.find(
         (job) => job.id === parseInt(destructionId as string)
-      ) ?? { reference: undefined }
+      ) ?? { name: undefined }
       const itemsAdded = data
         .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
           return (
@@ -83,7 +86,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         .map(async (item) => {
           const audiData = {
             activityType: AuditType.EDIT,
-            activityDetail: `Add item to destruction ${reference}`,
+            activityDetail: 'Item added to destruction',
             securityRelated: false,
             resource: constants.R_ITEMS,
             dataId: item.id,
@@ -94,10 +97,9 @@ export default function DestroyItems(props: Props): React.ReactElement {
           await audit({
             ...audiData,
             resource: constants.R_DESTRUCTION,
-            activityDetail: `Add item ${item.itemNumber} to destruction`,
             dataId: destructionJobId as number,
-            subjectId: null,
-            subjectResource: null
+            subjectId: item.id,
+            subjectResource: constants.R_ITEMS
           })
 
           return item.id
@@ -139,7 +141,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
               label={label}>
               {items.map((item) => (
                 <MenuItem key={item.id} value={String(item.id)}>
-                  {item.reference} ({item.remarks})
+                  {item.name} ({item.remarks})
                 </MenuItem>
               ))}
             </Select>
@@ -149,7 +151,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
       <FlexBox>
         <Button
           disabled={items.length === 0}
-          onClick={onDestroy as any}
+          onClick={onAddToDestroy as any}
           variant='contained'>
           Destroy
         </Button>

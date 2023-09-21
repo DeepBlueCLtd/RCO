@@ -3,17 +3,22 @@ import {
   SaveButton,
   SimpleForm,
   TextInput,
-  Toolbar
+  Toolbar,
+  useDataProvider,
+  useRedirect
 } from 'react-admin'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SourceInput from '../../components/SourceInput'
-import { R_ADDRESSES, R_USERS } from '../../constants'
+import { R_ADDRESSES, R_DISPATCH, R_USERS, R_VAULT } from '../../constants'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import FlexBox from '../../components/FlexBox'
+import { ConditionalReferenceInput } from '../batches/BatchForm'
+import { useParams } from 'react-router-dom'
 
 interface Props {
   show?: boolean
+  edit?: boolean
 }
 
 const sx = { width: '100%' }
@@ -33,7 +38,25 @@ const EditToolbar = (): React.ReactElement => {
 }
 
 export default function DispatchForm(props: Props): React.ReactElement {
-  const { show } = props
+  const { show, edit } = props
+
+  const { id } = useParams()
+  const dataProvider = useDataProvider()
+  const redirect = useRedirect()
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      if (id !== undefined) {
+        const {
+          data: { dispatchedAt }
+        } = await dataProvider.getOne<Dispatch>(R_DISPATCH, { id: Number(id) })
+        if (dispatchedAt && dispatchedAt !== 'null' && edit) {
+          redirect(`/dispatch/${id}/show`)
+        }
+      }
+    }
+    fetchData().catch(console.log)
+  }, [id])
 
   const showForm = typeof show !== 'undefined' && show
 
@@ -42,7 +65,7 @@ export default function DispatchForm(props: Props): React.ReactElement {
       toolbar={showForm ? false : <EditToolbar />}
       resolver={yupResolver(schema)}>
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>
-        <TextInput sx={sx} disabled={show} source='toName' />
+        <TextInput sx={sx} disabled={show ?? edit} source='toName' />
       </FlexBox>
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>
         <SourceInput
@@ -58,7 +81,7 @@ export default function DispatchForm(props: Props): React.ReactElement {
       {showForm && (
         <>
           <FlexBox>
-            <TextInput sx={sx} disabled source='reference' />
+            <TextInput sx={sx} disabled source='name' />
             <SourceInput
               sx={sx}
               disabled
@@ -79,6 +102,13 @@ export default function DispatchForm(props: Props): React.ReactElement {
           </FlexBox>
         </>
       )}
+      <ConditionalReferenceInput
+        source='vault'
+        reference={R_VAULT}
+        inputProps={{ helperText: false }}
+        show={show}
+        {...(edit ? { active: true } : null)}
+      />
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
     </SimpleForm>
   )

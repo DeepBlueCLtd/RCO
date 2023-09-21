@@ -18,7 +18,6 @@ import {
   useUpdate
 } from 'react-admin'
 import { Chip, Typography, Button, Modal } from '@mui/material'
-import { decryptPassword } from '../../utils/encryption'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -28,6 +27,7 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
+import { checkIfUserIsActive } from '../../utils/helper'
 
 const style = {
   position: 'absolute',
@@ -43,7 +43,7 @@ const style = {
 
 interface Props {
   handleClose: () => void
-  record?: User & { salt: string }
+  record?: User
 }
 
 const DepartOrganisation = ({
@@ -56,7 +56,7 @@ const DepartOrganisation = ({
     update(R_USERS, {
       id: record?.id,
       previousData: record,
-      data: { active: false, departedDate: nowDate() }
+      data: { departedDate: nowDate() }
     }).catch(console.log)
     handleClose()
   }
@@ -83,7 +83,7 @@ interface UserShowCompType {
 }
 
 const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
-  const { record, isLoading } = useShowContext<User & { salt: string }>()
+  const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
@@ -106,7 +106,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const cannotDepart = (): boolean => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
-      (record?.active as unknown as number) === 0 ||
+      (record !== undefined && !checkIfUserIsActive(record)) ||
       !hasWriteAccess
     )
   }
@@ -133,15 +133,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               variant='outlined'
               sx={{ width: '100%' }}
             />
-            <TextInput
-              disabled
-              source='password'
-              variant='outlined'
-              sx={{ width: '100%' }}
-              format={(password) =>
-                record !== undefined && decryptPassword(password, record.salt)
-              }
-            />
             <FlexBox>
               <Chip label={record?.role} />
               <TextInput
@@ -153,7 +144,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
             </FlexBox>
             <FlexBox>
               <BooleanInput disabled source='adminRights' />
-              <BooleanInput disabled source='active' />
             </FlexBox>
             <FlexBox justifyContent='center'>
               <Button
@@ -264,15 +254,18 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='itemNumber' label='Reference' />
-      <SourceField
+      <TextField<Item> source='itemNumber' label='Reference' />
+      <SourceField<Item>
         link='show'
         source='mediaType'
         reference={constants.R_MEDIA_TYPE}
         label='Media type'
       />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <TextField source='remarks' />
+      <SourceField<Item>
+        source='protectiveMarking'
+        reference='protectiveMarking'
+      />
+      <TextField<Item> source='remarks' />
     </DatagridConfigurable>
   )
 }

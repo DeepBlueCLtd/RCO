@@ -17,6 +17,7 @@ import * as constants from '../../constants'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import SourceInput from '../../components/SourceInput'
+import { DateTime } from 'luxon'
 
 type ButtonType = '' | 'loan' | 'loanReturn'
 
@@ -88,6 +89,7 @@ const ToolBar = (): React.ReactElement => (
 
 function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
+  const nowDate = useMemo(() => DateTime.now().toString(), [])
 
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const notify = useNotify()
@@ -121,7 +123,10 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
           <SourceInput
             source='holder'
             reference={constants.R_USERS}
-            filter={{ active: true }}
+            filter={{
+              departedDate_gte: nowDate
+            }}
+            sort={{ field: 'staffNumber', order: 'ASC' }}
           />
         </SimpleForm>
       </Create>
@@ -141,7 +146,7 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
     const selectedItems: number[] = []
     const userNames = items.map((item) => {
       selectedItems.push(item.id)
-      if (item.loanedTo !== undefined) {
+      if (item.loanedTo) {
         const user = usersById[item.loanedTo]
         return user?.name
       }

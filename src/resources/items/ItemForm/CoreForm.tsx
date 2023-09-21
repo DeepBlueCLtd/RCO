@@ -168,11 +168,11 @@ const CoreForm = (props: Props): React.ReactElement => {
         {(disabled ?? false) && (
           <>
             <ValueField label='Created'>
-              <TextField source='createdAt' />
+              <TextField<Item> source='createdAt' />
             </ValueField>
             <div>
               {'Batch: '}
-              <SourceField
+              <SourceField<Item>
                 link='show'
                 source='batch'
                 reference={R_BATCHES}

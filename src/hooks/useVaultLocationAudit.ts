@@ -93,40 +93,57 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
       const itemAudit: AuditData = {
         ...auditData,
         resource: constants.R_ITEMS,
-        dataId: itemId
+        dataId: itemId,
+        activityDetail: null,
+        subjectId: vaultLocationId,
+        subjectResource: constants.R_VAULT_LOCATION
+        // TODO: TAHA - we should includeh the VAULT LOCATION id and R_VAULT_LOCATIONS for this.
       }
       const audits: AuditData[] = []
       // log removal first
       if (!id) {
+        // TODO: TAHA - for `itemAudit` the subject should be the OLD vault lcoation, and for
+        // TODO: `auditData` the subject should be the item
+
         audits.push(
           ...[
             {
               ...itemAudit,
               activityDetail: `Removed from ${
                 vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
-              } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`
+              } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`,
+              subjectId: selectedItems[itemId]?.vaultLocation,
+              subjectResource: constants.R_VAULT_LOCATION
             },
             {
               ...auditData,
               activityDetail: `${itemRef} removed`,
               resource: constants.R_VAULT_LOCATION,
-              dataId: selectedItems[itemId]?.vaultLocation
+              dataId: selectedItems[itemId]?.vaultLocation,
+              subjectResource: constants.R_ITEMS,
+              subjectId: itemId
             }
           ]
         )
       }
       // now log putting in new locaiton
+      // TODO: TAHA - for `itemAudit` the subject should be the NEW vault lcoation, and for
+      // TODO: `auditData` the subject should be the item
       audits.push(
         ...[
           {
             ...itemAudit,
-            activityDetail: `Moved to ${vaultLocation?.name}`
+            activityDetail: `Moved to ${vaultLocation?.name}`,
+            subjectId: vaultLocation?.id,
+            subjectResource: constants.R_VAULT_LOCATION
           },
           {
             ...auditData,
             activityDetail: `${itemRef} added`,
             resource: constants.R_VAULT_LOCATION,
-            dataId: vaultLocationId
+            dataId: vaultLocationId,
+            subjectId: itemId,
+            subjectResource: constants.R_ITEMS
           }
         ]
       )

@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS protectiveMarking(
 CREATE TABLE IF NOT EXISTS vaultLocation(
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
-       active INTEGER NOT NULL
+       active INTEGER NOT NULL,
+       shelfSize INTEGER
 ) WITHOUT ROWID;
 
 -- Meta table - department
@@ -72,9 +73,11 @@ CREATE TABLE IF NOT EXISTS project (
        name TEXT NOT NULL,
        remarks TEXT,
        createdAt TEXT NOT NULL,
-       createdBy INT NOT NULL,
+       createdBy INT,
        startDate TEXT NOT NULL,
        endDate TEXT NOT NULL,
+       enduring INTEGER NOT NULL,
+       active INTEGER NOT NULL,
        FOREIGN KEY (createdBy) REFERENCES user(id)
 ) WITHOUT ROWID;
 
@@ -83,7 +86,8 @@ CREATE TABLE IF NOT EXISTS project (
 CREATE TABLE IF NOT EXISTS mediaType(
        id INTEGER PRIMARY KEY,
        active INTEGER NOT NULL,
-       name TEXT NOT NULL
+       name TEXT NOT NULL,
+       itemSize INTEGER /* storage volume required */
 ) WITHOUT ROWID;
 
 
@@ -101,10 +105,9 @@ CREATE TABLE IF NOT EXISTS user (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
        password TEXT NOT NULL,
-       salt TEXT,
        adminRights INTEGER NOT NULL,
        active INTEGER NOT NULL,
-       roles TEXT NOT NULL, /*Should be a json array string. Ex.: "['rco-user', 'rco-power-user']" or "['rco-user']" or "[]"*/
+       role TEXT NOT NULL,  /* Should be string Ex.: 'rco-user, 'rco-power-user' */
        staffNumber TEXT NOT NULL,
        departedDate TEXT,
        createdAt TEXT NOT NULL,
@@ -128,6 +131,7 @@ CREATE TABLE IF NOT EXISTS audit (
        securityRelated INTEGER,
        subjectId INTEGER,
        subjectResource: TEXT,
+       ip TEXT,
 
        FOREIGN KEY (user) REFERENCES user(id),
        FOREIGN KEY (subject) REFERENCES user(id),
@@ -139,23 +143,23 @@ CREATE TABLE IF NOT EXISTS audit (
 CREATE TABLE IF NOT EXISTS batch (
        id INTEGER PRIMARY KEY,
        batchNumber TEXT NOT NULL,
-       yearOfReceipt TEXT NOT NULL,
+       yearOfReceipt INT NOT NULL,
        project INT,
        platform INT,
-       organisation INT NOT NULL,
+       organisation TEXT,
        vault TEXT NOT NULL,
-       department INT NOT NULL,
+       department TEXT,
        remarks TEXT,
        receiptNotes TEXT,
        createdAt TEXT NOT NULL,
-       createdBy INT NOT NULL,
+       createdBy INT, 
 
        FOREIGN KEY (project) REFERENCES project(id),
        FOREIGN KEY (platform) REFERENCES platform(id),
        FOREIGN KEY (department) REFERENCES department(id),
        FOREIGN KEY (organisation) REFERENCES organisation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
-       FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (createdBy) REFERENCES user(id),
        FOREIGN KEY (vault) REFERENCES vault(id)
 ) WITHOUT ROWID;
 
@@ -163,7 +167,8 @@ CREATE TABLE IF NOT EXISTS batch (
 CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
 
-       reference TEXT NOT NULL,
+       name TEXT NOT NULL,
+       vault TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -173,14 +178,16 @@ CREATE TABLE IF NOT EXISTS destruction(
        remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
-       FOREIGN KEY (finalisedBy) REFERENCES user(id)
+       FOREIGN KEY (finalisedBy) REFERENCES user(id),
+       FOREIGN KEY (vault) REFERENCES vault(id)
  ) WITHOUT ROWID;
 
 -- Resource table - Dispatch
 CREATE TABLE IF NOT EXISTS dispatch(
        id INTEGER PRIMARY KEY,
 
-       reference TEXT,
+       name TEXT,
+       vault TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
@@ -194,13 +201,15 @@ CREATE TABLE IF NOT EXISTS dispatch(
        remarks TEXT,
 
        FOREIGN KEY (createdBy) REFERENCES user(id),
-       FOREIGN KEY (address) REFERENCES address(id)
+       FOREIGN KEY (address) REFERENCES address(id),
+       FOREIGN KEY (vault) REFERENCES vault(id)
  ) WITHOUT ROWID;
 
 -- Resource table - Item
 CREATE TABLE IF NOT EXISTS item(
        id INTEGER PRIMARY KEY,
        mediaType INTEGER NOT NULL,
+       legacyMediaType INTEGER, /* not present for new data */
        startDate TEXT,
        endDate TEXT,
        batch INTEGER NOT NULL,
@@ -223,6 +232,7 @@ CREATE TABLE IF NOT EXISTS item(
        createdBy INT NOT NULL,
 
        FOREIGN KEY (mediaType) REFERENCES mediaType(id),
+       FOREIGN KEY (legacyMediaType) REFERENCES mediaType(id),
        FOREIGN KEY (batch) REFERENCES batch(id),
        FOREIGN KEY (vaultLocation) REFERENCES vaultLocation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),

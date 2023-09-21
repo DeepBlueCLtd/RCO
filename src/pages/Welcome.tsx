@@ -34,20 +34,24 @@ const useStyles = makeStyles({
 })
 
 export default function Welcome(): React.ReactElement {
+  const filter = process.env.MOCK
+    ? { loanedTo_neq: undefined }
+    : { loanedTo_neq: null }
+
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
   const { data } = useGetList<Item>(constants.R_ITEMS, {
-    sort: { field: 'id', order: 'ASC' }
+    sort: { field: 'id', order: 'ASC' },
+    filter
   })
   const usersHaveLoan: Array<User['id']> = []
-  data?.forEach((d) =>
-    d.loanedTo !== undefined ? usersHaveLoan.push(d.loanedTo) : null
-  )
+  data?.forEach((d) => (d.loanedTo ? usersHaveLoan.push(d.loanedTo) : null))
   const uniqueUsers = [...new Set(usersHaveLoan)]
   const configData = useConfigData()
   const redirect = useRedirect()
 
   if (loading) return <></>
+  if (!hasAccess('welcome-page', { read: true })) redirect('/login')
 
   return (
     <div className={styles.root}>

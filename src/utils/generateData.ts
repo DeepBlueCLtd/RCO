@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { nowDate } from '../providers/dataProvider/dataprovider-utils'
 import * as constants from '../constants'
 import { ID_FIX } from '../constants'
+import { type DataProvider } from 'react-admin'
 
 const skipStartDate = (): boolean => {
   return Math.random() < 0.05
@@ -49,6 +50,36 @@ export function generateRandomDateInRange(
   return randomDate.toJSDate().toString()
 }
 
+function generateDateForEnduringProjects(): {
+  startDate: string
+  endDate: string
+} {
+  const startYear = 1980
+  const endYear = 2060
+
+  const startDate = DateTime.fromObject({
+    year: startYear,
+    month: 1,
+    day: 1
+  }).toMillis()
+
+  const endDate = DateTime.fromObject({
+    year: endYear,
+    month: 12,
+    day: 31
+  }).toMillis()
+
+  const randomTimestamp = Math.random() * (endDate - startDate) + startDate
+  const randomStartDate = DateTime.fromMillis(randomTimestamp)
+  const randomDays = Math.floor(Math.random() * 3650) + 1
+  const randomEndDate = randomStartDate.plus({ days: randomDays })
+
+  return {
+    startDate: randomStartDate.toString(),
+    endDate: randomEndDate.toString()
+  }
+}
+
 function setMinuteToStep(date: string, step = 15): string {
   const luxonDate = DateTime.fromJSDate(new Date(date))
   const updatedDate = luxonDate.minus({
@@ -65,7 +96,7 @@ const getItemReferenceNumber = (batch: Batch, items: Item[]): string => {
   })
 }
 
-const generateBatchId = (year: string, batch: Batch[]): string => {
+const generateBatchId = (year: number, batch: Batch[]): string => {
   const yearsFound = batch.filter((b) => b.yearOfReceipt === year)
   return (yearsFound.length + 1).toLocaleString('en-US', {
     minimumIntegerDigits: 2,
@@ -91,9 +122,13 @@ export const generatePlatform = (
   return platforms
 }
 
-export const generateProject = (length: number, user: number): Project[] => {
+export const generateProject = (
+  length: number,
+  user: number,
+  offset: number
+): Project[] => {
   const projects: Project[] = []
-  for (let i = 1; i <= length; i++) {
+  for (let i = offset; i <= offset + length; i++) {
     const [startDate, endDate] = generateRandomDate()
     const obj: Project = {
       id: i,
@@ -102,7 +137,33 @@ export const generateProject = (length: number, user: number): Project[] => {
       startDate: startDate.toString(),
       endDate: endDate.toString(),
       remarks: `project-remarks-${i}`,
-      createdBy: user
+      createdBy: user,
+      enduring: false,
+      active: Math.random() > 0.4
+    }
+    projects.push(obj)
+  }
+  return projects
+}
+
+export const generateEnduringProjects = (
+  names: string[],
+  user: number
+): Project[] => {
+  const projects: Project[] = []
+  const length = names.length
+  for (let i = 0; i < length; i++) {
+    const { startDate, endDate } = generateDateForEnduringProjects()
+    const obj: Project = {
+      id: i,
+      createdAt: nowDate(),
+      name: names[i],
+      startDate,
+      endDate,
+      remarks: `project-remarks-${i}`,
+      createdBy: user,
+      enduring: true,
+      active: true
     }
     projects.push(obj)
   }
@@ -153,7 +214,7 @@ export const generateBatch = (
   }
 
   for (let i = 1; i <= length; i++) {
-    const year = String(generateRandomNumber(2020, 2023))
+    const year = generateRandomNumber(2020, 2023)
 
     const department = `${generateRandomNumber(1, departments - 1)}-${
       ID_FIX[constants.R_DEPARTMENT]
@@ -169,13 +230,13 @@ export const generateBatch = (
       batchNumber: `V${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department,
-      project: isNull() ? undefined : generateRandomNumber(1, projects - 1),
-      platform: isNull() ? undefined : generateRandomNumber(1, platforms - 1),
+      project: isNull() ? null : generateRandomNumber(1, projects - 1),
+      platform: isNull() ? null : generateRandomNumber(1, platforms - 1),
       vault: Math.random() >= 0.5 ? 'LEGACY' : 'VAULT',
       organisation,
       remarks: `remarks-batch-${i}`,
       receiptNotes: `Reference-${i}`,
-      createdBy: user
+      createdBy: !isNull() ? null : user
     }
     batches.push(obj)
   }
@@ -209,6 +270,7 @@ export const generateItems = (
       id: offset + i,
       createdAt: nowDate(),
       mediaType: generateRandomNumber(1, mediaType - 1),
+      legacyMediaType: generateRandomNumber(1, mediaType - 1),
       batch: idOfBatch,
       itemNumber: `${batchNumber}/${itemReference}`,
       startDate:
@@ -219,7 +281,14 @@ export const generateItems = (
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),
       consecSheets: `consec-sheets-${i + 1}`,
-      createdBy: user
+      createdBy: user,
+      loanedDate: null,
+      loanedTo: null,
+      dispatchedDate: null,
+      dispatchJob: null,
+      destruction: null,
+      destructionDate: null,
+      protectionString: null
       // project: batch.project,
       // platform: batch.platform
     }
@@ -246,13 +315,92 @@ export const generateUsers = (length: number): User[] => {
       name: `user-${i + 1}`,
       password: 'user',
       adminRights: generateRandomNumber(0, 100) > 50,
-      active,
+      ...(active
+        ? { departedDate: null }
+        : { departedDate: generateRandomDate()[0].toString() }),
       staffNumber: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
-      createdAt: nowDate()
+      createdAt: nowDate(),
+      departedDate: null
     }
     users.push(obj)
   }
   return users
+}
+
+interface Params {
+  project: Project[]
+  platform: Platform[]
+  item: Item[]
+}
+
+export const generateRichItems = async (
+  dataProvider: DataProvider,
+  data?: Params
+): Promise<void> => {
+  const params = {
+    pagination: { page: 1, perPage: 1000 },
+    sort: { field: 'id', order: 'ASC' },
+    filter: {}
+  }
+  const fetchedRichItems = (
+    await dataProvider.getList<RichItem>(constants.R_RICH_ITEMS, params)
+  ).data.map((item) => item.id)
+  if (fetchedRichItems.length > 0)
+    await dataProvider.deleteMany<RichItem>(constants.R_RICH_ITEMS, {
+      ids: fetchedRichItems
+    })
+
+  const richItems: RichItem[] = []
+
+  if (data === undefined) {
+    const { data: fetchedItems } = await dataProvider.getList<Item>(
+      constants.R_ITEMS,
+      params
+    )
+    const { data: fetchedProjects } = await dataProvider.getList<Project>(
+      constants.R_PROJECTS,
+      params
+    )
+    const { data: fetchedPlatforms } = await dataProvider.getList<Platform>(
+      constants.R_PLATFORMS,
+      params
+    )
+    richItems.push(
+      ...richItemsGenerate(fetchedItems, fetchedPlatforms, fetchedProjects)
+    )
+  } else {
+    const { project, platform, item } = data
+    richItems.push(...richItemsGenerate(item, platform, project))
+  }
+
+  const promises = richItems.map(async (richItem) => {
+    await dataProvider.create<RichItem>(constants.R_RICH_ITEMS, {
+      data: richItem
+    })
+  })
+
+  try {
+    await Promise.all(promises)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const richItemsGenerate = (
+  items: Item[],
+  platforms: Platform[],
+  projects: Project[]
+): RichItem[] => {
+  const richItems: RichItem[] = []
+  for (const item of items) {
+    richItems.push({
+      ...item,
+      id: item.id,
+      platform: generateRandomNumber(0, platforms.length),
+      project: generateRandomNumber(0, projects.length)
+    })
+  }
+  return richItems
 }

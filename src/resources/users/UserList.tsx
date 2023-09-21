@@ -52,9 +52,7 @@ export default function UserList(props: Props): React.ReactElement {
     useEffect(() => {
       const users = data.filter((user: User) => selectedIds.includes(user.id))
       setSelectedUser(users)
-      setShowReturn(
-        users.every((user: User) => user.departedDate !== undefined)
-      )
+      setShowReturn(users.every((user: User) => user.departedDate !== null))
     }, [selectedIds, data])
 
     const handleUserReturn = (): void => {
@@ -64,8 +62,7 @@ export default function UserList(props: Props): React.ReactElement {
             id: user.id,
             previousData: user,
             data: {
-              departedDate: undefined,
-              active: true
+              departedDate: null
             }
           }).catch(console.log)
         })
@@ -99,13 +96,17 @@ export default function UserList(props: Props): React.ReactElement {
       <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
-        <TextField source='staffNumber' label='Staff number' />
-        <TextField source='name' />
-        <BooleanField source='adminRights' label='Admin Rights' looseValue />
-        <BooleanField source='active' label='Active User' looseValue />
+        <TextField<User> source='staffNumber' label='Staff number' />
+        <TextField<User> source='name' />
+        <BooleanField<User>
+          source='adminRights'
+          label='Admin Rights'
+          looseValue
+        />
+        <TextField label='Departure' source='departedDate' />
         <ChipField />
       </DatagridConfigurableWithShow>
-      <UserMusterList open={open} onClose={handleOpen(false)} />
+      <UserMusterList<User> open={open} onClose={handleOpen(false)} />
     </List>
   )
 }

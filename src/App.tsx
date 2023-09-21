@@ -41,6 +41,7 @@ import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
+import { initialize } from './utils/helper'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 // true for mock, false for REST
@@ -203,6 +204,10 @@ function App(): React.ReactElement {
     return null
   }
 
+  useEffect(() => {
+    initialize().catch(console.log)
+  }, [])
+
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
 
@@ -333,15 +338,15 @@ function App(): React.ReactElement {
           {...protectedRoutes(permissions, constants.R_BATCHES, batches)}
         />
         <Resource
-          key={constants.R_ITEMS}
+          key={constants.R_RICH_ITEMS}
           icon={constants.ICON_ITEM}
-          name={constants.R_ITEMS}
+          name={constants.R_RICH_ITEMS}
           options={{
             filter: {
               dispatchedDate: null,
               destructionDate: null
             },
-            resource: constants.R_ITEMS,
+            resource: constants.R_RICH_ITEMS,
             sort: {
               field: 'id',
               order: 'DESC'

@@ -86,7 +86,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const handleLogOut = (): void => {
     logout()
       .then(() => {
-        redirect('/')
+        redirect('/login')
         const storageEvent = new StorageEvent('storage', {
           key: constants.AUTH_STATE_CHANGED
         })
@@ -175,7 +175,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => {
         />
       </span>
       <Box flex={1} />
-      [RCO]
+      [VAL]
       <Box flex={1} />
     </AppBar>
   )

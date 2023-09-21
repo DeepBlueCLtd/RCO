@@ -26,7 +26,7 @@ const DispatchCreate = (): React.ReactElement => {
 export const DispatchEdit = (): React.ReactElement => {
   return (
     <Edit>
-      <DispatchForm />
+      <DispatchForm edit />
     </Edit>
   )
 }

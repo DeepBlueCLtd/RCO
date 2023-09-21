@@ -20,7 +20,7 @@ const DestructionCreate = (): React.ReactElement => {
 const DestructionEdit = (): React.ReactElement => {
   return (
     <Edit>
-      <DestructionForm disabledFields={['year', 'reference']} isEdit />
+      <DestructionForm disabledFields={['year', 'name']} isEdit />
     </Edit>
   )
 }

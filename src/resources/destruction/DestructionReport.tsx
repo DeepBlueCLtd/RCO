@@ -84,24 +84,26 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
         filter={{
           destruction: recordId
         }}>
-        <TextField source='itemNumber' />
-        <SourceField
+        <TextField<Item> source='itemNumber' />
+        <SourceField<Item>
           link='show'
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <TextField source='consecSheets' label='Srl/Pages' />
-        <SourceField
+        <TextField<Item> source='consecSheets' label='Srl/Pages' />
+        <SourceField<Item>
           reference={constants.R_PROTECTIVE_MARKING}
           source='protectiveMarking'
         />
-        <ReferenceField
+        <ReferenceField<Item>
           label='Platform'
           reference={constants.R_BATCHES}
           source='batch'>
-          <ReferenceField reference={constants.R_PLATFORMS} source='platform'>
-            <TextField source='name' />
+          <ReferenceField<Batch>
+            reference={constants.R_PLATFORMS}
+            source='platform'>
+            <TextField<Platform> source='name' />
           </ReferenceField>
         </ReferenceField>
       </ItemsReport>
@@ -248,7 +250,7 @@ const TablesData = (): React.ReactElement => {
           margin: '20px 0'
         }}>
         It is certified that the {total} above mentioned item(s) of{' '}
-        {record.reference} has been destroyed in the presence of:-
+        {record.name} has been destroyed in the presence of:-
       </Typography>
       <SignatureForms />
     </Box>
@@ -273,7 +275,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>
           <Typography variant='h5' textAlign='center' margin='10px'>
-            <TextField source='reference' />
+            <TextField<Destruction> source='name' />
           </Typography>
           <Typography variant='h6' textAlign='center' margin='10px'>
             CERTIFICATE OF DESTRUCTION OF DOCUMENTS

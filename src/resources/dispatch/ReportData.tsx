@@ -14,9 +14,9 @@ const DispatchDetail = (): React.ReactElement => {
 
   return (
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
-      <FieldWithLabel
+      <FieldWithLabel<Dispatch>
         label='Serial No.'
-        source='reference'
+        source='name'
         labelStyles={{ fontSize: '1rem' }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
@@ -28,7 +28,7 @@ const DispatchDetail = (): React.ReactElement => {
           </span>
         </Typography>
       </Box>
-      <FieldWithLabel
+      <FieldWithLabel<Dispatch>
         label='Date'
         source='createdAt'
         labelStyles={{ fontSize: '1rem' }}
@@ -41,7 +41,7 @@ const DispatchDetail = (): React.ReactElement => {
         }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
-      <FieldWithLabel
+      <FieldWithLabel<Dispatch>
         sourceField='fullAddress'
         label='To'
         source='toAddress'
@@ -68,15 +68,15 @@ const ItemListBox = (): React.ReactElement => {
         filter={{
           dispatchJob: id
         }}>
-        <TextField source='itemNumber' />
-        <SourceField
+        <TextField<Item> source='itemNumber' />
+        <SourceField<Item>
           link='show'
           source='mediaType'
           reference={constants.R_MEDIA_TYPE}
           label='Media type'
         />
-        <TextField source='consecSheets' label='Consec/Sheets' />
-        <SourceField
+        <TextField<Item> source='consecSheets' label='Consec/Sheets' />
+        <SourceField<Item>
           reference={constants.R_PROTECTIVE_MARKING}
           source='protectiveMarking'
           label='Prot Mk'

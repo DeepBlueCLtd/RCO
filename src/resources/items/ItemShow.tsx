@@ -58,7 +58,7 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
         />
         <FlexBox>
           <Remarks />
-          <Source />
+          <Media />
         </FlexBox>
         <Created />
       </Form>
@@ -85,11 +85,6 @@ const Details = (): React.ReactElement => {
         </Typography>
       </legend>
       <FlexBox>
-        <SourceInput
-          source='mediaType'
-          reference={constants.R_MEDIA_TYPE}
-          inputProps={{ sx, disabled: true }}
-        />
         <TextInput
           label='Consec/Sheets'
           source='consecSheets'
@@ -139,7 +134,7 @@ const Location = (): React.ReactElement => {
   )
 }
 
-const Source = (): React.ReactElement => {
+const Media = (): React.ReactElement => {
   const sx = {
     width: '100%'
   }
@@ -154,18 +149,19 @@ const Source = (): React.ReactElement => {
       }}>
       <legend>
         <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-          Source
+          Media
         </Typography>
       </legend>
       <FlexBox>
         <SourceInput
-          source='platform'
-          reference={constants.R_PLATFORMS}
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
           inputProps={{ sx, disabled: true }}
         />
         <SourceInput
-          source='project'
-          reference={constants.R_PROJECTS}
+          source='legacyMediaType'
+          label='Legacy Media Type'
+          reference={constants.R_MEDIA_TYPE}
           inputProps={{ sx, disabled: true }}
         />
       </FlexBox>
@@ -192,7 +188,7 @@ const Remarks = (): React.ReactElement => {
         </Typography>
       </legend>
       <FlexBox>
-        <TextInput source='remarks' sx={sx} disabled />
+        <TextInput multiline source='remarks' sx={sx} disabled />
       </FlexBox>
     </Box>
   )
@@ -248,7 +244,7 @@ interface StatusTextProps {
 interface ActionLinkProps {
   actionText: string
   linkPathname: string
-  text: string
+  text: string | null
 }
 
 const ActionLink = ({
@@ -315,7 +311,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
       {source === 'loanedTo' ? (
         <Typography sx={sx} variant='h5'>
           {statusText}
-          <SourceField
+          <SourceField<Item>
             link='show'
             source={source}
             reference={constants.R_USERS}
@@ -347,12 +343,13 @@ const ItemShowActions = ({
   record
 }: ItemShowProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField source='itemNumber' />
+      <TopToolbarField<Item> source='itemNumber' />
       <StatusText record={record} />
-      {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
+      {hasAccess(constants.R_ITEMS, { write: true }) && (
+        <EditButton to={`/${constants.R_RICH_ITEMS}/${record.id}`} />
+      )}
       <HistoryButton
         onClick={() => {
           handleOpen(true)
