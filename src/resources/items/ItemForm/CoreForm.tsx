@@ -30,6 +30,7 @@ const CoreForm = (props: Props): React.ReactElement => {
   const { batch, disabled, itemId, setItemId, isRemarksOpen } = props
   const formContext = useFormContext()
   const {
+    setValue,
     formState: { isSubmitted, isSubmitting }
   } = formContext
   const [mediaTypes, setMediaTypes] = useState<any[]>([])
@@ -77,6 +78,15 @@ const CoreForm = (props: Props): React.ReactElement => {
         {label}: {children}
       </Typography>
     )
+  }
+
+  const handleKeyUp = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    source: string
+  ): void => {
+    const inputElement = e.target as HTMLInputElement
+    const value = inputElement.value
+    setValue(source, value)
   }
 
   return (
@@ -138,6 +148,9 @@ const CoreForm = (props: Props): React.ReactElement => {
           source='startDate'
           label='Start'
           variant='outlined'
+          onKeyUp={(e) => {
+            handleKeyUp(e, 'startDate')
+          }}
         />
         <DateTimeInput
           InputProps={{ ref: dateRef }}
@@ -146,6 +159,9 @@ const CoreForm = (props: Props): React.ReactElement => {
           source='endDate'
           variant='outlined'
           label='End'
+          onKeyUp={(e) => {
+            handleKeyUp(e, 'endDate')
+          }}
         />
       </FlexBox>
       <FlexBox>
