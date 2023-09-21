@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS audit (
        securityRelated INTEGER,
        subjectId INTEGER,
        subjectResource: TEXT,
+       ip TEXT,
 
        FOREIGN KEY (user) REFERENCES user(id),
        FOREIGN KEY (subject) REFERENCES user(id),

@@ -41,6 +41,7 @@ import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
+import { initialize } from './utils/helper'
 
 const LoadingPage = <Loading loadingPrimary='Loading' loadingSecondary='' />
 // true for mock, false for REST
@@ -202,6 +203,10 @@ function App(): React.ReactElement {
     }
     return null
   }
+
+  useEffect(() => {
+    initialize().catch(console.log)
+  }, [])
 
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
