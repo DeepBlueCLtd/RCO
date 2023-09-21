@@ -2,6 +2,7 @@ import { type DataProvider } from 'react-admin'
 import { getUser } from '../providers/authProvider'
 import * as constants from '../constants'
 import { getActivityTypeLabel } from './activity-types'
+import { getClientIp } from './helper'
 
 /** minimal set of data for Audit, to be supplemented
  * with other metadata when stored
@@ -36,7 +37,8 @@ export const trackEvent =
           securityRelated:
             securityRelated !== undefined ? securityRelated : false,
           subjectId,
-          subjectResource
+          subjectResource,
+          ip: getClientIp()
         }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
           data: audit
