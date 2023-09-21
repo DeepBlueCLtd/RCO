@@ -26,6 +26,7 @@ const getIp = async (): Promise<string | undefined> => {
     )
     return data.data?.ip
   } catch (error) {
+    console.log(error)
     return undefined
   }
 }
