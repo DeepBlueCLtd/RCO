@@ -178,7 +178,7 @@ type Item = ResourceWithCreation & {
   // originator reference number (consec) or number of sheets (optional)
   consecSheets: string | null
   endDate: string | null
-  vaultLocation: VaultLocation['id']
+  vaultLocation: VaultLocation['id'] | null
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
   // temporarily removing for working with soul
