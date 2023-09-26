@@ -48,6 +48,8 @@ export const removeToken = (): void => {
 }
 
 const removeCookie = (name: string): void => {
+  // note: setting the expiry date of a cookie to a past data effectively
+  // removes it
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
 }
 
