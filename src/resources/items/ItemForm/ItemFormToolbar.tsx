@@ -124,7 +124,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   }, [])
 
   const vLocationAudits = async (
-    vaultLocationId?: number,
+    vaultLocationId?: number | null,
     itemId?: number,
     clone = false
   ): Promise<void> => {

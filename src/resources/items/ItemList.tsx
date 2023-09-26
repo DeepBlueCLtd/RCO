@@ -681,7 +681,10 @@ const ItemListData = ({
             if (record?.dispatchedDate) {
               return 'SENT'
             }
-            return vaultLocations?.[record?.vaultLocation]?.name
+            return (
+              record?.vaultLocation &&
+              vaultLocations?.[record?.vaultLocation]?.name
+            )
           }}
         />
         <SourceField<RichItem>

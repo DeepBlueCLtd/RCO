@@ -80,6 +80,8 @@ const BatchForm = (
   const location = useLocation()
   const { isEdit, isShow } = props
   const configData = useConfigData()
+
+  // check that date is in the last two years
   const compareDate = useMemo(
     () => DateTime.now().minus({ years: 2 }).toISO(),
     []
@@ -98,7 +100,7 @@ const BatchForm = (
       filter: {
         enduring: false,
         active: true,
-        endDate_gte: compareDate
+        endDate_gte: compareDate // only offer recent projects
       },
       sort: { field: 'id', order: 'DESC' }
     }

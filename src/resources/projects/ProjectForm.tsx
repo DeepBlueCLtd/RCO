@@ -25,6 +25,28 @@ const schema = yup.object({
     )
 })
 
+const styles = {
+  '& .MuiSwitch-root': {
+    display: 'none'
+  },
+  '& .MuiSwitch-input': {
+    display: 'none'
+  },
+  '.MuiFormHelperText-root': {
+    maxWidth: '20px'
+  }
+}
+
+const helperTextStyles = {
+  color: 'rgba(0, 0, 0, 0.6)',
+  fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+  fontWeight: '400px',
+  fontSize: '0.75rem',
+  lineHeight: 1.66,
+  letterSpacing: '0.03333em',
+  maxWidth: '500px'
+}
+
 export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
   const defaultValues = {
     name: '',
@@ -65,7 +87,22 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
         variant='outlined'
         sx={{ width: '100%' }}
       />
-      {isEdit && <BooleanInput source='enduring' />}
+      <FlexBox sx={{ alignItems: 'center]' }}>
+        <BooleanInput source='enduring' defaultValue={false} />
+        <p style={helperTextStyles}>
+          This is enduring if it is a placeholder for a task that is conducted
+          repeatedly, and will not be re-created each time. If it is enduring it
+          should be give start/end dates covering a long period (such as
+          2020-2040).
+        </p>
+      </FlexBox>
+      <BooleanInput
+        hidden
+        source='active'
+        defaultValue={true}
+        sx={styles}
+        label={false}
+      />
     </SimpleForm>
   )
 }

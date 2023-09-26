@@ -45,6 +45,7 @@ import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
 import { Button, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
+import { initialize } from './utils/helper'
 
 const style = {
   backgroundColor: 'white',
@@ -278,6 +279,10 @@ function App(): React.ReactElement {
     }
     return null
   }
+
+  useEffect(() => {
+    initialize().catch(console.log)
+  }, [])
 
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage

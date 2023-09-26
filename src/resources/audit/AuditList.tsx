@@ -195,6 +195,7 @@ export default function AuditList({
             }}
           />
         )}
+        <TextField<Audit> source='ip' label='IP Address' />
         {/* Note: the following function is flexible, so it is able to show
         source value for different kinds of resource */}
         <FunctionField<Audit>

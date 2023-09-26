@@ -20,6 +20,22 @@ interface Props {
   name: string
 }
 
+interface ActiveFilterType {
+  label: string
+  source: string
+}
+
+const ActiveFilter = ({
+  label,
+  source
+}: ActiveFilterType): React.ReactElement => {
+  const { setFilters, displayedFilters, filterValues } = useListContext()
+  useEffect(() => {
+    setFilters({ ...filterValues, [source]: true }, displayedFilters)
+  }, [])
+  return <Chip sx={{ marginBottom: 1 }} label={label} />
+}
+
 export default function PlatformList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
@@ -47,22 +63,6 @@ export default function PlatformList(props: Props): React.ReactElement {
       <FilterButton />
     </TopToolbar>
   )
-
-  interface ActiveFilterType {
-    label: string
-    source: string
-  }
-
-  const ActiveFilter = ({
-    label,
-    source
-  }: ActiveFilterType): React.ReactElement => {
-    const { setFilters, displayedFilters, filterValues } = useListContext()
-    useEffect(() => {
-      setFilters({ ...filterValues, [source]: true }, displayedFilters)
-    }, [])
-    return <Chip sx={{ marginBottom: 1 }} label={label} />
-  }
 
   const filters = [
     <ActiveFilter source='active' key='platform' label='Active Platforms' />
