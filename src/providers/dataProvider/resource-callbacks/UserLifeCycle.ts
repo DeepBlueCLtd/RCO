@@ -7,6 +7,7 @@ import {
 import { R_USERS } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
 import {
+  type UpdateResult,
   type CreateParams,
   type ResourceCallbacks,
   type UpdateParams
@@ -40,6 +41,22 @@ const lifeCycles = (
       },
       audit
     )
+  },
+  afterUpdate: async (result: UpdateResult<User>) => {
+    const { id } = result.data
+    const auditObj = {
+      resource: R_USERS,
+      activityType: AuditType.EDIT,
+      activityDetail: 'Password assigned',
+      securityRelated: true,
+      dataId: id,
+      subjectId: null,
+      subjectResource: null
+    }
+
+    audit(auditObj).catch(console.log)
+
+    return result
   }
 })
 

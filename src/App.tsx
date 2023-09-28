@@ -194,7 +194,7 @@ function App(): React.ReactElement {
           process.env.VITE_APP_VERSION ?? '1'
         )
         Object.keys(localStorage).forEach((k) => {
-          if (k !== 'rco-user' && k !== 'salt') {
+          if (k !== 'rco-user') {
             localStorage.removeItem(k)
           }
         })

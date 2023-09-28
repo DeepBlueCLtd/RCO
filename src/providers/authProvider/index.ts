@@ -6,19 +6,16 @@ import {
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
 import { AuditType } from '../../utils/activity-types'
-import { decryptData, encryptData, generateSalt } from '../../utils/encryption'
+import { decryptData, encryptData } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
 import bcrypt from 'bcryptjs'
 import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
 
 export const getUser = (): User | undefined => {
   const encryptedUser = getCookie(constants.TOKEN_KEY)
-  const salt = getCookie(constants.SALT)
-  if (encryptedUser && salt) {
+  if (encryptedUser) {
     const decryptedData = decryptData(encryptedUser)
-    return JSON.parse(
-      decryptedData.substring(0, decryptedData.length - salt.length)
-    )
+    return JSON.parse(decryptedData)
   }
   return undefined
 }
@@ -34,17 +31,15 @@ const getCookie = (name: string): string | null => {
   return null
 }
 
-const setToken = (token: string, salt: string): void => {
+const setToken = (token: string): void => {
   const date = new Date()
   date.setTime(date.getTime() + 1 * 60 * 60 * 1000)
   const expires = date.toUTCString()
   document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
-  document.cookie = `${constants.SALT}=${salt}; expires=${expires}; path=/`
 }
 
 export const removeToken = (): void => {
   removeCookie(constants.TOKEN_KEY)
-  removeCookie(constants.SALT)
 }
 
 const removeCookie = (name: string): void => {
@@ -61,9 +56,8 @@ const createUserToken = async (
     ...user
   }
   delete clonedUser.password
-  const salt = generateSalt()
-  const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
-  setToken(token, salt)
+  const token = encryptData(`${JSON.stringify(clonedUser)}`)
+  setToken(token)
   await audit({
     activityType: AuditType.LOGIN,
     resource: constants.R_USERS,
