@@ -245,11 +245,61 @@ describe('CRUD operations on User', () => {
       filter: {}
     })
 
-    expect(auditListAfterUpdate.total).toBe(2)
+    expect(auditListAfterUpdate.total).toBe(3)
+
     const secondAuditEntry = auditListAfterUpdate.data[1]
     expect(secondAuditEntry.dataId).toBe(createdUser.id)
     expect(secondAuditEntry.resource).toBe(R_USERS)
     expect(secondAuditEntry.activityType).toBe(AuditType.EDIT)
     expect(secondAuditEntry.securityRelated).toBe(true)
+  })
+
+  it('should test after udpate', async () => {
+    const auditListBeforeCreate = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    expect(auditListBeforeCreate.total).toBe(0)
+
+    const createdUser = (
+      await provider.create<User>(R_USERS, { data: generateUserForTesting() })
+    ).data
+
+    expect(createdUser.id).toBeDefined()
+    expect(createdUser).toBeDefined()
+
+    const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    expect(auditListAfterCreate.total).toBe(1)
+
+    await provider.update<User>(R_USERS, {
+      id: createdUser.id,
+      previousData: createdUser,
+      data: generateUserForTesting({
+        id: createdUser.id,
+        name: 'dummy-user',
+        adminRights: false
+      })
+    })
+
+    const auditListAfterUpdate = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    expect(auditListAfterUpdate.total).toBe(3)
+
+    const thirdAuditEntry = auditListAfterUpdate.data[2]
+    expect(thirdAuditEntry.dataId).toBe(createdUser.id)
+    expect(thirdAuditEntry.resource).toBe(R_USERS)
+    expect(thirdAuditEntry.activityType).toBe(AuditType.EDIT)
+    expect(thirdAuditEntry.securityRelated).toBe(true)
   })
 })
