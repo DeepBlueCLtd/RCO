@@ -256,10 +256,10 @@ export const generateItems = (
 
   for (let i = 1; i <= length; i++) {
     const skipStart = skipStartDate()
-    const skipEnd = skipEndDate()
+    const skip = skipEndDate()
     let start: DateTime | null = null
     let end: DateTime | null = null
-    if (!skipStart && !skipEnd) {
+    if (!skipStart && !skip) {
       ;[start, end] = skipEndDate() ? [null, null] : generateRandomDate()
     }
 
@@ -276,7 +276,7 @@ export const generateItems = (
       startDate:
         start === null ? start : setMinuteToStep(start.toJSDate().toString()),
       endDate: end === null ? end : setMinuteToStep(end.toJSDate().toString()),
-      vaultLocation: generateRandomNumber(1, vaults - 1),
+      vaultLocation: skip ? null : generateRandomNumber(1, vaults - 1),
       remarks: `remarks-${i + 1}`,
       musterRemarks: `muster-remarks-${i + 1}`,
       protectiveMarking: generateRandomNumber(1, protectiveMarking - 1),

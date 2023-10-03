@@ -15,7 +15,6 @@
     "lint": "eslint . --fix --max-warnings=0",
     "serve": "node server.mjs",
     "format": "prettier . --write",
-    "prepare": "husky install",
     "deploy": "gh-pages -d build",
     "test": "jest",
     "e2e": "yarn playwright test",

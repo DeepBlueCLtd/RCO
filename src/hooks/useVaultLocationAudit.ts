@@ -76,9 +76,10 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
 
     if (Object.keys(selectedItems).length === 0) return
 
-    const selectedVIds = newIds.map(
-      (id: number) => selectedItems?.[id].vaultLocation
-    )
+    const selectedVIds = newIds
+      .map((id: number) => selectedItems?.[id].vaultLocation)
+      .filter((id: number | null) => id !== null) as number[]
+
     const vaultLocations = await getVLocationByIds(selectedVIds)
 
     const auditData = {
@@ -100,6 +101,12 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
         // TODO: TAHA - we should includeh the VAULT LOCATION id and R_VAULT_LOCATIONS for this.
       }
       const audits: AuditData[] = []
+
+      const selectedItmeId = selectedItems[itemId]?.vaultLocation
+
+      const removedFromLocation =
+        selectedItmeId && vaultLocations?.[selectedItmeId]?.name
+
       // log removal first
       if (!id) {
         // TODO: TAHA - for `itemAudit` the subject should be the OLD vault lcoation, and for
@@ -110,7 +117,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
             {
               ...itemAudit,
               activityDetail: `Removed from ${
-                vaultLocations?.[selectedItems[itemId]?.vaultLocation].name
+                removedFromLocation ?? 'Unknown Location'
               } ${editRemarks !== undefined ? `Remarks: ${editRemarks}` : ''}`,
               subjectId: selectedItems[itemId]?.vaultLocation,
               subjectResource: constants.R_VAULT_LOCATION
