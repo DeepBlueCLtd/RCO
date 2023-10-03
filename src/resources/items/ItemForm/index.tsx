@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -16,24 +16,21 @@ import CoreForm from './CoreForm'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 import dayjs from 'dayjs'
+import { DateTime } from 'luxon'
 
 const schema = yup.object({
   mediaType: yup.number().required(),
-  startDate: yup.date().optional(),
-  endDate: yup.date().when('startDate', {
-    is: undefined,
-    then: (schema) => schema.optional(),
-    otherwise: (schema) =>
-      schema
-        .required()
-        .test(
-          'endDate',
-          'End date must be greater than start date',
-          function (value) {
-            return dayjs(value).diff(this.parent.startDate) > 0
-          }
-        )
-  }),
+  startDate: yup.date().required(),
+  endDate: yup
+    .date()
+    .required()
+    .test(
+      'endDate',
+      'End date must be greater than start date',
+      function (value) {
+        return dayjs(value).diff(this.parent.startDate) > 0
+      }
+    ),
   batch: yup.number().required(),
   vaultLocation: yup.number().required(),
   protectiveMarking: yup.number().required(),
@@ -74,9 +71,26 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     }
   }, [])
 
+  const { startDate, endDate } = useMemo((): {
+    startDate: string
+    endDate: string
+  } => {
+    const dateTime = DateTime.local().set({
+      hour: 0,
+      minute: 0,
+      second: 0
+    })
+    return {
+      startDate: dateTime.toString(),
+      endDate: dateTime.plus({ days: 1 }).toString()
+    }
+  }, [])
+
   const defaultValues: Partial<Item> = {
     itemNumber: '',
-    loanedTo: undefined
+    loanedTo: undefined,
+    startDate,
+    endDate
   }
 
   const pageTitle = isEdit !== undefined ? 'Edit Item' : 'Add new Item'
