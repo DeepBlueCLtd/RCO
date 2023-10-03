@@ -6,29 +6,67 @@ import {
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
 import { AuditType } from '../../utils/activity-types'
-import { decryptData, encryptData, generateSalt } from '../../utils/encryption'
+import { decryptData, encryptData } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
 import bcrypt from 'bcryptjs'
+import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
 
 export const getUser = (): User | undefined => {
-  const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
-  const salt = localStorage.getItem(constants.SALT)
-  if (encryptedUser !== null && salt !== null) {
-    const decryptedData = decryptData(`${encryptedUser}`)
-    return JSON.parse(
-      decryptedData.substring(0, decryptedData.length - salt.length)
-    )
+  const encryptedUser = getCookie(constants.TOKEN_KEY)
+  if (encryptedUser) {
+    const decryptedData = decryptData(encryptedUser)
+    return JSON.parse(decryptedData)
   }
+  return undefined
 }
 
-const setToken = (token: string, salt: string): void => {
-  localStorage.setItem(constants.TOKEN_KEY, token)
-  localStorage.setItem(constants.SALT, salt)
+const getCookie = (name: string): string | null => {
+  const cookies = document.cookie.split('; ')
+  for (const cookie of cookies) {
+    const items = cookie.split('=')
+    if (items[0] === name) {
+      return decodeURIComponent(items[1])
+    }
+  }
+  return null
 }
 
-const removeToken = (): void => {
-  localStorage.removeItem(constants.TOKEN_KEY)
-  localStorage.removeItem(constants.SALT)
+const setToken = (token: string): void => {
+  const date = new Date()
+  date.setTime(date.getTime() + 1 * 60 * 60 * 1000)
+  const expires = date.toUTCString()
+  document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
+}
+
+export const removeToken = (): void => {
+  removeCookie(constants.TOKEN_KEY)
+}
+
+const removeCookie = (name: string): void => {
+  // note: setting the expiry date of a cookie to a past data effectively
+  // removes it
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
+}
+
+const createUserToken = async (
+  user: User,
+  audit: AuditFunctionType
+): Promise<void> => {
+  const clonedUser: User = {
+    ...user
+  }
+  delete clonedUser.password
+  const token = encryptData(`${JSON.stringify(clonedUser)}`)
+  setToken(token)
+  await audit({
+    activityType: AuditType.LOGIN,
+    resource: constants.R_USERS,
+    dataId: user.id,
+    subjectId: null,
+    subjectResource: null,
+    securityRelated: null,
+    activityDetail: null
+  })
 }
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
@@ -44,24 +82,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         (item: any) => item.staffNumber === staffNumber
       )
       if (user !== undefined) {
-        if (bcrypt.compareSync(password, user.password)) {
-          const clonedUser: Omit<User, 'password'> & { password?: string } = {
-            ...user
-          }
-          delete clonedUser.password
-          const salt = generateSalt()
-          const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
-          setToken(token, salt)
-          await audit({
-            activityType: AuditType.LOGIN,
-            resource: constants.R_USERS,
-            dataId: user.id,
-            subjectId: null,
-            subjectResource: null,
-            securityRelated: null,
-            activityDetail: null
-          })
+        if (user.password && bcrypt.compareSync(password, user.password)) {
+          await createUserToken(user, audit)
           return await Promise.resolve(data)
+        } else if (!user.password && password === user.staffNumber) {
+          await createUserToken(user, audit)
         } else {
           throw new Error('Wrong password')
         }
