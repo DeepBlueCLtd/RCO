@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS item(
        batch INTEGER NOT NULL,
        itemNumber TEXT NOT NULL,
        consecSheets TEXT,
-       vaultLocation INTEGER NOT NULL,
+       vaultLocation INTEGER,
        remarks TEXT,
        protectiveMarking INTEGER NOT NULL,
        protectionString TEXT NOT NULL,
