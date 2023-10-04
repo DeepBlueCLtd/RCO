@@ -7,16 +7,20 @@ import {
   List,
   TopToolbar,
   BooleanField,
-  TextField
+  TextField,
+  FilterButton
 } from 'react-admin'
 import useCanAccess from '../hooks/useCanAccess'
 import ResourceHistoryModal from './ResourceHistory'
 import * as constants from '../constants'
 import HistoryButton from './HistoryButton'
+import { ActiveFilter } from '../resources/platforms/PlatformList'
 
 interface PropType {
   name: string
 }
+
+const filters = [<ActiveFilter source='active' key='active' label='Active' />]
 
 export default function ReferenceDataList({
   name
@@ -32,6 +36,7 @@ export default function ReferenceDataList({
       {hasAccess('reference-data', { write: true }) ? (
         <CreateButton to={'create'} />
       ) : null}
+      <FilterButton />
     </TopToolbar>
   )
 
@@ -50,7 +55,7 @@ export default function ReferenceDataList({
   const notShowActive = (name: string): boolean => name === constants.R_AUDIT
 
   return (
-    <List actions={<ListActions />} resource={cName}>
+    <List actions={<ListActions />} resource={cName} filters={filters}>
       <Datagrid
         bulkActionButtons={false}
         rowClick={(id: Identifier) => {

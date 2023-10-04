@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from 'react'
-import { BooleanField, FunctionField, List, TextField } from 'react-admin'
+import {
+  BooleanField,
+  FilterButton,
+  FunctionField,
+  List,
+  TextField,
+  TopToolbar
+} from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import * as constants from '../../constants'
@@ -8,6 +15,15 @@ import { Article } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 import HistoryButton from '../../components/HistoryButton'
+import { ActiveFilter } from '../platforms/PlatformList'
+
+const filters = [<ActiveFilter source='active' key='active' label='Active' />]
+
+const ListActions = (): React.ReactElement => (
+  <TopToolbar>
+    <FilterButton />
+  </TopToolbar>
+)
 
 export default function VaultLocationList(): React.ReactElement {
   const [open, setOpen] = useState<boolean>(false)
@@ -42,7 +58,10 @@ export default function VaultLocationList(): React.ReactElement {
     )
   }
   return (
-    <List>
+    <List
+      actions={<ListActions />}
+      filters={filters}
+      filterDefaultValues={{ active: true }}>
       <DatagridConfigurableWithShow
         resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
