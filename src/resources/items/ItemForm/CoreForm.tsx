@@ -33,7 +33,7 @@ const CoreForm = (props: Props): React.ReactElement => {
     setValue,
     formState: { isSubmitted, isSubmitting }
   } = formContext
-  const [mediaTypes, setMediaTypes] = useState<any[]>([])
+  const [mediaTypes, setMediaTypes] = useState<MediaType[]>([])
   const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
   const dateRef = useRef<HTMLInputElement>(null)
   const mediaTypeRef = useRef<HTMLInputElement>(null)
@@ -95,7 +95,9 @@ const CoreForm = (props: Props): React.ReactElement => {
         TextFieldProps={{ ref: mediaTypeRef }}
         disabled={disabled}
         source='mediaType'
-        choices={mediaTypes.filter((item: Record<string, any>) => item.active)}
+        choices={mediaTypes
+          .filter((item) => item.active)
+          .sort((a, b) => a.id - b.id)}
         sx={sx}
       />
       <FlexBox alignItems='flex-start'>

@@ -110,6 +110,7 @@ export default function ProtectionBlockInputs<
           onValueChange={setCodeChanges}
         />
         <SourceInput
+          sort={{ field: 'id', order: 'ASC' }}
           source={markingSource}
           filter={isEdit === true ? {} : { active: true }}
           reference={constants.R_PROTECTIVE_MARKING}
