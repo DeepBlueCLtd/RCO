@@ -25,7 +25,7 @@ interface ActiveFilterType {
   source: string
 }
 
-const ActiveFilter = ({
+export const ActiveFilter = ({
   label,
   source
 }: ActiveFilterType): React.ReactElement => {
