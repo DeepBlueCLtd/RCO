@@ -23,7 +23,7 @@ export default function ItemHistory(): React.ReactElement {
           activityType_neq: AuditType.EDIT
         }}
         sort={{
-          field: 'id',
+          field: 'dateTime',
           order: 'DESC'
         }}>
         <Datagrid bulkActionButtons={false}>
