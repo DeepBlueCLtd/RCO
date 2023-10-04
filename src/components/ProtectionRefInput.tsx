@@ -69,7 +69,9 @@ export default function ProtectionRefInput<
     resource
   )
 
-  const { data: options = [] } = useGetList<T>(reference)
+  const { data: options = [] } = useGetList<T>(reference, {
+    sort: { field: 'id', order: 'ASC' }
+  })
 
   const labelById = useMemo(() => {
     const results: Record<Identifier, T> = {}
