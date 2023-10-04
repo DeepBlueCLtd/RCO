@@ -96,7 +96,7 @@ const CoreForm = (props: Props): React.ReactElement => {
         disabled={disabled}
         source='mediaType'
         choices={mediaTypes
-          .filter((item: MediaType) => item.active)
+          .filter((item) => item.active)
           .sort((a, b) => a.id - b.id)}
         sx={sx}
       />
