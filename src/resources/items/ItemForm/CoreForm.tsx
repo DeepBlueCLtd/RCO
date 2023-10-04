@@ -95,7 +95,9 @@ const CoreForm = (props: Props): React.ReactElement => {
         TextFieldProps={{ ref: mediaTypeRef }}
         disabled={disabled}
         source='mediaType'
-        choices={mediaTypes.filter((item: Record<string, any>) => item.active)}
+        choices={mediaTypes
+          .filter((item: Record<string, any>) => item.active)
+          .sort((a, b) => a.id - b.id)}
         sx={sx}
       />
       <FlexBox alignItems='flex-start'>
