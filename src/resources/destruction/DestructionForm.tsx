@@ -167,7 +167,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
         source='vault'
         reference={constants.R_VAULT}
         inputProps={{ helperText: false }}
-        active
+        isEdit={isEdit}
       />
       <TextInput sx={{ width: '100%' }} source='remarks' />
     </SimpleForm>

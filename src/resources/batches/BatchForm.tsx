@@ -40,19 +40,25 @@ interface Props {
   inputProps?: SelectInputProps | TextInputProps
   active?: boolean
   show?: boolean
+  isEdit?: boolean
 }
 
 export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
-  const { source, reference, inputProps = {}, active, show = false } = props
-  const filter = active !== undefined && active ? { active: true } : {}
-  const { data, isLoading } = useGetList<T>(reference, {
-    filter
-  })
+  const { source, reference, inputProps = {}, show = false, isEdit } = props
+  const { data, isLoading } = useGetList<T>(reference)
   if (isLoading) return null
   if (data === undefined) return null
-  const choices = data.map((d) => ({ name: d.name, id: d.id }))
+  const choices =
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    isEdit || show
+      ? data.map((d) =>
+          d.active
+            ? { name: d.name, id: d.id }
+            : { name: `${d.name} (Legacy)`, id: d.id }
+        )
+      : data.filter((d) => d.active).map((d) => ({ name: d.name, id: d.id }))
   return data?.length === 1 ? (
     <SelectInput
       source={source}
@@ -193,7 +199,7 @@ const BatchForm = (
               source='vault'
               reference={constants.R_VAULT}
               inputProps={{ helperText: false }}
-              active
+              isEdit={isEdit}
             />
           ) : (
             <ReferenceInput
@@ -212,44 +218,18 @@ const BatchForm = (
           )}
         </FlexBox>
         <FlexBox>
-          {(isEdit === undefined || !isEdit) &&
-          (!isShow || isShow === undefined) ? (
-            <>
-              <ConditionalReferenceInput
-                source='organisation'
-                reference={constants.R_ORGANISATION}
-                active
-              />
-              <ConditionalReferenceInput
-                source='department'
-                reference={constants.R_DEPARTMENT}
-                active
-              />
-            </>
-          ) : (
-            <>
-              <ReferenceInput
-                variant='outlined'
-                source='organisation'
-                reference={constants.R_ORGANISATION}>
-                <AutocompleteInput
-                  optionText='name'
-                  sx={sx}
-                  disabled={isShow}
-                />
-              </ReferenceInput>
-              <ReferenceInput
-                variant='outlined'
-                source='department'
-                reference={constants.R_DEPARTMENT}>
-                <AutocompleteInput
-                  optionText='name'
-                  sx={sx}
-                  disabled={isShow}
-                />
-              </ReferenceInput>
-            </>
-          )}
+          <ConditionalReferenceInput
+            source='organisation'
+            reference={constants.R_ORGANISATION}
+            isEdit={isEdit}
+            show={isShow}
+          />
+          <ConditionalReferenceInput
+            source='department'
+            reference={constants.R_DEPARTMENT}
+            isEdit={isEdit}
+            show={isShow}
+          />
         </FlexBox>
         <Created />
         <TextInput
