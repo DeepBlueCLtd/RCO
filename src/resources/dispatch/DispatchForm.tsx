@@ -105,7 +105,6 @@ export default function DispatchForm(props: Props): React.ReactElement {
       <ConditionalReferenceInput
         source='vault'
         reference={R_VAULT}
-        inputProps={{ helperText: false }}
         show={show}
         isEdit={edit}
       />

@@ -166,7 +166,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
       <ConditionalReferenceInput
         source='vault'
         reference={constants.R_VAULT}
-        inputProps={{ helperText: false }}
         isEdit={isEdit}
       />
       <TextInput sx={{ width: '100%' }} source='remarks' />
