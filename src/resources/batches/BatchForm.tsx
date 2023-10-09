@@ -61,7 +61,10 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
     sort,
     groupBy
   } = props
-  const { data, isLoading } = useGetList<T>(reference)
+  const { data, isLoading } = useGetList<T>(
+    reference,
+    !isEdit ? { filter: { active: true } } : undefined
+  )
   if (isLoading) return null
   if (data === undefined) return null
 
