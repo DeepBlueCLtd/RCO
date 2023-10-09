@@ -47,6 +47,7 @@ import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
 import { useLocation } from 'react-router-dom'
 import useItemList from '../../hooks/useItemList'
+import { useConfigData } from '../../utils/useConfigData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -640,6 +641,7 @@ const ItemListData = ({
   storeKey
 }: Props): React.ReactElement => {
   const { users, vaultLocations } = useItemList()
+  const configData = useConfigData()
   const CommonEndFields = [
     <TextField<Item> source='remarks' key={'remarks'} />,
     <TextField<Item> source='musterRemarks' key={'musterRemarks'} />,
@@ -730,6 +732,7 @@ const ItemListData = ({
         <SourceField<RichItem>
           link='show'
           source='project'
+          label={configData?.projectName}
           reference={constants.R_PROJECTS}
         />
 
