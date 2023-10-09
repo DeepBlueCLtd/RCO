@@ -85,13 +85,9 @@ const commonPatterns = [
   'nasa'
 ]
 
-export const passwordValidationSchema = yup
+const common = yup
   .string()
   .required('Password is required')
-  .notOneOf(
-    [yup.ref('name'), yup.ref('staffNumber')],
-    'Password cannot include your username, first name, or last name'
-  )
   .min(10, 'Password must be at least 10 characters long')
   .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
   .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
@@ -101,20 +97,12 @@ export const passwordValidationSchema = yup
     'Password must contain at least one special character'
   )
   .test(
-    'no-name-in-password',
-    'Password cannot include name or staff number',
-    function (value) {
-      const name = this.parent.name
-      const staffId = this.parent.staffNumber
-      if (
-        value.toLowerCase().includes(name.toLowerCase()) ||
-        value.toLowerCase().includes(staffId.toLowerCase())
-      ) {
-        return false
-      }
-
-      return true
-    }
+    'no-common-patterns',
+    'Password cannot match common patterns',
+    (value) =>
+      !commonPatterns.some((pattern) =>
+        value.toLowerCase().includes(pattern.toLowerCase())
+      )
   )
   .test(
     'no-consecutive-chars',
@@ -135,11 +123,40 @@ export const passwordValidationSchema = yup
       return true
     }
   )
+
+const userFormSchemaWithoutCommon = yup
+  .string()
+  .required()
   .test(
-    'no-common-patterns',
-    'Password cannot match common patterns',
-    (value) =>
-      !commonPatterns.some((pattern) =>
-        value.toLowerCase().includes(pattern.toLowerCase())
-      )
+    'no-name-in-password',
+    'Password cannot include name or staff number',
+    function (value) {
+      const name = this.parent.name
+      const staffId = this.parent.staffNumber
+      if (
+        value.toLowerCase().includes(name.toLowerCase()) ||
+        value.toLowerCase().includes(staffId.toLowerCase())
+      ) {
+        return false
+      }
+
+      return true
+    }
   )
+
+export const passwordValidationSchema = common.concat(
+  userFormSchemaWithoutCommon
+)
+
+const resetPasswordWithoutCommon = yup
+  .string()
+  .required()
+  .test('equal-to-password', 'Passwords do not match', function (value) {
+    const newPassword = this.parent.newPassword
+    if (value === newPassword) return true
+    else return false
+  })
+
+export const resetPasswordValidationSchema = common.concat(
+  resetPasswordWithoutCommon
+)
