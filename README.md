@@ -18,6 +18,14 @@ As the data sample grows, the trend line will become more valuable.
 
 - Run command `yarn prepare` in root project folder
 
-### Run the application
+### Build the application
 
-- Run command `yarn build && yarn dev` in root project folder
+- Run command `yarn build` in root project folder, this will create a deployment in the `dist` sub-folder
+
+### Run the application (development)
+
+- Run command `yarn dev` in root project folder
+
+### Run the application (production)
+
+- Run command `yarn serve:soul` in root project folder
