@@ -34,19 +34,12 @@ const useStyles = makeStyles({
 })
 
 export default function Welcome(): React.ReactElement {
-  const filter = process.env.MOCK
-    ? { loanedTo_neq: undefined }
-    : { loanedTo_neq: null }
-
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
-  const { data } = useGetList<Item>(constants.R_ITEMS, {
-    sort: { field: 'id', order: 'ASC' },
-    filter
+  const { data } = useGetList<Item>(constants.R_RICH_ITEMS, {
+    sort: { field: 'id', order: 'ASC' }
   })
-  const usersHaveLoan: Array<User['id']> = []
-  data?.forEach((d) => (d.loanedTo ? usersHaveLoan.push(d.loanedTo) : null))
-  const uniqueUsers = [...new Set(usersHaveLoan)]
+  const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
   const configData = useConfigData()
   const redirect = useRedirect()
 
@@ -101,20 +94,17 @@ export default function Welcome(): React.ReactElement {
           ]}
           search='order=DESC&sort=createdAt'
         />
-        <Recent<User>
+        <Recent<Item>
           label='Items on Loan'
-          resource={constants.R_USERS}
-          fields={[{ source: 'name' }]}
-          filter={{ id: uniqueUsers }}
-          itemsCount={undefined}
+          resource={constants.R_RICH_ITEMS}
+          fields={[
+            { source: 'loanedTo', reference: constants.R_USERS },
+            { source: 'itemNumber' }
+          ]}
+          filter={{ loanedTo_neq: undefined }}
           search={`filter=${JSON.stringify({
-            id: uniqueUsers
+            id: loaned
           })}`}
-          rowClick={(id) => {
-            const path = `/${constants.R_ITEMS}?filter={"loanedTo":${id}}`
-            redirect(path)
-            return path
-          }}
         />
       </FlexBox>
       <FlexBox className={styles.row}>

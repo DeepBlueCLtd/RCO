@@ -61,7 +61,7 @@ interface Props<T> extends DatagridProps {
   rowStyle?: (data: T) => SxProps
 }
 
-function Column<T extends Batch | User | Dispatch>(
+function Column<T extends Batch | Dispatch | Item>(
   props: Field<T>
 ): React.ReactElement {
   const { source, reference, component } = props
@@ -119,7 +119,7 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
     </Box>
   )
 }
-export default function Recent<T extends Batch | User | Dispatch>(
+export default function Recent<T extends Batch | Dispatch | Item>(
   props: Props<T>
 ): React.ReactElement {
   const {
