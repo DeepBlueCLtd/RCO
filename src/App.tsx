@@ -14,6 +14,7 @@ import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 import { useForm } from 'react-hook-form'
 import bcrypt from 'bcryptjs'
+import * as yup from 'yup'
 
 // pages
 import Welcome from './pages/Welcome'
@@ -46,6 +47,8 @@ import localForage from 'localforage'
 import { Button, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { initialize } from './utils/helper'
+import { resetPasswordValidationSchema } from './utils/password-validation.schema'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 const style = {
   backgroundColor: 'white',
@@ -84,12 +87,18 @@ function App(): React.ReactElement {
   const [loggingPref, setLoggingPref] = useState<boolean>(false)
   const [authChanged, setAuthChanged] = useState<boolean>(false)
   const [configData, setConfigData] = useState<ConfigData | undefined>()
+  const schema = yup.object({
+    newPassword: resetPasswordValidationSchema,
+    retypePassword: resetPasswordValidationSchema
+  })
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors }
-  } = useForm<PasswordForm>({ mode: 'onChange' })
+  } = useForm<PasswordForm>({
+    mode: 'onChange',
+    resolver: yupResolver(schema)
+  })
   const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
 
   const handleGetProvider = (): any => {
@@ -143,6 +152,7 @@ function App(): React.ReactElement {
 
   const onSubmit = async (data: PasswordForm): Promise<void> => {
     const { newPassword } = data
+    console.log(newPassword)
     if (
       dataProvider !== undefined &&
       authProvider !== undefined &&
@@ -304,13 +314,7 @@ function App(): React.ReactElement {
               type='password'
               fullWidth
               margin='normal'
-              {...register('newPassword', {
-                required: { value: true, message: 'This is a required field' },
-                minLength: {
-                  value: 8,
-                  message: 'Password should be 8 characters long'
-                }
-              })}
+              {...register('newPassword')}
               error={Boolean(errors.newPassword)}
               helperText={errors.newPassword?.message}
               placeholder='New password'
@@ -319,18 +323,7 @@ function App(): React.ReactElement {
               type='password'
               fullWidth
               margin='normal'
-              {...register('retypePassword', {
-                required: { value: true, message: 'This is a required field' },
-                minLength: {
-                  value: 8,
-                  message: 'Password should be 8 characters long'
-                },
-                validate: {
-                  passWordEqual: (value) =>
-                    value === getValues('newPassword') ||
-                    'Passwords should match'
-                }
-              })}
+              {...register('retypePassword')}
               error={Boolean(errors.retypePassword)}
               helperText={errors.retypePassword?.message}
               placeholder='Re-type password'
