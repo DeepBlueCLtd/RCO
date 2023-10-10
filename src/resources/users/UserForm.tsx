@@ -12,10 +12,11 @@ import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
 import FlexBox from '../../components/FlexBox'
+import { passwordValidationSchema } from '../../utils/password-validation.schema'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: yup.string().required(),
+  password: passwordValidationSchema,
   adminRights: yup.boolean(),
   role: yup.string().oneOf(rolesOptions.map(({ value }) => value))
 })
