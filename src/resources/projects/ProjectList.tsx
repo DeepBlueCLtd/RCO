@@ -17,11 +17,14 @@ import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
 import SourceField from '../../components/SourceField'
+import { ActiveFilter } from '../platforms/PlatformList'
 
 const omitColumns: string[] = ['createdAt', 'createdBy']
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <ActiveFilter source='active' key='active' label='Active' />,
+  <ActiveFilter source='enduring' key='enduring' label='Enduring' />,
   <CreatedByMeFilter
     key='createdByMe'
     source='createdBy_eq'
