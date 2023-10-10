@@ -34,12 +34,16 @@ const useStyles = makeStyles({
 })
 
 export default function Welcome(): React.ReactElement {
+  const filter = process.env.MOCK
+    ? { loanedTo_neq: undefined }
+    : { loanedTo_neq: null }
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
   const { data } = useGetList<Item>(constants.R_RICH_ITEMS, {
-    sort: { field: 'id', order: 'ASC' }
+    sort: { field: 'id', order: 'ASC' },
+    filter
   })
-  const loaned = data?.filter((d) => d.loanedTo !== undefined).map((f) => f.id)
+  const ids = data?.map((d) => d.id)
   const configData = useConfigData()
   const redirect = useRedirect()
 
@@ -101,9 +105,9 @@ export default function Welcome(): React.ReactElement {
             { source: 'loanedTo', reference: constants.R_USERS },
             { source: 'itemNumber' }
           ]}
-          filter={{ loanedTo_neq: undefined }}
+          filter={filter}
           search={`filter=${JSON.stringify({
-            id: loaned
+            id: ids
           })}`}
         />
       </FlexBox>
