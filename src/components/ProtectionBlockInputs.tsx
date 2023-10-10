@@ -101,7 +101,7 @@ export default function ProtectionBlockInputs<
           setIsDirty={setIsDirty}
           reference={constants.R_CAT_CODE}
           refTable={refTables.catCode}
-          labelField='name'
+          labelField={disabled ? 'id' : 'name'}
           source='catCode'
           itemId={id}
           label={configData?.catCode ?? 'Cat code'}
@@ -123,7 +123,7 @@ export default function ProtectionBlockInputs<
           source='catHandle'
           itemId={id}
           label={configData?.catHandle ?? 'Cat handle'}
-          labelField='name'
+          labelField={disabled ? 'id' : 'name'}
           {...protectionInputProps}
           width='30%'
           onValueChange={setHandleChanges}
@@ -133,7 +133,7 @@ export default function ProtectionBlockInputs<
           reference={constants.R_CAT_CAVE}
           refTable={refTables.catCave}
           source='catCave'
-          labelField='name'
+          labelField={disabled ? 'id' : 'name'}
           itemId={id}
           label={configData?.catCave ?? 'Cat cave'}
           {...protectionInputProps}
