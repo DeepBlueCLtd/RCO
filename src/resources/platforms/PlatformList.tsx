@@ -23,15 +23,17 @@ interface Props {
 interface ActiveFilterType {
   label: string
   source: string
+  val?: boolean
 }
 
 export const ActiveFilter = ({
   label,
-  source
+  source,
+  val = true
 }: ActiveFilterType): React.ReactElement => {
   const { setFilters, displayedFilters, filterValues } = useListContext()
   useEffect(() => {
-    setFilters({ ...filterValues, [source]: true }, displayedFilters)
+    setFilters({ ...filterValues, [source]: val }, displayedFilters)
   }, [])
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }

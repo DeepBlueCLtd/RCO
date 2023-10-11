@@ -256,13 +256,13 @@ const loadDefaultData = async (
 
   const configDataItem: ConfigData = {
     id: 0,
-    projectName: 'Project',
-    projectsName: 'Projects',
-    fromAddress: 'Dept BB, Building CC, Department DD, Some Town, Some ZIP',
-    protectionName: 'Protection',
-    catCode: 'Cat-Code',
-    catHandle: 'Cat-Handle',
-    catCave: 'Cat-Cave'
+    projectName: 'Projject',
+    projectsName: 'Projjects',
+    fromAddress: 'Dept AA, Building BB, Department CC, Some Town, Some ZIP',
+    protectionName: 'Prottection',
+    catCode: 'Catt-Code',
+    catHandle: 'Catt-Handle',
+    catCave: 'Catt-Cave'
   }
   const configData: ConfigData[] = [configDataItem]
 
