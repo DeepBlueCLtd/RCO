@@ -108,6 +108,7 @@ export default function ProtectionBlockInputs<
           {...protectionInputProps}
           width='20%'
           onValueChange={setCodeChanges}
+          isEdit={isEdit}
         />
         <SourceInput
           sort={{ field: 'id', order: 'ASC' }}
@@ -127,6 +128,7 @@ export default function ProtectionBlockInputs<
           {...protectionInputProps}
           width='30%'
           onValueChange={setHandleChanges}
+          isEdit={isEdit}
         />
         <ProtectionRefInput<CatCave, TCatCave>
           setIsDirty={setIsDirty}
@@ -139,6 +141,7 @@ export default function ProtectionBlockInputs<
           {...protectionInputProps}
           width='30%'
           onValueChange={setCaveChanges}
+          isEdit={isEdit}
         />
       </FlexBox>
     </Box>

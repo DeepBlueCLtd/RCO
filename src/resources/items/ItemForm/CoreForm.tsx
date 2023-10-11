@@ -24,10 +24,11 @@ interface Props {
   itemId?: Item['id']
   setItemId: React.Dispatch<React.SetStateAction<number | undefined>>
   isRemarksOpen: boolean
+  isEdit?: boolean
 }
 
 const CoreForm = (props: Props): React.ReactElement => {
-  const { batch, disabled, itemId, setItemId, isRemarksOpen } = props
+  const { batch, disabled, itemId, setItemId, isRemarksOpen, isEdit } = props
   const formContext = useFormContext()
   const {
     setValue,
@@ -136,6 +137,7 @@ const CoreForm = (props: Props): React.ReactElement => {
         disabled={disabled}
         markingSource='protectiveMarking'
         id={itemId}
+        isEdit={isEdit}
         refTables={{
           catCave: constants.R_ITEMS_CAVE,
           catCode: constants.R_ITEMS_CODE,

@@ -140,6 +140,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
           itemId={itemId}
           setItemId={setItemId}
           batch={batch?.id}
+          isEdit={isEdit}
         />
       </SimpleForm>
     </Box>
