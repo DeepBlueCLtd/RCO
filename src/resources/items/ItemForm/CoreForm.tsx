@@ -142,6 +142,7 @@ const CoreForm = (props: Props): React.ReactElement => {
         disabled={disabled}
         markingSource='protectiveMarking'
         id={itemId}
+        isEdit={isEdit}
         refTables={{
           catCave: constants.R_ITEMS_CAVE,
           catCode: constants.R_ITEMS_CODE,
