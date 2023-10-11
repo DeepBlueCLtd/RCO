@@ -17,6 +17,7 @@ interface Props {
   resource: string
   refTables: Record<'catCave' | 'catCode' | 'catHandle', string>
   isRemarksOpen?: boolean
+  show?: boolean
 }
 
 export default function ProtectionBlockInputs<
@@ -24,8 +25,15 @@ export default function ProtectionBlockInputs<
   TCatCave extends RaRecord,
   TCatHandle extends RaRecord
 >(props: Props): React.ReactElement {
-  const { disabled, markingSource, isEdit, id, refTables, isRemarksOpen } =
-    props
+  const {
+    disabled,
+    markingSource,
+    isEdit,
+    id,
+    refTables,
+    isRemarksOpen,
+    show
+  } = props
   const { setValue } = useFormContext()
   const configData = useConfigData()
   const [codeChanges, setCodeChanges] = useState<string[] | undefined>()
@@ -109,6 +117,7 @@ export default function ProtectionBlockInputs<
           width='20%'
           onValueChange={setCodeChanges}
           isEdit={isEdit}
+          show={show}
         />
         <SourceInput
           sort={{ field: 'id', order: 'ASC' }}
@@ -129,6 +138,7 @@ export default function ProtectionBlockInputs<
           width='30%'
           onValueChange={setHandleChanges}
           isEdit={isEdit}
+          show={show}
         />
         <ProtectionRefInput<CatCave, TCatCave>
           setIsDirty={setIsDirty}
@@ -142,6 +152,7 @@ export default function ProtectionBlockInputs<
           width='30%'
           onValueChange={setCaveChanges}
           isEdit={isEdit}
+          show={show}
         />
       </FlexBox>
     </Box>

@@ -55,6 +55,7 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
             catHandle: constants.R_ITEMS_HANDLE
           }}
           resource={constants.R_ITEMS}
+          show
         />
         <FlexBox>
           <Remarks />

@@ -33,6 +33,7 @@ interface Props<T, RefTable> {
   onValueChange: (value: string[] | undefined) => void
   isRemarksOpen?: boolean
   isEdit?: boolean
+  show?: boolean
 }
 
 export default function ProtectionRefInput<
@@ -52,6 +53,7 @@ export default function ProtectionRefInput<
     onValueChange,
     isRemarksOpen,
     isEdit,
+    show,
     ...rest
   } = props
   const [data, setData] = useState<Array<T['id']> | T['id']>([])
@@ -70,10 +72,9 @@ export default function ProtectionRefInput<
     source as string,
     resource
   )
-
   const { data: options = [] } = useGetList<T>(reference, {
     sort: { field: 'id', order: 'ASC' },
-    ...(!isEdit ? { filter: { active: true } } : null)
+    ...(!isEdit && !show ? { filter: { active: true } } : null)
   })
 
   const labelById = useMemo(() => {
