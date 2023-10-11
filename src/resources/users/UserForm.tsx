@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  SimpleForm,
-  TextInput,
-  BooleanInput,
-  useEditContext,
-  SelectInput
-} from 'react-admin'
+import { SimpleForm, TextInput, useEditContext, SelectInput } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
@@ -17,7 +11,6 @@ import { passwordValidationSchema } from '../../utils/password-validation.schema
 const schema = yup.object({
   name: yup.string().required(),
   password: passwordValidationSchema,
-  adminRights: yup.boolean(),
   role: yup.string().oneOf(rolesOptions.map(({ value }) => value))
 })
 
@@ -28,7 +21,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   > = {
     name: '',
     password: '',
-    adminRights: false,
     role: 'rco-user'
   }
   const { record } = useEditContext()
@@ -55,9 +47,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           choices={rolesOptions}
         />
         <TextInput source='staffNumber' label='Staff number' sx={{ flex: 1 }} />
-      </FlexBox>
-      <FlexBox>
-        <BooleanInput source='adminRights' />
       </FlexBox>
     </SimpleForm>
   )

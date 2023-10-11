@@ -83,7 +83,6 @@ type ResourceWithCreation = RCOResource & {
 type User = ResourceWithCreation & {
   name: string
   password?: string
-  adminRights: boolean
   role: UserRole
   staffNumber: string
   departedDate: string | null

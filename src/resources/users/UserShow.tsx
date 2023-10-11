@@ -3,7 +3,6 @@ import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
 import ItemList, { BulkActions } from '../items/ItemList'
 import {
-  BooleanInput,
   DatagridConfigurable,
   type DatagridConfigurableProps,
   EditButton,
@@ -141,9 +140,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 label='Staff number'
                 sx={{ flex: 1 }}
               />
-            </FlexBox>
-            <FlexBox>
-              <BooleanInput disabled source='adminRights' />
             </FlexBox>
             <FlexBox justifyContent='center'>
               <Button
