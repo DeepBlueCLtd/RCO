@@ -77,7 +77,7 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
       <AutocompleteInput
         label={label}
         sx={sx}
-        defaultValue={defaultValue}
+        defaultValue={defaultValue ?? (data.length === 1 ? data[0].id : null)}
         optionText={(choice) =>
           choice.active ? choice.name : `${choice.name} (Legacy)`
         }
