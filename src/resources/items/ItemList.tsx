@@ -47,6 +47,7 @@ import StyledTopToolbar from '../../components/StyledTopToolbar'
 import SourceField from '../../components/SourceField'
 import { useLocation } from 'react-router-dom'
 import useItemList from '../../hooks/useItemList'
+import { useConfigData } from '../../utils/useConfigData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -67,7 +68,10 @@ const omitColumns: Array<keyof Item> = [
   'legacyMediaType'
 ]
 
-const getFilters = (resource?: string): React.ReactElement[] => {
+const getFilters = (
+  resource?: string,
+  projectLabel?: string
+): React.ReactElement[] => {
   const filters = [
     // <SourceInput
     //   source='platform'
@@ -152,6 +156,8 @@ const getFilters = (resource?: string): React.ReactElement[] => {
     <SourceInput
       source='project'
       key='project'
+      label={projectLabel}
+      inputProps={{ label: projectLabel }}
       sort={sort('id')}
       reference={constants.R_PROJECTS}
       optionField='name'
@@ -583,6 +589,7 @@ export default function ItemList(
     filter,
     ...rest
   } = props ?? {}
+  const configData = useConfigData()
 
   const sx = {
     '& .MuiToolbar-root': {
@@ -606,8 +613,8 @@ export default function ItemList(
       pagination={<Pagination rowsPerPageOptions={[10, 25, 50, 100]} />}
       filters={
         !filtersShown
-          ? getFilters(resource)
-          : getFilters(resource).filter((f) =>
+          ? getFilters(resource, configData?.projectName)
+          : getFilters(resource, configData?.projectName).filter((f) =>
               filtersShown.includes(f.key as string)
             )
       }
@@ -618,6 +625,7 @@ export default function ItemList(
         preferenceKey={preferenceKey}
         resource={resource}
         storeKey={storeKey}
+        projectName={configData?.projectName}
       />
     </List>
   )
@@ -631,13 +639,15 @@ interface Props {
     | undefined
   resource: string
   storeKey: string | false
+  projectName?: string
 }
 
 const ItemListData = ({
   preferenceKey,
   bulkActionButtons,
   resource,
-  storeKey
+  storeKey,
+  projectName
 }: Props): React.ReactElement => {
   const { users, vaultLocations } = useItemList()
   const CommonEndFields = [
@@ -727,11 +737,14 @@ const ItemListData = ({
           source='platform'
           reference={constants.R_PLATFORMS}
         />
-        <SourceField<RichItem>
-          link='show'
-          source='project'
-          reference={constants.R_PROJECTS}
-        />
+        {projectName && (
+          <SourceField<RichItem>
+            link='show'
+            source='project'
+            label={projectName}
+            reference={constants.R_PROJECTS}
+          />
+        )}
 
         {resource !== constants.R_RICH_ITEMS
           ? [

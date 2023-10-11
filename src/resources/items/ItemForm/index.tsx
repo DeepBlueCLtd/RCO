@@ -136,6 +136,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
           />
         }>
         <CoreForm
+          isEdit={isEdit}
           isRemarksOpen={openRemarks}
           itemId={itemId}
           setItemId={setItemId}

@@ -15,7 +15,7 @@ const DispatchCreate = (): React.ReactElement => {
       mutationOptions={{
         onSuccess: (data: Dispatch) => {
           notify('Please add items from Live Items page')
-          redirect(`/${constants.R_DISPATCH}/${data.id}`)
+          redirect(`/${constants.R_DISPATCH}/${data.id}/show`)
         }
       }}>
       <DispatchForm />

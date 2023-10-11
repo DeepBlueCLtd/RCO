@@ -44,7 +44,14 @@ const CoreForm = (props: Props): React.ReactElement => {
   })
 
   useEffect(() => {
-    setMediaTypes(data)
+    if (!isEdit)
+      setMediaTypes(data.filter((d) => d.active).sort((a, b) => a.id - b.id))
+    else
+      setMediaTypes(
+        data
+          .map((d) => (d.active ? d : { ...d, name: `${d.name} (Legacy)` }))
+          .sort((a, b) => a.id - b.id)
+      )
   }, [data])
 
   useEffect(() => {
@@ -96,9 +103,7 @@ const CoreForm = (props: Props): React.ReactElement => {
         TextFieldProps={{ ref: mediaTypeRef }}
         disabled={disabled}
         source='mediaType'
-        choices={mediaTypes
-          .filter((item) => item.active)
-          .sort((a, b) => a.id - b.id)}
+        choices={mediaTypes}
         sx={sx}
       />
       <FlexBox alignItems='flex-start'>
@@ -172,7 +177,7 @@ const CoreForm = (props: Props): React.ReactElement => {
         <ConditionalReferenceInput
           source='vaultLocation'
           reference={constants.R_VAULT_LOCATION}
-          active
+          isEdit={isEdit}
         />
       </FlexBox>
       <FlexBox>

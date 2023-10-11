@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
-  SelectInput,
   type SelectInputProps,
   SimpleForm,
   TextInput,
@@ -9,7 +8,8 @@ import {
   type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput
+  DateInput,
+  type SortPayload
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -40,36 +40,52 @@ interface Props {
   inputProps?: SelectInputProps | TextInputProps
   active?: boolean
   show?: boolean
+  isEdit?: boolean
+  choices?: any[]
+  label?: string
+  defaultValue?: number | null
+  sort?: SortPayload
+  groupBy?: (option: any) => string
 }
 
 export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
-  const { source, reference, inputProps = {}, active, show = false } = props
-  const filter = active !== undefined && active ? { active: true } : {}
-  const { data, isLoading } = useGetList<T>(reference, {
-    filter
-  })
+  const {
+    source,
+    reference,
+    show = false,
+    isEdit,
+    label,
+    defaultValue,
+    sort,
+    groupBy
+  } = props
+  const { data, isLoading } = useGetList<T>(
+    reference,
+    !isEdit ? { filter: { active: true } } : undefined
+  )
   if (isLoading) return null
   if (data === undefined) return null
-  const choices = data.map((d) => ({ name: d.name, id: d.id }))
-  return data?.length === 1 ? (
-    <SelectInput
+
+  return (
+    <ReferenceInput
+      reference={reference}
       source={source}
-      disabled
-      sx={sx}
-      defaultValue={data[0].id}
-      optionText='name'
-      choices={choices}
-      {...inputProps}
-    />
-  ) : (
-    <AutocompleteInput
-      source={source}
-      {...(show ? { disabled: true } : null)}
-      choices={choices}
-      sx={sx}
-    />
+      {...(!isEdit ? { filter: { active: true } } : null)}
+      sort={sort}>
+      <AutocompleteInput
+        label={label}
+        sx={sx}
+        defaultValue={defaultValue ?? (data.length === 1 ? data[0].id : null)}
+        optionText={(choice) =>
+          choice.active ? choice.name : `${choice.name} (Legacy)`
+        }
+        inputText={(choice) => choice.name}
+        disabled={data?.length === 1 || show}
+        groupBy={groupBy}
+      />
+    </ReferenceInput>
   )
 }
 
@@ -124,12 +140,6 @@ const BatchForm = (
   if (enduringProjects === undefined || nonEnduringProjects === undefined)
     return null
 
-  const choices = [...enduringProjects, ...nonEnduringProjects].map((d) => ({
-    name: d.name,
-    id: d.id,
-    enduring: d.enduring
-  }))
-
   const ToolBar = (): React.ReactElement => {
     return <EditToolBar type='button' />
   }
@@ -160,22 +170,22 @@ const BatchForm = (
           <constants.ICON_BATCH /> {pageTitle}
         </Typography>
         <FlexBox>
-          <ReferenceInput
-            variant='outlined'
+          <ConditionalReferenceInput
             source='platform'
-            filter={isEdit === true ? {} : { active: true }}
-            reference={constants.R_PLATFORMS}>
-            <AutocompleteInput optionText='name' sx={sx} disabled={isShow} />
-          </ReferenceInput>
-          <AutocompleteInput
+            reference={constants.R_PLATFORMS}
+            isEdit={isEdit}
+            show={isShow}
+          />
+
+          <ConditionalReferenceInput
             source='project'
+            reference={constants.R_PROJECTS}
+            isEdit={isEdit}
+            show={isShow}
             label={configData?.projectName}
-            optionText='name'
-            choices={choices}
-            sx={sx}
-            groupBy={(option) => (option.enduring ? 'Enduring' : 'Regular')}
             defaultValue={projectId !== undefined ? projectId : null}
-            disabled={isShow}
+            sort={{ field: 'enduring', order: 'DESC' }}
+            groupBy={(option) => (option.enduring ? 'Enduring' : 'Regular')}
           />
         </FlexBox>
         <FlexBox marginBottom='20px' alignItems='center'>
@@ -193,7 +203,7 @@ const BatchForm = (
               source='vault'
               reference={constants.R_VAULT}
               inputProps={{ helperText: false }}
-              active
+              isEdit={isEdit}
             />
           ) : (
             <ReferenceInput
@@ -212,44 +222,18 @@ const BatchForm = (
           )}
         </FlexBox>
         <FlexBox>
-          {(isEdit === undefined || !isEdit) &&
-          (!isShow || isShow === undefined) ? (
-            <>
-              <ConditionalReferenceInput
-                source='organisation'
-                reference={constants.R_ORGANISATION}
-                active
-              />
-              <ConditionalReferenceInput
-                source='department'
-                reference={constants.R_DEPARTMENT}
-                active
-              />
-            </>
-          ) : (
-            <>
-              <ReferenceInput
-                variant='outlined'
-                source='organisation'
-                reference={constants.R_ORGANISATION}>
-                <AutocompleteInput
-                  optionText='name'
-                  sx={sx}
-                  disabled={isShow}
-                />
-              </ReferenceInput>
-              <ReferenceInput
-                variant='outlined'
-                source='department'
-                reference={constants.R_DEPARTMENT}>
-                <AutocompleteInput
-                  optionText='name'
-                  sx={sx}
-                  disabled={isShow}
-                />
-              </ReferenceInput>
-            </>
-          )}
+          <ConditionalReferenceInput
+            source='organisation'
+            reference={constants.R_ORGANISATION}
+            isEdit={isEdit}
+            show={isShow}
+          />
+          <ConditionalReferenceInput
+            source='department'
+            reference={constants.R_DEPARTMENT}
+            isEdit={isEdit}
+            show={isShow}
+          />
         </FlexBox>
         <Created />
         <TextInput
