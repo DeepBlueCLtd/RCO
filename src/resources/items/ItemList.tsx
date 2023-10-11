@@ -157,6 +157,7 @@ const getFilters = (
       source='project'
       key='project'
       label={projectLabel}
+      inputProps={{ label: projectLabel }}
       sort={sort('id')}
       reference={constants.R_PROJECTS}
       optionField='name'
