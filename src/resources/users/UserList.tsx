@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import {
-  BooleanField,
   CreateButton,
   List,
   TextField,
@@ -98,11 +97,6 @@ export default function UserList(props: Props): React.ReactElement {
         bulkActionButtons={<UserActions />}>
         <TextField<User> source='staffNumber' label='Staff number' />
         <TextField<User> source='name' />
-        <BooleanField<User>
-          source='adminRights'
-          label='Admin Rights'
-          looseValue
-        />
         <TextField label='Departure' source='departedDate' />
         <ChipField />
       </DatagridConfigurableWithShow>

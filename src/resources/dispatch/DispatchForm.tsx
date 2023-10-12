@@ -65,7 +65,7 @@ export default function DispatchForm(props: Props): React.ReactElement {
       toolbar={showForm ? false : <EditToolbar />}
       resolver={yupResolver(schema)}>
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>
-        <TextInput sx={sx} disabled={show ?? edit} source='toName' />
+        <TextInput sx={sx} disabled={show} source='toName' />
       </FlexBox>
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>
         <SourceInput
@@ -105,9 +105,8 @@ export default function DispatchForm(props: Props): React.ReactElement {
       <ConditionalReferenceInput
         source='vault'
         reference={R_VAULT}
-        inputProps={{ helperText: false }}
         show={show}
-        {...(edit ? { active: true } : null)}
+        isEdit={edit}
       />
       <TextInput sx={sx} disabled={show} multiline source='remarks' />
     </SimpleForm>

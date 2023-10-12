@@ -106,7 +106,6 @@ describe('CRUD operations on User', () => {
       data: generateUserForTesting({
         id: createdUser.id,
         name: 'dummy-user',
-        adminRights: false,
         departedDate: randomDepartDate
       })
     })
@@ -119,7 +118,6 @@ describe('CRUD operations on User', () => {
     const shouldMatchUser = generateUserForTesting({
       id: createdUser.id,
       name: 'dummy-user',
-      adminRights: false,
       departedDate: randomDepartDate
     })
 
@@ -234,8 +232,7 @@ describe('CRUD operations on User', () => {
       previousData: createdUser,
       data: generateUserForTesting({
         id: createdUser.id,
-        name: 'dummy-user',
-        adminRights: false
+        name: 'dummy-user'
       })
     })
 
@@ -283,8 +280,7 @@ describe('CRUD operations on User', () => {
       previousData: createdUser,
       data: generateUserForTesting({
         id: createdUser.id,
-        name: 'dummy-user',
-        adminRights: false
+        name: 'dummy-user'
       })
     })
 

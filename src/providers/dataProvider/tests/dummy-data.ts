@@ -117,7 +117,6 @@ export const generatePlatformForTesting = ({
 
 interface UserProps {
   id?: number
-  adminRights?: boolean
   departedDate?: string
   name?: string
 }
@@ -125,7 +124,6 @@ interface UserProps {
 export const generateUserForTesting = ({
   id,
   name,
-  adminRights,
   departedDate
 }: UserProps = {}): Omit<
   User,
@@ -134,7 +132,6 @@ export const generateUserForTesting = ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
   password: 'abcd',
-  adminRights: adminRights ?? true,
   ...(departedDate ? { departedDate } : { departedDate: null }),
   role: 'rco-user',
   staffNumber: 'd-1'

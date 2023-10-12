@@ -2,7 +2,7 @@ import React from 'react'
 import { Create, Edit, ShowButton, TopToolbar } from 'react-admin'
 import ItemForm from './ItemForm'
 import TopToolbarField from '../../components/TopToolbarField'
-import { R_ITEMS } from '../../constants'
+import { R_ITEMS, R_RICH_ITEMS } from '../../constants'
 
 const ItemList = React.lazy(async () => await import('./ItemList'))
 const ItemShow = React.lazy(async () => await import('./ItemShow'))
@@ -22,7 +22,7 @@ const ItemEdit = (): React.ReactElement => {
       actions={
         <TopToolbar>
           <TopToolbarField<Item> source='itemNumber' />
-          <ShowButton />
+          <ShowButton resource={R_RICH_ITEMS} />
         </TopToolbar>
       }
       mutationMode='pessimistic'>
