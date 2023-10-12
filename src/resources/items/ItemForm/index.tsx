@@ -20,15 +20,17 @@ import { DateTime } from 'luxon'
 
 const schema = yup.object({
   mediaType: yup.number().required(),
-  startDate: yup.date().required(),
+  startDate: yup.date().optional().nullable(),
   endDate: yup
     .date()
-    .required()
+    .optional()
+    .nullable()
     .test(
       'endDate',
       'End date must be greater than start date',
       function (value) {
-        return dayjs(value).diff(this.parent.startDate) > 0
+        const startDate = this.parent.startDate
+        return startDate ? dayjs(value).diff(startDate) > 0 : true
       }
     ),
   batch: yup.number().required(),

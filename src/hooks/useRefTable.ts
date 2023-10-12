@@ -32,11 +32,14 @@ export default function useRefTable(
         const idsToDelete = tableData.map(
           (item: Record<string, any>) => item.id
         )
-        deleteMany(refTable, { ids: idsToDelete })
-          .then(() => {
-            createRecord(id, data)
-          })
-          .catch(console.log)
+
+        if (idsToDelete.length)
+          deleteMany(refTable, { ids: idsToDelete })
+            .then(() => {
+              createRecord(id, data)
+            })
+            .catch(console.log)
+        else createRecord(id, data)
       })
       .catch(console.log)
   }
