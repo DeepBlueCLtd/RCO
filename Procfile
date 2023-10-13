@@ -1,1 +1,1 @@
-web: sh deploy.sh
+web: yarn serve $PORT
