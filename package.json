@@ -12,7 +12,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "check-dist": "if [ ! -d dist ]; then echo '\\e[31mError: The \"dist\" folder does not exist. Please run \"yarn build\" first.\\e[0m'; exit 1; else echo 'Dist folder exists'; fi",
-    "serve": "yarn run check-dist && port=$1 &&  soul -d ./db/RCO2.sqlite -e $(realpath ./_extensions) -p $port",
+    "serve": "MOCK=false && yarn run check-dist && port=$1 &&  soul -d ./db/RCO2.sqlite -e $(realpath ./_extensions) -p $port",
     "serve:dev": "soul -d ./db/RCO2.sqlite -e $(realpath ./_devExtensions)",
     "serve:large": "if [ ! -d dist ]; then echo '\\e[31mError: The \"dist\" folder does not exist. Please run \"yarn build\" first.\\e[0m'; else soul -d ./db/RCO2-large.sqlite -e $(realpath ./_extensions); fi",
     "serve:dev:large": "soul -d ./db/RCO2-large.sqlite -e $(realpath ./_devExtensions)",
