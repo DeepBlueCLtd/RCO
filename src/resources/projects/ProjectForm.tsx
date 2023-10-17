@@ -11,7 +11,7 @@ import dayjs from 'dayjs'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
-  remarks: yup.string(),
+  remarks: yup.string().optional().nullable(),
   startDate: yup.date().required(),
   endDate: yup
     .date()
