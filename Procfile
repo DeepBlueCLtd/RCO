@@ -1,1 +1,1 @@
-web: yarn preview --host 0.0.0.0 --base ./  --port $PORT
+web: yarn serve $PORT
