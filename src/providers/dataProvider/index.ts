@@ -62,7 +62,11 @@ export const getDataProvider = async (
   MOCK: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
   const provider = !MOCK
-    ? dataProvider('/api/tables')
+    ? dataProvider(
+        process.env.NODE_ENV === 'development'
+          ? 'http://localhost:8000/api/tables'
+          : '/api/tables'
+      )
     : await localForageDataProvider({
         prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
         loggingEnabled
