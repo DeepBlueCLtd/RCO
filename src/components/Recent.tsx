@@ -49,6 +49,7 @@ interface Field<T> {
   source: keyof T
   reference?: string
   component?: React.FC<any>
+  label?: string
 }
 
 interface Props<T> extends DatagridProps {
@@ -64,13 +65,20 @@ interface Props<T> extends DatagridProps {
 function Column<T extends Batch | User | Dispatch>(
   props: Field<T>
 ): React.ReactElement {
-  const { source, reference, component } = props
+  const { source, reference, component, label = '' } = props
   if (typeof component !== 'undefined') {
     return React.createElement(component, { source })
   }
 
   if (typeof reference !== 'undefined') {
-    return <SourceField<T> link={false} source={source} reference={reference} />
+    return (
+      <SourceField<T>
+        link={false}
+        source={source}
+        reference={reference}
+        label={label}
+      />
+    )
   }
   return <TextField source={source as string} />
 }
