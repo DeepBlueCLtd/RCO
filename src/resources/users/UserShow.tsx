@@ -77,6 +77,34 @@ const DepartOrganisation = ({
   )
 }
 
+const ResetPassword = ({ handleClose, record }: Props): React.ReactElement => {
+  const [update] = useUpdate()
+
+  const handlePasswordReset = (): void => {
+    update(R_USERS, {
+      id: record?.id,
+      previousData: record,
+      data: { password: '' }
+    }).catch(console.log)
+    handleClose()
+  }
+  return (
+    <Box sx={style}>
+      <Typography variant='h6'>
+        Are you sure you want to reset the password for this user?
+      </Typography>
+      <FlexBox marginTop='20px' justifyContent='center'>
+        <Button variant='contained' onClick={handlePasswordReset}>
+          Confirm
+        </Button>
+        <Button variant='outlined' color='secondary' onClick={handleClose}>
+          Cancel
+        </Button>
+      </FlexBox>
+    </Box>
+  )
+}
+
 interface UserShowCompType {
   setRecord: React.Dispatch<React.SetStateAction<User | undefined>>
 }
@@ -84,6 +112,7 @@ interface UserShowCompType {
 const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
+  const [resetOpen, setResetopen] = useState(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -102,6 +131,15 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const handleDepartClose = (): void => {
     setDepartOpen(false)
   }
+
+  const handleResetPassowrd = (): void => {
+    setResetopen(true)
+  }
+
+  const handleResetClose = (): void => {
+    setResetopen(false)
+  }
+
   const cannotDepart = (): boolean => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
@@ -141,7 +179,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 sx={{ flex: 1 }}
               />
             </FlexBox>
-            <FlexBox justifyContent='center'>
+            <FlexBox justifyContent='left'>
               <Button
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
@@ -158,6 +196,14 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                     </Typography>
                   </>
                 )}
+            </FlexBox>
+            <FlexBox justifyContent='left'>
+              <Button
+                variant='outlined'
+                sx={{ marginBottom: 1 }}
+                onClick={handleResetPassowrd}>
+                Reset Password
+              </Button>
             </FlexBox>
           </SimpleForm>
         </Box>
@@ -179,6 +225,10 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
 
       <Modal open={departOpen} onClose={handleDepartClose}>
         <DepartOrganisation handleClose={handleDepartClose} record={record} />
+      </Modal>
+
+      <Modal open={resetOpen} onClose={handleResetClose}>
+        <ResetPassword handleClose={handleResetClose} record={record} />
       </Modal>
     </>
   )
