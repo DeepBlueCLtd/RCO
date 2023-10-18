@@ -98,7 +98,11 @@ export default function Welcome(): React.ReactElement {
           fields={[
             { source: 'batchNumber' },
             { source: 'platform', reference: constants.R_PLATFORMS },
-            { source: 'project', reference: constants.R_PROJECTS }
+            {
+              source: 'project',
+              label: configData?.projectName,
+              reference: constants.R_PROJECTS
+            }
           ]}
           search='order=DESC&sort=createdAt'
         />
