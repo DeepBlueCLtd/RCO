@@ -7,7 +7,7 @@
   },
   "homepage": ".",
   "scripts": {
-    "dev": "vite --open",
+    "dev": "cross-env NODE_ENV=development vite --open",
     "dev:mock": "cross-env MOCK=true vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
