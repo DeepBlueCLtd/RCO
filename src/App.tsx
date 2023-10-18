@@ -44,7 +44,7 @@ import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
-import { Button, Modal, TextField } from '@mui/material'
+import { Button, Modal, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { initialize } from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
@@ -152,7 +152,6 @@ function App(): React.ReactElement {
 
   const onSubmit = async (data: PasswordForm): Promise<void> => {
     const { newPassword } = data
-    console.log(newPassword)
     if (
       dataProvider !== undefined &&
       authProvider !== undefined &&
@@ -310,6 +309,20 @@ function App(): React.ReactElement {
         <Box sx={style}>
           {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={handleSubmit(onSubmit)}>
+            <Typography>
+              <p>
+                <b>Please provide an initial password</b>
+              </p>
+              <p>
+                The password should include these items:
+                <ul>
+                  <li>At least 10 characters in length</li>
+                  <li>Upper and lower case letters</li>
+                  <li>At least one digit</li>
+                  <li>At least one special character</li>
+                </ul>
+              </p>
+            </Typography>
             <TextField
               type='password'
               fullWidth
