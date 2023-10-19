@@ -1,5 +1,5 @@
 import { Chip } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   List,
   TextField,
@@ -28,6 +28,7 @@ const ListActions = ({
   preferenceKey
 }: SelectColumnsButtonProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
+
   return (
     <StyledTopToolbar>
       {hasAccess(constants.R_BATCHES, { write: true }) ? (
@@ -82,7 +83,9 @@ const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
 
 export default function BatchList(): React.ReactElement {
   const configData = useConfigData()
+  const [projectName, setProjectName] = useState<null | string>()
   const preferenceKey = `${constants.R_BATCHES}-batch-datagrid-columns`
+  const [key, setKey] = useState(0)
 
   const filters = [
     <SourceInput key='vault' source='vault' reference={constants.R_VAULT} />,
@@ -137,9 +140,16 @@ export default function BatchList(): React.ReactElement {
       format='iso'
     />
   ]
+  useEffect(() => {
+    if (configData?.projectName) {
+      setProjectName(configData.projectName)
+      setKey((prev) => prev + 1)
+    }
+  }, [configData?.projectName])
 
   return (
     <List
+      key={key}
       sx={{
         '& .MuiToolbar-root': {
           '& > form': {
@@ -163,11 +173,15 @@ export default function BatchList(): React.ReactElement {
           label='Department'
           reference={constants.R_DEPARTMENT}
         />
-        <SourceField<Batch>
-          source='project'
-          reference={constants.R_PROJECTS}
-          label={configData?.projectName}
-        />
+
+        {projectName && (
+          <SourceField<Batch>
+            source='project'
+            reference={constants.R_PROJECTS}
+            label={projectName}
+          />
+        )}
+
         <SourceField<Batch>
           source='platform'
           reference={constants.R_PLATFORMS}
