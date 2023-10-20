@@ -1,4 +1,10 @@
-import { Datagrid, FunctionField, List, TextField } from 'react-admin'
+import {
+  Datagrid,
+  FunctionField,
+  List,
+  SearchInput,
+  TextField
+} from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import ResourceHistoryModal from '../../components/ResourceHistory'
@@ -8,6 +14,7 @@ import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 import { ConditionalDateField } from '../dispatch/DispatchList'
 
 const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
   <NullUndefinedFilter
     label='Destroyed'
     source={process.env.MOCK ? 'finalisedAt_neq' : 'finalisedAt__notnull'}

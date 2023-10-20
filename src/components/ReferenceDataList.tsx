@@ -8,7 +8,8 @@ import {
   TopToolbar,
   BooleanField,
   TextField,
-  FilterButton
+  FilterButton,
+  SearchInput
 } from 'react-admin'
 import useCanAccess from '../hooks/useCanAccess'
 import ResourceHistoryModal from './ResourceHistory'
@@ -20,7 +21,13 @@ interface PropType {
   name: string
 }
 
-const filters = [<ActiveFilter source='active' key='active' label='Active' />]
+const getFilters = (cName: string): React.ReactElement[] => {
+  const filters = [<ActiveFilter source='active' key='active' label='Active' />]
+  if (cName === constants.R_MEDIA_TYPE) {
+    filters.push(<SearchInput source='q' key='q' alwaysOn />)
+  }
+  return filters
+}
 
 export default function ReferenceDataList({
   name
@@ -55,7 +62,10 @@ export default function ReferenceDataList({
   const notShowActive = (name: string): boolean => name === constants.R_AUDIT
 
   return (
-    <List actions={<ListActions />} resource={cName} filters={filters}>
+    <List
+      actions={<ListActions />}
+      resource={cName}
+      filters={getFilters(cName)}>
       <Datagrid
         bulkActionButtons={false}
         rowClick={(id: Identifier) => {
