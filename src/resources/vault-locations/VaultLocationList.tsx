@@ -4,6 +4,7 @@ import {
   FilterButton,
   FunctionField,
   List,
+  SearchInput,
   TextField,
   TopToolbar
 } from 'react-admin'
@@ -17,7 +18,10 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 import HistoryButton from '../../components/HistoryButton'
 import { ActiveFilter } from '../platforms/PlatformList'
 
-const filters = [<ActiveFilter source='active' key='active' label='Active' />]
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <ActiveFilter source='active' key='active' label='Active' />
+]
 
 const ListActions = (): React.ReactElement => (
   <TopToolbar>

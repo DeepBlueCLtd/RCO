@@ -9,7 +9,8 @@ import {
   TopToolbar,
   FilterButton,
   useListContext,
-  FunctionField
+  FunctionField,
+  SearchInput
 } from 'react-admin'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
@@ -38,6 +39,11 @@ export const ActiveFilter = ({
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
 
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <ActiveFilter source='active' key='platform' label='Active Platforms' />
+]
+
 export default function PlatformList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
@@ -65,10 +71,6 @@ export default function PlatformList(props: Props): React.ReactElement {
       <FilterButton />
     </TopToolbar>
   )
-
-  const filters = [
-    <ActiveFilter source='active' key='platform' label='Active Platforms' />
-  ]
 
   return (
     <List
