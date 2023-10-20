@@ -7,7 +7,8 @@ import {
   useRecordContext,
   useListContext,
   useUpdate,
-  useNotify
+  useNotify,
+  SearchInput
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
 import { Article, KeyboardReturn } from '@mui/icons-material'
@@ -20,6 +21,8 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 interface Props {
   name: string
 }
+
+const filters = [<SearchInput source='q' key='q' alwaysOn />]
 
 export default function UserList(props: Props): React.ReactElement {
   const { name } = props
@@ -91,7 +94,11 @@ export default function UserList(props: Props): React.ReactElement {
     )
   }
   return (
-    <List actions={<ListActions />} perPage={25} resource={cName}>
+    <List
+      actions={<ListActions />}
+      perPage={25}
+      resource={cName}
+      filters={filters}>
       <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>

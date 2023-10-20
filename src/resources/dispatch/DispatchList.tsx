@@ -8,7 +8,8 @@ import {
   useDataProvider,
   useNotify,
   useRefresh,
-  useRecordContext
+  useRecordContext,
+  SearchInput
 } from 'react-admin'
 import { Button } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -18,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 
 const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
   <NullUndefinedFilter
     label='Dispatched'
     source={process.env.MOCK ? 'dispatchedAt_neq' : 'dispatchedAt__notnull'}
