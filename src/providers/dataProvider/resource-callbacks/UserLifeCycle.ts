@@ -12,7 +12,6 @@ import {
   type ResourceCallbacks,
   type UpdateParams
 } from 'react-admin'
-import { getUser } from '../../authProvider'
 
 const lifeCycles = (
   audit: AuditFunctionType
@@ -60,23 +59,19 @@ const lifeCycles = (
       )
     },
     afterUpdate: async (result: UpdateResult<User>) => {
-      const { id } = result.data
-      const user = getUser()
-
-      const dataId = passwordReset && user ? user.id : id
-      const auditObj = {
-        resource: R_USERS,
-        activityType: passwordReset ? AuditType.PASSWORD_RESET : AuditType.EDIT,
-        activityDetail: passwordReset
-          ? 'Password reset successfully'
-          : 'Password assigned',
-        securityRelated: true,
-        dataId,
-        subjectId: null,
-        subjectResource: null
+      if (!passwordReset) {
+        const { id } = result.data
+        const auditObj = {
+          resource: R_USERS,
+          activityType: AuditType.EDIT,
+          activityDetail: 'Password assigned',
+          securityRelated: true,
+          dataId: id,
+          subjectId: null,
+          subjectResource: null
+        }
+        audit(auditObj).catch(console.log)
       }
-
-      audit(auditObj).catch(console.log)
 
       return result
     }
