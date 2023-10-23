@@ -1,15 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
-  type SelectInputProps,
   SimpleForm,
   TextInput,
   useGetList,
-  type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
   DateInput,
-  type SortPayload
+  type SortPayload,
+  type AutocompleteInputProps
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -37,7 +36,7 @@ const sx = { width: '100%' }
 interface Props {
   reference: string
   source: string
-  inputProps?: SelectInputProps | TextInputProps
+  inputProps?: AutocompleteInputProps
   active?: boolean
   show?: boolean
   isEdit?: boolean
@@ -59,7 +58,8 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
     label,
     defaultValue,
     sort,
-    groupBy
+    groupBy,
+    inputProps
   } = props
   const { data, isLoading } = useGetList<T>(
     reference,
@@ -84,6 +84,7 @@ export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
         inputText={(choice) => choice.name}
         disabled={data?.length === 1 || show}
         groupBy={groupBy}
+        {...inputProps}
       />
     </ReferenceInput>
   )
