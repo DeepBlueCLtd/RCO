@@ -578,6 +578,9 @@ export default function ItemList(
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const filterInSearch = searchParams.get('filter')
+  const [projectName, setProjectName] = useState<undefined | string>(undefined)
+  const [key, setKey] = useState(0)
+
   const sKey = filterInSearch ? 'filtered-item-list' : 'items-items-list'
   const {
     datagridConfigurableProps,
@@ -598,8 +601,17 @@ export default function ItemList(
       }
     }
   }
+
+  useEffect(() => {
+    if (configData?.projectName) {
+      setProjectName(configData.projectName)
+      setKey((prev) => prev + 1)
+    }
+  }, [configData?.projectName])
+
   return (
     <List
+      key={key}
       {...(filterInSearch
         ? { disableSyncWithLocation: false }
         : { disableSyncWithLocation: true })}
@@ -625,7 +637,7 @@ export default function ItemList(
         preferenceKey={preferenceKey}
         resource={resource}
         storeKey={storeKey}
-        projectName={configData?.projectName}
+        projectName={projectName}
       />
     </List>
   )

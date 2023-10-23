@@ -80,7 +80,7 @@ export default function ReferenceData(): React.ReactElement {
   const mainReferenceRoutes = [
     { path: '/platform', title: 'Platforms' },
     { path: '/audit', title: 'Audit Log' },
-    { path: '/vault', title: 'Vault' }
+    { path: '/address', title: 'Addresses' }
   ]
 
   const rarelyUsedRoutes = [
@@ -91,7 +91,8 @@ export default function ReferenceData(): React.ReactElement {
     { path: '/catCave', title: configData?.catCave ?? 'Cat Cave' },
     { path: '/mediaType', title: 'Media Type' },
     { path: '/department', title: 'Department' },
-    { path: '/address', title: 'Addresses' }
+
+    { path: '/vault', title: 'Vault' }
   ]
   return (
     <div>

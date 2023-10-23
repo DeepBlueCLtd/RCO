@@ -5,7 +5,8 @@ import {
   TextInput,
   Toolbar,
   useDataProvider,
-  useRedirect
+  useRedirect,
+  Link
 } from 'react-admin'
 import React, { useEffect } from 'react'
 import SourceInput from '../../components/SourceInput'
@@ -74,6 +75,14 @@ export default function DispatchForm(props: Props): React.ReactElement {
           reference={R_ADDRESSES}
           optionField='fullAddress'
           inputProps={{
+            helperText: (
+              <>
+                View{' '}
+                <span style={{ textDecoration: 'underline' }}>
+                  <Link to={{ pathname: '/address' }}>Addresses</Link>
+                </span>
+              </>
+            ),
             disabled: showForm
           }}
         />
