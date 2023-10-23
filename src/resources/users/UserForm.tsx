@@ -6,11 +6,9 @@ import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
 import FlexBox from '../../components/FlexBox'
-import { passwordValidationSchema } from '../../utils/password-validation.schema'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: passwordValidationSchema,
   role: yup.string().oneOf(rolesOptions.map(({ value }) => value))
 })
 
@@ -36,7 +34,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <TextInput source='password' variant='outlined' sx={{ width: '100%' }} />
       <FlexBox>
         <SelectInput
           label='Role'
