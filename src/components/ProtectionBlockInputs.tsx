@@ -2,12 +2,12 @@ import FlexBox from './FlexBox'
 import * as constants from '../constants'
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import SourceInput from './SourceInput'
 import ProtectionRefInput from './ProtectionRefInput'
 import { type RaRecord } from 'react-admin'
 import { useFormContext } from 'react-hook-form'
 import { useConfigData } from '../utils/useConfigData'
 import { useEffect, useState } from 'react'
+import { ConditionalReferenceInput } from '../resources/batches/BatchForm'
 
 interface Props {
   disabled?: boolean
@@ -119,10 +119,10 @@ export default function ProtectionBlockInputs<
           isEdit={isEdit}
           show={show}
         />
-        <SourceInput
+        <ConditionalReferenceInput
           sort={{ field: 'id', order: 'ASC' }}
           source={markingSource}
-          filter={isEdit === true ? {} : { active: true }}
+          isEdit={isEdit}
           reference={constants.R_PROTECTIVE_MARKING}
           inputProps={{ ...inputProps, sx: { width: '20%' } }}
         />
