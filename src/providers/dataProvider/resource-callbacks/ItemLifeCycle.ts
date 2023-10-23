@@ -83,11 +83,10 @@ const lifeCycles = (
         activityDetail: null
       })
       emitter.emit(SAVE_EVENT, itemNumber)
-      return record
     } catch (error) {
       console.log({ error })
-      return record
     }
+    return record
   }
 })
 
