@@ -66,7 +66,7 @@ const lifeCycles = (
       })
       const batchNumber: string = batchObj.batchNumber
       const itemNumber = `${batchNumber}/${idVal}`
-      const withItemRef = await dataProvider.update<Item>(R_ITEMS, {
+      await dataProvider.update<Item>(R_ITEMS, {
         id,
         previousData: data,
         data: {
@@ -83,7 +83,7 @@ const lifeCycles = (
         activityDetail: null
       })
       emitter.emit(SAVE_EVENT, itemNumber)
-      return { ...record, data: withItemRef.data }
+      return record
     } catch (error) {
       console.log({ error })
       return record
