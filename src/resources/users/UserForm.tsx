@@ -36,7 +36,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <TextInput source='password' variant='outlined' sx={{ width: '100%' }} />
       <FlexBox>
         <SelectInput
           label='Role'
