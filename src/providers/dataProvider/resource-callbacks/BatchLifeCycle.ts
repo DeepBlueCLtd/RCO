@@ -31,6 +31,8 @@ export const generateBatchId = async (
   year: number
 ): Promise<string> => {
   if (!isNumber(year)) throw new TypeError('Year invalid')
+  // TODO: remove debug warnings from this method
+  console.warn('New batch ID for year', year)
   const batches = await provider.getList(R_BATCHES, {
     sort: { field: 'id', order: 'ASC' },
     pagination: { page: 1, perPage: 1000 },
@@ -38,10 +40,12 @@ export const generateBatchId = async (
   })
 
   if (batches.data.length === 0) {
+    console.warn('Returning counter 0')
     return '0'
   }
 
   if (batches.data.length === 1) {
+    console.warn('Returning counter 1')
     return '1'
   }
   const greatestBatch = batches.data.reduce((prev, current) =>
@@ -49,13 +53,15 @@ export const generateBatchId = async (
       ? current
       : prev
   )
+  console.warn('greatest batch:', greatestBatch)
 
-  return (parseInt(greatestBatch.batchNumber.substring(1)) + 1).toLocaleString(
-    'en-US',
-    {
-      useGrouping: false
-    }
-  )
+  const batchId = (
+    parseInt(greatestBatch.batchNumber.substring(1)) + 1
+  ).toLocaleString('en-US', {
+    useGrouping: false
+  })
+  console.warn('batchId:', batchId)
+  return batchId
 }
 
 const lifeCycles = (
