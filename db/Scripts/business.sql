@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS user (
 
        name TEXT NOT NULL,
        password TEXT NOT NULL,
-       active INTEGER NOT NULL,
        roles TEXT NOT NULL, /*Should be a json array string. Ex.: "['rco-user', 'rco-power-user']" or "['rco-user']" or "[]"*/
        staffNumber TEXT NOT NULL,
        departedDate TEXT,
