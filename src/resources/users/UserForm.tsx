@@ -9,7 +9,15 @@ import FlexBox from '../../components/FlexBox'
 
 const schema = yup.object({
   name: yup.string().required(),
-  role: yup.string().oneOf(rolesOptions.map(({ value }) => value))
+  role: yup
+    .string()
+    .transform((val) => {
+      if (!val) return null
+      else return rolesOptions.find((role) => role.value === val)?.value
+    })
+    .oneOf(rolesOptions.map(({ value }) => value))
+    .nullable()
+    .optional()
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
