@@ -281,20 +281,25 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     })
   },
 
-  delete: async (resource: string, params: any) => {
-    const url = `${apiUrl}/${resource}/rows/${params.id}`
+  // Note: Deletion is not supported
+  delete: async (_resource: string, _params: any) => {
+    throw new Error('Deletion is not supported!')
+    // const url = `${apiUrl}/${resource}/rows/${params.id}`
 
-    return await axios.delete(url).then(() => {
-      return { data: params.id }
-    })
+    // return await axios.delete(url).then(() => {
+    //   return { data: params.id }
+    // })
   },
 
-  deleteMany: async (resource: string, params: any) => {
-    const ids = params.ids.toString()
-    const url = `${apiUrl}/${resource}/rows/${ids}`
+  // Note: Deletion is not supported
+  deleteMany: async (_resource: string, _params: any) => {
+    throw new Error('Deletion is not supported!')
 
-    return await axios.delete(url).then(() => {
-      return { data: params.ids }
-    })
+    // const ids = params.ids.toString()
+    // const url = `${apiUrl}/${resource}/rows/${ids}`
+
+    // return await axios.delete(url).then(() => {
+    //   return { data: params.ids }
+    // })
   }
 })
