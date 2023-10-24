@@ -227,7 +227,7 @@ export const generateBatch = (
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
-      batchNumber: `V${generateBatchId(year, batches)}/${year}`,
+      batchNumber: `${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department,
       project: isNull() ? null : generateRandomNumber(1, projects - 1),
