@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS user (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
        password TEXT NOT NULL,
-       role TEXT NOT NULL,  /* Should be string Ex.: 'rco-user, 'rco-power-user' */
+       role TEXT,  /* Should be string Ex.: 'rco-user, 'rco-power-user' */
        staffNumber TEXT NOT NULL,
        departedDate TEXT,
        createdAt TEXT NOT NULL,
