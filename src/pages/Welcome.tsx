@@ -43,7 +43,7 @@ export default function Welcome(): React.ReactElement {
   const { data } = useGetList<Item>(constants.R_RICH_ITEMS, {
     sort: { field: 'id', order: 'ASC' },
     filter,
-    pagination: { page: 1, perPage: 5 }
+    pagination: { page: 1, perPage: 500 }
   })
   const usersHaveLoan: Array<User['id']> = []
   data?.forEach((d) => (d.loanedTo ? usersHaveLoan.push(d.loanedTo) : null))

@@ -2,8 +2,10 @@
   "folders": {},
   "connections": {
     "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76": {
-      "provider": "sqlite",
-      "driver": "sqlite_jdbc",
+      "provider": "sqlite-ee",
+      "driver": "sqlite_ee",
+      "original-provider": "sqlite",
+      "original-driver": "sqlite_jdbc",
       "name": "RCO2",
       "save-password": true,
       "configuration": {
@@ -15,6 +17,24 @@
           "sqlite-remote-enabled": "false"
         },
         "auth-model": "native"
+      }
+    },
+    "sqlite_ee-18b6151046d-5acab2481e53bd11": {
+      "provider": "sqlite-ee",
+      "driver": "sqlite_ee",
+      "name": "RCO2-large.sqlite",
+      "save-password": true,
+      "navigator-show-only-entities": true,
+      "navigator-hide-folders": true,
+      "navigator-hide-virtual": true,
+      "configuration": {
+        "database": "/Users/ian/git/RCO/db/RCO2-large.sqlite",
+        "url": "jdbc:sqlite:/Users/ian/git/RCO/db/RCO2-large.sqlite",
+        "configurationType": "MANUAL",
+        "type": "dev",
+        "properties": {
+          "sqlite-remote-enabled": "false"
+        }
       }
     }
   },
@@ -36,7 +56,7 @@
       "confirm-execute": false,
       "confirm-data-change": false,
       "smart-commit": false,
-      "smart-commit-recover": true,
+      "smart-commit-recover": false,
       "auto-close-transactions": true,
       "close-transactions-period": 1800
     }
