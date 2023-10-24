@@ -132,7 +132,7 @@ export default function Recent<T extends Batch | User | Dispatch>(
 ): React.ReactElement {
   const {
     resource,
-    itemsCount = 5,
+    itemsCount = 10,
     label,
     fields = [],
     filter,
