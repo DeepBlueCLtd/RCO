@@ -64,9 +64,13 @@ export default function ChangeLocation(
         undefined,
         values.editRemarks
       )
+
+      const valuesCopy = values as Partial<FormState>
+      delete valuesCopy.editRemarks
+
       const { data } = await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids,
-        data: values
+        data: valuesCopy
       })
       notify('Elements updated')
       successCallback?.(data)
