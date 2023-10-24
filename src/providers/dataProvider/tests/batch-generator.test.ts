@@ -63,7 +63,7 @@ const generateBatch = async (
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
-    batchNumber: `V${batchNumber ?? id}/${year}`,
+    batchNumber: `${batchNumber ?? id}/${year}`,
     yearOfReceipt: year,
     department: `${id}-department`,
     project: isNull() ? null : id,
@@ -154,7 +154,7 @@ describe('generateBatchId for values greater than 9', () => {
       })
       for (let i = 0; i < batchData.data.length; i++) {
         expect(batchData.data[i].batchNumber).toBe(
-          `V${i.toLocaleString('en-US', {
+          `${i.toLocaleString('en-US', {
             useGrouping: false
           })}/${year}`
         )
@@ -184,7 +184,7 @@ describe('generateBatchId for values greater than 9', () => {
 
       for (let i = 20; i < batchData1.data.length; i++) {
         expect(batchData1.data[i].batchNumber).toBe(
-          `V${i.toLocaleString('en-US', {
+          `${i.toLocaleString('en-US', {
             useGrouping: false
           })}/${year}`
         )

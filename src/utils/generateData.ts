@@ -214,7 +214,7 @@ export const generateBatch = (
   }
 
   for (let i = 1; i <= length; i++) {
-    const year = generateRandomNumber(2020, 2023)
+    const year = generateRandomNumber(2021, 2024)
 
     const department = `${generateRandomNumber(1, departments - 1)}-${
       ID_FIX[constants.R_DEPARTMENT]
@@ -227,7 +227,7 @@ export const generateBatch = (
     const obj: Batch = {
       id: i,
       createdAt: nowDate(),
-      batchNumber: `V${generateBatchId(year, batches)}/${year}`,
+      batchNumber: `${generateBatchId(year, batches)}/${year}`,
       yearOfReceipt: year,
       department,
       project: isNull() ? null : generateRandomNumber(1, projects - 1),
