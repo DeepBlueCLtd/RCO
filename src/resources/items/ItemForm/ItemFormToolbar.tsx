@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useLocation, useParams } from 'react-router-dom'
 import FlexBox from '../../../components/FlexBox'
 import mitt from 'mitt'
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { ITEM_CLONE, ITEM_SAVE, SAVE_EVENT } from '../../../constants'
 import { transformProtectionValues } from '../../../utils/helper'
 import RemarksBox from '../../../components/RemarksBox'
@@ -77,6 +77,8 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
   const { notify } = useContext(NotificationContext)
   const { reset, getValues, setValue } = useFormContext()
+  const [alwaysEnable, setAlwaysEnable] = useState(false)
+
   const { id } = useParams()
   const vaultLocationsAudit = useVaultLocationAudit()
   const saveCloneButtonRef = useRef<ButtonBaseActions>(null)
@@ -87,11 +89,13 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
   const saveHandler = (e: string): void => {
     if (clone) {
       clone = false
+      setAlwaysEnable(true)
       saveAndClone(e, ItemFormSaveType.CLONE)
       emitter.emit(ITEM_CLONE, null)
     }
     if (save) {
       save = false
+      setAlwaysEnable(false)
       saveAndClone(e, ItemFormSaveType.SAVE)
       emitter.emit(ITEM_SAVE, null)
       reset()
@@ -196,6 +200,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
           type='button'
           label='Save / Clone <alt + c>'
           title='Store this item, then create a new copy'
+          alwaysEnable={alwaysEnable}
           onClick={() => {
             clone = true
           }}
@@ -219,6 +224,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
         />
         <SaveButton
           action={saveNewButtonRef}
+          alwaysEnable={alwaysEnable}
           type='button'
           label='Save / New <alt + n>'
           title='Store this item, then create a blank item'
