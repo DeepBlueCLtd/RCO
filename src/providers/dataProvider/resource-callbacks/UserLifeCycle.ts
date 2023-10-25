@@ -59,7 +59,7 @@ const lifeCycles = (
       )
     },
     afterUpdate: async (result: UpdateResult<User>) => {
-      if (!passwordReset) {
+      if (passwordReset) {
         const { id } = result.data
         const auditObj = {
           resource: R_USERS,
