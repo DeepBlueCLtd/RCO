@@ -62,7 +62,9 @@ export default function ProtectionRefInput<
   const [prevValue, setPrevValue] = useState<Array<T['id']>>([])
   const {
     formState: { errors, isSubmitSuccessful },
-    setValue
+    setValue,
+    getValues,
+    reset
   } = useFormContext()
   const [valueLabel, setValueLabel] = useState<string>('')
   type SelectedIdType = T['id'] | Array<T['id']>
@@ -164,6 +166,7 @@ export default function ProtectionRefInput<
       } else if (id) {
         createRecord(id, selectedData as number[])
       }
+      reset(getValues())
     }
   }, [isSubmitSuccessful])
 
