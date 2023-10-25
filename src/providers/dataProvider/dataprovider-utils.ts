@@ -28,7 +28,9 @@ export const getDifference = (
       data[item] instanceof Date && !isSameDate(data[item], previousData[item])
     if (
       isDateModified ||
-      (typeof data[item] !== 'object' && data[item] !== previousData[item])
+      (typeof data[item] !== 'object' &&
+        data[item] !== previousData[item] &&
+        item !== 'password')
     ) {
       valuesChanged[item] = previousData[item]
     }
@@ -110,7 +112,10 @@ export const auditForUpdatedChanges = async (
     })
   }
 
-  if (Object.keys(difference).length > 0) {
+  if (
+    Object.keys(difference).length > 0 ||
+    auditData.activityType === AuditType.PASSWORD_RESET
+  ) {
     const activityDetail = getActivityDetail(difference, editRemarks)
     await audit({
       activityDetail,
