@@ -119,19 +119,21 @@ interface UserProps {
   id?: number
   departedDate?: string
   name?: string
+  password?: string
 }
 
 export const generateUserForTesting = ({
   id,
   name,
-  departedDate
+  departedDate,
+  password = undefined
 }: UserProps = {}): Omit<
   User,
   'id' | 'createdAt' | 'createdBy' | 'departedDate'
 > => ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
-  password: 'abcd',
+  password: password ?? undefined,
   ...(departedDate ? { departedDate } : { departedDate: null }),
   role: 'rco-user',
   staffNumber: 'd-1'
