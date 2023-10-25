@@ -242,7 +242,7 @@ describe('CRUD operations on User', () => {
       filter: {}
     })
 
-    expect(auditListAfterUpdate.total).toBe(3)
+    expect(auditListAfterUpdate.total).toBe(2)
 
     const secondAuditEntry = auditListAfterUpdate.data[1]
     expect(secondAuditEntry.dataId).toBe(createdUser.id)
@@ -280,7 +280,8 @@ describe('CRUD operations on User', () => {
       previousData: createdUser,
       data: generateUserForTesting({
         id: createdUser.id,
-        name: 'dummy-user'
+        name: 'dummy-user',
+        password: 'abd'
       })
     })
 

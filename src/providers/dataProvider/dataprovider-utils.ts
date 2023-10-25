@@ -62,7 +62,7 @@ const getActivityDetail = (
 
   const activityDetail = `{"Previous values": ${stringify(difference)}${
     editRemarks ? `, "Remarks": ${stringify(editRemarks)}` : ''
-  }, "subjectId": 1}`
+  }}`
 
   return activityDetail
 }

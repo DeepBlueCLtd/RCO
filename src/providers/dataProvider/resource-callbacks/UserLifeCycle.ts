@@ -17,20 +17,25 @@ const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => {
   let passwordReset = false
+  let returned = false
+  let departed = false
+  let passwordAssigned = false
   return {
     beforeCreate: async (record: CreateParams<User>) => {
       return withCreatedByAt(record)
     },
     beforeUpdate: async (record: UpdateParams<User>) => {
-      const departed =
+      departed =
         (record.data.password === undefined || record.data.password === null) &&
-        record.previousData.departedDate &&
+        record.previousData.departedDate !== null &&
+        record.previousData.departedDate !== undefined &&
         (record.data.departedDate !== null ||
           record.data.departedDate !== undefined)
 
-      const returned =
+      returned =
         (record.data.password === undefined || record.data.password === null) &&
-        record.previousData.departedDate &&
+        record.previousData.departedDate !== undefined &&
+        record.previousData.departedDate !== null &&
         (record.data.departedDate === undefined ||
           record.data.departedDate === null)
 
@@ -40,6 +45,12 @@ const lifeCycles = (
         (record.previousData.password !== undefined ||
           record.previousData.password !== null) &&
         record.data.password === ''
+      passwordAssigned =
+        (record.previousData.password === null ||
+          record.previousData.password === undefined) &&
+        record.data.password !== null &&
+        record.data.password !== undefined
+
       // all user changes are security related
       const securityRelated = true
       return await auditForUpdatedChanges(
@@ -59,7 +70,7 @@ const lifeCycles = (
       )
     },
     afterUpdate: async (result: UpdateResult<User>) => {
-      if (!passwordReset) {
+      if (passwordAssigned) {
         const { id } = result.data
         const auditObj = {
           resource: R_USERS,
