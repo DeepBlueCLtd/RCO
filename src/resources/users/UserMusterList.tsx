@@ -6,7 +6,6 @@ import {
   useListContext,
   Show,
   Count,
-  ReferenceField,
   useRecordContext,
   DateField
 } from 'react-admin'
@@ -15,39 +14,13 @@ import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
-import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   open: boolean
   onClose?: () => void
 }
 
-interface CompositeFieldProps {
-  label: string
-}
-
 const style = { fontSize: '12px' }
-
-const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
-  const { label } = props
-  return (
-    <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
-      <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField<Item>
-          textProps={{ ...style }}
-          source='id'
-          reference={constants.R_PROJECTS}
-        />
-        ,{' '}
-        <SourceField<Item>
-          textProps={{ ...style }}
-          source='id'
-          reference={constants.R_PLATFORMS}
-        />
-      </ReferenceField>
-    </ReferenceField>
-  )
-}
 
 const Title = (): React.ReactElement => {
   const record = useRecordContext()
@@ -64,7 +37,6 @@ export default function UserMusterList<T extends User>(
   const { open, onClose } = props
   const { selectedIds } = useListContext()
   const userIds: number[] = selectedIds
-  const configData = useConfigData()
 
   return (
     <Printable open={open} onClose={onClose}>
@@ -121,10 +93,6 @@ export default function UserMusterList<T extends User>(
                     textProps={{ ...style }}
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}
-                  />
-                  <CompositeField
-                    {...style}
-                    label={`${configData?.projectName} & Platform`}
                   />
                   <DateField<Item>
                     {...style}
