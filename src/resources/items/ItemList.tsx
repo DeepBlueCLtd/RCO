@@ -388,12 +388,11 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         id: itemId
       })
       const auditData = {
-        activityType: AuditType.EDIT,
+        activityType: AuditType.RETURN,
         activityDetail: 'Item returned',
         securityRelated: false,
-        dataId: itemId,
+        dataId: data.dispatchJob,
         resource: constants.R_DISPATCH,
-        // TODO: include the item as subject
         subjectId: itemId,
         subjectResource: constants.R_ITEMS
       }
@@ -403,7 +402,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityType: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS,
-        // TODO: include the dispatch as subject
+        dataId: itemId,
         subjectId: data.dispatchJob,
         subjectResource: constants.R_DISPATCH
       })
