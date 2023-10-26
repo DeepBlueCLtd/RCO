@@ -105,7 +105,13 @@ export default function UserMusterList<T extends User>(
                     label='Consec/Sheets'
                   />
                 </ItemsReport>
-                <ReportSignature id={userId} />
+                <ReportSignature>
+                  <Count
+                    resource={constants.R_ITEMS}
+                    {...style}
+                    filter={{ loanedTo: userId }}
+                  />
+                </ReportSignature>
               </Box>
               {selectedIds.length !== index + 1 && (
                 <div className='pagebreak' />

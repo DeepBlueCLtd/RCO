@@ -172,7 +172,12 @@ export default function VaultLocationReport(props: Props): ReactElement {
                       label='Muster remarks'
                     />
                   </ItemsReport>
-                  <ReportSignature id={id} />
+                  <ReportSignature>
+                    <Count
+                      resource={constants.R_ITEMS}
+                      filter={{ vaultLocation: id, loanedTo: undefined }}
+                    />
+                  </ReportSignature>
                 </Box>
                 {selectedIds.length !== index + 1 && (
                   <div className='pagebreak' />
