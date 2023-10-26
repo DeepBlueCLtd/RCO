@@ -1,24 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   CreateButton,
   List,
   TextField,
   TopToolbar,
   useRecordContext,
-  useListContext,
-  useUpdate,
-  useNotify,
   SearchInput
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article, KeyboardReturn } from '@mui/icons-material'
+import { Article } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
 import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
-import { DateTime } from 'luxon'
-import { checkIfDateHasPassed } from '../../utils/helper'
 
 interface Props {
   name: string
@@ -47,39 +42,6 @@ export default function UserList(props: Props): React.ReactElement {
     setOpen(open)
   }
   const UserActions = (): React.ReactElement => {
-    const { selectedIds, data } = useListContext()
-    const [showReturn, setShowReturn] = useState<boolean>(false)
-    const [selectedUser, setSelectedUser] = useState<User[] | null>(null)
-    const [update] = useUpdate<User>()
-    const notify = useNotify()
-    useEffect(() => {
-      const users = data.filter((user: User) => selectedIds.includes(user.id))
-      setSelectedUser(users)
-      setShowReturn(
-        users.every(
-          (user: User) =>
-            user.departedDate !== null &&
-            user.departedDate !== undefined &&
-            checkIfDateHasPassed(user.departedDate)
-        )
-      )
-    }, [selectedIds, data])
-
-    const handleUserReturn = (): void => {
-      if (selectedUser !== null) {
-        selectedUser.forEach((user) => {
-          update(constants.R_USERS, {
-            id: user.id,
-            previousData: user,
-            data: {
-              departedDate: DateTime.now().plus({ years: 10 }).toISO()
-            }
-          }).catch(console.log)
-        })
-        notify('User Returned')
-      }
-    }
-
     return (
       <>
         <Button
@@ -89,15 +51,6 @@ export default function UserList(props: Props): React.ReactElement {
           onClick={handleOpen(true)}>
           User Muster List
         </Button>
-        {showReturn && (
-          <Button
-            startIcon={<KeyboardReturn />}
-            sx={{ lineHeight: '1.5' }}
-            size='small'
-            onClick={handleUserReturn}>
-            Return to Organisation
-          </Button>
-        )}
       </>
     )
   }
