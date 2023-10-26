@@ -249,7 +249,10 @@ const getItemStates = (
         (f) => f.loanedTo !== undefined && f.loanedTo !== null
       ),
       anyDispatched: filteredData.some(
-        (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
+        (f) => f.dispatchedDate !== undefined && f.dispatchedDate !== null
+      ),
+      allDispatched: filteredData.every(
+        (f) => f.dispatchedDate !== undefined && f.dispatchedDate !== null
       )
     }
   }
@@ -385,12 +388,11 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         id: itemId
       })
       const auditData = {
-        activityType: AuditType.EDIT,
+        activityType: AuditType.RETURN,
         activityDetail: 'Item returned',
         securityRelated: false,
-        dataId: itemId,
+        dataId: data.dispatchJob,
         resource: constants.R_DISPATCH,
-        // TODO: include the item as subject
         subjectId: itemId,
         subjectResource: constants.R_ITEMS
       }
@@ -400,7 +402,7 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         activityType: AuditType.RETURN,
         activityDetail: 'Dispatched Item returned',
         resource: constants.R_ITEMS,
-        // TODO: include the dispatch as subject
+        dataId: itemId,
         subjectId: data.dispatchJob,
         subjectResource: constants.R_DISPATCH
       })
@@ -413,6 +415,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dispatchedDate: null
       }
     })
+
+    notify(`${selectedIds.length} items returned`, { type: 'success' })
     refresh()
   }
 
