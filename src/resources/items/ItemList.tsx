@@ -249,10 +249,10 @@ const getItemStates = (
         (f) => f.loanedTo !== undefined && f.loanedTo !== null
       ),
       anyDispatched: filteredData.some(
-        (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
+        (f) => f.dispatchedDate !== undefined && f.dispatchedDate !== null
       ),
       allDispatched: filteredData.every(
-        (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
+        (f) => f.dispatchedDate !== undefined && f.dispatchedDate !== null
       )
     }
   }
