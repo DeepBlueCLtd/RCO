@@ -26,7 +26,7 @@ import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
-import { checkIfUserIsActive } from '../../utils/helper'
+import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
 
 const style = {
   position: 'absolute',
@@ -144,7 +144,10 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
       (record !== undefined && !checkIfUserIsActive(record)) ||
-      !hasWriteAccess
+      !hasWriteAccess ||
+      (record?.departedDate !== undefined &&
+        record?.departedDate !== null &&
+        checkIfDateHasPassed(record.departedDate))
     )
   }
 
@@ -199,6 +202,11 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
             </FlexBox>
             <FlexBox justifyContent='left'>
               <Button
+                disabled={
+                  record?.departedDate !== undefined &&
+                  record.departedDate !== null &&
+                  checkIfDateHasPassed(record.departedDate)
+                }
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
                 onClick={handleResetPassowrd}>

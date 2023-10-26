@@ -17,6 +17,8 @@ import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
 import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
+import { DateTime } from 'luxon'
+import { checkIfDateHasPassed } from '../../utils/helper'
 
 interface Props {
   name: string
@@ -50,11 +52,17 @@ export default function UserList(props: Props): React.ReactElement {
     const [selectedUser, setSelectedUser] = useState<User[] | null>(null)
     const [update] = useUpdate<User>()
     const notify = useNotify()
-
     useEffect(() => {
       const users = data.filter((user: User) => selectedIds.includes(user.id))
       setSelectedUser(users)
-      setShowReturn(users.every((user: User) => user.departedDate !== null))
+      setShowReturn(
+        users.every(
+          (user: User) =>
+            user.departedDate !== null &&
+            user.departedDate !== undefined &&
+            checkIfDateHasPassed(user.departedDate)
+        )
+      )
     }, [selectedIds, data])
 
     const handleUserReturn = (): void => {
@@ -64,7 +72,7 @@ export default function UserList(props: Props): React.ReactElement {
             id: user.id,
             previousData: user,
             data: {
-              departedDate: null
+              departedDate: DateTime.now().plus({ years: 10 }).toISO()
             }
           }).catch(console.log)
         })
@@ -87,7 +95,7 @@ export default function UserList(props: Props): React.ReactElement {
             sx={{ lineHeight: '1.5' }}
             size='small'
             onClick={handleUserReturn}>
-            Return
+            Return to Organisation
           </Button>
         )}
       </>

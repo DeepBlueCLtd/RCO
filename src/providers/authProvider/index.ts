@@ -10,6 +10,7 @@ import { decryptData, encryptData } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
 import bcrypt from 'bcryptjs'
 import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
+import { checkIfDateHasPassed } from '../../utils/helper'
 
 export const getUser = (): User | undefined => {
   const encryptedUser = getCookie(constants.TOKEN_KEY)
@@ -82,11 +83,25 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         (item: any) => item.staffNumber === staffNumber
       )
       if (user !== undefined) {
-        if (user.password && bcrypt.compareSync(password, user.password)) {
+        const hasUserDeparted =
+          user.departedDate !== undefined &&
+          user.departedDate !== null &&
+          checkIfDateHasPassed(user.departedDate)
+        if (
+          user.password &&
+          bcrypt.compareSync(password, user.password) &&
+          !hasUserDeparted
+        ) {
           await createUserToken(user, audit)
           return await Promise.resolve(data)
-        } else if (!user.password && password === user.staffNumber) {
+        } else if (
+          !user.password &&
+          password === user.staffNumber &&
+          !hasUserDeparted
+        ) {
           await createUserToken(user, audit)
+        } else if (hasUserDeparted) {
+          throw new Error('User has departed organisation')
         } else {
           throw new Error('Wrong password')
         }
