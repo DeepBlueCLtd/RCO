@@ -5,7 +5,6 @@ import {
   TextField,
   DateField,
   DateTimeInput,
-  NumberInput,
   useListContext,
   AutocompleteArrayInput,
   TextInput,
@@ -56,7 +55,12 @@ const filters = [
     key='Activity Type'
     label='Activity Type'
   />,
-  <NumberInput source='user' key='user' label='User' min={1} max={2} />,
+  <SourceInput
+    reference={constants.R_USERS}
+    source='user'
+    key='user'
+    label='User'
+  />,
   <TextInput source='resource' key='resource' label='Resource' />,
   <TextInput source='item' key='Item' />,
   <SecurityRelatedFilter
