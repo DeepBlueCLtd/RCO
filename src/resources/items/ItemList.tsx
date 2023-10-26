@@ -250,6 +250,9 @@ const getItemStates = (
       ),
       anyDispatched: filteredData.some(
         (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
+      ),
+      allDispatched: filteredData.every(
+        (f) => f.dispatchJob !== undefined && f.dispatchJob !== null
       )
     }
   }
@@ -413,6 +416,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
         dispatchedDate: null
       }
     })
+
+    notify(`${selectedIds.length} items returned`, { type: 'success' })
     refresh()
   }
 
