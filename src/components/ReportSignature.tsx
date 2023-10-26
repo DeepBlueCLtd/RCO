@@ -43,9 +43,8 @@ export default function ReportSignature(props: Props): ReactElement {
               filter={{ loanedTo: id }}
             />
           }{' '}
-          items listed above have been 100%
+          items listed above have been 100% mustered by:
         </Typography>
-        <Typography {...style}>Mustered by:</Typography>
         <SignatureDetails />
       </Box>
       <FlexBox
