@@ -5,8 +5,11 @@ import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useLogin, useNotify } from 'react-admin'
 import {
+  IconButton,
+  InputAdornment,
   Table,
   TableBody,
   TableCell,
@@ -20,6 +23,12 @@ import * as constants from '../constants'
 export default function Login(): React.ReactElement {
   const login = useLogin()
   const notify = useNotify()
+
+  const [showPassword, setShowPassword] = React.useState(false)
+
+  const handleClickShowPassword = (): void => {
+    setShowPassword((show) => !show)
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
@@ -122,13 +131,22 @@ export default function Login(): React.ReactElement {
             />
             <TextField
               margin='normal'
-              required
               fullWidth
+              required
               name='password'
               label='Password'
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               id='password'
               autoComplete='current-password'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={handleClickShowPassword} edge='end'>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               type='submit'
