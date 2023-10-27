@@ -185,11 +185,10 @@ const loadDefaultData = async (
   })
   const mediaType: MediaType[] = mediaTypeCore.map((item): MediaType => {
     return {
-      itemSize: null,
+      itemSize: Math.floor(Math.random() * 10),
       ...item
     }
   })
-
   const protectiveMarking = getActiveReferenceData<IntegerReferenceItem>({
     nameVal: 'Protective Marking',
     alternateInactive: true
@@ -265,7 +264,6 @@ const loadDefaultData = async (
     catCave: 'Catt-Cave'
   }
   const configData: ConfigData[] = [configDataItem]
-
   const defaultData: Omit<RCOStore, 'richItem'> = {
     user: encryptedUsers(isHigh),
     batch,
