@@ -9,7 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { AllInbox, Groups } from '@mui/icons-material'
+import { AllInbox, Groups, Visibility } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 import { useForm } from 'react-hook-form'
@@ -44,7 +44,7 @@ import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
-import { Button, Modal, TextField, Typography } from '@mui/material'
+import { Button, Icon, Modal, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { initialize } from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
@@ -100,6 +100,12 @@ function App(): React.ReactElement {
     resolver: yupResolver(schema)
   })
   const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
+
+  const [showPassword, setShowPassword] = React.useState(false)
+
+  const handleClickShowPassword = (): void => {
+    setShowPassword((show) => !show)
+  }
 
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
@@ -323,8 +329,17 @@ function App(): React.ReactElement {
                 </ul>
               </p>
             </Typography>
+            <Icon
+              onClick={() => {
+                handleClickShowPassword()
+              }}>
+              <Visibility
+                color={showPassword ? 'info' : 'inherit'}
+                sx={{ width: '20px', height: '20px' }}
+              />
+            </Icon>
             <TextField
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               fullWidth
               margin='normal'
               {...register('newPassword')}
@@ -333,7 +348,7 @@ function App(): React.ReactElement {
               placeholder='New password'
             />
             <TextField
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               fullWidth
               margin='normal'
               {...register('retypePassword')}
