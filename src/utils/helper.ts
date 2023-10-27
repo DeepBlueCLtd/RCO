@@ -44,3 +44,10 @@ export const initialize = async (): Promise<void> => {
 export const getClientIp = (): string | undefined => {
   return clientIp
 }
+
+export const checkIfDateHasPassed = (dateString: string): boolean => {
+  const jsDate = new Date(dateString)
+  const dateTime = DateTime.fromJSDate(jsDate)
+  const currentDateTime = DateTime.local()
+  return currentDateTime > dateTime
+}

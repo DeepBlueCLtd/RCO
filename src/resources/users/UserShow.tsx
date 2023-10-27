@@ -14,19 +14,22 @@ import {
   TopToolbar,
   useGetList,
   useShowContext,
-  useUpdate
+  useUpdate,
+  useNotify,
+  DateInput
 } from 'react-admin'
 import { Chip, Typography, Button, Modal } from '@mui/material'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
-import { Warning } from '@mui/icons-material'
+import { KeyboardReturn, Warning } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
-import { checkIfUserIsActive } from '../../utils/helper'
+import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
+import { DateTime } from 'luxon'
 
 const style = {
   position: 'absolute',
@@ -43,11 +46,13 @@ const style = {
 interface Props {
   handleClose: () => void
   record?: User
+  setShowReturn?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const DepartOrganisation = ({
   handleClose,
-  record
+  record,
+  setShowReturn
 }: Props): React.ReactElement => {
   const [update] = useUpdate()
 
@@ -56,7 +61,11 @@ const DepartOrganisation = ({
       id: record?.id,
       previousData: record,
       data: { departedDate: nowDate() }
-    }).catch(console.log)
+    })
+      .then(() => {
+        if (setShowReturn !== undefined) setShowReturn(true)
+      })
+      .catch(console.log)
     handleClose()
   }
   return (
@@ -113,6 +122,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
   const [resetOpen, setResetopen] = useState(false)
+  const [showReturn, setShowReturn] = useState<boolean>(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -123,6 +133,16 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { id } = useParams()
+  const [update] = useUpdate<User>()
+  const notify = useNotify()
+
+  useEffect(() => {
+    setShowReturn(
+      record?.departedDate !== null &&
+        record?.departedDate !== undefined &&
+        checkIfDateHasPassed(record?.departedDate)
+    )
+  }, [record?.departedDate])
 
   const handleDepartUser = (): void => {
     setDepartOpen(true)
@@ -144,8 +164,28 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
       (record !== undefined && !checkIfUserIsActive(record)) ||
-      !hasWriteAccess
+      !hasWriteAccess ||
+      (record?.departedDate !== undefined &&
+        record?.departedDate !== null &&
+        checkIfDateHasPassed(record.departedDate))
     )
+  }
+
+  const handleUserReturn = (): void => {
+    if (record !== null && record !== undefined) {
+      update(constants.R_USERS, {
+        id: record.id,
+        previousData: record,
+        data: {
+          departedDate: DateTime.now().plus({ years: 10 }).toISO()
+        }
+      })
+        .then(() => {
+          setShowReturn(false)
+        })
+        .catch(console.log)
+      notify('User Returned')
+    }
   }
 
   useEffect(() => {
@@ -179,6 +219,14 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 sx={{ flex: 1 }}
               />
             </FlexBox>
+            <FlexBox>
+              <DateInput
+                disabled
+                source='departedDate'
+                label='Departed'
+                sx={{ flex: 1 }}
+              />
+            </FlexBox>
             <FlexBox justifyContent='left'>
               <Button
                 variant='outlined'
@@ -199,10 +247,24 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
             </FlexBox>
             <FlexBox justifyContent='left'>
               <Button
+                disabled={
+                  record?.departedDate !== undefined &&
+                  record.departedDate !== null &&
+                  checkIfDateHasPassed(record.departedDate)
+                }
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
                 onClick={handleResetPassowrd}>
                 Reset Password
+              </Button>
+            </FlexBox>
+            <FlexBox justifyContent='left'>
+              <Button
+                disabled={!showReturn}
+                variant='outlined'
+                startIcon={<KeyboardReturn />}
+                onClick={handleUserReturn}>
+                Return to Organisation
               </Button>
             </FlexBox>
           </SimpleForm>
@@ -224,7 +286,11 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
       </FlexBox>
 
       <Modal open={departOpen} onClose={handleDepartClose}>
-        <DepartOrganisation handleClose={handleDepartClose} record={record} />
+        <DepartOrganisation
+          handleClose={handleDepartClose}
+          record={record}
+          setShowReturn={setShowReturn}
+        />
       </Modal>
 
       <Modal open={resetOpen} onClose={handleResetClose}>
@@ -236,7 +302,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
 
 export default function UserShow(): React.ReactElement {
   const [record, setRecord] = useState<User>()
-
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState(false)
   const [filteredData, setFilteredData] = useState<Audit[]>([])
