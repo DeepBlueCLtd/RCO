@@ -27,8 +27,8 @@ export default function Login(): React.ReactElement {
     const staffNumber = formData.get('staffNumber') as string
     const password = formData.get('password') as string
     login({ staffNumber, password })
-      .catch(() => {
-        notify('Invalid staff-ID or password', { type: 'error' })
+      .catch((err) => {
+        notify(err.message ?? 'Invalid staff-ID or password', { type: 'error' })
       })
       .then(() => {
         const storageEvent = new StorageEvent('storage', {
