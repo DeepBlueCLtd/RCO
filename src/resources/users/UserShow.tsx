@@ -115,16 +115,13 @@ const ResetPassword = ({ handleClose, record }: Props): React.ReactElement => {
 
 interface UserShowCompType {
   setRecord: React.Dispatch<React.SetStateAction<User | undefined>>
-  setShowReturn: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const UserShowComp = ({
-  setRecord,
-  setShowReturn
-}: UserShowCompType): React.ReactElement => {
+const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
   const [resetOpen, setResetopen] = useState(false)
+  const [showReturn, setShowReturn] = useState<boolean>(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -135,6 +132,16 @@ const UserShowComp = ({
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { id } = useParams()
+  const [update] = useUpdate<User>()
+  const notify = useNotify()
+
+  useEffect(() => {
+    setShowReturn(
+      record?.departedDate !== null &&
+        record?.departedDate !== undefined &&
+        checkIfDateHasPassed(record?.departedDate)
+    )
+  }, [record?.departedDate])
 
   const handleDepartUser = (): void => {
     setDepartOpen(true)
@@ -161,6 +168,23 @@ const UserShowComp = ({
         record?.departedDate !== null &&
         checkIfDateHasPassed(record.departedDate))
     )
+  }
+
+  const handleUserReturn = (): void => {
+    if (record !== null && record !== undefined) {
+      update(constants.R_USERS, {
+        id: record.id,
+        previousData: record,
+        data: {
+          departedDate: DateTime.now().plus({ years: 10 }).toISO()
+        }
+      })
+        .then(() => {
+          setShowReturn(false)
+        })
+        .catch(console.log)
+      notify('User Returned')
+    }
   }
 
   useEffect(() => {
@@ -225,6 +249,17 @@ const UserShowComp = ({
                 Reset Password
               </Button>
             </FlexBox>
+            <FlexBox>
+              <Button
+                disabled={!showReturn}
+                variant='outlined'
+                startIcon={<KeyboardReturn />}
+                sx={{ lineHeight: '1.5' }}
+                size='small'
+                onClick={handleUserReturn}>
+                Return to Organisation
+              </Button>
+            </FlexBox>
           </SimpleForm>
         </Box>
         <Box component='fieldset' style={{ padding: '0 15px' }}>
@@ -266,10 +301,6 @@ export default function UserShow(): React.ReactElement {
   const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
   const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
 
-  const [showReturn, setShowReturn] = useState<boolean>(false)
-  const [update] = useUpdate<User>()
-  const notify = useNotify()
-
   useEffect(() => {
     if (data != null)
       setFilteredData(
@@ -283,36 +314,11 @@ export default function UserShow(): React.ReactElement {
       )
   }, [data, record, isLoading])
 
-  useEffect(() => {
-    setShowReturn(
-      record?.departedDate !== null &&
-        record?.departedDate !== undefined &&
-        checkIfDateHasPassed(record?.departedDate)
-    )
-  }, [record?.departedDate])
-
   const handleOpen = (open: boolean): void => {
     setOpen(open)
   }
 
   if (isLoading) return <Loading />
-
-  const handleUserReturn = (): void => {
-    if (record !== null && record !== undefined) {
-      update(constants.R_USERS, {
-        id: record.id,
-        previousData: record,
-        data: {
-          departedDate: DateTime.now().plus({ years: 10 }).toISO()
-        }
-      })
-        .then(() => {
-          setShowReturn(false)
-        })
-        .catch(console.log)
-      notify('User Returned')
-    }
-  }
 
   return (
     <Show
@@ -326,19 +332,10 @@ export default function UserShow(): React.ReactElement {
                 handleOpen(true)
               }}
             />
-            {showReturn && (
-              <Button
-                startIcon={<KeyboardReturn />}
-                sx={{ lineHeight: '1.5' }}
-                size='small'
-                onClick={handleUserReturn}>
-                Return to Organisation
-              </Button>
-            )}
           </TopToolbar>
         )
       }>
-      <UserShowComp setRecord={setRecord} setShowReturn={setShowReturn} />
+      <UserShowComp setRecord={setRecord} />
       <ResourceHistoryModal
         // filter={filter}
         open={open}
