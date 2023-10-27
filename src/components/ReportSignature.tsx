@@ -1,10 +1,9 @@
-import { type ListProps, Count } from 'react-admin'
+import { type ListProps } from 'react-admin'
 import React, { type ReactElement } from 'react'
 import { Box, Typography } from '@mui/material'
-import * as constants from '../constants'
 import FlexBox from './FlexBox'
 
-type Props = PartialBy<ListProps, 'children'> & { id: number }
+type Props = PartialBy<ListProps, 'children'>
 
 const style = { fontSize: '12px' }
 
@@ -29,21 +28,11 @@ const sx = {
 }
 
 export default function ReportSignature(props: Props): ReactElement {
-  const { id } = props
-
   return (
     <FlexBox columnGap={0} alignItems='start'>
       <Box sx={sx}>
         <Typography {...style}>
-          The{' '}
-          {
-            <Count
-              resource={constants.R_ITEMS}
-              {...style}
-              filter={{ loanedTo: id }}
-            />
-          }{' '}
-          items listed above have been 100% mustered by:
+          The {props.children} items listed above have been 100% mustered by:
         </Typography>
         <SignatureDetails />
       </Box>
