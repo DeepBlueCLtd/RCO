@@ -104,6 +104,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
   const { selectedIds } = useListContext()
   const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
+
   useEffect(() => {
     dataProvider
       .getList<IntegerReferenceItem>(constants.R_VAULT_LOCATION, {
@@ -127,6 +128,12 @@ export default function VaultLocationReport(props: Props): ReactElement {
       <Printable open={open} onClose={handleOpen(false)}>
         <>
           {selectedIds.map((id, index) => {
+            const filter = {
+              vaultLocation: id,
+              loanedTo: null,
+              dispatchedDate: null,
+              destructionDate: null
+            }
             return (
               <React.Fragment key={id}>
                 <Box padding={'20px'} key={id}>
@@ -149,7 +156,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     items)
                   </Typography>
                   <ItemsReport
-                    filter={{ vaultLocation: id, loanedTo: undefined }}
+                    filter={filter}
                     {...props}
                     footer={ProtectiveMarking}>
                     <TextField<Item> source='itemNumber' label='Item Number' />
@@ -173,10 +180,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     />
                   </ItemsReport>
                   <ReportSignature>
-                    <Count
-                      resource={constants.R_ITEMS}
-                      filter={{ vaultLocation: id, loanedTo: undefined }}
-                    />
+                    <Count resource={constants.R_ITEMS} filter={filter} />
                   </ReportSignature>
                 </Box>
                 {selectedIds.length !== index + 1 && (
