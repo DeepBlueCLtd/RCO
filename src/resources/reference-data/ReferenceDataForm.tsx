@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   BooleanInput,
+  NumberInput,
   SaveButton,
   SimpleForm,
   TextInput,
@@ -48,6 +49,13 @@ export default function ReferenceDataForm(
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
+      {name === constants.R_MEDIA_TYPE ? (
+        <NumberInput
+          source='itemSize'
+          sx={{ width: '100%', visibility: 'hidden' }}
+          defaultValue={10}
+        />
+      ) : null}
       {isEdit !== undefined && name !== undefined && !isNotActive(name) ? (
         <BooleanInput defaultValue={true} source='active' />
       ) : (

@@ -78,6 +78,9 @@ export default function ReferenceDataList({
           render={({ name }) => `${name}`}
           label='Name'
         />
+        {name === constants.R_MEDIA_TYPE ? (
+          <TextField source='itemSize' />
+        ) : null}
         {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}
         <FunctionField<IntegerReferenceItem>
           label='History'

@@ -51,7 +51,7 @@ interface RCOResource {
 type MediaType = RCOResource & {
   name: string
   active: boolean
-  itemSize: number | null
+  itemSize: number
 }
 
 /** a generic type, used for our assorted reference data lists. Once the

@@ -9,7 +9,12 @@ import {
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
 import React, { Suspense, useEffect, useState } from 'react'
-import { AllInbox, Groups } from '@mui/icons-material'
+import {
+  AllInbox,
+  Groups,
+  Visibility,
+  VisibilityOff
+} from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 import { useForm } from 'react-hook-form'
@@ -44,7 +49,14 @@ import dispatch from './resources/dispatch'
 import destruction from './resources/destruction'
 import ReferenceDataShow from './resources/reference-data/ReferenceDataShow'
 import localForage from 'localforage'
-import { Button, Modal, TextField, Typography } from '@mui/material'
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  Modal,
+  TextField,
+  Typography
+} from '@mui/material'
 import { Box } from '@mui/system'
 import { initialize } from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
@@ -100,6 +112,12 @@ function App(): React.ReactElement {
     resolver: yupResolver(schema)
   })
   const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
+
+  const [showPassword, setShowPassword] = React.useState(false)
+
+  const handleClickShowPassword = (): void => {
+    setShowPassword((show) => !show)
+  }
 
   const handleGetProvider = (): any => {
     if (loggingPref !== null) {
@@ -323,23 +341,42 @@ function App(): React.ReactElement {
                 </ul>
               </p>
             </Typography>
+
             <TextField
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               fullWidth
               margin='normal'
               {...register('newPassword')}
               error={Boolean(errors.newPassword)}
               helperText={errors.newPassword?.message}
               placeholder='New password'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={handleClickShowPassword} edge='end'>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <TextField
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               fullWidth
               margin='normal'
               {...register('retypePassword')}
               error={Boolean(errors.retypePassword)}
               helperText={errors.retypePassword?.message}
               placeholder='Re-type password'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={handleClickShowPassword} edge='end'>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
 
             <Button type='submit' variant='contained' sx={buttonPrimaryStyle}>
