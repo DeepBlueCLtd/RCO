@@ -15,7 +15,8 @@ import {
   useGetList,
   useShowContext,
   useUpdate,
-  useNotify
+  useNotify,
+  DateInput
 } from 'react-admin'
 import { Chip, Typography, Button, Modal } from '@mui/material'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
@@ -218,6 +219,14 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 sx={{ flex: 1 }}
               />
             </FlexBox>
+            <FlexBox>
+              <DateInput
+                disabled
+                source='departedDate'
+                label='Departed'
+                sx={{ flex: 1 }}
+              />
+            </FlexBox>
             <FlexBox justifyContent='left'>
               <Button
                 variant='outlined'
@@ -249,13 +258,11 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 Reset Password
               </Button>
             </FlexBox>
-            <FlexBox>
+            <FlexBox justifyContent='left'>
               <Button
                 disabled={!showReturn}
                 variant='outlined'
                 startIcon={<KeyboardReturn />}
-                sx={{ lineHeight: '1.5' }}
-                size='small'
                 onClick={handleUserReturn}>
                 Return to Organisation
               </Button>
