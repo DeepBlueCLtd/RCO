@@ -10,7 +10,7 @@ import {
 import { ValueField } from '../projects/ProjectShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type HistoryProps } from '../batches/BatchShow'
-import { type ResourceTypes } from '../../constants'
+import { R_MEDIA_TYPE, type ResourceTypes } from '../../constants'
 import { useState } from 'react'
 import useCanAccess from '../../hooks/useCanAccess'
 import HistoryButton from '../../components/HistoryButton'
@@ -85,6 +85,11 @@ export default function ReferenceDataShow({
           <ValueField label='name'>
             <TextField<VaultLocation> variant='h6' source='name' />
           </ValueField>
+          {name === R_MEDIA_TYPE ? (
+            <ValueField label='Item size'>
+              <TextField variant='h6' source='itemSize' />
+            </ValueField>
+          ) : null}
           <ValueField label='active'>
             <BooleanField<VaultLocation> source='active' looseValue />
           </ValueField>
