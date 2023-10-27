@@ -52,7 +52,7 @@ export default function ReferenceDataForm(
       {name === constants.R_MEDIA_TYPE ? (
         <NumberInput
           source='itemSize'
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', visibility: 'hidden' }}
           defaultValue={10}
         />
       ) : null}

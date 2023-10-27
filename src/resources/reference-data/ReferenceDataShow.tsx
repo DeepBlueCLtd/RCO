@@ -86,7 +86,7 @@ export default function ReferenceDataShow({
             <TextField<VaultLocation> variant='h6' source='name' />
           </ValueField>
           {name === R_MEDIA_TYPE ? (
-            <ValueField label='Item size'>
+            <ValueField label='Item size' sx={{ visibility: 'hidden' }}>
               <TextField variant='h6' source='itemSize' />
             </ValueField>
           ) : null}
