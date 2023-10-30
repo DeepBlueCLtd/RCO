@@ -32,7 +32,7 @@ const schema = yup.object({
         const startDate = this.parent.startDate
         return startDate
           ? value
-            ? dayjs(value).diff(startDate) > 0
+            ? dayjs(value).diff(startDate) >= 0
             : true
           : true
       }
@@ -84,7 +84,8 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     const dateTime = DateTime.local().set({
       hour: 0,
       minute: 0,
-      second: 0
+      second: 0,
+      millisecond: 0
     })
     return {
       startDate: dateTime.toString(),
