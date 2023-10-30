@@ -1,4 +1,11 @@
-import { Box, Button, Card, CardContent, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  type SxProps,
+  Typography
+} from '@mui/material'
 import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import {
   Datagrid,
@@ -18,6 +25,7 @@ import FlexBox from '../../components/FlexBox'
 
 type Props = PartialBy<ListProps, 'children'> & {
   footer?: React.FunctionComponent
+  headStyle?: Record<string, any>
 }
 
 interface Field {
@@ -85,8 +93,10 @@ const FieldWithReference = (
   return <FieldValue field={{ type: 'text', label, name }} value={value} />
 }
 
-export default function ItemsReport(props: Props): React.ReactElement {
-  const { footer, children, ...rest } = props
+export default function ItemsReport(
+  props: Props & SxProps
+): React.ReactElement {
+  const { footer, children, headStyle = {}, sx = {}, ...rest } = props
   return (
     <List
       resource={constants.R_ITEMS}
@@ -97,18 +107,26 @@ export default function ItemsReport(props: Props): React.ReactElement {
       hasCreate={false}
       disableSyncWithLocation
       {...rest}>
-      <Typography variant='h6' margin='16px'>
+      <Typography variant='h6' margin='16px' {...headStyle}>
         Items:
       </Typography>
 
-      <Datagrid bulkActionButtons={false}>
+      <Datagrid bulkActionButtons={false} sx={sx}>
         {children !== undefined ? (
           children
         ) : (
           <>
-            <TextField source='item_number' label='Item Number' />
-            <TextField source='mediaType' label='Media type' />
-            <SourceField source='vaultLocation' reference='vaultLocation' />
+            <TextField<Item> source='itemNumber' label='Item Number' />
+            <SourceField<Item>
+              link='show'
+              source='mediaType'
+              reference={constants.R_MEDIA_TYPE}
+              label='Media type'
+            />
+            <SourceField<Item>
+              source='vaultLocation'
+              reference='vaultLocation'
+            />
           </>
         )}
       </Datagrid>
@@ -143,7 +161,7 @@ const referenceFields: RefFieldType[] = [
     label: 'Protective Marking'
   },
   {
-    name: 'batchId',
+    name: 'batch',
     resource: constants.R_BATCHES,
     source: 'batchNumber',
     label: 'Batch'
@@ -172,7 +190,7 @@ const fields: FieldType[] = [
     type: 'text'
   },
   {
-    name: 'item_number',
+    name: 'itemNumber',
     label: 'Reference',
     type: 'text'
   }
@@ -232,7 +250,7 @@ export function ItemAssetReport(props: Props): React.ReactElement {
       <Printable open={open} onClose={handleOpen(false)}>
         <Box padding={'20px'}>
           <Typography variant='h4' textAlign='center' margin='10px'>
-            RCO Asset Report
+            VAL Asset Report
           </Typography>
           <Card>
             <CardContent>
@@ -255,10 +273,15 @@ export function ItemAssetReport(props: Props): React.ReactElement {
             </CardContent>
           </Card>
           <ItemsReport filter={filters} {...props}>
-            <TextField source='item_number' label='Item Number' />
-            <TextField source='mediaType' label='Media type' />
-            <TextField source='remarks' label='Remark' />
-            <TextField source='consecPages' label='Consec/Pages' />
+            <TextField<Item> source='itemNumber' label='Item Number' />
+            <SourceField<Item>
+              link='show'
+              source='mediaType'
+              reference={constants.R_MEDIA_TYPE}
+              label='Media type'
+            />{' '}
+            <TextField<Item> source='remarks' label='Remark' />
+            <TextField<Item> source='consecSheets' label='Consec/Sheets' />
           </ItemsReport>
         </Box>
       </Printable>

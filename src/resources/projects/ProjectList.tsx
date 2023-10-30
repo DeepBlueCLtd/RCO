@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  BooleanField,
   CreateButton,
   DatagridConfigurable,
   DateField,
@@ -15,11 +16,15 @@ import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
+import SourceField from '../../components/SourceField'
+import { ActiveFilter } from '../platforms/PlatformList'
 
-const omitColumns: string[] = ['createdAt']
+const omitColumns: string[] = ['createdAt', 'createdBy']
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
+  <ActiveFilter source='active' key='active' label='Active' />,
+  <ActiveFilter source='enduring' key='enduring' label='Enduring' />,
   <CreatedByMeFilter
     key='createdByMe'
     source='createdBy_eq'
@@ -30,7 +35,12 @@ const filters = [
     source='createdBy'
     reference={constants.R_USERS}
   />,
-  <DateFilter key='createdAt' source='createdAt' label='Created At' />
+  <DateFilter
+    key='createdAt'
+    source='createdAt'
+    label='Created At'
+    format='iso'
+  />
 ]
 
 export default function ProjectList(): React.ReactElement {
@@ -38,7 +48,9 @@ export default function ProjectList(): React.ReactElement {
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
       <FilterButton />
-      {hasAccess('reference-data', { write: true }) ? <CreateButton /> : null}
+      {hasAccess(constants.R_PROJECTS, { write: true }) ? (
+        <CreateButton />
+      ) : null}
       <SelectColumnsButton />
     </TopToolbar>
   )
@@ -50,11 +62,17 @@ export default function ProjectList(): React.ReactElement {
         omit={omitColumns}
         rowClick='show'
         bulkActionButtons={false}>
-        <TextField source='name' />
-        <TextField source='remarks' />
-        <TextField source='createdAt' label='Created' />
-        <DateField source='startDate' label='Start' />
-        <DateField source='endDate' label='End' />
+        <TextField<Project> source='name' />
+        <TextField<Project> source='remarks' />
+        <DateField<Project> source='startDate' label='Start' />
+        <DateField<Project> source='endDate' label='End' />
+        <BooleanField<Project> source='enduring' looseValue />
+        <BooleanField<Project> source='active' looseValue />
+        <TextField<Project> source='createdAt' label='Created at' />
+        <SourceField<Project>
+          source='createdBy'
+          reference={constants.R_USERS}
+        />
       </DatagridConfigurable>
     </List>
   )

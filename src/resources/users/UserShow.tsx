@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-import ItemList from '../items/ItemList'
+import ItemList, { BulkActions } from '../items/ItemList'
 import {
-  BooleanInput,
   DatagridConfigurable,
   type DatagridConfigurableProps,
   EditButton,
@@ -15,18 +14,22 @@ import {
   TopToolbar,
   useGetList,
   useShowContext,
-  useUpdate
+  useUpdate,
+  useNotify,
+  DateInput
 } from 'react-admin'
-import { Chip, Typography, Button, Modal, IconButton } from '@mui/material'
-import { decryptPassword } from '../../utils/encryption'
+import { Chip, Typography, Button, Modal } from '@mui/material'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
-import { Warning, History } from '@mui/icons-material'
+import { KeyboardReturn, Warning } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import * as constants from '../../constants'
 import { useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
+import HistoryButton from '../../components/HistoryButton'
+import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
+import { DateTime } from 'luxon'
 
 const style = {
   position: 'absolute',
@@ -42,12 +45,14 @@ const style = {
 
 interface Props {
   handleClose: () => void
-  record?: User & { salt: string }
+  record?: User
+  setShowReturn?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const DepartOrganisation = ({
   handleClose,
-  record
+  record,
+  setShowReturn
 }: Props): React.ReactElement => {
   const [update] = useUpdate()
 
@@ -55,8 +60,12 @@ const DepartOrganisation = ({
     update(R_USERS, {
       id: record?.id,
       previousData: record,
-      data: { active: false, departedDate: nowDate() }
-    }).catch(console.log)
+      data: { departedDate: nowDate() }
+    })
+      .then(() => {
+        if (setShowReturn !== undefined) setShowReturn(true)
+      })
+      .catch(console.log)
     handleClose()
   }
   return (
@@ -77,13 +86,43 @@ const DepartOrganisation = ({
   )
 }
 
+const ResetPassword = ({ handleClose, record }: Props): React.ReactElement => {
+  const [update] = useUpdate()
+
+  const handlePasswordReset = (): void => {
+    update(R_USERS, {
+      id: record?.id,
+      previousData: record,
+      data: { password: '' }
+    }).catch(console.log)
+    handleClose()
+  }
+  return (
+    <Box sx={style}>
+      <Typography variant='h6'>
+        Are you sure you want to reset the password for this user?
+      </Typography>
+      <FlexBox marginTop='20px' justifyContent='center'>
+        <Button variant='contained' onClick={handlePasswordReset}>
+          Confirm
+        </Button>
+        <Button variant='outlined' color='secondary' onClick={handleClose}>
+          Cancel
+        </Button>
+      </FlexBox>
+    </Box>
+  )
+}
+
 interface UserShowCompType {
   setRecord: React.Dispatch<React.SetStateAction<User | undefined>>
 }
 
 const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
-  const { record, isLoading } = useShowContext<User & { salt: string }>()
+  const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
+  const [resetOpen, setResetopen] = useState(false)
+  const [showReturn, setShowReturn] = useState<boolean>(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -94,6 +133,16 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { id } = useParams()
+  const [update] = useUpdate<User>()
+  const notify = useNotify()
+
+  useEffect(() => {
+    setShowReturn(
+      record?.departedDate !== null &&
+        record?.departedDate !== undefined &&
+        checkIfDateHasPassed(record?.departedDate)
+    )
+  }, [record?.departedDate])
 
   const handleDepartUser = (): void => {
     setDepartOpen(true)
@@ -103,12 +152,40 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
     setDepartOpen(false)
   }
 
+  const handleResetPassowrd = (): void => {
+    setResetopen(true)
+  }
+
+  const handleResetClose = (): void => {
+    setResetopen(false)
+  }
+
   const cannotDepart = (): boolean => {
     return (
       (loanedItems.data !== undefined && loanedItems.data?.length > 0) ||
-      record?.active === false ||
-      !hasWriteAccess
+      (record !== undefined && !checkIfUserIsActive(record)) ||
+      !hasWriteAccess ||
+      (record?.departedDate !== undefined &&
+        record?.departedDate !== null &&
+        checkIfDateHasPassed(record.departedDate))
     )
+  }
+
+  const handleUserReturn = (): void => {
+    if (record !== null && record !== undefined) {
+      update(constants.R_USERS, {
+        id: record.id,
+        previousData: record,
+        data: {
+          departedDate: DateTime.now().plus({ years: 10 }).toISO()
+        }
+      })
+        .then(() => {
+          setShowReturn(false)
+        })
+        .catch(console.log)
+      notify('User Returned')
+    }
   }
 
   useEffect(() => {
@@ -133,19 +210,8 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               variant='outlined'
               sx={{ width: '100%' }}
             />
-            <TextInput
-              disabled
-              source='password'
-              variant='outlined'
-              sx={{ width: '100%' }}
-              format={(password) =>
-                record !== undefined && decryptPassword(password, record.salt)
-              }
-            />
             <FlexBox>
-              {record?.roles.map((r, index) => (
-                <Chip label={r} key={index} />
-              ))}
+              <Chip label={record?.role} />
               <TextInput
                 disabled
                 source='staffNumber'
@@ -154,10 +220,14 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               />
             </FlexBox>
             <FlexBox>
-              <BooleanInput disabled source='adminRights' />
-              <BooleanInput disabled source='active' />
+              <DateInput
+                disabled
+                source='departedDate'
+                label='Departed'
+                sx={{ flex: 1 }}
+              />
             </FlexBox>
-            <FlexBox justifyContent='center'>
+            <FlexBox justifyContent='left'>
               <Button
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
@@ -174,6 +244,28 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                     </Typography>
                   </>
                 )}
+            </FlexBox>
+            <FlexBox justifyContent='left'>
+              <Button
+                disabled={
+                  record?.departedDate !== undefined &&
+                  record.departedDate !== null &&
+                  checkIfDateHasPassed(record.departedDate)
+                }
+                variant='outlined'
+                sx={{ marginBottom: 1 }}
+                onClick={handleResetPassowrd}>
+                Reset Password
+              </Button>
+            </FlexBox>
+            <FlexBox justifyContent='left'>
+              <Button
+                disabled={!showReturn}
+                variant='outlined'
+                startIcon={<KeyboardReturn />}
+                onClick={handleUserReturn}>
+                Return to Organisation
+              </Button>
             </FlexBox>
           </SimpleForm>
         </Box>
@@ -194,7 +286,15 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
       </FlexBox>
 
       <Modal open={departOpen} onClose={handleDepartClose}>
-        <DepartOrganisation handleClose={handleDepartClose} record={record} />
+        <DepartOrganisation
+          handleClose={handleDepartClose}
+          record={record}
+          setShowReturn={setShowReturn}
+        />
+      </Modal>
+
+      <Modal open={resetOpen} onClose={handleResetClose}>
+        <ResetPassword handleClose={handleResetClose} record={record} />
       </Modal>
     </>
   )
@@ -202,7 +302,6 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
 
 export default function UserShow(): React.ReactElement {
   const [record, setRecord] = useState<User>()
-
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState(false)
   const [filteredData, setFilteredData] = useState<Audit[]>([])
@@ -215,7 +314,7 @@ export default function UserShow(): React.ReactElement {
         data.filter((audit) => {
           return (
             audit.user === record?.id ||
-            audit.subject === record?.id ||
+            audit.subjectId === record?.id ||
             (audit.dataId === record?.id && audit.resource === R_USERS)
           )
         })
@@ -235,12 +334,11 @@ export default function UserShow(): React.ReactElement {
         hasDeleteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>
             <EditButton />
-            <IconButton
+            <HistoryButton
               onClick={() => {
                 handleOpen(true)
-              }}>
-              <History />
-            </IconButton>
+              }}
+            />
           </TopToolbar>
         )
       }>
@@ -262,14 +360,23 @@ function ItemListDataTable(
 ): React.ReactElement {
   return (
     <DatagridConfigurable
+      bulkActionButtons={<BulkActions />}
       rowClick='show'
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
-      <SourceField source='protectiveMarking' reference='protectiveMarking' />
-      <TextField source='remarks' />
+      <TextField<Item> source='itemNumber' label='Reference' />
+      <SourceField<Item>
+        link='show'
+        source='mediaType'
+        reference={constants.R_MEDIA_TYPE}
+        label='Media type'
+      />
+      <SourceField<Item>
+        source='protectiveMarking'
+        reference='protectiveMarking'
+      />
+      <TextField<Item> source='remarks' />
     </DatagridConfigurable>
   )
 }

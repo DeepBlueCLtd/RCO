@@ -1,4 +1,4 @@
-import { Show, TextField } from 'react-admin'
+import { DateField, Show, TextField } from 'react-admin'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import { Typography } from '@mui/material'
 import ItemsReport from '../items/ItemsReport'
@@ -14,9 +14,9 @@ const DispatchDetail = (): React.ReactElement => {
 
   return (
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
-      <FieldWithLabel
+      <FieldWithLabel<Dispatch>
         label='Serial No.'
-        source='reference'
+        source='name'
         labelStyles={{ fontSize: '1rem' }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
@@ -28,13 +28,20 @@ const DispatchDetail = (): React.ReactElement => {
           </span>
         </Typography>
       </Box>
-      <FieldWithLabel
+      <FieldWithLabel<Dispatch>
         label='Date'
         source='createdAt'
         labelStyles={{ fontSize: '1rem' }}
+        component={DateField}
+        locales='en-GB'
+        options={{
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
-      <FieldWithLabel
+      <FieldWithLabel<Dispatch>
         sourceField='fullAddress'
         label='To'
         source='toAddress'
@@ -61,10 +68,15 @@ const ItemListBox = (): React.ReactElement => {
         filter={{
           dispatchJob: id
         }}>
-        <TextField source='item_number' />
-        <TextField source='mediaType' />
-        <TextField source='consecPages' label='Consec/Sheets' />
-        <SourceField
+        <TextField<Item> source='itemNumber' />
+        <SourceField<Item>
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
+        <TextField<Item> source='consecSheets' label='Consec/Sheets' />
+        <SourceField<Item>
           reference={constants.R_PROTECTIVE_MARKING}
           source='protectiveMarking'
           label='Prot Mk'

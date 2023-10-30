@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
-  BooleanField,
   CreateButton,
   List,
   TextField,
   TopToolbar,
-  ArrayField,
-  SingleFieldList,
   useRecordContext,
-  useListContext,
-  useUpdate,
-  useNotify
+  SearchInput
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
-import { Article, KeyboardReturn } from '@mui/icons-material'
+import { Article } from '@mui/icons-material'
 import UserMusterList from './UserMusterList'
 import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -23,6 +18,8 @@ import DatagridConfigurableWithShow from '../../components/DatagridConfigurableW
 interface Props {
   name: string
 }
+
+const filters = [<SearchInput source='q' key='q' alwaysOn />]
 
 export default function UserList(props: Props): React.ReactElement {
   const { name } = props
@@ -45,36 +42,6 @@ export default function UserList(props: Props): React.ReactElement {
     setOpen(open)
   }
   const UserActions = (): React.ReactElement => {
-    const { selectedIds, data } = useListContext()
-    const [showReturn, setShowReturn] = useState<boolean>(false)
-    const [selectedUser, setSelectedUser] = useState<User[] | null>(null)
-    const [update] = useUpdate<User>()
-    const notify = useNotify()
-
-    useEffect(() => {
-      const users = data.filter((user: User) => selectedIds.includes(user.id))
-      setSelectedUser(users)
-      setShowReturn(
-        users.every((user: User) => user.departedDate !== undefined)
-      )
-    }, [selectedIds, data])
-
-    const handleUserReturn = (): void => {
-      if (selectedUser !== null) {
-        selectedUser.forEach((user) => {
-          update(constants.R_USERS, {
-            id: user.id,
-            previousData: user,
-            data: {
-              departedDate: undefined,
-              active: true
-            }
-          }).catch(console.log)
-        })
-        notify('User Returned')
-      }
-    }
-
     return (
       <>
         <Button
@@ -84,42 +51,31 @@ export default function UserList(props: Props): React.ReactElement {
           onClick={handleOpen(true)}>
           User Muster List
         </Button>
-        {showReturn && (
-          <Button
-            startIcon={<KeyboardReturn />}
-            sx={{ lineHeight: '1.5' }}
-            size='small'
-            onClick={handleUserReturn}>
-            Return
-          </Button>
-        )}
       </>
     )
   }
   return (
-    <List actions={<ListActions />} perPage={25} resource={cName}>
+    <List
+      actions={<ListActions />}
+      perPage={25}
+      resource={cName}
+      filters={filters}>
       <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
-        <TextField source='staffNumber' label='Staff number' />
-        <TextField source='name' />
-        <BooleanField source='adminRights' label='Admin Rights' />
-        <BooleanField source='active' label='Active User' />
-        <ArrayField source='roles'>
-          <SingleFieldList sx={{ columnGap: 1 }}>
-            <ChipField />
-          </SingleFieldList>
-        </ArrayField>
+        <TextField<User> source='staffNumber' label='Staff number' />
+        <TextField<User> source='name' />
+        <TextField label='Departure' source='departedDate' />
+        <ChipField />
       </DatagridConfigurableWithShow>
-      <UserMusterList open={open} onClose={handleOpen(false)} />
+      <UserMusterList<User> open={open} onClose={handleOpen(false)} />
     </List>
   )
 }
 
 function ChipField(): React.ReactElement {
   const record = useRecordContext<any>()
-
-  const role = rolesOptions.find(({ value }) => value === record)
+  const role = rolesOptions.find(({ value }) => value === record.role)
 
   if (typeof role === 'undefined') return <></>
 

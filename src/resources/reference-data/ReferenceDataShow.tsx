@@ -1,4 +1,4 @@
-import { Card, CardContent, IconButton, Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import {
   BooleanField,
   EditButton,
@@ -10,10 +10,10 @@ import {
 import { ValueField } from '../projects/ProjectShow'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type HistoryProps } from '../batches/BatchShow'
-import { type ResourceTypes } from '../../constants'
+import { R_MEDIA_TYPE, type ResourceTypes } from '../../constants'
 import { useState } from 'react'
-import { History } from '@mui/icons-material'
 import useCanAccess from '../../hooks/useCanAccess'
+import HistoryButton from '../../components/HistoryButton'
 
 const HistoryModal = ({
   handleOpen,
@@ -47,12 +47,11 @@ const Actions = ({
 
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <IconButton
+      <HistoryButton
         onClick={() => {
           handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+        }}
+      />
       {hasAccess(resource, { write: true }) ? <EditButton /> : null}
     </TopToolbar>
   )
@@ -81,13 +80,18 @@ export default function ReferenceDataShow({
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <ValueField label='Id'>
-            <TextField variant='h6' source='id' />
+            <TextField<VaultLocation> variant='h6' source='id' />
           </ValueField>
           <ValueField label='name'>
-            <TextField variant='h6' source='name' />
+            <TextField<VaultLocation> variant='h6' source='name' />
           </ValueField>
+          {name === R_MEDIA_TYPE ? (
+            <ValueField label='Item size' sx={{ visibility: 'hidden' }}>
+              <TextField variant='h6' source='itemSize' />
+            </ValueField>
+          ) : null}
           <ValueField label='active'>
-            <BooleanField source='active' />
+            <BooleanField<VaultLocation> source='active' looseValue />
           </ValueField>
         </CardContent>
       </Card>

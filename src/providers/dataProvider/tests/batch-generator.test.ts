@@ -2,7 +2,6 @@ import * as constants from '../../../constants'
 import { describe, it, beforeAll } from '@jest/globals'
 import { getDataProvider } from '..'
 import { type DataProvider } from 'react-admin'
-import { generateRandomDate } from '../../../utils/generateData'
 import { generateBatchId } from '../resource-callbacks/BatchLifeCycle'
 interface BatchType {
   data: Batch[]
@@ -11,7 +10,7 @@ interface BatchType {
 const batches: Record<string, BatchType> = {
   [constants.R_BATCHES]: { data: [] }
 }
-const year = '2025'
+const year = 2025
 
 const mockProvider = {
   async getList(resource: string, filter: any) {
@@ -50,29 +49,30 @@ jest.mock('..', () => {
 const generateBatch = async (
   id: number,
   provider: DataProvider,
-  year: string,
+  year: number,
   batchNumber: string | undefined,
   user: number
 ): Promise<void> => {
-  const [startDate, endDate] = generateRandomDate()
+  const isNull = (): boolean => {
+    if (Math.random() > 0.3) {
+      return false
+    }
+    return true
+  }
+
   const obj: Batch = {
     id,
     createdAt: Date.now().toString(),
-    startDate: startDate.toString(),
-    endDate: endDate.toString(),
-    batchNumber: `V${batchNumber ?? id}/${year}`,
+    batchNumber: `${batchNumber ?? id}/${year}`,
     yearOfReceipt: year,
-    department: id,
-    project: id,
-    platform: id,
-    organisation: id,
-    protectiveMarking: id,
-    catCode: id,
-    catHandle: id,
-    catCave: [id],
+    department: `${id}-department`,
+    project: isNull() ? null : id,
+    platform: isNull() ? null : id,
+    organisation: `${id}-organisation`,
     remarks: `remarks-batch-${year}`,
     receiptNotes: `Reference-${id}`,
-    createdBy: user
+    createdBy: user,
+    vault: Math.random() > 0.5 ? 'VAULT' : 'LEGACY'
   }
 
   await provider.create(constants.R_BATCHES, { data: { ...obj } })
@@ -84,7 +84,7 @@ describe('generateBatchId', () => {
   let id: number
 
   beforeAll(async () => {
-    provider = await getDataProvider(false)
+    provider = await getDataProvider(false, true)
   })
 
   beforeEach(() => {
@@ -116,21 +116,24 @@ describe('generateBatchId', () => {
     })
   })
 
-  describe('when an invalid value is provided for year (non-integer)', () => {
-    it('should throw a TypeError', async () => {
-      const year = 'aaa'
-      await expect(
-        async () => await generateBatchId(provider, year)
-      ).rejects.toThrow(TypeError)
-    })
-  })
+  // No longer required as the type of year is changed from string to number and the ts is enforcing the type
+
+  // describe('when an invalid value is provided for year (non-integer)', () => {
+  //   it('should throw a TypeError', async () => {
+  //     const year = 'aaa'
+  //     await expect(
+  //       async () => await generateBatchId(provider, year)
+  //     ).rejects.toThrow(TypeError)
+  //   })
+  // })
 })
 
 describe('generateBatchId for values greater than 9', () => {
   let provider: DataProvider
 
   beforeAll(async () => {
-    provider = await getDataProvider(false)
+    provider = await getDataProvider(false, false)
+    provider.clear(constants.R_BATCHES)
     for (let i = 0; i < 20; i++) {
       await generateBatch(
         i,
@@ -151,7 +154,7 @@ describe('generateBatchId for values greater than 9', () => {
       })
       for (let i = 0; i < batchData.data.length; i++) {
         expect(batchData.data[i].batchNumber).toBe(
-          `V${i.toLocaleString('en-US', {
+          `${i.toLocaleString('en-US', {
             useGrouping: false
           })}/${year}`
         )
@@ -181,7 +184,7 @@ describe('generateBatchId for values greater than 9', () => {
 
       for (let i = 20; i < batchData1.data.length; i++) {
         expect(batchData1.data[i].batchNumber).toBe(
-          `V${i.toLocaleString('en-US', {
+          `${i.toLocaleString('en-US', {
             useGrouping: false
           })}/${year}`
         )

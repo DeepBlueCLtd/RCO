@@ -1,11 +1,12 @@
-import { Box, type Theme, Typography } from '@mui/material'
+import { Box, type Theme, Typography, type SxProps } from '@mui/material'
 import React from 'react'
 import {
   Datagrid,
   type FilterPayload,
   List,
   ResourceContext,
-  TextField
+  TextField,
+  type DatagridProps
 } from 'react-admin'
 import { makeStyles } from '@mui/styles'
 import { Link } from 'react-router-dom'
@@ -48,36 +49,41 @@ interface Field<T> {
   source: keyof T
   reference?: string
   component?: React.FC<any>
+  label?: string
 }
 
-interface Props<T> {
+interface Props<T> extends DatagridProps {
   resource: string
   itemsCount?: number
   label?: string
   fields: Array<Field<T>>
   filter?: FilterPayload
   search?: string
+  rowStyle?: (data: T) => SxProps
 }
 
-function Column<T>(props: Field<T>): React.ReactElement {
-  const { source, reference, component } = props
+function Column<T extends Batch | User | Dispatch>(
+  props: Field<T>
+): React.ReactElement {
+  const { source, reference, component, label = '' } = props
   if (typeof component !== 'undefined') {
     return React.createElement(component, { source })
   }
 
   if (typeof reference !== 'undefined') {
     return (
-      <SourceField
+      <SourceField<T>
         link={false}
-        source={source as string}
+        source={source}
         reference={reference}
+        label={label}
       />
     )
   }
   return <TextField source={source as string} />
 }
 
-interface RecentCardProps {
+interface RecentCardProps extends DatagridProps {
   children: React.ReactElement
   label?: string
   resource?: string
@@ -121,8 +127,19 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
     </Box>
   )
 }
-export default function Recent<T>(props: Props<T>): React.ReactElement {
-  const { resource, itemsCount = 5, label, fields = [], filter, search } = props
+export default function Recent<T extends Batch | User | Dispatch>(
+  props: Props<T>
+): React.ReactElement {
+  const {
+    resource,
+    itemsCount = 10,
+    label,
+    fields = [],
+    filter,
+    search,
+    rowStyle,
+    rowClick
+  } = props
 
   return (
     <RecentCard label={label} resource={resource} search={search}>
@@ -134,13 +151,15 @@ export default function Recent<T>(props: Props<T>): React.ReactElement {
           actions={false}
           perPage={itemsCount}
           pagination={false}
-          sort={{ field: 'id', order: 'DESC' }}>
+          sort={{ field: 'id', order: 'DESC' }}
+          empty={<></>}>
           <Datagrid
-            header={() => null}
+            rowStyle={rowStyle}
+            /* include headers header={() => null} */
             bulkActionButtons={false}
-            rowClick='show'>
+            rowClick={rowClick ?? 'show'}>
             {fields.map((column, index) => (
-              <Column key={index} {...column} />
+              <Column<T> key={index} {...column} />
             ))}
           </Datagrid>
         </List>

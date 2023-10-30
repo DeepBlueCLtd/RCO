@@ -10,8 +10,12 @@ export const customMethods = (
   const audit = trackEvent(provider)
 
   return {
-    loanItems: async (items: Array<Item['id']>, holder: number) => {
-      await provider.updateMany<Item>(R_ITEMS, {
+    loanItems: async function (
+      this: DataProvider,
+      items: Array<Item['id']>,
+      holder: number
+    ) {
+      await this.updateMany<Item>(R_ITEMS, {
         ids: items,
         data: {
           loanedTo: holder,
@@ -20,30 +24,43 @@ export const customMethods = (
       })
 
       const {
-        data: { name, id }
-      } = await provider.getOne<User>(R_USERS, {
+        data: { id }
+      } = await this.getOne<User>(R_USERS, {
         id: holder
       })
 
       const promisees = items.map(async (item) => {
-        await audit({
-          type: AuditType.LOAN,
-          activityDetail: `Item loaned to ${name}.`,
+        // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
+        // TODO: so, on the user page history we will see a history of what they have loaned
+
+        const auditLoan = {
+          activityType: AuditType.LOAN,
+          activityDetail: 'Item loaned',
           resource: R_ITEMS,
           dataId: item,
-          subject: id
+          subjectId: id,
+          subjectResource: R_USERS,
+          securityRelated: null
+        }
+
+        await audit(auditLoan)
+        await audit({
+          ...auditLoan,
+          resource: R_USERS,
+          subjectId: item,
+          subjectResource: R_ITEMS,
+          dataId: holder
         })
       })
       await Promise.all(promisees)
     },
-    returnItems: async (items: Array<Item['id']>) => {
+    returnItems: async function (this: DataProvider, items: Array<Item['id']>) {
       const userById: Record<number, User> = {}
-
-      const { data: itemsData } = await provider.getMany<Item>(R_ITEMS, {
+      const { data: itemsData } = await this.getMany<Item>(R_ITEMS, {
         ids: items
       })
       const usersIds = itemsData.map((item) => item.loanedTo) as number[]
-      const { data: usersData } = await provider.getMany<User>(R_USERS, {
+      const { data: usersData } = await this.getMany<User>(R_USERS, {
         ids: usersIds
       })
 
@@ -54,22 +71,33 @@ export const customMethods = (
       const promisees = itemsData.map(async (item) => {
         const { loanedTo, id } = item
 
-        if (loanedTo !== undefined) {
-          const { name } = userById[loanedTo]
-          await audit({
+        if (loanedTo) {
+          // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
+          const loanReturnAudit = {
             dataId: id,
-            type: AuditType.RETURN,
-            activityDetail: `Item returned from ${name}`,
-            resource: R_ITEMS
+            activityType: AuditType.RETURN,
+            activityDetail: 'Item returned',
+            resource: R_ITEMS,
+            subjectId: loanedTo,
+            subjectResource: R_USERS,
+            securityRelated: null
+          }
+
+          await audit(loanReturnAudit)
+          await audit({
+            ...loanReturnAudit,
+            dataId: loanedTo,
+            resource: R_USERS,
+            subjectId: id,
+            subjectResource: R_ITEMS
           })
         }
       })
-
-      await provider.updateMany(R_ITEMS, {
+      await this.updateMany(R_ITEMS, {
         ids: items,
         data: {
-          loanedTo: undefined,
-          loanedDate: undefined
+          loanedTo: null,
+          loanedDate: null
         }
       })
 

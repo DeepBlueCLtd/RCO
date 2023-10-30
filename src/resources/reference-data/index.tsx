@@ -10,7 +10,7 @@ const RerferenceDataCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
     <Create redirect={`/${cName}`} resource={cName}>
-      <ReferenceDataForm />
+      <ReferenceDataForm name={cName} />
     </Create>
   )
 }

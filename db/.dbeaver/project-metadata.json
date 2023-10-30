@@ -1,9 +1,15 @@
 {
   "resources": {
+    "Scripts/Script.sql": {
+      "default-datasource": "sqlite_ee-18b6151046d-5acab2481e53bd11"
+    },
     "Scripts/business.sql": {
       "default-datasource": "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76"
     },
     "Scripts/full.sql": {
+      "default-datasource": "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76"
+    },
+    "Scripts/graphical.sql": {
       "default-datasource": "sqlite_jdbc-188bf16d667-6c38fb7c76f27f76"
     },
     "Scripts/reference.sql": {

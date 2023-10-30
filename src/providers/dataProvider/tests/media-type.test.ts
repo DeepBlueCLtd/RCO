@@ -23,7 +23,7 @@ describe('CRUD operation on Media Type Resource', () => {
     createResource: (
       dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
       resource: ResourceTypes
-    ) => Promise<ActiveReferenceItem>
+    ) => Promise<IntegerReferenceItem>
 
   beforeAll(async () => {
     const provider = await localForageDataProvider({
@@ -33,7 +33,7 @@ describe('CRUD operation on Media Type Resource', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
@@ -55,7 +55,7 @@ describe('CRUD operation on Media Type Resource', () => {
       R_MEDIA_TYPE
     )
 
-    await provider.update<ActiveReferenceItem>(R_MEDIA_TYPE, {
+    await provider.update<IntegerReferenceItem>(R_MEDIA_TYPE, {
       id: createdMediaType.id,
       previousData: createdMediaType,
       data: {
@@ -66,7 +66,7 @@ describe('CRUD operation on Media Type Resource', () => {
     })
 
     const fetchedMediaType = (
-      await provider.getOne<ActiveReferenceItem>(R_MEDIA_TYPE, {
+      await provider.getOne<IntegerReferenceItem>(R_MEDIA_TYPE, {
         id: createdMediaType.id
       })
     ).data

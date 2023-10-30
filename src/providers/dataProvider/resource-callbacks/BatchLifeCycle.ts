@@ -14,8 +14,9 @@ import {
 import { isNumber } from '../../../utils/number'
 
 const compareVersions = (v1: string, v2: string): number => {
-  const s1 = parseInt(v1.substring(1))
-  const s2 = parseInt(v2.substring(1))
+  const s1 = parseInt(v1)
+  const s2 = parseInt(v2)
+
   if (isNaN(s1) || isNaN(s2)) return NaN
   if (s1 < s2) {
     return -1
@@ -28,7 +29,7 @@ const compareVersions = (v1: string, v2: string): number => {
 
 export const generateBatchId = async (
   provider: DataProvider,
-  year: string
+  year: number
 ): Promise<string> => {
   if (!isNumber(year)) throw new TypeError('Year invalid')
   const batches = await provider.getList(R_BATCHES, {
@@ -44,13 +45,15 @@ export const generateBatchId = async (
   if (batches.data.length === 1) {
     return '1'
   }
-  const greatestBatch = batches.data.reduce((prev, current) =>
-    compareVersions(prev.batchNumber, current.batchNumber) === -1
+
+  const greatestBatch = batches.data.reduce((prev, current) => {
+    const previousBatchIndex = prev.batchNumber.split('/')[0]
+    const currentBatchIndex = current.batchNumber.split('/')[0]
+    return compareVersions(previousBatchIndex, currentBatchIndex) === -1
       ? current
       : prev
-  )
-
-  return (parseInt(greatestBatch.batchNumber.substring(1)) + 1).toLocaleString(
+  })
+  return (parseInt(greatestBatch.batchNumber.split('/')[0]) + 1).toLocaleString(
     'en-US',
     {
       useGrouping: false
@@ -73,9 +76,9 @@ const lifeCycles = (
     try {
       const { data } = record
       const { id, yearOfReceipt: year } = data
-      const yearVal: string = year
+      const yearVal = year
       const idVal: string = await generateBatchId(provider, year)
-      const batchNumber = `V${idVal}/${yearVal}`
+      const batchNumber = `${idVal}/${yearVal}`
       const withRef = await dataProvider.update<Batch>(R_BATCHES, {
         id,
         previousData: data,
@@ -84,9 +87,13 @@ const lifeCycles = (
         }
       })
       await audit({
-        type: AuditType.CREATE,
+        activityType: AuditType.CREATE,
         resource: R_BATCHES,
-        dataId: record.data.id
+        dataId: record.data.id,
+        subjectId: null,
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       return { ...record, data: withRef.data }
     } catch (error) {

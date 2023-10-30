@@ -9,19 +9,3 @@ export const decryptData = (ciphertext: string): string => {
   const bytes = CryptoJS.AES.decrypt(ciphertext, key)
   return bytes.toString(CryptoJS.enc.Utf8)
 }
-
-export const decryptPassword = (
-  hashedPassword: string,
-  salt: string
-): string => {
-  const password: string = hashedPassword
-  const decryptedData = decryptData(`${password}`)
-  const decryptedPassword = decryptedData.substring(
-    0,
-    decryptedData.length - salt.length
-  )
-  return decryptedPassword
-}
-
-export const generateSalt = (): string =>
-  CryptoJS.lib.WordArray.random(16).toString()

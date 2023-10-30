@@ -1,8 +1,6 @@
 import {
   Button,
   Count,
-  DatagridConfigurable,
-  type DatagridConfigurableProps,
   EditButton,
   Show,
   TopToolbar,
@@ -11,7 +9,6 @@ import {
   useNotify,
   useRecordContext,
   useUpdate,
-  TextField,
   useRefresh,
   useUpdateMany,
   useGetList
@@ -28,31 +25,47 @@ import DispatchForm from './DispatchForm'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
 import ItemList, { BulkActions } from '../items/ItemList'
-import SourceField from '../../components/SourceField'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
+import ResourceHistoryModal from '../../components/ResourceHistory'
+import HistoryButton from '../../components/HistoryButton'
+import { type AuditData } from '../../utils/audit'
 
-const ShowActions = (): React.ReactElement => {
+interface ShowActionsProps {
+  handleOpen: (open: DestructionModal) => void
+  showEdit: boolean
+}
+
+const ShowActions = (props: ShowActionsProps): React.ReactElement => {
+  const { handleOpen, showEdit } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
-  const dispatched = typeof record.dispatchedAt !== 'undefined'
+  const dispatched = typeof record?.dispatchedAt !== 'undefined'
 
   return (
     <>
       <TopToolbar>
-        <TopToolbarField<Dispatch> source='reference' />
-        {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
-          <EditButton />
-        )}
+        <FlexBox>
+          <TopToolbarField<Dispatch> source='name' />
+          {hasAccess(constants.R_DISPATCH, { write: true }) && !dispatched && (
+            <EditButton />
+          )}
+          <HistoryButton
+            onClick={() => {
+              handleOpen('history')
+            }}
+          />
+          {showEdit && <EditButton />}
+        </FlexBox>
       </TopToolbar>
     </>
   )
 }
 
 interface FooterProps {
-  handleOpen: (name: string) => void
+  handleOpen: (name: DestructionModal) => void
   dispatch: (data: UpdateParams) => Promise<void>
 }
 
@@ -65,12 +78,18 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const audit = useAudit()
   const refresh = useRefresh()
   const [update] = useUpdate()
+  const notify = useNotify()
 
   const dispatched: boolean =
-    !hasWritePermission || typeof record?.dispatchedAt !== 'undefined'
+    !hasWritePermission ||
+    (typeof record?.dispatchedAt !== 'undefined' &&
+      record?.dispatchedAt !== null &&
+      record?.dispatchedAt !== 'null')
 
   const receiptReceived: boolean =
-    !hasWritePermission || typeof record?.receiptReceived !== 'undefined'
+    !hasWritePermission ||
+    (typeof record?.receiptReceived !== 'undefined' &&
+      record?.receiptReceived !== null)
 
   const handleDispatch = (): void => {
     setOpen(true)
@@ -86,6 +105,20 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
   }
 
+  const sendReceiptReceived = async (): Promise<void> => {
+    await update(constants.R_DISPATCH, {
+      id: record.id,
+      data: {
+        receiptReceived: nowDate()
+      },
+      previousData: record
+    })
+    refresh()
+    notify('Receipt Received', {
+      type: 'success'
+    })
+  }
+
   const sendHastener = async (): Promise<void> => {
     await update(constants.R_DISPATCH, {
       id: record.id,
@@ -96,11 +129,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
     refresh()
     await audit({
-      type: AuditType.EDIT,
+      activityType: AuditType.EDIT,
       activityDetail: 'Hastener sent',
       securityRelated: false,
       resource: constants.R_DISPATCH,
-      dataId: record.id
+      dataId: record.id,
+      subjectId: null,
+      subjectResource: null
     })
   }
 
@@ -108,39 +143,45 @@ const Footer = (props: FooterProps): React.ReactElement => {
 
   return (
     <>
-      <FlexBox justifyContent='end' padding={2}>
-        {dispatched && (
+      <FlexBox flexDirection='column' gap='6px' marginBottom='20px'>
+        <FlexBox justifyContent='space-around'>
           <Button
             variant='outlined'
-            label='Print Hastener'
+            label='Print Receipt'
             onClick={() => {
-              handleOpen('hastener')
+              handleOpen('dispatch')
             }}
           />
-        )}
-        {dispatched && !receiptReceived && (
-          <Button
-            variant='outlined'
-            label='Record Hastener Sent'
-            onClick={sendHastener as any}
-          />
-        )}
-        {!dispatched && (
-          <>
+          {dispatched ? (
             <Button
               variant='outlined'
-              label='Print Receipt'
+              label='Print Hastener'
               onClick={() => {
-                handleOpen('dispatch')
+                handleOpen('hastener')
               }}
             />
+          ) : (
             <Button
               variant='contained'
               label='Dispatch'
-              disabled={dispatched}
+              disabled={!record.reportPrintedAt}
               onClick={handleDispatch}
             />
-          </>
+          )}
+        </FlexBox>
+        {dispatched && !receiptReceived && (
+          <FlexBox justifyContent='space-around'>
+            <Button
+              variant='outlined'
+              label='Record Hastener Sent'
+              onClick={sendHastener as any}
+            />
+            <Button
+              variant='outlined'
+              label='Receipt Note Received'
+              onClick={sendReceiptReceived as any}
+            />
+          </FlexBox>
         )}
       </FlexBox>
       <Confirm
@@ -162,8 +203,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   )
 }
 
+export type DestructionModal = 'history' | 'hastener' | 'dispatch' | ''
+
 export default function DispatchShow(): React.ReactElement {
-  const [open, setOpen] = useState<string>()
+  const [open, setOpen] = useState<DestructionModal>()
   const [update] = useUpdate()
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
@@ -172,27 +215,36 @@ export default function DispatchShow(): React.ReactElement {
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
     filter: { dispatchJob: id }
   })
+  const { data: record } = useGetOne(constants.R_DISPATCH, { id })
 
-  const handleOpen = (name: string): void => {
+  const handleOpen = (name: DestructionModal): void => {
     setOpen(name)
   }
 
   const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
-    const audiData = {
-      type: AuditType.EDIT,
-      activityDetail: 'add item to dispatch',
+    const audiData: AuditData = {
+      activityType: AuditType.SENT,
+      activityDetail: 'Dispatch Sent',
       securityRelated: false,
       resource: constants.R_ITEMS,
-      dataId: itemId
+      dataId: itemId,
+      subjectId: record.id,
+      subjectResource: constants.R_DISPATCH
     }
     await audit(audiData)
-    await audit({
-      ...audiData,
-      resource: constants.R_DISPATCH
-    })
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
+    const audiData: AuditData = {
+      activityType: AuditType.SENT,
+      activityDetail: 'Dispatch Sent',
+      securityRelated: false,
+      resource: constants.R_DISPATCH,
+      dataId: parseInt(id as string),
+      subjectId: id ? Number(id) : null,
+      subjectResource: constants.R_ITEMS
+    }
+    await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)
     await update(constants.R_DISPATCH, data)
     await updateMany(constants.R_ITEMS, {
@@ -205,18 +257,55 @@ export default function DispatchShow(): React.ReactElement {
     notify('Element dispatched', { type: 'success' })
   }
 
+  const saveReportPrinted = (): void => {
+    update(constants.R_DISPATCH, {
+      id: record.id,
+      previousData: record,
+      data: {
+        reportPrintedAt: nowDate()
+      }
+    })
+      .then(console.log)
+      .catch(console.error)
+  }
+
   return (
     <FlexBox alignItems={'flex-start'}>
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
         <legend>
           <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
-            Dispatch Job
+            Dispatch
           </Typography>
         </legend>
         <Box>
-          <DispatchReport open={open === 'dispatch'} handleOpen={handleOpen} />
+          <DispatchReport
+            onPrint={saveReportPrinted}
+            open={open === 'dispatch'}
+            handleOpen={handleOpen}
+          />
           <HastenerReport open={open === 'hastener'} handleOpen={handleOpen} />
-          <Show actions={<ShowActions />} component={'div'}>
+          <ResourceHistoryModal
+            filter={{
+              resource: constants.R_DISPATCH,
+              dataId: parseInt(id as string)
+            }}
+            open={open === 'history'}
+            close={() => {
+              handleOpen('')
+            }}
+          />
+          <Show
+            actions={
+              <ShowActions
+                handleOpen={handleOpen}
+                showEdit={
+                  record?.dispatchedAt === null ||
+                  record?.dispatchedAt === undefined ||
+                  record?.dispatchedAt === 'null'
+                }
+              />
+            }
+            component={'div'}>
             <DispatchForm show />
             <Footer handleOpen={handleOpen} dispatch={dispatch} />
           </Show>
@@ -246,6 +335,8 @@ function DispatchedItemList(
     return !permission
   }, [data])
 
+  const preferenceKey = `datagrid-${constants.R_DISPATCH}-${id}-items-list`
+
   const bulkActionButtons: false | React.ReactElement = destroyed ? (
     false
   ) : (
@@ -255,9 +346,9 @@ function DispatchedItemList(
         location: false,
         loan: false,
         dispatchRemove: true,
-        dispatch: false,
-        isReturn: dispatched
+        dispatch: false
       }}
+      preferenceKey={preferenceKey}
     />
   )
 
@@ -273,33 +364,12 @@ function DispatchedItemList(
       <ItemList
         storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
         filter={{ dispatchJob: id }}
-        filtersShown={['q', 'batchId', 'mediaType']}>
-        <ItemListDataTable
-          preferenceKey={`datagrid-${constants.R_DISPATCH}-${id}-items-list`}
-          bulkActionButtons={bulkActionButtons}
-        />
-      </ItemList>
-    </Box>
-  )
-}
-
-function ItemListDataTable(
-  props: DatagridConfigurableProps
-): React.ReactElement {
-  return (
-    <DatagridConfigurable
-      rowClick='show'
-      bulkActionButtons={props?.bulkActionButtons ?? <BulkActions />}
-      preferenceKey={props.preferenceKey}
-      omit={props?.omit}
-      {...props}>
-      <TextField source='item_number' label='Reference' />
-      <TextField source='mediaType' label='Media type' />
-      <TextField source='consecPages' label='Consec Serial' />
-      <SourceField
-        source='protectiveMarking'
-        reference={constants.R_PROTECTIVE_MARKING}
+        preferenceKey={preferenceKey}
+        bulkActionButtons={
+          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+        }
+        filtersShown={['q', 'batch', 'mediaType']}
       />
-    </DatagridConfigurable>
+    </Box>
   )
 }

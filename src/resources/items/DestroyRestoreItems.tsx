@@ -34,41 +34,34 @@ export default function DestroyRestoreItems(props: Props): React.ReactElement {
 
   const onRemove = async (): Promise<void> => {
     const promisees = data.map(async (item) => {
-      console.log(typeof item.destruction)
       const { id, destruction } = item
 
-      const {
-        data: { reference }
-      } = await dataProvider.getOne<Destruction>(constants.R_DESTRUCTION, {
-        id: destruction
-      })
-
       await audit({
-        type: AuditType.EDIT,
-        activityDetail: `Remove item from destruction ${reference}`,
+        activityType: AuditType.EDIT,
+        activityDetail: 'Remove item from destruction',
         securityRelated: false,
         resource: constants.R_ITEMS,
-        dataId: id
+        dataId: id,
+        subjectId: destruction,
+        subjectResource: constants.R_DESTRUCTION
       })
     })
     await Promise.all(promisees)
-
     await dataProvider.updateMany<Item>(constants.R_ITEMS, {
       ids,
       data: {
-        destruction: undefined,
-        destructionDate: undefined
+        destruction: null,
+        destructionDate: null
       }
     })
-
-    notify(`${ids.length} items removed from destruction job`)
+    notify(`${ids.length} items removed from destruction`)
     successCallback()
   }
 
   return (
     <Box sx={style}>
       <Typography variant='h6' marginY={2}>
-        Remove {ids.length} items from destruction job
+        Remove {ids.length} items from destruction
       </Typography>
       <FlexBox>
         <Button onClick={onRemove as any} variant='contained'>

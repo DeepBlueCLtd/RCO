@@ -21,8 +21,9 @@ import * as constants from '../constants'
 import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
+import React from 'react'
 
-type ReferenceItemById = Record<number, ActiveReferenceItem>
+type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
   name: string
   count: number
@@ -44,7 +45,7 @@ function ProtectiveMarking(): React.ReactElement {
       }
     })
     const { data: protectiveMarkings } =
-      await dataProvider.getMany<ActiveReferenceItem>(
+      await dataProvider.getMany<IntegerReferenceItem>(
         constants.R_PROTECTIVE_MARKING,
         {
           ids: Object.keys(items)
@@ -103,9 +104,10 @@ export default function VaultLocationReport(props: Props): ReactElement {
   const { selectedIds } = useListContext()
   const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
+
   useEffect(() => {
     dataProvider
-      .getList<ActiveReferenceItem>(constants.R_VAULT_LOCATION, {
+      .getList<IntegerReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: { id: selectedIds }
@@ -126,11 +128,17 @@ export default function VaultLocationReport(props: Props): ReactElement {
       <Printable open={open} onClose={handleOpen(false)}>
         <>
           {selectedIds.map((id, index) => {
+            const filter = {
+              vaultLocation: id,
+              loanedTo: null,
+              dispatchedDate: null,
+              destructionDate: null
+            }
             return (
-              <>
+              <React.Fragment key={id}>
                 <Box padding={'20px'} key={id}>
                   <Typography variant='h4' textAlign='center' margin='10px'>
-                    RCO - Location Muster List
+                    VAL - Location Muster List
                   </Typography>
                   <Typography variant='h5' textAlign='center' margin='10px'>
                     100% Muster List for {locations?.[id]?.name}, printed{' '}
@@ -148,24 +156,37 @@ export default function VaultLocationReport(props: Props): ReactElement {
                     items)
                   </Typography>
                   <ItemsReport
-                    filter={{ vaultLocation: id, loanedTo: undefined }}
+                    filter={filter}
                     {...props}
                     footer={ProtectiveMarking}>
-                    <TextField source='item_number' label='Item Number' />
-                    <TextField source='mediaType' label='Media type' />
-                    <TextField source='consecPages' label='Consec/Pages' />
-                    <SourceField
+                    <TextField<Item> source='itemNumber' label='Item Number' />
+                    <SourceField<Item>
+                      link='show'
+                      source='mediaType'
+                      reference={constants.R_MEDIA_TYPE}
+                      label='Media type'
+                    />
+                    <TextField<Item>
+                      source='consecSheets'
+                      label='Consec/Sheets'
+                    />
+                    <SourceField<Item>
                       source='protectiveMarking'
                       reference={constants.R_PROTECTIVE_MARKING}
                     />
-                    <TextField source='musterRemarks' label='Muster remarks' />
+                    <TextField<Item>
+                      source='musterRemarks'
+                      label='Muster remarks'
+                    />
                   </ItemsReport>
-                  <ReportSignature id={id} />
+                  <ReportSignature>
+                    <Count resource={constants.R_ITEMS} filter={filter} />
+                  </ReportSignature>
                 </Box>
                 {selectedIds.length !== index + 1 && (
                   <div className='pagebreak' />
                 )}
-              </>
+              </React.Fragment>
             )
           })}
         </>

@@ -24,6 +24,7 @@ import FlexBox from '../../components/FlexBox'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import React from 'react'
+import { type DestructionModal } from './DestructionShow'
 
 const ItemsCount = (): React.ReactElement => {
   const record = useRecordContext()
@@ -83,19 +84,26 @@ const ItemsListBox = (props: ItemsListBoxProps): React.ReactElement => {
         filter={{
           destruction: recordId
         }}>
-        <TextField source='item_number' />
-        <TextField source='mediaType' />
-        <TextField source='consecPages' label='Srl/Pages' />
-        <SourceField
+        <TextField<Item> source='itemNumber' />
+        <SourceField<Item>
+          link='show'
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          label='Media type'
+        />
+        <TextField<Item> source='consecSheets' label='Srl/Pages' />
+        <SourceField<Item>
           reference={constants.R_PROTECTIVE_MARKING}
           source='protectiveMarking'
         />
-        <ReferenceField
+        <ReferenceField<Item>
           label='Platform'
           reference={constants.R_BATCHES}
-          source='batchId'>
-          <ReferenceField reference={constants.R_PLATFORMS} source='platform'>
-            <TextField source='name' />
+          source='batch'>
+          <ReferenceField<Batch>
+            reference={constants.R_PLATFORMS}
+            source='platform'>
+            <TextField<Platform> source='name' />
           </ReferenceField>
         </ReferenceField>
       </ItemsReport>
@@ -242,7 +250,7 @@ const TablesData = (): React.ReactElement => {
           margin: '20px 0'
         }}>
         It is certified that the {total} above mentioned item(s) of{' '}
-        {record.reference} has been destroyed in the presence of:-
+        {record.name} has been destroyed in the presence of:-
       </Typography>
       <SignatureForms />
     </Box>
@@ -251,22 +259,23 @@ const TablesData = (): React.ReactElement => {
 
 interface Props {
   open: boolean
-  handleOpen: (open: boolean) => void
+  handleOpen: (open: DestructionModal) => void
+  onPrint?: () => void
 }
 
 export default function DestructionReport(props: Props): React.ReactElement {
-  const { open, handleOpen } = props
+  const { handleOpen, ...rest } = props
 
   return (
     <Printable
-      open={open}
+      {...rest}
       onClose={() => {
-        handleOpen(false)
+        handleOpen('')
       }}>
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>
           <Typography variant='h5' textAlign='center' margin='10px'>
-            <TextField source='reference' />
+            <TextField<Destruction> source='name' />
           </Typography>
           <Typography variant='h6' textAlign='center' margin='10px'>
             CERTIFICATE OF DESTRUCTION OF DOCUMENTS

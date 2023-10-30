@@ -3,10 +3,10 @@ import React, { type FC, useMemo } from 'react'
 import { type LinkToType, TextField, type TextFieldProps } from 'react-admin'
 import SourceField from './SourceField'
 
-export interface FieldWithLabelProps {
+export interface FieldWithLabelProps<T> {
   label: string
   reference?: string
-  source: string
+  source: keyof T
   component?: FC<any>
   separator?: string
   labelPosition?: 'left' | 'top'
@@ -17,7 +17,9 @@ export interface FieldWithLabelProps {
   [key: string]: any
 }
 
-const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
+const FieldWithLabel = <T extends Dispatch>(
+  props: FieldWithLabelProps<T>
+): React.ReactElement => {
   const {
     label,
     source,
@@ -38,7 +40,7 @@ const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
     }
     if (typeof reference === 'string' && reference !== '') {
       return (
-        <SourceField
+        <SourceField<T>
           source={source}
           reference={reference}
           sourceField={sourceField}
@@ -47,7 +49,7 @@ const FieldWithLabel = (props: FieldWithLabelProps): React.ReactElement => {
         />
       )
     }
-    return <TextField source={source} {...textProps} />
+    return <TextField source={source as string} {...textProps} />
   }, [])
 
   const labelWithSeparator: string = `${label}${separator}`

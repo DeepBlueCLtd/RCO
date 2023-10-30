@@ -47,9 +47,10 @@ export default function DispatchItems(props: Props): React.ReactElement {
 
   useEffect(() => {
     setLoading(true)
+    const nullFilter = process.env.MOCK ? 'null' : null
     dataProvider
       .getList<Dispatch>(constants.R_DISPATCH, {
-        filter: { dispatchedAt: undefined },
+        filter: { dispatchedAt: nullFilter },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,
@@ -66,30 +67,32 @@ export default function DispatchItems(props: Props): React.ReactElement {
       })
   }, [])
 
-  const onDispatch = async (): Promise<void> => {
-    const { reference } = items.find(
+  const onAddToDispatch = async (): Promise<void> => {
+    const { id: dispatchJobId } = items.find(
       (job) => job.id === parseInt(dispatchId as string)
     ) ?? {
-      reference: undefined
+      name: undefined
     }
     if (typeof dispatchId !== 'undefined') {
       const items = data
         .filter(({ id }) => ids.includes(id))
         .map(async (item) => {
-          const { item_number: itemNumber } = item
           const audiData = {
-            type: AuditType.EDIT,
-            activityDetail: `Add item to dispatch ${reference}`,
+            activityType: AuditType.EDIT,
+            activityDetail: 'Item added to dispatch',
             securityRelated: false,
             resource: constants.R_ITEMS,
-            dataId: item.id
+            dataId: item.id,
+            subjectId: dispatchJobId as number,
+            subjectResource: constants.R_DISPATCH
           }
           await audit(audiData)
           await audit({
             ...audiData,
-            activityDetail: `Add item ${itemNumber} to dispatch`,
             resource: constants.R_DISPATCH,
-            dataId: dispatchId as number
+            dataId: dispatchJobId as number,
+            subjectId: item.id,
+            subjectResource: constants.R_ITEMS
           })
           return item.id
         })
@@ -101,11 +104,11 @@ export default function DispatchItems(props: Props): React.ReactElement {
         }
       })
 
-      notify(`${items.length} items dispatched!`, { type: 'success' })
+      notify(`${items.length} items added to dispatch`, { type: 'success' })
       successCallback()
     }
   }
-  const label = 'Dispatch Jobs'
+  const label = 'Dispatches'
 
   if (typeof loading === 'boolean' && loading) return <></>
 
@@ -115,7 +118,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       <Box>
         {items.length === 0 ? (
           <Typography marginY={3}>
-            Please create the dispatch job before dispatching items
+            Please create the dispatch before dispatching items
           </Typography>
         ) : (
           <FormControl sx={{ width: '100%', margin: '25px 0' }}>
@@ -128,7 +131,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
               label={label}>
               {items.map((item) => (
                 <MenuItem key={item.id} value={String(item.id)}>
-                  {item.reference}-{item.remarks}
+                  {item.name}-{item.remarks}
                 </MenuItem>
               ))}
             </Select>
@@ -138,7 +141,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       <FlexBox>
         <Button
           disabled={items.length === 0}
-          onClick={onDispatch as any}
+          onClick={onAddToDispatch as any}
           variant='contained'>
           Dispatch
         </Button>

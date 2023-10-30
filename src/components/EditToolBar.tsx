@@ -1,12 +1,19 @@
 import { Box } from '@mui/system'
 import React from 'react'
-import { SaveButton, Toolbar } from 'react-admin'
+import { SaveButton, type SaveButtonProps, Toolbar } from 'react-admin'
 
-const EditToolBar = (): React.ReactElement => {
+const EditToolBar = (
+  props: SaveButtonProps & { isValid?: boolean }
+): React.ReactElement => {
+  const { isValid, ...saveButtonProps } = props
+
   return (
     <Toolbar>
       <Box display='flex' width='100%' justifyContent='space-between'>
-        <SaveButton />
+        <SaveButton
+          {...saveButtonProps}
+          disabled={saveButtonProps.onClick !== undefined && !isValid}
+        />
       </Box>
     </Toolbar>
   )

@@ -1,5 +1,5 @@
 import { Save } from '@mui/icons-material'
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as constants from '../../../constants'
@@ -13,29 +13,31 @@ import {
 import { useLocation, useParams } from 'react-router-dom'
 import { isNumber } from '../../../utils/number'
 import CoreForm from './CoreForm'
-import dayjs from 'dayjs'
 import ItemFormToolbar from './ItemFormToolbar'
 import { Box, InputAdornment, TextField, Typography } from '@mui/material'
+import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
 
 const schema = yup.object({
   mediaType: yup.number().required(),
-  startDate: yup.date().required(),
+  startDate: yup.date().optional().nullable(),
   endDate: yup
     .date()
-    .required()
+    .optional()
+    .nullable()
     .test(
       'endDate',
       'End date must be greater than start date',
       function (value) {
-        return dayjs(value).diff(this.parent.startDate) > 0
+        const startDate = this.parent.startDate
+        return startDate ? dayjs(value).diff(startDate) > 0 : true
       }
     ),
-  batchId: yup.number().required(),
+  batch: yup.number().required(),
   vaultLocation: yup.number().required(),
-  protectiveMarking: yup.number().required()
+  protectiveMarking: yup.number().required(),
+  editRemarks: yup.string()
 })
-
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const [batch, setBatch] = useState<Batch>()
   const location = useLocation()
@@ -44,10 +46,17 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   const { id } = useParams()
   const record = useRecordContext<Item>()
   const dataProvider = useDataProvider()
+  const [itemId, setItemId] = useState<Item['id']>()
+  const [openRemarks, setOpenRemarks] = useState(false)
+
+  const onSave = (event: React.SyntheticEvent): void => {
+    setOpenRemarks(true)
+    event.preventDefault()
+  }
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
-    const batch = searchParams.get('batch') ?? record.batchId
+    const batch = searchParams.get('batch') ?? record.batch
 
     const isValidNumber = isNumber(batch)
     if (isValidNumber) {
@@ -59,7 +68,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         .catch(console.log)
     } else {
       if (typeof id === 'undefined') {
-        redirect(createPath({ resource: constants.R_ITEMS, type: 'list' }))
+        redirect(createPath({ resource: constants.R_RICH_ITEMS, type: 'list' }))
       }
     }
   }, [])
@@ -80,7 +89,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
   }, [])
 
   const defaultValues: Partial<Item> = {
-    item_number: '',
+    itemNumber: '',
     loanedTo: undefined,
     startDate,
     endDate
@@ -114,11 +123,27 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
         <constants.ICON_ITEM /> {pageTitle}
       </Typography>
       <SimpleForm
+        resource={constants.R_ITEMS}
         warnWhenUnsavedChanges
         resolver={yupResolver(schema)}
         defaultValues={defaultValues}
-        toolbar={<ItemFormToolbar />}>
-        <CoreForm batchId={batch?.id} />
+        toolbar={
+          <ItemFormToolbar
+            onSuccess={({ id }: { id: number }) => {
+              setItemId(id)
+            }}
+            openRemarks={openRemarks}
+            setOpenRemarks={setOpenRemarks}
+            onSave={onSave}
+          />
+        }>
+        <CoreForm
+          isEdit={isEdit}
+          isRemarksOpen={openRemarks}
+          itemId={itemId}
+          setItemId={setItemId}
+          batch={batch?.id}
+        />
       </SimpleForm>
     </Box>
   )

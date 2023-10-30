@@ -1,15 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
-  SelectInput,
-  type SelectInputProps,
   SimpleForm,
   TextInput,
   useGetList,
-  type TextInputProps,
   ReferenceInput,
   AutocompleteInput,
-  DateInput
+  DateInput,
+  type SortPayload,
+  type AutocompleteInputProps
 } from 'react-admin'
 import * as yup from 'yup'
 import DatePicker from '../../components/DatePicker'
@@ -19,28 +18,17 @@ import * as constants from '../../constants'
 import { useLocation } from 'react-router-dom'
 import { isNumber } from '../../utils/number'
 import { Typography } from '@mui/material'
-import dayjs from 'dayjs'
-import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import { useConfigData } from '../../utils/useConfigData'
+import SourceInput from '../../components/SourceInput'
+import { DateTime } from 'luxon'
 
 const schema = yup.object({
-  yearOfReceipt: yup.string().required(),
-  department: yup.number().required(),
-  project: yup.number().required(),
-  platform: yup.number().required(),
-  organisation: yup.number().required(),
-  protectiveMarking: yup.number().required(),
-  startDate: yup.date().required(),
-  endDate: yup
-    .date()
-    .required()
-    .test(
-      'endDate',
-      'End date must be greater than start date',
-      function (value) {
-        return dayjs(value).diff(this.parent.startDate) > 0
-      }
-    )
+  yearOfReceipt: yup.number().required(),
+  department: yup.string().nullable(),
+  project: yup.number().nullable(),
+  platform: yup.number().nullable(),
+  organisation: yup.string().nullable(),
+  vault: yup.string()
 })
 
 const sx = { width: '100%' }
@@ -48,47 +36,95 @@ const sx = { width: '100%' }
 interface Props {
   reference: string
   source: string
-  inputProps?: SelectInputProps | TextInputProps
+  inputProps?: AutocompleteInputProps
   active?: boolean
+  show?: boolean
+  isEdit?: boolean
+  choices?: any[]
+  label?: string
+  defaultValue?: number | null
+  sort?: SortPayload
+  groupBy?: (option: any) => string
 }
 
-export const ConditionalReferenceInput = <T extends ActiveReferenceItem>(
+export const ConditionalReferenceInput = <T extends IntegerReferenceItem>(
   props: Props
 ): React.ReactElement | null => {
-  const { source, reference, inputProps = {}, active } = props
-  const filter = active !== undefined && active ? { active: true } : {}
-  const { data, isLoading } = useGetList<T>(reference, {
-    filter
-  })
-  const boolIsLoading: boolean = isLoading
-  if (boolIsLoading) return null
+  const {
+    source,
+    reference,
+    show = false,
+    isEdit,
+    label,
+    defaultValue,
+    sort,
+    groupBy,
+    inputProps
+  } = props
+  const { data, isLoading } = useGetList<T>(
+    reference,
+    !isEdit ? { filter: { active: true } } : undefined
+  )
+  if (isLoading) return null
   if (data === undefined) return null
-  const choices = data.map((d) => ({ name: d.name, id: d.id }))
 
-  return data?.length === 1 ? (
-    <SelectInput
+  return (
+    <ReferenceInput
+      reference={reference}
       source={source}
-      disabled
-      sx={sx}
-      defaultValue={data[0].id}
-      optionText='name'
-      choices={choices}
-      {...inputProps}
-    />
-  ) : (
-    <AutocompleteInput source={source} choices={choices} sx={sx} />
+      {...(!isEdit ? { filter: { active: true } } : null)}
+      sort={sort}>
+      <AutocompleteInput
+        label={label}
+        sx={sx}
+        defaultValue={defaultValue ?? (data.length === 1 ? data[0].id : null)}
+        optionText={(choice) =>
+          choice.active ? choice.name : `${choice.name} (Legacy)`
+        }
+        inputText={(choice) => choice.name}
+        disabled={data?.length === 1 || show}
+        groupBy={groupBy}
+        {...inputProps}
+      />
+    </ReferenceInput>
   )
 }
 
-const BatchForm = (props: FormProps): React.ReactElement => {
+const BatchForm = (
+  props: FormProps & { isShow?: boolean }
+): React.ReactElement | null => {
   const [projectId, setProjectId] = useState<number>()
   const location = useLocation()
-  const { isEdit } = props
+  const { isEdit, isShow } = props
   const configData = useConfigData()
+
+  // check that date is in the last two years
+  const compareDate = useMemo(
+    () => DateTime.now().minus({ years: 2 }).toISO(),
+    []
+  )
+  const { data: enduringProjects } = useGetList<Project>(constants.R_PROJECTS, {
+    pagination: { page: 1, perPage: 10 },
+    filter: {
+      enduring: true
+    }
+  })
+
+  const { data: nonEnduringProjects } = useGetList<Project>(
+    constants.R_PROJECTS,
+    {
+      pagination: { page: 1, perPage: 40 },
+      filter: {
+        enduring: false,
+        active: true,
+        endDate_gte: compareDate // only offer recent projects
+      },
+      sort: { field: 'id', order: 'DESC' }
+    }
+  )
 
   const defaultValues: Partial<Batch> = {
     batchNumber: '',
-    yearOfReceipt: '',
     remarks: ''
   }
 
@@ -101,90 +137,120 @@ const BatchForm = (props: FormProps): React.ReactElement => {
   }, [])
 
   const pageTitle = isEdit !== undefined ? 'Edit Batch' : 'Add new Batch'
+
+  if (enduringProjects === undefined || nonEnduringProjects === undefined)
+    return null
+
+  const ToolBar = (): React.ReactElement => {
+    return <EditToolBar type='button' />
+  }
+
+  const Created = (): React.ReactElement => {
+    const sx = {
+      width: '100%'
+    }
+    return (
+      <FlexBox>
+        <DateInput source='createdAt' sx={sx} disabled />
+        <SourceInput
+          source='createdBy'
+          reference={constants.R_USERS}
+          inputProps={{ sx, disabled: true }}
+        />
+      </FlexBox>
+    )
+  }
+
   return (
     <>
       <SimpleForm
-        toolbar={<EditToolBar />}
+        toolbar={!isShow && <ToolBar />}
         defaultValues={defaultValues}
         resolver={yupResolver(schema)}>
         <Typography variant='h5' fontWeight='bold'>
           <constants.ICON_BATCH /> {pageTitle}
         </Typography>
         <FlexBox>
-          <ReferenceInput
-            variant='outlined'
+          <ConditionalReferenceInput
             source='platform'
-            filter={isEdit === true ? {} : { active: true }}
-            reference={constants.R_PLATFORMS}>
-            <AutocompleteInput optionText='name' sx={sx} />
-          </ReferenceInput>
-          <ReferenceInput
-            variant='outlined'
+            reference={constants.R_PLATFORMS}
+            isEdit={isEdit}
+            show={isShow}
+          />
+
+          <ConditionalReferenceInput
             source='project'
-            reference={constants.R_PROJECTS}>
-            <AutocompleteInput
-              label={configData?.projectName}
-              optionText='name'
-              sx={sx}
-              defaultValue={projectId !== undefined ? projectId : null}
-            />
-          </ReferenceInput>
+            reference={constants.R_PROJECTS}
+            isEdit={isEdit}
+            show={isShow}
+            label={configData?.projectName}
+            defaultValue={projectId !== undefined ? projectId : null}
+            sort={{ field: 'enduring', order: 'DESC' }}
+            groupBy={(option) => (option.enduring ? 'Enduring' : 'Regular')}
+          />
         </FlexBox>
-        <FlexBox marginBottom='20px'>
+        <FlexBox marginBottom='20px' alignItems='center'>
           <DatePicker
             label='Year of receipt'
             source='yearOfReceipt'
             variant='outlined'
             format='YYYY'
-            dataPickerProps={{ views: ['year'] }}
+            dataPickerProps={{ views: ['year'], disabled: isShow }}
+            sx={sx}
           />
-        </FlexBox>
-        <FlexBox>
-          {isEdit === undefined || !isEdit ? (
-            <>
-              <ConditionalReferenceInput
-                source='organisation'
-                reference={constants.R_ORGANISATION}
-                active
-              />
-              <ConditionalReferenceInput
-                source='department'
-                reference={constants.R_DEPARTMENT}
-                active
-              />
-            </>
+          {(isEdit === undefined || !isEdit) &&
+          (!isShow || isShow === undefined) ? (
+            <ConditionalReferenceInput
+              source='vault'
+              reference={constants.R_VAULT}
+              inputProps={{ helperText: false }}
+              isEdit={isEdit}
+            />
           ) : (
-            <>
-              <ReferenceInput
-                variant='outlined'
-                source='organisation'
-                reference={constants.R_ORGANISATION}>
-                <AutocompleteInput optionText='name' sx={sx} />
-              </ReferenceInput>
-              <ReferenceInput
-                variant='outlined'
-                source='department'
-                reference={constants.R_DEPARTMENT}>
-                <AutocompleteInput optionText='name' sx={sx} />
-              </ReferenceInput>
-            </>
+            <ReferenceInput
+              variant='outlined'
+              source='vault'
+              reference={constants.R_VAULT}>
+              <AutocompleteInput
+                label='Vault'
+                helperText={false}
+                optionText='name'
+                sx={sx}
+                defaultValue={1}
+                disabled={isShow}
+              />
+            </ReferenceInput>
           )}
         </FlexBox>
-        <ProtectionBlockInputs
-          isEdit={isEdit}
-          markingSource='protectiveMarking'
-        />
         <FlexBox>
-          <DateInput
-            sx={sx}
-            source='startDate'
-            label='Start'
-            variant='outlined'
+          <ConditionalReferenceInput
+            source='organisation'
+            reference={constants.R_ORGANISATION}
+            isEdit={isEdit}
+            show={isShow}
           />
-          <DateInput sx={sx} source='endDate' variant='outlined' label='End' />
+          <ConditionalReferenceInput
+            source='department'
+            reference={constants.R_DEPARTMENT}
+            isEdit={isEdit}
+            show={isShow}
+          />
         </FlexBox>
-        <TextInput multiline source='remarks' variant='outlined' sx={sx} />
-        <TextInput multiline source='receiptNotes' variant='outlined' sx={sx} />
+        <Created />
+        <TextInput
+          multiline
+          source='remarks'
+          variant='outlined'
+          sx={sx}
+          disabled={isShow}
+        />
+        <TextInput
+          multiline
+          source='receiptNotes'
+          variant='outlined'
+          sx={sx}
+          disabled={isShow}
+        />
       </SimpleForm>
     </>
   )

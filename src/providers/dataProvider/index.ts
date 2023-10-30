@@ -1,4 +1,3 @@
-import localForageDataProvider from 'ra-data-local-forage'
 import {
   withLifecycleCallbacks,
   type DataProvider,
@@ -15,6 +14,9 @@ import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import DispatchLifeCycle from './resource-callbacks/DispatchLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
+import axios from 'axios'
+import queryString from 'query-string'
+import localForageDataProvider from 'ra-data-local-forage'
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -31,7 +33,7 @@ export const lifecycleCallbacks = (
     ReferenceItemLifeCycle(audit, constants.R_ORGANISATION),
     ReferenceItemLifeCycle(audit, constants.R_PROTECTIVE_MARKING),
     ReferenceItemLifeCycle(audit, constants.R_CAT_CODE),
-    ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLING),
+    ReferenceItemLifeCycle(audit, constants.R_CAT_HANDLE),
     ReferenceItemLifeCycle(audit, constants.R_CAT_CAVE),
     ReferenceItemLifeCycle(audit, constants.R_MEDIA_TYPE),
     ReferenceItemLifeCycle(audit, constants.R_DEPARTMENT),
@@ -56,12 +58,19 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
 }
 
 export const getDataProvider = async (
-  loggingEnabled: boolean
+  loggingEnabled: boolean,
+  MOCK: boolean
 ): Promise<CustomDataProvider & DataProvider<string>> => {
-  const provider = await localForageDataProvider({
-    prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
-    loggingEnabled
-  })
+  const provider = !MOCK
+    ? dataProvider(
+        process.env.NODE_ENV === 'development'
+          ? 'http://localhost:8000/api/tables'
+          : '/api/tables'
+      )
+    : await localForageDataProvider({
+        prefixLocalForageKey: constants.LOCAL_STORAGE_DB_KEY,
+        loggingEnabled
+      })
 
   const providerWithCustomMethods = {
     ...provider,
@@ -75,3 +84,217 @@ export const getDataProvider = async (
     lifecycleCallbacks(audit, providerWithCustomMethods)
   ) as CustomDataProvider & DataProvider
 }
+
+const operators = ['_neq', '_eq', '_lte', '_gte']
+const SEARCH_OPERATOR = 'q'
+const nullOperators = ['__null', '__notnull']
+
+export const dataProvider = (apiUrl: string): DataProvider => ({
+  getList: async (resource: string, params: any) => {
+    const { page, perPage } = params.pagination
+    let { field, order } = params.sort
+    field = field === 'id' ? 'id' : field
+    const ordering = order === 'ASC' ? `${field}` : `-${field}`
+    // converting boolean to 1 and 0 for filters
+    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
+      if (typeof params.filter[key] === 'boolean') {
+        acc[key] = params.filter[key] ? 1 : 0
+      } else {
+        acc[key] = params.filter[key]
+      }
+      return acc
+    }, {})
+
+    let query: any = {}
+
+    params.filter = Object.entries(params.filter).reduce(
+      (acc: any, [key, value]) => {
+        const foundOperator = operators.find((operator) =>
+          key.includes(operator)
+        )
+        if (value === null) {
+          if (foundOperator) {
+            if (foundOperator === operators[0]) {
+              const modifiedKey = key.replace(foundOperator, '')
+              acc[`${modifiedKey}${nullOperators[1]}`] = ''
+            } else if (foundOperator === operators[1]) {
+              const modifiedKey = key.replace(foundOperator, '')
+              acc[`${modifiedKey}${nullOperators[0]}`] = ''
+            }
+          } else {
+            acc[`${key}__null`] = ''
+          }
+        } else if (foundOperator) {
+          const modifiedKey = key.replace(
+            foundOperator,
+            `__${foundOperator.slice(1)}`
+          )
+          acc[modifiedKey] = value
+        } else if (key === SEARCH_OPERATOR) {
+          query._search = value
+        } else {
+          acc[key] = value
+        }
+
+        return acc
+      },
+      {}
+    )
+
+    const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
+    query = {
+      ...query,
+      _page: page,
+      _limit: perPage,
+      _ordering: ordering,
+      _filters: filter || undefined
+    }
+    if (resource === constants.R_CONFIG) {
+      query = {
+        _page: page,
+        _limit: perPage
+      }
+    }
+    const url = `${apiUrl}/${resource}/rows?${queryString.stringify({
+      ...query
+    })}`
+    return await axios.get(url).then((response) => {
+      const { data } = response.data
+
+      // dataprovider getList should return data with ids
+      if (resource === constants.R_CONFIG) {
+        data[0].id = 1
+      }
+
+      return { data, total: response.data.total }
+    })
+  },
+
+  getOne: async (resource: string, params: any) => {
+    const url = `${apiUrl}/${resource}/rows/${params.id}`
+
+    return await axios.get(url).then((response) => {
+      let { data } = response.data
+      data = data[0]
+
+      return { data }
+    })
+  },
+
+  getMany: async (resource: string, params: any) => {
+    const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
+    return await axios.get(url).then((response) => {
+      const { data } = response.data
+
+      return { data, total: response.data.total }
+    })
+  },
+
+  getManyReference: async (resource: string, params: any) => {
+    const { page, perPage } = params.pagination
+    const { field, order } = params.sort
+
+    const ordering = order === 'ASC' ? `${field}` : `-${field}`
+
+    // converting boolean to 1 and 0 for filters
+    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
+      if (typeof params.filter[key] === 'boolean') {
+        acc[key] = params.filter[key] ? 1 : 0
+      } else {
+        acc[key] = params.filter[key]
+      }
+      return acc
+    }, {})
+
+    // converting single score operators to double score operators for soul-cli compatibility
+    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
+      const foundOperator = operators.find((operator) => key.includes(operator))
+      if (foundOperator) {
+        const modifiedKey = key.replace(
+          foundOperator,
+          `__${foundOperator.slice(1)}`
+        )
+        acc[modifiedKey] = params.filter[key]
+      } else {
+        acc[key] = params.filter[key]
+      }
+
+      return acc
+    }, {})
+
+    const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
+    const query = {
+      _page: page,
+      _limit: perPage,
+      _ordering: field !== 'id' ? ordering : undefined,
+      _filters: filter ? `${filter},${params.target}:${params.id}` : undefined
+    }
+
+    const url = `${apiUrl}/${resource}/rows?${JSON.stringify(query)}`
+
+    return await axios.get(url).then((response) => {
+      const { data } = response.data
+
+      return { data, total: response.data.total }
+    })
+  },
+
+  create: async (resource: string, params: any) => {
+    const url = `${apiUrl}/${resource}/rows`
+
+    params.data = Object.keys(params.data).reduce((acc: any, key) => {
+      if (typeof params.data[key] === 'boolean') {
+        acc[key] = params.data[key] ? 1 : 0
+      } else {
+        acc[key] = params.data[key]
+      }
+      return acc
+    }, {})
+
+    return await axios.post(url, { fields: params.data }).then((response) => {
+      return {
+        data: { id: response.data.data.lastInsertRowid, ...params.data }
+      }
+    })
+  },
+
+  update: async (resource: string, params: any) => {
+    const url = `${apiUrl}/${resource}/rows/${params.id}`
+
+    // remove the id property
+    const { id, ...editData } = params.data
+
+    return await axios.put(url, { fields: editData }).then(() => {
+      return {
+        data: { id: params.id, ...params.data }
+      }
+    })
+  },
+
+  updateMany: async (resource: string, params: any) => {
+    const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
+
+    // remove the id property
+    const { id, ...editData } = params.data
+    return await axios.put(url, { fields: editData }).then(async () => {
+      return { data: params.ids }
+    })
+  },
+
+  delete: async (resource: string, params: any) => {
+    const url = `${apiUrl}/${resource}/rows/${params.id}`
+
+    return await axios.delete(url).then(() => {
+      return { data: params.id }
+    })
+  },
+
+  deleteMany: async (resource: string, params: any) => {
+    const ids = params.ids.toString()
+    const url = `${apiUrl}/${resource}/rows/${ids}`
+
+    return await axios.delete(url).then(() => {
+      return { data: params.ids }
+    })
+  }
+})

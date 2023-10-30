@@ -1,4 +1,4 @@
-import { Chip, IconButton } from '@mui/material'
+import { Chip } from '@mui/material'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   BooleanField,
@@ -9,24 +9,48 @@ import {
   TopToolbar,
   FilterButton,
   useListContext,
-  FunctionField
+  FunctionField,
+  SearchInput
 } from 'react-admin'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
 import ResourceHistoryModal from '../../components/ResourceHistory'
-import { History } from '@mui/icons-material'
+import HistoryButton from '../../components/HistoryButton'
 
 interface Props {
   name: string
 }
+
+interface ActiveFilterType {
+  label: string
+  source: string
+  val?: boolean
+}
+
+export const ActiveFilter = ({
+  label,
+  source,
+  val = true
+}: ActiveFilterType): React.ReactElement => {
+  const { setFilters, displayedFilters, filterValues } = useListContext()
+  useEffect(() => {
+    setFilters({ ...filterValues, [source]: val }, displayedFilters)
+  }, [])
+  return <Chip sx={{ marginBottom: 1 }} label={label} />
+}
+
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <ActiveFilter source='active' key='platform' label='Active Platforms' />
+]
 
 export default function PlatformList(props: Props): React.ReactElement {
   const { name } = props
   const cName: string = name
   const basePath: string = `/${cName}`
   const { hasAccess } = useCanAccess()
-  const [open, setOpen] = useState<boolean>()
-  const [record, setRecord] = useState<ActiveReferenceItem>()
+  const [open, setOpen] = useState<boolean>(false)
+  const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const filter = useMemo(
     () =>
@@ -48,26 +72,6 @@ export default function PlatformList(props: Props): React.ReactElement {
     </TopToolbar>
   )
 
-  interface ActiveFilterType {
-    label: string
-    source: string
-  }
-
-  const ActiveFilter = ({
-    label,
-    source
-  }: ActiveFilterType): React.ReactElement => {
-    const { setFilters, displayedFilters, filterValues } = useListContext()
-    useEffect(() => {
-      setFilters({ ...filterValues, [source]: true }, displayedFilters)
-    }, [])
-    return <Chip sx={{ marginBottom: 1 }} label={label} />
-  }
-
-  const filters = [
-    <ActiveFilter source='active' key='platform' label='Active Platforms' />
-  ]
-
   return (
     <List
       actions={<ListActions />}
@@ -75,21 +79,24 @@ export default function PlatformList(props: Props): React.ReactElement {
       filters={filters}
       resource='platform'>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='id' label='ID' />
-        <TextField source='name' />
-        <BooleanField source='active' label='Active Platform' />
-        <FunctionField
+        <TextField<Platform> source='id' label='ID' />
+        <TextField<Platform> source='name' />
+        <BooleanField<Platform>
+          source='active'
+          label='Active Platform'
+          looseValue
+        />
+        <FunctionField<Platform>
           label='History'
-          render={(record: ActiveReferenceItem) => {
+          render={(record) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   handleOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />

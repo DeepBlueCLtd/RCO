@@ -7,16 +7,26 @@ import {
   List,
   TopToolbar,
   BooleanField,
-  TextField
+  TextField,
+  FilterButton,
+  SearchInput
 } from 'react-admin'
 import useCanAccess from '../hooks/useCanAccess'
-import { IconButton } from '@mui/material'
-import { History } from '@mui/icons-material'
 import ResourceHistoryModal from './ResourceHistory'
 import * as constants from '../constants'
+import HistoryButton from './HistoryButton'
+import { ActiveFilter } from '../resources/platforms/PlatformList'
 
 interface PropType {
   name: string
+}
+
+const getFilters = (cName: string): React.ReactElement[] => {
+  const filters = [<ActiveFilter source='active' key='active' label='Active' />]
+  if (cName === constants.R_MEDIA_TYPE) {
+    filters.push(<SearchInput source='q' key='q' alwaysOn />)
+  }
+  return filters
 }
 
 export default function ReferenceDataList({
@@ -24,7 +34,7 @@ export default function ReferenceDataList({
 }: PropType): React.ReactElement {
   const cName: string = name
   const [open, setOpen] = useState<boolean>()
-  const [record, setRecord] = useState<ActiveReferenceItem>()
+  const [record, setRecord] = useState<IntegerReferenceItem>()
 
   const { hasAccess } = useCanAccess()
 
@@ -33,6 +43,7 @@ export default function ReferenceDataList({
       {hasAccess('reference-data', { write: true }) ? (
         <CreateButton to={'create'} />
       ) : null}
+      <FilterButton />
     </TopToolbar>
   )
 
@@ -51,7 +62,10 @@ export default function ReferenceDataList({
   const notShowActive = (name: string): boolean => name === constants.R_AUDIT
 
   return (
-    <List actions={<ListActions />} resource={cName}>
+    <List
+      actions={<ListActions />}
+      resource={cName}
+      filters={getFilters(cName)}>
       <Datagrid
         bulkActionButtons={false}
         rowClick={(id: Identifier) => {
@@ -59,24 +73,26 @@ export default function ReferenceDataList({
           return `/${cName}/${cID}/show`
         }}>
         <TextField source='id' label='ID' />
-        <FunctionField
+        <FunctionField<IntegerReferenceItem>
           style={{ cursor: 'pointer' }}
-          render={({ name }: any) => `${name as string}`}
+          render={({ name }) => `${name}`}
           label='Name'
         />
-        {notShowActive(name) ? '' : <BooleanField source='active' />}
-        <FunctionField
+        {name === constants.R_MEDIA_TYPE ? (
+          <TextField source='itemSize' />
+        ) : null}
+        {notShowActive(name) ? '' : <BooleanField source='active' looseValue />}
+        <FunctionField<IntegerReferenceItem>
           label='History'
-          render={(record: ActiveReferenceItem) => {
+          render={(record) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   handleOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />

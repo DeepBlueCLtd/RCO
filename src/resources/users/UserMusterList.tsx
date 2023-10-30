@@ -5,77 +5,61 @@ import {
   TextField,
   useListContext,
   Show,
-  BooleanField,
   Count,
-  ReferenceField,
   useRecordContext,
   DateField
 } from 'react-admin'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
-import FieldWithLabel from '../../components/FieldWithLabel'
 import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
-import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   open: boolean
   onClose?: () => void
 }
 
-interface CompositeFieldProps {
-  label: string
-}
-
-const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
-  const { label } = props
-  return (
-    <ReferenceField
-      label={label}
-      source='batchId'
-      reference={constants.R_ITEMS}>
-      <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField source='id' reference={constants.R_PROJECTS} />,{' '}
-        <SourceField source='id' reference={constants.R_PLATFORMS} />
-      </ReferenceField>
-    </ReferenceField>
-  )
-}
+const style = { fontSize: '12px' }
 
 const Title = (): React.ReactElement => {
   const record = useRecordContext()
   return (
-    <Typography variant='h4' textAlign='center' margin='10px'>
-      RCO - Loans to {record.name}
+    <Typography fontSize='18px' variant='h4' textAlign='center' margin='10px'>
+      VAL - Loans to {record.name}
     </Typography>
   )
 }
 
-export default function UserMusterList(props: Props): React.ReactElement {
+export default function UserMusterList<T extends User>(
+  props: Props
+): React.ReactElement {
   const { open, onClose } = props
   const { selectedIds } = useListContext()
   const userIds: number[] = selectedIds
-  const configData = useConfigData()
 
   return (
     <Printable open={open} onClose={onClose}>
       <>
         {userIds.map((userId, index) => {
           return (
-            <>
+            <React.Fragment key={userId}>
               <Box padding={'20px'} key={index}>
-                <Show
+                <Show<T>
                   component={'div'}
                   id={userId}
                   resource={constants.R_USERS}
                   actions={false}>
                   <Title />
-                  <Typography variant='h5' textAlign='center' margin='10px'>
+                  <Typography
+                    fontSize='16px'
+                    variant='h5'
+                    textAlign='center'
+                    margin='10px'>
                     {
                       <Count
                         resource={constants.R_ITEMS}
-                        sx={{ fontSize: '1.5rem' }}
+                        sx={{ fontSize: '16px' }}
                         filter={{ loanedTo: userId }}
                       />
                     }{' '}
@@ -83,35 +67,56 @@ export default function UserMusterList(props: Props): React.ReactElement {
                     {DateTime.now().toFormat(constants.DATETIME_FORMAT)}
                   </Typography>
                 </Show>
-                <Show id={userId} resource={constants.R_USERS} actions={false}>
-                  <Box padding={'16px'}>
-                    <FieldWithLabel label='Name' source='name' />
-                    <FieldWithLabel
-                      source='adminRights'
-                      label='Admin Rights'
-                      component={BooleanField}
-                    />
-                  </Box>
-                </Show>
-                <ItemsReport filter={{ loanedTo: userId }}>
-                  <TextField source='item_number' label='Item Number' />
-                  <TextField source='mediaType' label='Media type' />
-                  <SourceField
+                <ItemsReport
+                  filter={{ loanedTo: userId }}
+                  sx={{
+                    '.MuiTableCell-head span': {
+                      fontSize: '12px'
+                    }
+                  }}
+                  headStyle={{
+                    fontSize: '12px'
+                  }}>
+                  <TextField<Item>
+                    {...style}
+                    source='itemNumber'
+                    label='Item Number'
+                  />
+                  <SourceField<Item>
+                    textProps={{ ...style }}
+                    link='show'
+                    source='mediaType'
+                    reference={constants.R_MEDIA_TYPE}
+                    label='Media type'
+                  />
+                  <SourceField<Item>
+                    textProps={{ ...style }}
                     source='protectiveMarking'
                     reference={constants.R_PROTECTIVE_MARKING}
                   />
-                  <CompositeField
-                    label={`${configData?.projectName} & Platform`}
+                  <DateField<Item>
+                    {...style}
+                    source='loanedDate'
+                    label='Loaned Date'
                   />
-                  <DateField source='loanedDate' label='Loaned Date' />
-                  <TextField source='consecPages' label='Consec/Pages' />
+                  <TextField<Item>
+                    {...style}
+                    source='consecSheets'
+                    label='Consec/Sheets'
+                  />
                 </ItemsReport>
-                <ReportSignature id={userId} />
+                <ReportSignature>
+                  <Count
+                    resource={constants.R_ITEMS}
+                    {...style}
+                    filter={{ loanedTo: userId }}
+                  />
+                </ReportSignature>
               </Box>
               {selectedIds.length !== index + 1 && (
                 <div className='pagebreak' />
               )}
-            </>
+            </React.Fragment>
           )
         })}
       </>

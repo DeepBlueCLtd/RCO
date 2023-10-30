@@ -16,21 +16,23 @@ const resourceRoutes: ResourceRoutes = {
 }
 
 describe('protected routes ', () => {
-  it('routes for unauthorized user', () => {
-    const permissions = getPermissionsByRoles(['user'])
-    const { create, list, show, edit } = protectedRoutes(
-      permissions,
-      constants.R_ITEMS,
-      resourceRoutes
-    )
-    expect(list).toBeDefined()
-    expect(show).toBeDefined()
-    expect(create).toBeUndefined()
-    expect(edit).toBeUndefined()
-  })
+  // no longer required as unauthorized users can't see any data
+
+  // it('routes for unauthorized user', () => {
+  //   const permissions = getPermissionsByRoles('user')
+  //   const { create, list, show, edit } = protectedRoutes(
+  //     permissions,
+  //     constants.R_ITEMS,
+  //     resourceRoutes
+  //   )
+  //   expect(list).toBeDefined()
+  //   expect(show).toBeDefined()
+  //   expect(create).toBeUndefined()
+  //   expect(edit).toBeUndefined()
+  // })
 
   it('routes for authorized user', () => {
-    const permissions = getPermissionsByRoles(['rco-user'])
+    const permissions = getPermissionsByRoles('rco-user')
     const { create, list, show, edit } = protectedRoutes(
       permissions,
       constants.R_ITEMS,
@@ -43,7 +45,7 @@ describe('protected routes ', () => {
   })
 
   it('can access resource', () => {
-    const permissions = getPermissionsByRoles(['rco-user'])
+    const permissions = getPermissionsByRoles('rco-user')
     const hasReadPermission = canAccess(permissions, constants.R_ITEMS, {
       read: true
     })
@@ -57,22 +59,12 @@ describe('protected routes ', () => {
   })
 
   it('power user can access all resource', () => {
-    const permissions = getPermissionsByRoles(['rco-power-user'])
+    const permissions = getPermissionsByRoles('rco-power-user')
     const hasReadPermission = canAccess(permissions, '*', {
       read: true,
       write: true,
       delete: true
     })
     expect(hasReadPermission).toBeTruthy()
-  })
-
-  it('merged permissions for multiple roles', () => {
-    const permissions = getPermissionsByRoles(['user', 'rco-power-user'])
-    const hasAllPermissions = canAccess(permissions, '*', {
-      read: true,
-      write: true,
-      delete: true
-    })
-    expect(hasAllPermissions).toBeTruthy()
   })
 })

@@ -16,6 +16,7 @@ import DatePicker from '../../components/DatePicker'
 import TextFields from '@mui/material/TextField'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { ConditionalReferenceInput } from '../batches/BatchForm'
 
 interface Props {
   isEdit?: boolean
@@ -37,7 +38,7 @@ const DestructionFormToolbar = (
 
   return (
     <Toolbar>
-      <SaveButton label={isEdit ? 'Save' : 'Create'} />
+      <SaveButton label={isEdit ? 'Save' : 'Create'} alwaysEnable />
     </Toolbar>
   )
 }
@@ -54,7 +55,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const notify = useNotify()
   const [update] = useUpdate()
 
-  const getReference = (lastId: number, year: number): string => {
+  const getName = (lastId: number, year: number): string => {
     const id = lastId + 1
     return `DC/V/${id}/${year}`
   }
@@ -91,13 +92,21 @@ export default function DestructionForm(props: Props): React.ReactElement {
   }
 
   const onSubmit = async (data: any): Promise<void> => {
-    const { remarks } = data
+    const { remarks, vault } = data
     try {
-      const reference = getReference(lastId, year)
+      const name = getName(lastId, year)
+      const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
+        name,
+        remarks,
+        finalisedAt: null,
+        finalisedBy: null,
+        reportPrintedAt: null,
+        vault
+      }
       await create(
         constants.R_DESTRUCTION,
         {
-          data: { reference, remarks }
+          data: newD
         },
         {
           onSuccess: () => {
@@ -113,7 +122,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   if (typeof loading !== 'undefined' && loading) return <></>
 
-  const reference = getReference(lastId, year)
+  const name = getName(lastId, year)
 
   const updateJob = async (data: Destruction): Promise<void> => {
     await update(
@@ -150,9 +159,14 @@ export default function DestructionForm(props: Props): React.ReactElement {
       />
       <TextFields
         fullWidth
-        value={reference}
+        value={name}
         label='Reference'
-        disabled={disabledFields.includes('reference')}
+        disabled={disabledFields.includes('name')}
+      />
+      <ConditionalReferenceInput
+        source='vault'
+        reference={constants.R_VAULT}
+        isEdit={isEdit}
       />
       <TextInput sx={{ width: '100%' }} source='remarks' />
     </SimpleForm>

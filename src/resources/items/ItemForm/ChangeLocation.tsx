@@ -8,9 +8,11 @@ import {
   type Identifier,
   SelectInput,
   useDataProvider,
-  useNotify
+  useNotify,
+  TextInput
 } from 'react-admin'
 import FlexBox from '../../../components/FlexBox'
+import useVaultLocationAudit from '../../../hooks/useVaultLocationAudit'
 
 interface ChangeLocationProps {
   ids: Identifier[]
@@ -33,6 +35,7 @@ const style = {
 
 interface FormState {
   vaultLocation: number
+  editRemarks: string
 }
 
 export default function ChangeLocation(
@@ -50,14 +53,24 @@ export default function ChangeLocation(
 
   const vaultLocationValue: number | string = watch('vaultLocation')
 
-  const [vaultLocation, setVaultLocation] = useState<ActiveReferenceItem[]>([])
+  const [vaultLocation, setVaultLocation] = useState<IntegerReferenceItem[]>([])
   const dataProvider = useDataProvider()
+  const vaultLocationsAudit = useVaultLocationAudit()
 
   async function onSubmit(values: FormState): Promise<void> {
     try {
+      await vaultLocationsAudit(
+        values.vaultLocation,
+        undefined,
+        values.editRemarks
+      )
+
+      const valuesCopy = values as Partial<FormState>
+      delete valuesCopy.editRemarks
+
       const { data } = await dataProvider.updateMany<Item>(constants.R_ITEMS, {
         ids,
-        data: values
+        data: valuesCopy
       })
       notify('Elements updated')
       successCallback?.(data)
@@ -68,10 +81,10 @@ export default function ChangeLocation(
 
   useEffect(() => {
     dataProvider
-      .getList<ActiveReferenceItem>(constants.R_VAULT_LOCATION, {
+      .getList<IntegerReferenceItem>(constants.R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
-        filter: {}
+        filter: { active: true }
       })
       .then(({ data }) => {
         setVaultLocation(data)
@@ -97,6 +110,19 @@ export default function ChangeLocation(
               sx={{ width: '100%' }}
               source='vaultLocation'
               choices={vaultLocation}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name='editRemarks'
+          render={({ field }) => (
+            <TextInput
+              multiline
+              rows={4}
+              source='editRemarks'
+              {...field}
+              sx={{ width: '100%' }}
             />
           )}
         />

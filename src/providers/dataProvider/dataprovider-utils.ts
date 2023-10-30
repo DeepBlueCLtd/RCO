@@ -1,6 +1,6 @@
 import { type UpdateParams, type CreateResult, type RaRecord } from 'ra-core'
 import { DateTime } from 'luxon'
-import { type AuditType } from '../../utils/activity-types'
+import { AuditType } from '../../utils/activity-types'
 import { isSameDate } from '../../utils/date'
 import { getUser } from '../authProvider'
 import { type ResourceTypes } from '../../constants'
@@ -11,6 +11,7 @@ import {
 } from 'react-admin'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import { isNumber } from '../../utils/number'
+import { type AuditData } from '../../utils/audit'
 
 export const nowDate = (): string => {
   const isoDate = DateTime.utc().toISO()
@@ -20,14 +21,16 @@ export const nowDate = (): string => {
 export const getDifference = (
   data: Record<string, any>,
   previousData: Record<string, any>
-): Record<any, string> => {
+): Record<any, string | null> => {
   const valuesChanged: Record<string, any> = {}
   Object.keys(data).forEach((item) => {
     const isDateModified =
       data[item] instanceof Date && !isSameDate(data[item], previousData[item])
     if (
       isDateModified ||
-      (typeof data[item] !== 'object' && data[item] !== previousData[item])
+      (typeof data[item] !== 'object' &&
+        data[item] !== previousData[item] &&
+        item !== 'password')
     ) {
       valuesChanged[item] = previousData[item]
     }
@@ -35,46 +38,95 @@ export const getDifference = (
   return valuesChanged
 }
 
-interface AuditProps {
-  type: AuditType
-  activityDetail?: string
-  securityRelated?: boolean
-  resource: string | null
-  dataId: number | null
-  subject?: User['id']
-}
-
 interface AuditDataArgs {
-  type: AuditType
+  activityType: AuditType
   securityRelated?: boolean
 }
 
 export type AuditFunctionType = ({
-  type,
+  activityType,
   activityDetail,
   securityRelated,
   resource,
   dataId,
-  subject
-}: AuditProps) => Promise<void>
+  subjectId,
+  subjectResource
+}: AuditData) => Promise<void>
+
+const getActivityDetail = (
+  difference: Record<string, any>,
+  editRemarks: Record<string, any>
+): string => {
+  const stringify = (data: any): string =>
+    JSON.stringify(data).replace(/"/g, '\\"')
+
+  const activityDetail = `{"Previous values": ${stringify(difference)}${
+    editRemarks ? `, "Remarks": ${stringify(editRemarks)}` : ''
+  }}`
+
+  return activityDetail
+}
 
 export const auditForUpdatedChanges = async (
   record: UpdateParams<RCOResource>,
   resource: ResourceTypes,
   auditData: AuditDataArgs,
-  audit: AuditFunctionType,
-  subject?: User['id']
+  audit: AuditFunctionType
 ): Promise<UpdateParams<RCOResource>> => {
-  const difference = getDifference(record.data, record.previousData)
+  // @ts-expect-error: property not found in type
+  const { editRemarks, prevProtectionValues = {}, ...rest } = record.data
+  if (editRemarks || prevProtectionValues) {
+    record.data = rest
+  }
+  const { protectionString, ...difference } = getDifference(
+    record.data,
+    record.previousData
+  )
+
+  const keys = Object.keys(difference)
+  const testKeys: string[] = [
+    'dispatchedAt',
+    'reportPrintedAt',
+    'lastHastenerSent',
+    'receiptReceived'
+  ]
+  testKeys.forEach((key) => {
+    if (keys.includes(key) && !difference?.[key]) {
+      difference[key] = 'unset'
+    }
+  })
+
   const dataId =
     record.previousData.id !== undefined ? record.previousData.id : null
-  await audit({
-    ...auditData,
-    activityDetail: `Previous values: ${JSON.stringify(difference)}`,
-    resource,
-    dataId,
-    subject
-  })
+
+  if (Object.keys(prevProtectionValues).length > 0) {
+    const activityDetail = getActivityDetail(prevProtectionValues, editRemarks)
+    await audit({
+      activityDetail,
+      resource,
+      securityRelated: true,
+      dataId,
+      activityType: AuditType.EDIT,
+      subjectId: null,
+      subjectResource: null
+    })
+  }
+
+  if (
+    Object.keys(difference).length > 0 ||
+    auditData.activityType === AuditType.PASSWORD_RESET
+  ) {
+    const activityDetail = getActivityDetail(difference, editRemarks)
+    await audit({
+      activityDetail,
+      resource,
+      dataId,
+      subjectId: null,
+      subjectResource: null,
+      securityRelated: null,
+      ...auditData
+    })
+  }
   return record
 }
 
@@ -83,7 +135,7 @@ export const convertDateToISO = <T>(
   keys: Array<keyof T>
 ): Partial<T> => {
   keys.forEach((key) => {
-    if (typeof record[key] !== 'undefined') {
+    if (typeof record[key] !== 'undefined' && record[key] !== null) {
       record[key] = new Date(record[key]).toISOString()
     }
   })

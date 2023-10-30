@@ -47,9 +47,12 @@ export default function DestroyItems(props: Props): React.ReactElement {
 
   useEffect(() => {
     setLoading(true)
+    // note: we need to provide `undefined` for mock backend, and `null`
+    // for SQLite
+    const nullFilter = process.env.MOCK ? 'null' : null
     dataProvider
       .getList<Destruction>(constants.R_DESTRUCTION, {
-        filter: { finalisedAt: undefined },
+        filter: { finalisedAt: nullFilter },
         sort: { field: 'id', order: 'ASC' },
         pagination: {
           page: 1,
@@ -66,34 +69,37 @@ export default function DestroyItems(props: Props): React.ReactElement {
       })
   }, [])
 
-  const onDestroy = async (): Promise<void> => {
+  const onAddToDestroy = async (): Promise<void> => {
     if (typeof destructionId !== 'undefined') {
-      const { reference, id: destructionJobId } = items.find(
+      const { id: destructionJobId } = items.find(
         (job) => job.id === parseInt(destructionId as string)
-      ) ?? { reference: undefined }
+      ) ?? { name: undefined }
       const itemsAdded = data
         .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
           return (
             ids.includes(id) &&
-            typeof loanedTo === 'undefined' &&
-            typeof loanedDate === 'undefined' &&
-            typeof destructionDate === 'undefined'
+            (loanedTo === null || typeof loanedTo === 'undefined') &&
+            (loanedDate === null || typeof loanedDate === 'undefined') &&
+            (destructionDate === null || typeof destructionDate === 'undefined')
           )
         })
         .map(async (item) => {
           const audiData = {
-            type: AuditType.EDIT,
-            activityDetail: `Add item to destruction ${reference}`,
+            activityType: AuditType.EDIT,
+            activityDetail: 'Item added to destruction',
             securityRelated: false,
             resource: constants.R_ITEMS,
-            dataId: item.id
+            dataId: item.id,
+            subjectId: destructionJobId as number,
+            subjectResource: constants.R_DESTRUCTION
           }
           await audit(audiData)
           await audit({
             ...audiData,
             resource: constants.R_DESTRUCTION,
-            activityDetail: `Add item ${item.item_number} to destruction`,
-            dataId: destructionJobId as number
+            dataId: destructionJobId as number,
+            subjectId: item.id,
+            subjectResource: constants.R_ITEMS
           })
 
           return item.id
@@ -110,19 +116,19 @@ export default function DestroyItems(props: Props): React.ReactElement {
       successCallback()
     }
   }
-  const label = 'Destruction Jobs'
+  const label = 'Destructions'
 
   if (typeof loading === 'boolean' && loading) return <></>
 
   return (
     <Box sx={style}>
       <Typography variant='h6'>
-        {ids.length} items added to Destruction Job
+        {ids.length} items added to Destruction
       </Typography>
       <Box>
         {items.length === 0 ? (
           <Typography marginY={3}>
-            Please create the destruction job before destroying items
+            Please create the destruction before destroying items
           </Typography>
         ) : (
           <FormControl sx={{ width: '100%', margin: '25px 0' }}>
@@ -135,7 +141,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
               label={label}>
               {items.map((item) => (
                 <MenuItem key={item.id} value={String(item.id)}>
-                  {item.reference} ({item.remarks})
+                  {item.name} ({item.remarks})
                 </MenuItem>
               ))}
             </Select>
@@ -145,7 +151,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
       <FlexBox>
         <Button
           disabled={items.length === 0}
-          onClick={onDestroy as any}
+          onClick={onAddToDestroy as any}
           variant='contained'>
           Destroy
         </Button>

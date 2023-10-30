@@ -17,6 +17,7 @@ import * as constants from '../../constants'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import SourceInput from '../../components/SourceInput'
+import { DateTime } from 'luxon'
 
 type ButtonType = '' | 'loan' | 'loanReturn'
 
@@ -88,6 +89,7 @@ const ToolBar = (): React.ReactElement => (
 
 function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
   const { items, onClose } = props
+  const nowDate = useMemo(() => DateTime.now().toString(), [])
 
   const dataProvider = useDataProvider<CustomDataProvider & DataProvider>()
   const notify = useNotify()
@@ -121,7 +123,10 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
           <SourceInput
             source='holder'
             reference={constants.R_USERS}
-            filter={{ active: true }}
+            filter={{
+              departedDate_gte: nowDate
+            }}
+            sort={{ field: 'staffNumber', order: 'ASC' }}
           />
         </SimpleForm>
       </Create>
@@ -141,7 +146,7 @@ function LoanItemsReturn(props: LoanItemsModalProps): React.ReactElement {
     const selectedItems: number[] = []
     const userNames = items.map((item) => {
       selectedItems.push(item.id)
-      if (item.loanedTo !== undefined) {
+      if (item.loanedTo) {
         const user = usersById[item.loanedTo]
         return user?.name
       }
@@ -190,12 +195,18 @@ interface Props {
   noneLoaned: boolean
   // all of the items have been loaned (so provide the Return button)
   allLoaned: boolean
+  disabled?: boolean
 }
 
 export default function LoanItemsListBulkActionButtons(
   props: Props
 ): React.ReactElement {
-  const { buttons = ['loan', 'loanReturn'], noneLoaned, allLoaned } = props
+  const {
+    buttons = ['loan', 'loanReturn'],
+    noneLoaned,
+    allLoaned,
+    disabled = false
+  } = props
   const [buttonType, setButtonType] = useState<ButtonType>('')
   const { selectedIds } = useListContext<Item>()
   const { data = [] } = useGetMany<Item>(constants.R_ITEMS, {
@@ -212,26 +223,36 @@ export default function LoanItemsListBulkActionButtons(
     return data.filter((item) => selectedIds.includes(item.id))
   }, [selectedIds, data])
 
+  const { disableLoanItem, disableReturnItem } = useMemo(
+    () => ({
+      disableLoanItem: !(!disabled && buttons.includes('loan') && noneLoaned),
+      disableReturnItem: !(
+        !disabled &&
+        buttons.includes('loanReturn') &&
+        allLoaned
+      )
+    }),
+    [noneLoaned, disabled, allLoaned]
+  )
+
   return (
     <FlexBox>
-      {buttons.includes('loan') && noneLoaned && (
-        <Button
-          variant='outlined'
-          size='small'
-          color='primary'
-          onClick={handleClick('loan')}>
-          Loan
-        </Button>
-      )}
-      {buttons.includes('loanReturn') && allLoaned && (
-        <Button
-          variant='outlined'
-          size='small'
-          color='primary'
-          onClick={handleClick('loanReturn')}>
-          Loan return
-        </Button>
-      )}
+      <Button
+        disabled={disableLoanItem}
+        variant='outlined'
+        size='small'
+        color='primary'
+        onClick={handleClick('loan')}>
+        Loan
+      </Button>
+      <Button
+        disabled={disableReturnItem}
+        variant='outlined'
+        size='small'
+        color='primary'
+        onClick={handleClick('loanReturn')}>
+        Loan return
+      </Button>
       <Modal open={Boolean(buttonType)} onClose={handleClick('')}>
         <Box sx={style}>
           {buttonType === 'loan' && (

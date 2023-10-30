@@ -1,0 +1,67 @@
+import {
+  useCreate,
+  useDataProvider,
+  useDeleteMany,
+  useRedirect
+} from 'react-admin'
+import { R_ITEMS } from '../constants'
+
+interface DBMethods {
+  createRecord: (id: number, data?: number[]) => void
+  updateRecord: (id: number, data?: number[]) => void
+}
+
+export default function useRefTable(
+  refTable: string,
+  source: string,
+  resource: string
+): DBMethods {
+  const [create] = useCreate()
+  const [deleteMany] = useDeleteMany()
+  const redirect = useRedirect()
+  const dataProvider = useDataProvider()
+
+  const updateRecord = (id: number, data?: number[]): void => {
+    dataProvider
+      .getList(refTable, {
+        pagination: { page: 1, perPage: 100 },
+        sort: { field: 'id', order: 'ASC' },
+        filter: { [resource]: id }
+      })
+      .then(({ data: tableData = [] }) => {
+        const idsToDelete = tableData.map(
+          (item: Record<string, any>) => item.id
+        )
+
+        if (idsToDelete.length)
+          deleteMany(refTable, { ids: idsToDelete })
+            .then(() => {
+              createRecord(id, data)
+            })
+            .catch(console.log)
+        else createRecord(id, data)
+      })
+      .catch(console.log)
+  }
+
+  const createRecord = (id: number, data?: number[]): void => {
+    try {
+      data?.map(async (sId: number) => {
+        return await create(refTable, {
+          data: {
+            [source]: sId,
+            [resource]: id
+          }
+        })
+      })
+      if (resource !== R_ITEMS) redirect(`/${resource}`)
+    } catch (error: any) {
+      console.log(error)
+    }
+  }
+
+  return {
+    createRecord,
+    updateRecord
+  }
+}

@@ -23,7 +23,7 @@ describe('CRUD operation on Media Type Resource', () => {
     createResource: (
       dummyDataGenerate: typeof generateActiveReferenceItemForTesting,
       resource: ResourceTypes
-    ) => Promise<ActiveReferenceItem>
+    ) => Promise<IntegerReferenceItem>
 
   beforeAll(async () => {
     const provider = await localForageDataProvider({
@@ -33,7 +33,7 @@ describe('CRUD operation on Media Type Resource', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
@@ -58,7 +58,7 @@ describe('CRUD operation on Media Type Resource', () => {
       R_PROTECTIVE_MARKING
     )
 
-    await provider.update<ActiveReferenceItem>(R_PROTECTIVE_MARKING, {
+    await provider.update<IntegerReferenceItem>(R_PROTECTIVE_MARKING, {
       id: createdProtectiveMarking.id,
       previousData: createdProtectiveMarking,
       data: {
@@ -69,7 +69,7 @@ describe('CRUD operation on Media Type Resource', () => {
     })
 
     const fetchedProtectiveMarking = (
-      await provider.getOne<ActiveReferenceItem>(R_PROTECTIVE_MARKING, {
+      await provider.getOne<IntegerReferenceItem>(R_PROTECTIVE_MARKING, {
         id: createdProtectiveMarking.id
       })
     ).data

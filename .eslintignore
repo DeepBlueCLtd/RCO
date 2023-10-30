@@ -2,3 +2,5 @@ dist
 vite.config.ts
 e2e
 playwright.config.ts
+_extensions
+_devExtensions

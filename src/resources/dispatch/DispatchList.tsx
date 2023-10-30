@@ -7,13 +7,35 @@ import {
   useListContext,
   useDataProvider,
   useNotify,
-  useRefresh
+  useRefresh,
+  useRecordContext,
+  SearchInput
 } from 'react-admin'
 import { Button } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import { useLocation } from 'react-router-dom'
+import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <NullUndefinedFilter
+    label='Dispatched'
+    source={process.env.MOCK ? 'dispatchedAt_neq' : 'dispatchedAt__notnull'}
+    key='dispatched'
+  />,
+  <NullUndefinedFilter
+    label='Not Dispatched'
+    source={process.env.MOCK ? 'dispatchedAt_eq' : 'dispatchedAt__null'}
+    key='not_dispatched'
+  />,
+  <NullUndefinedFilter
+    label='Pending Receipt Note'
+    source={process.env.MOCK ? 'receiptReceived_eq' : 'receiptReceived__null'}
+    key='receiptPending'
+  />
+]
 
 const BulkActions = (): React.ReactElement => {
   const { selectedIds } = useListContext<Dispatch>()
@@ -56,16 +78,49 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
     : 'simple-dispatch-list'
 
   return (
-    <List hasCreate storeKey={storeKey}>
+    <List hasCreate storeKey={storeKey} filters={filters}>
       <Datagrid
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>
-        <TextField source='reference' />
-        <DateField source='dispatchedAt' />
-        <TextField source='toName' />
-        <TextField source='remarks' />
-        <TextField source='receiptReceived' />
+        <TextField<Dispatch> source='name' />
+        <TextField<Dispatch> source='toName' />
+        <TextField<Dispatch> source='remarks' />
+        <ConditionalDateField<Dispatch>
+          label='Dispatched At'
+          source='dispatchedAt'
+          resource={constants.R_DISPATCH}
+        />
+        <ConditionalDateField<Dispatch>
+          label='Receipt Received'
+          source='receiptReceived'
+          resource={constants.R_DISPATCH}
+        />
+        <ConditionalDateField<Dispatch>
+          label='Last Hastener Sent'
+          source='lastHastenerSent'
+          resource={constants.R_DISPATCH}
+        />
       </Datagrid>
     </List>
+  )
+}
+
+interface Props<T> {
+  label: string
+  source: keyof T
+  resource: any
+}
+
+export const ConditionalDateField = <T extends Dispatch | Destruction>({
+  label,
+  source,
+  resource
+}: Props<T>): React.ReactElement => {
+  const data = useRecordContext(resource)
+
+  return data[source as string] !== 'null' && !!data[source as string] ? (
+    <DateField source={source as string} label={label} />
+  ) : (
+    <></>
   )
 }

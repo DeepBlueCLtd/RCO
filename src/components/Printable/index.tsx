@@ -4,10 +4,32 @@ import FlexBox from '../FlexBox'
 
 interface Props {
   children?: React.ReactElement | React.ReactElement[]
+  onPrint?: () => void
 }
 
 const style = {
-  background: '#fff'
+  background: '#fff',
+  '@media print': {
+    '@page': {
+      size: 'portrait'
+    },
+    '& .MuiBox-root .RaShow-card .MuiTypography-h4': {
+      fontSize: '18px'
+    },
+    '& .MuiBox-root .RaShow-card .MuiTypography-h5,.MuiBox-root .RaShow-card .MuiTypography-h5 span':
+      {
+        fontSize: '16px'
+      },
+    '& .MuiBox-root .MuiTypography-root': {
+      fontSize: '12px'
+    },
+    '& .RaDatagrid-rowCell, .RaDatagrid-headerCell': {
+      padding: '0 !important;'
+    },
+    '& .RaDatagrid-rowCell *, .RaDatagrid-headerCell *': {
+      fontSize: '12px !important'
+    }
+  }
 }
 
 const buttonSx = {
@@ -20,13 +42,16 @@ const buttonSx = {
 export default function Printable(
   props: Props & ModalProps
 ): React.ReactElement {
-  const { children, ...rest } = props
+  const { children, onPrint, ...rest } = props
 
   const handleClose = (): void => {
     rest?.onClose?.({}, 'escapeKeyDown')
   }
 
   const handlePrint = (): void => {
+    if (onPrint) {
+      onPrint()
+    }
     window.print()
   }
 

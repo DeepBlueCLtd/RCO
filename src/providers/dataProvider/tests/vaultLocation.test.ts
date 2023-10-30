@@ -31,7 +31,7 @@ describe('CRUD operations vault location', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
@@ -53,7 +53,7 @@ describe('CRUD operations vault location', () => {
 
   it('should create vault location', async () => {
     const vaultLocationListBeforeCreate =
-      await provider.getList<ActiveReferenceItem>(R_VAULT_LOCATION, {
+      await provider.getList<IntegerReferenceItem>(R_VAULT_LOCATION, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1000 },
         filter: {}
@@ -62,7 +62,7 @@ describe('CRUD operations vault location', () => {
     expect(vaultLocationListBeforeCreate.total).toBe(0)
 
     const createdVault = (
-      await provider.create<ActiveReferenceItem>(R_VAULT_LOCATION, {
+      await provider.create<IntegerReferenceItem>(R_VAULT_LOCATION, {
         data: generateVaultLocationForTesting()
       })
     ).data
@@ -73,7 +73,7 @@ describe('CRUD operations vault location', () => {
 
   it('should update vault location', async () => {
     const createdVault = (
-      await provider.create<ActiveReferenceItem>(R_VAULT_LOCATION, {
+      await provider.create<IntegerReferenceItem>(R_VAULT_LOCATION, {
         data: generateVaultLocationForTesting()
       })
     ).data
@@ -81,14 +81,14 @@ describe('CRUD operations vault location', () => {
     expect(createdVault).not.toBeUndefined()
     expect(createdVault.id).toBeDefined()
 
-    await provider.update<ActiveReferenceItem>(R_VAULT_LOCATION, {
+    await provider.update<IntegerReferenceItem>(R_VAULT_LOCATION, {
       id: createdVault.id,
       previousData: createdVault,
       data: { id: createdVault.id, name: 'dummy-vault-1', active: false }
     })
 
     const fetchedVault = (
-      await provider.getOne<ActiveReferenceItem>(R_VAULT_LOCATION, {
+      await provider.getOne<IntegerReferenceItem>(R_VAULT_LOCATION, {
         id: createdVault.id
       })
     ).data

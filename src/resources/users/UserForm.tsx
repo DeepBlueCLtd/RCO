@@ -1,14 +1,7 @@
 import React from 'react'
-import {
-  SimpleForm,
-  TextInput,
-  BooleanInput,
-  useEditContext,
-  SelectArrayInput
-} from 'react-admin'
+import { SimpleForm, TextInput, useEditContext, SelectInput } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { decryptPassword } from '../../utils/encryption'
 import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
@@ -16,29 +9,32 @@ import FlexBox from '../../components/FlexBox'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: yup.string().required(),
-  adminRights: yup.boolean(),
-  roles: yup
-    .array(yup.string().oneOf(rolesOptions.map(({ value }) => value)))
-    .min(1)
+  role: yup
+    .string()
+    .transform((val) => {
+      if (!val) return null
+      else return rolesOptions.find((role) => role.value === val)?.value
+    })
+    .oneOf(rolesOptions.map(({ value }) => value))
+    .nullable()
+    .optional()
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   const defaultValues: Omit<
     User,
-    'id' | 'createdAt' | 'createdBy' | 'staffNumber'
+    'id' | 'createdAt' | 'createdBy' | 'staffNumber' | 'departedDate'
   > = {
     name: '',
     password: '',
-    adminRights: false,
-    active: true,
-    roles: []
+    role: 'rco-user'
   }
   const { record } = useEditContext()
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
 
   return (
     <SimpleForm
+      record={{ ...record, password: '' }}
       toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
@@ -46,30 +42,16 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
-      <TextInput
-        source='password'
-        variant='outlined'
-        sx={{ width: '100%' }}
-        format={(password) => {
-          if (password?.length === 88)
-            return decryptPassword(password, record.salt)
-          else return password !== null ? password : ''
-        }}
-      />
       <FlexBox>
-        <SelectArrayInput
-          label='Roles'
-          source='roles'
+        <SelectInput
+          label='Role'
+          source='role'
           optionValue='value'
           optionText='label'
           sx={{ width: '100%', flex: 1 }}
           choices={rolesOptions}
         />
         <TextInput source='staffNumber' label='Staff number' sx={{ flex: 1 }} />
-      </FlexBox>
-      <FlexBox>
-        <BooleanInput source='adminRights' />
-        <BooleanInput defaultValue={true} source='active' />
       </FlexBox>
     </SimpleForm>
   )

@@ -65,7 +65,7 @@ test.describe('Login failed test', () => {
 
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-    ).toHaveText('Invalid email or password')
+    ).toHaveText('Invalid staff-ID or password')
   })
 
   test('Verify "Invalid username and password" message is visible when user login with invalid password', async ({
@@ -90,7 +90,7 @@ test.describe('Login failed test', () => {
 
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-    ).toHaveText('Invalid email or password')
+    ).toHaveText('Invalid staff-ID or password')
   })
 
   test('Verify "Invalid username and password" message is visible when admin login with invalid username and password', async ({
@@ -115,6 +115,6 @@ test.describe('Login failed test', () => {
 
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-    ).toHaveText('Invalid email or password')
+    ).toHaveText('Invalid staff-ID or password')
   })
 })

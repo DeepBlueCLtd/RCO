@@ -43,45 +43,52 @@ interface FormProps {
 // -- SQL Data Types
 // ------------------------
 
-interface MediaType extends RCOResource {
-  name: string
-  active: boolean
-}
-
 /** an entity, with an id unique to that table */
 interface RCOResource {
   readonly id: number
 }
 
+type MediaType = RCOResource & {
+  name: string
+  active: boolean
+  itemSize: number
+}
+
 /** a generic type, used for our assorted reference data lists. Once the
  * interface becomes more complex, introduce a type-specific interface
  */
-interface ActiveReferenceItem extends RCOResource {
+interface ActiveItem {
+  // human-readable name for this entity
+  name: string
   // when false, the item should not be included in drop-downs
   // for `create` forms, though it should for `edit` forms
-  name: string
   active: boolean
+}
+
+type IntegerReferenceItem = ActiveItem & {
+  id: number
+}
+
+type StringReferenceItem = ActiveItem & {
+  id: string
 }
 
 /** an entity for which we track instance creation */
-interface ResourceWithCreation extends RCOResource {
+type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
-  createdBy: User['id']
+  createdBy: User['id'] | null // allow null, since some legacy data doesn't have created by
 }
 
-interface User extends ResourceWithCreation {
+type User = ResourceWithCreation & {
   name: string
-  password: string
-  adminRights: boolean
-  /** whether items can still be loaned to this user */
-  active: boolean
-  roles: UserRole[]
+  password?: string
+  role: UserRole
   staffNumber: string
-  departedDate?: string
+  departedDate: string | null
 }
 
-interface Audit extends RCOResource {
+type Audit = RCOResource & {
   // the user making the change
   user: User['id']
   // when this happened
@@ -95,78 +102,105 @@ interface Audit extends RCOResource {
   // what kind of change was made (human-friendly)
   label: string
   // summary of change
-  activityDetail?: string
-  /** should this audit entry be included in security review? */
-  securityRelated?: boolean
-  // who this event relates to
-  subject?: User['id']
+  activityDetail: string | null
+  // should this audit entry be included in security review?
+  securityRelated: boolean | null
+  // the "other" resource that this event relates to
+  subjectId: string | number | null
+  // the resource type of the subject
+  subjectResource: string | null
+  // the ip address of the client
+  ip?: string
 }
 
-interface Platform extends RCOResource {
+type Platform = RCOResource & {
   name: string
   active: boolean
 }
 
-interface Project extends ResourceWithCreation {
+type Project = ResourceWithCreation & {
   readonly id: number
   name: string
   remarks: string
   startDate: string
   endDate: string
+  enduring: boolean | null
+  active: boolean
 }
 
-type Department = ActiveReferenceItem
-type Organisation = ActiveReferenceItem
-type ProtectiveMarking = ActiveReferenceItem
-type CatCode = ActiveReferenceItem
-type CatHandle = ActiveReferenceItem
-type CatCave = ActiveReferenceItem
-type VaultLocation = ActiveReferenceItem
+type Department = StringReferenceItem
+type Organisation = StringReferenceItem
+type ProtectiveMarking = IntegerReferenceItem
+type CatCode = StringReferenceItem
+type CatHandle = StringReferenceItem
+type CatCave = StringReferenceItem
+type VaultLocation = IntegerReferenceItem & {
+  shelfSize: number | null
+}
 
-interface Batch extends ResourceWithCreation {
-  startDate: string
-  endDate: string
+type Vault = StringReferenceItem
+
+interface ItemCode {
+  id: number
+  item: number
+  catCode: CatCode['id']
+}
+interface ItemCave {
+  id: number
+  item: number
+  catCave: CatCave['id']
+}
+interface ItemHandling {
+  id: number
+  item: number
+  catHandle: CatHandle['id']
+}
+
+type Batch = ResourceWithCreation & {
   batchNumber: string
-  yearOfReceipt: string
-  department: Department['id']
-  project: Project['id']
-  platform: Platform['id']
-  organisation: Organisation['id']
-  protectiveMarking: ProtectiveMarking['id']
-  // extra protection details. All are optional
-  catCode: CatCode['id'] | undefined
-  catHandle: CatHandle['id'] | undefined
-  catCave: Array<CatCave['id']> | undefined
+  yearOfReceipt: number
+  department: Department['id'] | null
+  project: Project['id'] | null
+  platform: Platform['id'] | null
+  organisation: Organisation['id'] | null
   remarks: string
   receiptNotes: string
+  vault: Vault['id']
 }
 
-interface Item extends ResourceWithCreation {
+type Item = ResourceWithCreation & {
   mediaType: MediaType['id']
-  startDate: string
-  batchId: Batch['id']
-  item_number: string
-  consecPages?: string
-  endDate: string
-  vaultLocation: VaultLocation['id']
+  legacyMediaType: MediaType['id'] | null
+  startDate: string | null
+  batch: Batch['id']
+  itemNumber: string
+  // originator reference number (consec) or number of sheets (optional)
+  consecSheets: string | null
+  endDate: string | null
+  vaultLocation: VaultLocation['id'] | null
   remarks: string
   protectiveMarking: ProtectiveMarking['id']
-  // extra protection details. All are optional
-  catCode: CatCode['id'] | undefined
-  catHandle: CatHandle['id'] | undefined
-  catCave: Array<CatCave['id']> | undefined
+  // temporarily removing for working with soul
+  // project?: Project['id']
+  // platform?: Platform['id']
 
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
-  loanedTo?: User['id']
-  loanedDate?: string
+  loanedTo: User['id'] | null
+  loanedDate: string | null
   // dispatch details
-  dispatchJob?: Dispatch['id']
-  dispatchedDate?: string
+  dispatchJob: Dispatch['id'] | null
+  dispatchedDate: string | null
   // destruction details
-  destruction?: Destruction['id']
-  destructionDate?: string
+  destruction: Destruction['id'] | null
+  destructionDate: string | null
+  protectionString: string | null
+}
+
+type RichItem = Item & {
+  project: Project['id']
+  platform: Platform['id']
 }
 
 interface RCOStore {
@@ -177,10 +211,10 @@ interface RCOStore {
   organisation: Organisation[]
   department: Department[]
   vaultLocation: VaultLocation[]
-  mediaType: ActiveReferenceItem[]
+  mediaType: MediaType[]
   protectiveMarking: ProtectiveMarking[]
   catCode: CatCode[]
-  catHandling: CatHandle[]
+  catHandle: CatHandle[]
   catCave: CatCave[]
   // configuration data
   configData: ConfigData[]
@@ -190,17 +224,28 @@ interface RCOStore {
   batch: Batch[]
   item: Item[]
   destruction: Destruction[]
-  dispatche: Dispatch[]
+  dispatch: Dispatch[]
+  vault: Vault[]
+  // bridging tables
+  itemCode: ItemCode[]
+  itemCave: ItemCave[]
+  itemHandle: ItemHandling[]
+  batchCode: BatchCode[]
+  batchCave: BatchCave[]
+  batchHandle: BatchHandling[]
+  richItem: RichItem[]
 }
 
 interface Destruction {
   readonly id: number
-  reference: string
+  name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
-  finalisedAt?: string
-  finalisedBy?: User['id']
+  finalisedAt: string | null
+  finalisedBy: User['id'] | null
   remarks: string
+  reportPrintedAt: string | null
 }
 
 interface ActivityType {
@@ -218,19 +263,21 @@ interface Address {
 
 interface Dispatch {
   id: number
-  reference: string
+  name: string
+  vault: Vault['id']
   createdAt: string
   createdBy: User['id']
   remarks: string
-  dispatchedAt?: string
+  dispatchedAt: string | null
   toName: string
   toAddress: Address['id']
-  receiptReceived?: string
-  lastHastenerSent?: string
+  receiptReceived: string | null
+  lastHastenerSent: string | null
+  reportPrintedAt: string | null
 }
 
 /** per instance config data. It is just intended to be one row deep */
-interface ConfigData extends RCOResource {
+type ConfigData = RCOResource & {
   /** singular name for project resource
    * test value: `Project`
    */
@@ -250,13 +297,13 @@ interface ConfigData extends RCOResource {
   /** label for cat-code element
    * test value: `Cat-Code`
    */
-  cat_code: string
+  catCode: string
   /** label for cat-handle element
    * test value: `Cat-Handle`
    */
-  cat_handle: string
+  catHandle: string
   /** label for cat-cave element
    * test value: `Cat-Cave`
    */
-  cat_cave: string
+  catCave: string
 }

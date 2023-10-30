@@ -12,15 +12,16 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import TopToolbarField from '../../components/TopToolbarField'
-import { Box, Typography, IconButton, type Theme } from '@mui/material'
+import { Box, Typography, type Theme } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import SourceField from '../../components/SourceField'
-import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type SystemStyleObject } from '@mui/system'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import FlexBox from '../../components/FlexBox'
 import SourceInput from '../../components/SourceInput'
+import HistoryButton from '../../components/HistoryButton'
+import ItemHistory from './ItemHistory'
 
 interface ShowFormProps {
   setRecord: React.Dispatch<React.SetStateAction<Item | undefined>>
@@ -38,7 +39,7 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
   const pageTitle = 'View Item'
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <Box sx={{ padding: '10px', flex: 2 }}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_ITEM /> {pageTitle}
       </Typography>
@@ -48,8 +49,18 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
         <ProtectionBlockInputs
           disabled={true}
           markingSource='protectiveMarking'
+          refTables={{
+            catCave: constants.R_ITEMS_CAVE,
+            catCode: constants.R_ITEMS_CODE,
+            catHandle: constants.R_ITEMS_HANDLE
+          }}
+          resource={constants.R_ITEMS}
+          show
         />
-        <Remarks />
+        <FlexBox>
+          <Remarks />
+          <Media />
+        </FlexBox>
         <Created />
       </Form>
     </Box>
@@ -75,12 +86,12 @@ const Details = (): React.ReactElement => {
         </Typography>
       </legend>
       <FlexBox>
-        <SourceInput
-          source='mediaType'
-          reference={constants.R_MEDIA_TYPE}
-          inputProps={{ sx, disabled: true }}
+        <TextInput
+          label='Consec/Sheets'
+          source='consecSheets'
+          sx={sx}
+          disabled
         />
-        <TextInput label='Consec/Pages' source='consecPages' sx={sx} disabled />
         <DateInput source='startDate' label='Start' sx={sx} disabled />
         <DateInput source='endDate' label='End' sx={sx} disabled />
       </FlexBox>
@@ -124,6 +135,41 @@ const Location = (): React.ReactElement => {
   )
 }
 
+const Media = (): React.ReactElement => {
+  const sx = {
+    width: '100%'
+  }
+  return (
+    <Box
+      component='fieldset'
+      style={{
+        width: '100%',
+        padding: '0 15px',
+        borderRadius: 16,
+        margin: '20px 0'
+      }}>
+      <legend>
+        <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
+          Media
+        </Typography>
+      </legend>
+      <FlexBox>
+        <SourceInput
+          source='mediaType'
+          reference={constants.R_MEDIA_TYPE}
+          inputProps={{ sx, disabled: true }}
+        />
+        <SourceInput
+          source='legacyMediaType'
+          label='Legacy Media Type'
+          reference={constants.R_MEDIA_TYPE}
+          inputProps={{ sx, disabled: true }}
+        />
+      </FlexBox>
+    </Box>
+  )
+}
+
 const Remarks = (): React.ReactElement => {
   const sx = {
     width: '100%'
@@ -143,7 +189,7 @@ const Remarks = (): React.ReactElement => {
         </Typography>
       </legend>
       <FlexBox>
-        <TextInput source='remarks' sx={sx} disabled />
+        <TextInput multiline source='remarks' sx={sx} disabled />
       </FlexBox>
     </Box>
   )
@@ -199,7 +245,7 @@ interface StatusTextProps {
 interface ActionLinkProps {
   actionText: string
   linkPathname: string
-  text: string
+  text: string | null
 }
 
 const ActionLink = ({
@@ -224,8 +270,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
   let statusText = ''
   let source: keyof Item
   let component: React.ReactElement | null = null
-
-  if (record.destruction !== undefined) {
+  if (record.destruction !== undefined && record.destruction !== null) {
     linkPathname = `/destruction/${record.destruction}/show`
     source = 'destruction'
     const actionText =
@@ -241,7 +286,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
         text={dateText}
       />
     )
-  } else if (record.dispatchJob !== undefined) {
+  } else if (record.dispatchJob !== undefined && record.dispatchJob !== null) {
     linkPathname = `/dispatch/${record.dispatchJob}/show`
     source = 'dispatchJob'
     const actionText =
@@ -255,7 +300,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
         text={dateText}
       />
     )
-  } else if (record.loanedTo !== undefined) {
+  } else if (record.loanedTo !== undefined && record.loanedTo !== null) {
     source = 'loanedTo'
     statusText = 'Loaned to: '
   } else {
@@ -267,7 +312,7 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
       {source === 'loanedTo' ? (
         <Typography sx={sx} variant='h5'>
           {statusText}
-          <SourceField
+          <SourceField<Item>
             link='show'
             source={source}
             reference={constants.R_USERS}
@@ -299,18 +344,18 @@ const ItemShowActions = ({
   record
 }: ItemShowProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField source='item_number' />
+      <TopToolbarField<Item> source='itemNumber' />
       <StatusText record={record} />
-      {hasAccess(constants.R_ITEMS, { write: true }) && <EditButton />}
-      <IconButton
+      {hasAccess(constants.R_ITEMS, { write: true }) && (
+        <EditButton to={`/${constants.R_RICH_ITEMS}/${record.id}`} />
+      )}
+      <HistoryButton
         onClick={() => {
           handleOpen(true)
-        }}>
-        <History />
-      </IconButton>
+        }}
+      />
     </TopToolbar>
   )
 }
@@ -339,7 +384,10 @@ export default function ItemShow(): React.ReactElement {
           <ItemShowActions handleOpen={handleOpen} record={record} />
         )
       }>
-      <ShowForm setRecord={setRecord} />
+      <FlexBox columnGap={0} padding='10px' alignItems='start'>
+        <ShowForm setRecord={setRecord} />
+        <ItemHistory />
+      </FlexBox>
       <ResourceHistoryModal
         filter={filter}
         open={open}

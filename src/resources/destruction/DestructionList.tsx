@@ -1,19 +1,34 @@
 import {
   Datagrid,
-  DateField,
   FunctionField,
   List,
+  SearchInput,
   TextField
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
-import { IconButton } from '@mui/material'
-import { History } from '@mui/icons-material'
 import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useMemo, useState } from 'react'
+import HistoryButton from '../../components/HistoryButton'
+import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+import { ConditionalDateField } from '../dispatch/DispatchList'
+
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <NullUndefinedFilter
+    label='Destroyed'
+    source={process.env.MOCK ? 'finalisedAt_neq' : 'finalisedAt__notnull'}
+    key='destroyed'
+  />,
+  <NullUndefinedFilter
+    label='Not Destroyed'
+    source={process.env.MOCK ? 'finalisedAt_eq' : 'finalisedAt__null'}
+    key='not_destroyed'
+  />
+]
 
 export default function DestructionList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const [record, setRecord] = useState<Destruction>()
 
   const filter = useMemo(
@@ -28,29 +43,37 @@ export default function DestructionList(): React.ReactElement {
     setOpen(open)
   }
   return (
-    <List>
+    <List filters={filters}>
       <Datagrid rowClick='show' bulkActionButtons={false}>
-        <TextField source='reference' />
-        <DateField source='createdAt' />
-        <SourceField source='createdBy' reference={constants.R_USERS} />
-        <DateField source='finalisedAt' />
-        <SourceField source='finalisedBy' reference={constants.R_USERS} />
-        <FunctionField
+        <TextField<Destruction> source='name' label='Reference' />
+        <ConditionalDateField<Destruction>
+          label='Finalised at'
+          source='finalisedAt'
+          resource={constants.R_DESTRUCTION}
+        />
+        <SourceField<Destruction>
+          source='createdBy'
+          reference={constants.R_USERS}
+        />
+        <SourceField<Destruction>
+          source='finalisedBy'
+          reference={constants.R_USERS}
+        />
+        <FunctionField<Destruction>
           label='History'
-          render={(record: Destruction) => {
+          render={(record) => {
             return (
-              <IconButton
+              <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
                   setRecord(record)
                   handleOpen(true)
-                }}>
-                <History />
-              </IconButton>
+                }}
+              />
             )
           }}
         />
-        <TextField source='remarks' />
+        <TextField<Destruction> source='remarks' />
       </Datagrid>
       <ResourceHistoryModal
         filter={filter}

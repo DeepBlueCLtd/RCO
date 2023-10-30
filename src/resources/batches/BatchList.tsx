@@ -1,10 +1,9 @@
 import { Chip } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   List,
   TextField,
   DatagridConfigurable,
-  TopToolbar,
   SelectColumnsButton,
   CreateButton,
   SearchInput,
@@ -12,8 +11,8 @@ import {
   useListContext,
   useGetList,
   useGetMany,
-  DateField,
-  type SortPayload
+  type SortPayload,
+  type SelectColumnsButtonProps
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -23,27 +22,33 @@ import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
 import { useConfigData } from '../../utils/useConfigData'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
 
-const ListActions = (): React.ReactElement => {
+const ListActions = ({
+  preferenceKey
+}: SelectColumnsButtonProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
+
   return (
-    <TopToolbar>
+    <StyledTopToolbar>
       {hasAccess(constants.R_BATCHES, { write: true }) ? (
         <CreateButton label='ADD NEW BATCH' />
-      ) : null}
+      ) : (
+        <></>
+      )}
       <FilterButton />
-      <SelectColumnsButton />
-    </TopToolbar>
+      <SelectColumnsButton preferenceKey={preferenceKey} />
+    </StyledTopToolbar>
   )
 }
 
 const omitColumns: string[] = [
-  'protectiveMarking',
   'department',
   'remarks',
   'id',
   'receiptNotes',
-  'createdAt'
+  'createdAt',
+  'createdBy'
 ]
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
@@ -78,8 +83,12 @@ const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
 
 export default function BatchList(): React.ReactElement {
   const configData = useConfigData()
+  const [projectName, setProjectName] = useState<null | string>()
+  const preferenceKey = `${constants.R_BATCHES}-batch-datagrid-columns`
+  const [key, setKey] = useState(0)
 
   const filters = [
+    <SourceInput key='vault' source='vault' reference={constants.R_VAULT} />,
     <SearchInput source='q' key='q' alwaysOn />,
     <CreatedByMeFilter
       key='createdByMe'
@@ -121,43 +130,69 @@ export default function BatchList(): React.ReactElement {
       variant='outlined'
       reference={constants.R_PROJECTS}
       source='project'
-      label={configData?.projectName}
       key={configData?.projectsName}
+      inputProps={{ label: configData?.projectName }}
     />,
-    <DateFilter key='createdAt' source='createdAt' label='Created At' />
+    <DateFilter
+      key='createdAt'
+      source='createdAt'
+      label='Created At'
+      format='iso'
+    />
   ]
+  useEffect(() => {
+    if (configData?.projectName) {
+      setProjectName(configData.projectName)
+      setKey((prev) => prev + 1)
+    }
+  }, [configData?.projectName])
 
   return (
-    <List perPage={25} actions={<ListActions />} filters={filters}>
+    <List
+      key={key}
+      sx={{
+        '& .MuiToolbar-root': {
+          '& > form': {
+            flex: 1
+          }
+        }
+      }}
+      perPage={25}
+      actions={<ListActions preferenceKey={preferenceKey} />}
+      filters={filters}>
       <ResetDateFilter source='createdAt' />
       <DatagridConfigurable
         omit={omitColumns}
         rowClick='show'
-        bulkActionButtons={false}>
-        <TextField source='id' />
-        <DateField source='startDate' />
-        <DateField source='endDate' />
-        <TextField label='Reference' source='batchNumber' />
-        <SourceField source='department' label='Department' />
-        <SourceField
-          source='project'
-          reference={constants.R_PROJECTS}
-          label={configData?.projectName}
+        bulkActionButtons={false}
+        preferenceKey={preferenceKey}>
+        <TextField<Batch> source='id' />
+        <TextField<Batch> label='Reference' source='batchNumber' />
+        <SourceField<Batch>
+          source='department'
+          label='Department'
+          reference={constants.R_DEPARTMENT}
         />
-        <SourceField
+
+        {projectName && (
+          <SourceField<Batch>
+            source='project'
+            reference={constants.R_PROJECTS}
+            label={projectName}
+          />
+        )}
+
+        <SourceField<Batch>
           source='platform'
           reference={constants.R_PLATFORMS}
           label='Platform'
         />
-        <SourceField source='organisation' label='Organisation' />
-        <SourceField
-          source='protectiveMarking'
-          reference={constants.R_PROTECTIVE_MARKING}
-          label='Maximum protective marking'
-        />
-        <TextField source='remarks' />
-        <TextField source='receiptNotes' />
-        <TextField source='createdAt' label='Created' />
+        <SourceField<Batch> source='organisation' label='Organisation' />
+        <SourceField<Batch> source='vault' reference={constants.R_VAULT} />
+        <TextField<Batch> source='remarks' />
+        <TextField<Batch> source='receiptNotes' />
+        <TextField<Batch> source='createdAt' label='Created At' />
+        <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
       </DatagridConfigurable>
     </List>
   )

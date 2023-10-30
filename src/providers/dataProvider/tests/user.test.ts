@@ -11,6 +11,7 @@ import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
 import { clear, generateUserForTesting } from './dummy-data'
 import { AuditType } from '../../../utils/activity-types'
+import { generateRandomDate } from '../../../utils/generateData'
 
 const TEST_STORAGE_KEY = 'rco-test'
 const TO_CLEAR: ResourceTypes[] = [R_USERS, R_AUDIT]
@@ -26,7 +27,7 @@ describe('CRUD operations on User', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
@@ -47,6 +48,7 @@ describe('CRUD operations on User', () => {
   })
 
   it('should create user', async () => {
+    const randomDepartDate = generateRandomDate()[0].toString()
     const userListBeforeCreate = await provider.getList<User>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
@@ -57,7 +59,7 @@ describe('CRUD operations on User', () => {
 
     const createdUser = (
       await provider.create<User>(R_USERS, {
-        data: generateUserForTesting()
+        data: generateUserForTesting({ departedDate: randomDepartDate })
       })
     ).data
 
@@ -80,11 +82,16 @@ describe('CRUD operations on User', () => {
     expect(fetchedUser.id).toBeDefined()
     expect(fetchedUser).toBeDefined()
 
-    const shouldMatchUser = generateUserForTesting({ id: createdUser.id })
+    const shouldMatchUser = generateUserForTesting({
+      id: createdUser.id,
+      departedDate: randomDepartDate
+    })
     expect(fetchedUser).toMatchObject(shouldMatchUser)
   })
 
   it('should update user', async () => {
+    const randomDepartDate = generateRandomDate()[0].toString()
+
     const createdUser = (
       await provider.create<User>(R_USERS, {
         data: generateUserForTesting()
@@ -99,8 +106,7 @@ describe('CRUD operations on User', () => {
       data: generateUserForTesting({
         id: createdUser.id,
         name: 'dummy-user',
-        adminRights: false,
-        active: false
+        departedDate: randomDepartDate
       })
     })
     const fetchedUser = (
@@ -112,8 +118,7 @@ describe('CRUD operations on User', () => {
     const shouldMatchUser = generateUserForTesting({
       id: createdUser.id,
       name: 'dummy-user',
-      adminRights: false,
-      active: false
+      departedDate: randomDepartDate
     })
 
     expect(fetchedUser).toMatchObject(shouldMatchUser)
@@ -227,8 +232,7 @@ describe('CRUD operations on User', () => {
       previousData: createdUser,
       data: generateUserForTesting({
         id: createdUser.id,
-        name: 'dummy-user',
-        adminRights: false
+        name: 'dummy-user'
       })
     })
 
@@ -239,10 +243,60 @@ describe('CRUD operations on User', () => {
     })
 
     expect(auditListAfterUpdate.total).toBe(2)
+
     const secondAuditEntry = auditListAfterUpdate.data[1]
     expect(secondAuditEntry.dataId).toBe(createdUser.id)
     expect(secondAuditEntry.resource).toBe(R_USERS)
     expect(secondAuditEntry.activityType).toBe(AuditType.EDIT)
     expect(secondAuditEntry.securityRelated).toBe(true)
+  })
+
+  it('should test after udpate', async () => {
+    const auditListBeforeCreate = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    expect(auditListBeforeCreate.total).toBe(0)
+
+    const createdUser = (
+      await provider.create<User>(R_USERS, { data: generateUserForTesting() })
+    ).data
+
+    expect(createdUser.id).toBeDefined()
+    expect(createdUser).toBeDefined()
+
+    const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    expect(auditListAfterCreate.total).toBe(1)
+
+    await provider.update<User>(R_USERS, {
+      id: createdUser.id,
+      previousData: createdUser,
+      data: generateUserForTesting({
+        id: createdUser.id,
+        name: 'dummy-user',
+        password: 'abd'
+      })
+    })
+
+    const auditListAfterUpdate = await provider.getList<Audit>(R_AUDIT, {
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 },
+      filter: {}
+    })
+
+    expect(auditListAfterUpdate.total).toBe(3)
+
+    const thirdAuditEntry = auditListAfterUpdate.data[2]
+    expect(thirdAuditEntry.dataId).toBe(createdUser.id)
+    expect(thirdAuditEntry.resource).toBe(R_USERS)
+    expect(thirdAuditEntry.activityType).toBe(AuditType.EDIT)
+    expect(thirdAuditEntry.securityRelated).toBe(true)
   })
 })

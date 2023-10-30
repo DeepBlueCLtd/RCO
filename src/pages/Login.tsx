@@ -5,8 +5,11 @@ import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useLogin, useNotify } from 'react-admin'
 import {
+  IconButton,
+  InputAdornment,
   Table,
   TableBody,
   TableCell,
@@ -15,19 +18,34 @@ import {
   TableRow
 } from '@mui/material'
 import AppIcon from '../assets/rco_transparent.png'
+import * as constants from '../constants'
 
 export default function Login(): React.ReactElement {
   const login = useLogin()
   const notify = useNotify()
 
+  const [showPassword, setShowPassword] = React.useState(false)
+
+  const handleClickShowPassword = (): void => {
+    setShowPassword((show) => !show)
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const username = formData.get('username') as string
+    const staffNumber = formData.get('staffNumber') as string
     const password = formData.get('password') as string
-    login({ username, password }).catch(() => {
-      notify('Invalid email or password', { type: 'error' })
-    })
+    login({ staffNumber, password })
+      .catch((err) => {
+        notify(err.message ?? 'Invalid staff-ID or password', { type: 'error' })
+      })
+      .then(() => {
+        const storageEvent = new StorageEvent('storage', {
+          key: constants.AUTH_STATE_CHANGED
+        })
+        window.dispatchEvent(storageEvent)
+      })
+      .catch(console.error)
   }
 
   return (
@@ -53,7 +71,7 @@ export default function Login(): React.ReactElement {
             <TableHead>
               <TableRow>
                 <TableCell align='center' sx={{ fontWeight: '600' }}>
-                  User
+                  Staff Number
                 </TableCell>
                 <TableCell align='center' sx={{ fontWeight: '600' }}>
                   Password
@@ -62,11 +80,11 @@ export default function Login(): React.ReactElement {
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell align='center'>ian</TableCell>
+                <TableCell align='center'>d-1</TableCell>
                 <TableCell align='center'>admin</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell align='center'>jason</TableCell>
+                <TableCell align='center'>d-2</TableCell>
                 <TableCell align='center'>user</TableCell>
               </TableRow>
             </TableBody>
@@ -94,7 +112,7 @@ export default function Login(): React.ReactElement {
               }}
             />
             <Typography component='h1' variant='h5'>
-              Welcome to RCO
+              Welcome to VAL
             </Typography>
           </div>
           <Box
@@ -106,20 +124,29 @@ export default function Login(): React.ReactElement {
               required
               fullWidth
               id='username'
-              label='Username'
-              name='username'
-              autoComplete='username'
+              label='Staff Number'
+              name='staffNumber'
+              autoComplete='staffNumber'
               autoFocus
             />
             <TextField
               margin='normal'
-              required
               fullWidth
+              required
               name='password'
               label='Password'
-              type='password'
+              type={showPassword ? 'text' : 'password'}
               id='password'
               autoComplete='current-password'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={handleClickShowPassword} edge='end'>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               type='submit'

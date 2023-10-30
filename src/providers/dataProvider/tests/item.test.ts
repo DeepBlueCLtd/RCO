@@ -39,9 +39,9 @@ describe('CRUD operations on Item Resource', () => {
       await provider.create<User>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ username: 'ian', password: process.env.PASSWORD })
+    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
 
-    // creating batch beacuse item_number is generated from batch
+    // creating batch beacuse itemNumber is generated from batch
     // in the aftercreate lifeCycle
     await provider.create<Batch>(R_BATCHES, {
       data: generateDummyBatchForTesting({ id: 1 })
@@ -86,9 +86,9 @@ describe('CRUD operations on Item Resource', () => {
     ).data
     expect(firstCreatedItem).toBeDefined()
     expect(firstCreatedId).toEqual(firstCreatedItem.id)
-    const firstCreatedRef = firstCreated.item_number
+    const firstCreatedRef = firstCreated.itemNumber
     expect(firstCreatedRef).toBeTruthy()
-    expect(firstCreatedRef).toEqual('V1/2025/1')
+    expect(firstCreatedRef).toEqual('1/2025/1')
 
     const secondCreated = (
       await provider.create<Item>(R_ITEMS, {
@@ -102,9 +102,9 @@ describe('CRUD operations on Item Resource', () => {
     ).data
     expect(secondCreatedItem).toBeDefined()
     expect(secondCreatedId).toEqual(secondCreatedItem.id)
-    const secondCreatedRef = secondCreated.item_number
+    const secondCreatedRef = secondCreated.itemNumber
     expect(secondCreatedRef).toBeTruthy()
-    expect(secondCreatedRef).toEqual('V1/2025/2')
+    expect(secondCreatedRef).toEqual('1/2025/2')
   })
 
   it('should update the item', async () => {
@@ -267,7 +267,7 @@ describe('CRUD operations on Item Resource', () => {
       })
     ).data
     const batchId: number = batch.id
-    expect(fetchedItem.item_number).toEqual(`V${batchId}/${year}/1`)
+    expect(fetchedItem.itemNumber).toEqual(`${batchId}/${year}/1`)
 
     const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
       sort: { field: 'id', order: 'ASC' },

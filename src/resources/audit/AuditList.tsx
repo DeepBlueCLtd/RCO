@@ -1,22 +1,26 @@
 import { Chip } from '@mui/material'
 import React, { useEffect } from 'react'
 import {
-  Datagrid,
   List,
   TextField,
   DateField,
   DateTimeInput,
-  NumberInput,
   useListContext,
   AutocompleteArrayInput,
   TextInput,
-  FunctionField
+  FunctionField,
+  DatagridConfigurable,
+  type DatagridConfigurableProps,
+  FilterButton,
+  ExportButton
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
 import DateFilter from '../../components/DateFilter'
 import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
+import StyledTopToolbar from '../../components/StyledTopToolbar'
+import { useLocation } from 'react-router-dom'
 
 interface Props {
   label: string
@@ -51,7 +55,12 @@ const filters = [
     key='Activity Type'
     label='Activity Type'
   />,
-  <NumberInput source='user' key='user' label='User' min={1} max={2} />,
+  <SourceInput
+    reference={constants.R_USERS}
+    source='user'
+    key='user'
+    label='User'
+  />,
   <TextInput source='resource' key='resource' label='Resource' />,
   <TextInput source='item' key='Item' />,
   <SecurityRelatedFilter
@@ -60,14 +69,14 @@ const filters = [
     label='Security Related'
   />,
   <DateFilter key='createdAt' source='dateTime' label='Created At' />,
-  <SourceInput key='subject' source='subject' reference={constants.R_USERS} />
+  <SourceInput key='subject' source='subjectId' reference={constants.R_USERS} />
 ]
 
 const resourcesRefKey: Record<string, string> = {
   [constants.R_BATCHES]: 'batchNumber',
-  [constants.R_ITEMS]: 'item_number',
-  [constants.R_DESTRUCTION]: 'reference',
-  [constants.R_DISPATCH]: 'reference',
+  [constants.R_ITEMS]: 'itemNumber',
+  [constants.R_DESTRUCTION]: 'name',
+  [constants.R_DISPATCH]: 'name',
   [constants.R_ADDRESSES]: 'id',
   [constants.R_PROJECTS]: 'name',
   [constants.R_PLATFORMS]: 'name',
@@ -78,6 +87,7 @@ export interface FilterType {
   dataId?: number
   user?: number
   resource?: string
+  activityType?: string | string[]
 }
 
 const referenceItems = [
@@ -89,14 +99,38 @@ const referenceItems = [
   constants.R_DEPARTMENT
 ]
 
-interface AuditListProps {
+interface ListActionsProps {
+  buttons?: React.ReactElement
+}
+
+export const ListActions = (props: ListActionsProps): React.ReactElement => {
+  const { buttons = <></> } = props
+  return (
+    <StyledTopToolbar>
+      {buttons}
+      <FilterButton />
+      <ExportButton />
+    </StyledTopToolbar>
+  )
+}
+
+interface AuditListProps extends DatagridConfigurableProps {
   filter?: FilterType
   data?: Audit[]
+  actions?: React.ReactElement
 }
 export default function AuditList({
   filter = undefined,
-  data = undefined
+  data = undefined,
+  omit = [],
+  actions
 }: AuditListProps): React.ReactElement {
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const storeKey = searchParams.get('filter')
+    ? 'filtered-audit-list'
+    : 'simple-audit-list'
+
   return (
     <List
       perPage={25}
@@ -106,8 +140,11 @@ export default function AuditList({
         order: 'DESC'
       }}
       filters={filters}
-      filter={filter}>
-      <Datagrid
+      filter={filter}
+      storeKey={storeKey}
+      actions={actions ?? <ListActions />}>
+      <DatagridConfigurable
+        omit={omit}
         {...(data !== undefined ? { data } : null)}
         bulkActionButtons={false}
         sx={{
@@ -116,46 +153,72 @@ export default function AuditList({
             padding: '12px'
           }
         }}>
-        <SourceField source='user' reference={constants.R_USERS} link='show' />
-        <DateField source='dateTime' label='Date Time' showTime />;
-        <TextField source='label' label='Activity Type' />
-        <TextField
+        <SourceField<Audit>
+          source='user'
+          reference={constants.R_USERS}
+          link='show'
+        />
+        <DateField<Audit> source='dateTime' label='Date Time' showTime />;
+        <TextField<Audit> source='label' label='Activity Type' />
+        <TextField<Audit>
           source='activityDetail'
           label='Activity Details'
           sx={{ wordBreak: 'break-all', display: 'inline-block' }}
         />
-        <TextField source='securityRelated' label='Security Related' />
-        <TextField source='resource' label='Resource' />
-        <FunctionField
-          label='Name'
-          render={(record: Audit) => {
+        <TextField<Audit> source='securityRelated' label='Security Related' />
+        <TextField<Audit> source='resource' label='Resource' />
+        {!omit.includes('dataId') && (
+          <FunctionField<Audit>
+            label='Name'
+            render={(record) => {
+              return (
+                <>
+                  {record.resource !== null ? (
+                    <SourceField<Audit>
+                      source='dataId'
+                      reference={record.resource}
+                      sourceField={resourcesRefKey[record.resource]}
+                      link={() => {
+                        if (
+                          record.resource &&
+                          referenceItems.includes(record.resource)
+                        ) {
+                          return `/${record.resource}/${record.dataId}/show`
+                        }
+                        if (record.resource === constants.R_ITEMS) {
+                          return `/${constants.R_RICH_ITEMS}/${record.dataId}/show`
+                        }
+                        return 'show'
+                      }}
+                    />
+                  ) : (
+                    <TextField<Audit> source='dataId' label='Item' />
+                  )}
+                </>
+              )
+            }}
+          />
+        )}
+        <TextField<Audit> source='ip' label='IP Address' />
+        {/* Note: the following function is flexible, so it is able to show
+        source value for different kinds of resource */}
+        <FunctionField<Audit>
+          label='Subject'
+          render={(record) => {
             return (
-              <>
-                {record.resource !== null ? (
-                  <SourceField
-                    source='dataId'
-                    reference={record.resource}
-                    sourceField={resourcesRefKey[record.resource]}
-                    link={(record) => {
-                      if (referenceItems.includes(record.resource)) {
-                        return `/${record.resource}/${record.dataId}/show`
-                      }
-                      return 'show'
-                    }}
-                  />
-                ) : (
-                  <TextField source='dataId' label='Item' />
-                )}
-              </>
+              <SourceField<Audit>
+                source='subjectId'
+                {...(record.subjectResource &&
+                resourcesRefKey[record.subjectResource]
+                  ? { sourceField: 'itemNumber' }
+                  : null)}
+                reference={record.subjectResource ?? undefined}
+                link='show'
+              />
             )
           }}
         />
-        <SourceField
-          source='subject'
-          reference={constants.R_USERS}
-          link='show'
-        />
-      </Datagrid>
+      </DatagridConfigurable>
     </List>
   )
 }

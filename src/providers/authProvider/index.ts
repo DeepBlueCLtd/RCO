@@ -6,62 +6,102 @@ import {
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
 import { AuditType } from '../../utils/activity-types'
-import {
-  decryptData,
-  decryptPassword,
-  encryptData,
-  generateSalt
-} from '../../utils/encryption'
+import { decryptData, encryptData } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
+import bcrypt from 'bcryptjs'
+import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
+import { checkIfDateHasPassed } from '../../utils/helper'
+
 export const getUser = (): User | undefined => {
-  const encryptedUser = localStorage.getItem(constants.TOKEN_KEY)
-  const salt = localStorage.getItem(constants.SALT)
-  if (encryptedUser !== null && salt !== null) {
-    const decryptedData = decryptData(`${encryptedUser}`)
-    return JSON.parse(
-      decryptedData.substring(0, decryptedData.length - salt.length)
-    )
+  const encryptedUser = getCookie(constants.TOKEN_KEY)
+  if (encryptedUser) {
+    const decryptedData = decryptData(encryptedUser)
+    return JSON.parse(decryptedData)
   }
+  return undefined
 }
 
-const setToken = (token: string, salt: string): void => {
-  localStorage.setItem(constants.TOKEN_KEY, token)
-  localStorage.setItem(constants.SALT, salt)
+const getCookie = (name: string): string | null => {
+  const cookies = document.cookie.split('; ')
+  for (const cookie of cookies) {
+    const items = cookie.split('=')
+    if (items[0] === name) {
+      return decodeURIComponent(items[1])
+    }
+  }
+  return null
 }
 
-const removeToken = (): void => {
-  localStorage.removeItem(constants.TOKEN_KEY)
-  localStorage.removeItem(constants.SALT)
+const setToken = (token: string): void => {
+  const date = new Date()
+  date.setTime(date.getTime() + 1 * 60 * 60 * 1000)
+  const expires = date.toUTCString()
+  document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
+}
+
+export const removeToken = (): void => {
+  removeCookie(constants.TOKEN_KEY)
+}
+
+const removeCookie = (name: string): void => {
+  // note: setting the expiry date of a cookie to a past data effectively
+  // removes it
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
+}
+
+const createUserToken = async (
+  user: User,
+  audit: AuditFunctionType
+): Promise<void> => {
+  const clonedUser: User = {
+    ...user
+  }
+  delete clonedUser.password
+  const token = encryptData(`${JSON.stringify(clonedUser)}`)
+  setToken(token)
+  await audit({
+    activityType: AuditType.LOGIN,
+    resource: constants.R_USERS,
+    dataId: user.id,
+    subjectId: null,
+    subjectResource: null,
+    securityRelated: null,
+    activityDetail: null
+  })
 }
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
-    login: async ({ username, password }) => {
+    login: async ({ staffNumber, password }) => {
       const data = await dataProvider.getList(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
-        filter: { name: username }
+        filter: { staffNumber }
       })
-      const user = data.data.find((item: any) => item.name === username)
+      const user = data.data.find(
+        (item: any) => item.staffNumber === staffNumber
+      )
       if (user !== undefined) {
-        const salt: string = user.salt
-        const userHashedPassword: string = user.password
-        const decryptedPassword = decryptPassword(userHashedPassword, salt)
-        if (password === decryptedPassword) {
-          const clonedUser: Omit<User, 'password'> & { password?: string } = {
-            ...user
-          }
-          delete clonedUser.password
-          const salt: string = generateSalt()
-          const token = encryptData(`${JSON.stringify(clonedUser)}${salt}`)
-          setToken(token, salt)
-          await audit({
-            type: AuditType.LOGIN,
-            resource: null,
-            dataId: null
-          })
+        const hasUserDeparted =
+          user.departedDate !== undefined &&
+          user.departedDate !== null &&
+          checkIfDateHasPassed(user.departedDate)
+        if (
+          user.password &&
+          bcrypt.compareSync(password, user.password) &&
+          !hasUserDeparted
+        ) {
+          await createUserToken(user, audit)
           return await Promise.resolve(data)
+        } else if (
+          !user.password &&
+          password === user.staffNumber &&
+          !hasUserDeparted
+        ) {
+          await createUserToken(user, audit)
+        } else if (hasUserDeparted) {
+          throw new Error('User has departed organisation')
         } else {
           throw new Error('Wrong password')
         }
@@ -70,20 +110,25 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       }
     },
     logout: async (): Promise<void> => {
+      const user = getUser()
       await audit({
-        type: AuditType.LOGOUT,
-        resource: null,
-        dataId: null
+        activityType: AuditType.LOGOUT,
+        resource: constants.R_USERS,
+        dataId: user?.id ?? null,
+        subjectId: null,
+        subjectResource: null,
+        securityRelated: null,
+        activityDetail: null
       })
       removeToken()
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
-      await Promise.resolve()
-      // const token = getUser()
-      // token !== undefined
-      //   ? await Promise.resolve()
-      //   : await Promise.reject(new Error('Token not found'))
+      // await Promise.resolve()
+      const token = getUser()
+      token !== undefined
+        ? await Promise.resolve(true)
+        : await Promise.reject(new Error('Token not found'))
     },
     checkError: async (error): Promise<any> => {
       const status = error.status
@@ -107,14 +152,13 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       try {
         const user = getUser()
         if (user !== undefined) {
-          const permissions = getPermissionsByRoles(user.roles)
+          const permissions = getPermissionsByRoles(user.role)
           return await Promise.resolve(permissions)
         } else {
           throw new Error('You are not a registered user.')
         }
       } catch (error) {
-        const permissions = getPermissionsByRoles(['user'])
-        return await Promise.resolve(permissions)
+        throw new Error('You are not a registered user.')
       }
     }
   }

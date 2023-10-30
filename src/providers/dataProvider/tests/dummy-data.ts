@@ -9,7 +9,7 @@ interface NewBatch extends Omit<Batch, 'id' | 'createdAt' | 'createdBy'> {
 }
 
 interface NewItem
-  extends Omit<Item, 'id' | 'createdAt' | 'createdBy' | 'item_number'> {
+  extends Omit<Item, 'id' | 'createdAt' | 'createdBy' | 'itemNumber'> {
   readonly id?: number
 }
 
@@ -20,20 +20,15 @@ interface Props {
 export const generateDummyBatchForTesting = ({ id }: Props = {}): NewBatch => {
   return {
     ...(id !== undefined ? { id } : null),
-    startDate: DateTime.now().toFormat('yyyy-MM-dd'),
-    endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
-    batchNumber: `V1/${year}`,
-    yearOfReceipt: String(year),
-    department: 1,
+    batchNumber: `1/${year}`,
+    yearOfReceipt: year,
+    department: '1-department',
     project: 1,
     platform: 1,
-    organisation: 1,
-    protectiveMarking: 1,
-    catCode: 1,
-    catHandle: undefined,
-    catCave: [1],
+    organisation: '1-organisation',
     remarks: 'remarks-1',
-    receiptNotes: 'receipt-notes-1'
+    receiptNotes: 'receipt-notes-1',
+    vault: 'VAULT'
   }
 }
 
@@ -42,7 +37,7 @@ interface ItemProps {
   remarks?: string
   mediaType?: MediaType['id']
   toISO?: boolean
-  batchId?: number
+  batch?: Batch['id']
 }
 
 export const generateItemForTesting = ({
@@ -50,11 +45,12 @@ export const generateItemForTesting = ({
   remarks,
   mediaType,
   toISO,
-  batchId
+  batch
 }: ItemProps = {}): NewItem => {
   return {
     ...(id !== undefined ? { id } : null),
     mediaType: mediaType ?? 1,
+    legacyMediaType: null,
     startDate:
       toISO === true
         ? new Date(DateTime.now().toFormat('yyyy-MM-dd')).toISOString()
@@ -66,15 +62,19 @@ export const generateItemForTesting = ({
           ).toISOString()
         : DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
 
-    batchId: batchId ?? 1,
+    batch: batch ?? 1,
     vaultLocation: 1,
     remarks: remarks ?? 'Dummy-Remarks-1',
     protectiveMarking: 1,
-    catCode: 1,
-    catHandle: undefined,
-    catCave: [1],
-    consecPages: 'consec-pages-1',
-    musterRemarks: 'muster-remarks-1'
+    consecSheets: 'consec-sheets-1',
+    musterRemarks: 'muster-remarks-1',
+    loanedDate: null,
+    loanedTo: null,
+    destruction: null,
+    destructionDate: null,
+    dispatchedDate: null,
+    dispatchJob: null,
+    protectionString: null
   }
 }
 
@@ -93,7 +93,9 @@ export const generateProjectForTesting = ({
     remarks: 'dummy-remarks-1',
     startDate: DateTime.now().toFormat('yyyy-MM-dd'),
     endDate: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
-    createdBy: 1
+    createdBy: 1,
+    enduring: false,
+    active: true
   }
 }
 
@@ -115,23 +117,25 @@ export const generatePlatformForTesting = ({
 
 interface UserProps {
   id?: number
-  adminRights?: boolean
-  active?: boolean
+  departedDate?: string
   name?: string
+  password?: string
 }
 
 export const generateUserForTesting = ({
   id,
   name,
-  adminRights,
-  active
-}: UserProps = {}): Omit<User, 'id' | 'createdAt' | 'createdBy'> => ({
+  departedDate,
+  password = undefined
+}: UserProps = {}): Omit<
+  User,
+  'id' | 'createdAt' | 'createdBy' | 'departedDate'
+> => ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
-  password: 'abcd',
-  adminRights: adminRights ?? true,
-  active: active ?? true,
-  roles: ['rco-user'],
+  password: password ?? undefined,
+  ...(departedDate ? { departedDate } : { departedDate: null }),
+  role: 'rco-user',
   staffNumber: 'd-1'
 })
 
@@ -145,7 +149,7 @@ export const generateVaultLocationForTesting = ({
   id,
   active,
   name
-}: VaultLocationProps = {}): Omit<ActiveReferenceItem, 'id'> => ({
+}: VaultLocationProps = {}): Omit<IntegerReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
   name: name ?? 'Dummy-Vault-Location-1'
@@ -159,7 +163,7 @@ interface ActiveReferenceItemProps {
 export const generateActiveReferenceItemForTesting = (
   name: string,
   { id, active }: ActiveReferenceItemProps = {}
-): Omit<ActiveReferenceItem, 'id'> => ({
+): Omit<IntegerReferenceItem, 'id'> => ({
   ...(id !== undefined ? { id } : null),
   active: active ?? true,
   name

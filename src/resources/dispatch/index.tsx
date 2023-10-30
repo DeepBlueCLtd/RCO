@@ -14,8 +14,8 @@ const DispatchCreate = (): React.ReactElement => {
     <Create
       mutationOptions={{
         onSuccess: (data: Dispatch) => {
-          notify('“Please add items” from Items page')
-          redirect(`/${constants.R_DISPATCH}/${data.id}`)
+          notify('Please add items from Live Items page')
+          redirect(`/${constants.R_DISPATCH}/${data.id}/show`)
         }
       }}>
       <DispatchForm />
@@ -26,7 +26,7 @@ const DispatchCreate = (): React.ReactElement => {
 export const DispatchEdit = (): React.ReactElement => {
   return (
     <Edit>
-      <DispatchForm />
+      <DispatchForm edit />
     </Edit>
   )
 }

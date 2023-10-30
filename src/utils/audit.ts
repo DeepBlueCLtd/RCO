@@ -1,31 +1,28 @@
 import { type DataProvider } from 'react-admin'
 import { getUser } from '../providers/authProvider'
 import * as constants from '../constants'
-import { getActivityTypeLabel, type AuditType } from './activity-types'
+import { getActivityTypeLabel } from './activity-types'
+import { getClientIp } from './helper'
 
-export interface Props {
-  type: AuditType
-  activityDetail?: string
-  securityRelated?: boolean
-  resource: string | null
-  dataId: number | null
-  index?: number
-  label?: string
-  subject?: User['id']
-}
+/** minimal set of data for Audit, to be supplemented
+ * with other metadata when stored
+ */
+export type AuditData = Omit<Audit, 'id' | 'user' | 'dateTime' | 'label'>
+
 /**
  * @param  {string=} activityDetail - Deprecated
  */
 export const trackEvent =
   (dataProvider: DataProvider) =>
   async ({
-    type,
+    activityType,
     activityDetail = '',
     securityRelated,
     resource,
     dataId,
-    subject
-  }: Props) => {
+    subjectId,
+    subjectResource
+  }: AuditData) => {
     try {
       const user = getUser()
       if (user !== undefined) {
@@ -33,13 +30,15 @@ export const trackEvent =
           user: user.id,
           resource,
           dataId,
-          activityType: type,
+          activityType,
           dateTime: new Date().toISOString(),
           activityDetail,
-          label: getActivityTypeLabel(type),
+          label: getActivityTypeLabel(activityType),
           securityRelated:
             securityRelated !== undefined ? securityRelated : false,
-          subject: subject !== undefined ? subject : undefined
+          subjectId,
+          subjectResource,
+          ip: getClientIp()
         }
         await dataProvider.create<Audit>(constants.R_AUDIT, {
           data: audit

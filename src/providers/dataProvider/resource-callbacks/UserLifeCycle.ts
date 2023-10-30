@@ -7,6 +7,7 @@ import {
 import { R_USERS } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
 import {
+  type UpdateResult,
   type CreateParams,
   type ResourceCallbacks,
   type UpdateParams
@@ -14,33 +15,79 @@ import {
 
 const lifeCycles = (
   audit: AuditFunctionType
-): Omit<ResourceCallbacks<any>, 'resource'> => ({
-  beforeCreate: async (record: CreateParams<User>) => {
-    return withCreatedByAt(record)
-  },
-  beforeUpdate: async (record: UpdateParams<User>) => {
-    const departed = record.previousData.active && record.data.active === false
-    const returned =
-      record.previousData.departedDate !== undefined &&
-      record.data.departedDate === undefined
-    // all user changes are security related
-    const securityRelated = true
-    return await auditForUpdatedChanges(
-      record,
-      R_USERS,
-      {
-        type: departed
-          ? AuditType.USER_DEPARTED
-          : returned
-          ? AuditType.USER_RETURNED
-          : AuditType.EDIT,
-        securityRelated
-      },
-      audit,
-      record.id as number
-    )
+): Omit<ResourceCallbacks<any>, 'resource'> => {
+  let passwordReset = false
+  let returned = false
+  let departed = false
+  let passwordAssigned = false
+  return {
+    beforeCreate: async (record: CreateParams<User>) => {
+      return withCreatedByAt(record)
+    },
+    beforeUpdate: async (record: UpdateParams<User>) => {
+      departed =
+        (record.data.password === undefined || record.data.password === null) &&
+        record.previousData.departedDate !== null &&
+        record.previousData.departedDate !== undefined &&
+        (record.data.departedDate !== null ||
+          record.data.departedDate !== undefined)
+
+      returned =
+        (record.data.password === undefined || record.data.password === null) &&
+        record.previousData.departedDate !== undefined &&
+        record.previousData.departedDate !== null &&
+        (record.data.departedDate === undefined ||
+          record.data.departedDate === null)
+
+      passwordReset =
+        (record.data.departedDate === undefined ||
+          record.data.departedDate === null) &&
+        (record.previousData.password !== undefined ||
+          record.previousData.password !== null) &&
+        record.data.password === ''
+      passwordAssigned =
+        (record.previousData.password === null ||
+          record.previousData.password === undefined) &&
+        record.data.password !== null &&
+        record.data.password !== undefined
+
+      // all user changes are security related
+      const securityRelated = true
+      return await auditForUpdatedChanges(
+        record,
+        R_USERS,
+        {
+          activityType: departed
+            ? AuditType.USER_DEPARTED
+            : returned
+            ? AuditType.USER_RETURNED
+            : passwordReset
+            ? AuditType.PASSWORD_RESET
+            : AuditType.EDIT,
+          securityRelated
+        },
+        audit
+      )
+    },
+    afterUpdate: async (result: UpdateResult<User>) => {
+      if (passwordAssigned) {
+        const { id } = result.data
+        const auditObj = {
+          resource: R_USERS,
+          activityType: AuditType.EDIT,
+          activityDetail: 'Password assigned',
+          securityRelated: true,
+          dataId: id,
+          subjectId: null,
+          subjectResource: null
+        }
+        audit(auditObj).catch(console.log)
+      }
+
+      return result
+    }
   }
-})
+}
 
 const securityRelated = (): boolean => true
 
