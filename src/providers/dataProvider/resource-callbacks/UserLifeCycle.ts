@@ -1,8 +1,7 @@
 import {
   type AuditFunctionType,
   withCreatedByAt,
-  extendLifeCycle,
-  auditForUpdatedChanges
+  extendLifeCycle
 } from '../dataprovider-utils'
 import { R_USERS } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
@@ -16,58 +15,19 @@ import {
 const lifeCycles = (
   audit: AuditFunctionType
 ): Omit<ResourceCallbacks<any>, 'resource'> => {
-  let passwordReset = false
-  let returned = false
-  let departed = false
   let passwordAssigned = false
   return {
     beforeCreate: async (record: CreateParams<User>) => {
       return withCreatedByAt(record)
     },
     beforeUpdate: async (record: UpdateParams<User>) => {
-      departed =
-        (record.data.password === undefined || record.data.password === null) &&
-        record.previousData.departedDate !== null &&
-        record.previousData.departedDate !== undefined &&
-        (record.data.departedDate !== null ||
-          record.data.departedDate !== undefined)
-
-      returned =
-        (record.data.password === undefined || record.data.password === null) &&
-        record.previousData.departedDate !== undefined &&
-        record.previousData.departedDate !== null &&
-        (record.data.departedDate === undefined ||
-          record.data.departedDate === null)
-
-      passwordReset =
-        (record.data.departedDate === undefined ||
-          record.data.departedDate === null) &&
-        (record.previousData.password !== undefined ||
-          record.previousData.password !== null) &&
-        record.data.password === ''
       passwordAssigned =
         (record.previousData.password === null ||
           record.previousData.password === undefined) &&
         record.data.password !== null &&
         record.data.password !== undefined
 
-      // all user changes are security related
-      const securityRelated = true
-      return await auditForUpdatedChanges(
-        record,
-        R_USERS,
-        {
-          activityType: departed
-            ? AuditType.USER_DEPARTED
-            : returned
-            ? AuditType.USER_RETURNED
-            : passwordReset
-            ? AuditType.PASSWORD_RESET
-            : AuditType.EDIT,
-          securityRelated
-        },
-        audit
-      )
+      return record
     },
     afterUpdate: async (result: UpdateResult<User>) => {
       if (passwordAssigned) {
