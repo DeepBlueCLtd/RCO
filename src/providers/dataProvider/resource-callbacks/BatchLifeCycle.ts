@@ -78,7 +78,7 @@ const lifeCycles = (
       const { id, yearOfReceipt: year } = data
       const yearVal = year
       const idVal: string = await generateBatchId(provider, year)
-      const batchNumber = `${idVal}/${yearVal}`
+      const batchNumber = `V${idVal}/${yearVal}`
       const withRef = await dataProvider.update<Batch>(R_BATCHES, {
         id,
         previousData: data,
