@@ -279,6 +279,8 @@ CREATE TABLE if not exists  configData (
   protectionName  TEXT NOT NULL,
   catCode  TEXT NOT NULL,
   catHandle  TEXT NOT NULL,
-  catCave  TEXT NOT NULL
+  catCave  TEXT NOT NULL,
+  headerMarking TEXT NOT NULL,
+  reportPrefix TEXT NOT NULL
 )
 
