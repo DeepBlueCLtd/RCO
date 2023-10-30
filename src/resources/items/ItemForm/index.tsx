@@ -30,7 +30,11 @@ const schema = yup.object({
       'End date must be greater than start date',
       function (value) {
         const startDate = this.parent.startDate
-        return startDate ? dayjs(value).diff(startDate) > 0 : true
+        return startDate
+          ? value
+            ? dayjs(value).diff(startDate) > 0
+            : true
+          : true
       }
     ),
   batch: yup.number().required(),
