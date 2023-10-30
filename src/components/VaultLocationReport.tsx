@@ -22,7 +22,6 @@ import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 import React from 'react'
-import { useConfigData } from '../utils/useConfigData'
 
 type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
@@ -100,36 +99,11 @@ type Props = PartialBy<ListProps, 'children'> & {
   handleOpen: any
 }
 
-const Header = ({
-  configData
-}: {
-  configData: ConfigData | undefined
-}): React.ReactElement => {
-  return (
-    <Box textAlign='center' marginBottom={2}>
-      <Typography variant='h4'>{configData?.headerMarking}</Typography>
-    </Box>
-  )
-}
-
-const Footer = ({
-  configData
-}: {
-  configData: ConfigData | undefined
-}): React.ReactElement => {
-  return (
-    <Box position='absolute' bottom={0} textAlign='center' width='100%'>
-      <Typography variant='caption'>{configData?.headerMarking}</Typography>
-    </Box>
-  )
-}
-
 export default function VaultLocationReport(props: Props): ReactElement {
   const { open, handleOpen } = props
   const { selectedIds } = useListContext()
   const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
-  const configData = useConfigData()
 
   useEffect(() => {
     dataProvider
@@ -153,7 +127,6 @@ export default function VaultLocationReport(props: Props): ReactElement {
     <>
       <Printable open={open} onClose={handleOpen(false)}>
         <>
-          <Header configData={configData} />
           {selectedIds.map((id, index) => {
             const filter = {
               vaultLocation: id,
@@ -216,7 +189,6 @@ export default function VaultLocationReport(props: Props): ReactElement {
               </React.Fragment>
             )
           })}
-          <Footer configData={configData} />
         </>
       </Printable>
     </>
