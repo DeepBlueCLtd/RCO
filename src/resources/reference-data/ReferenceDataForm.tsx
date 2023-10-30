@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   BooleanInput,
   NumberInput,
@@ -12,6 +12,7 @@ import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import useCustomid from '../../hooks/useCustomId'
+import { useFormContext } from 'react-hook-form'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -21,12 +22,12 @@ export default function ReferenceDataForm(
   props: FormProps
 ): React.ReactElement {
   const { isEdit, name } = props
+  const [isValid, setIsValid] = useState<boolean>(false)
+
   const defaultValues = {
     name: '',
     active: true
   }
-
-  const isNotActive = (name: string): boolean => name === constants.R_AUDIT
 
   const ReferenceToolbar = ({
     isEdit
@@ -39,7 +40,7 @@ export default function ReferenceDataForm(
         <SaveButton />
       </Toolbar>
     ) : (
-      <EditToolBar type='button' onClick={createRecord} />
+      <EditToolBar type='button' onClick={createRecord} isValid={isValid} />
     )
   }
 
@@ -48,6 +49,32 @@ export default function ReferenceDataForm(
       toolbar={<ReferenceToolbar isEdit={isEdit} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
+      <FormContent name={name} isEdit={isEdit} setIsValid={setIsValid} />
+    </SimpleForm>
+  )
+}
+
+type FormContentType = FormProps & {
+  setIsValid: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const FormContent = ({
+  name,
+  isEdit,
+  setIsValid
+}: FormContentType): React.ReactElement => {
+  const {
+    formState: { isValid }
+  } = useFormContext()
+
+  const isNotActive = (name: string): boolean => name === constants.R_AUDIT
+
+  useEffect(() => {
+    setIsValid(isValid)
+  }, [isValid])
+
+  return (
+    <>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       {name === constants.R_MEDIA_TYPE ? (
         <NumberInput
@@ -61,6 +88,6 @@ export default function ReferenceDataForm(
       ) : (
         ''
       )}
-    </SimpleForm>
+    </>
   )
 }

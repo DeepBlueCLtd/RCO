@@ -274,9 +274,11 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
     linkPathname = `/destruction/${record.destruction}/show`
     source = 'destruction'
     const actionText =
-      record.destructionDate !== undefined ? 'Destroyed at:' : 'Pending'
+      record.destructionDate !== undefined && record.destructionDate !== null
+        ? 'Destroyed at:'
+        : 'Pending'
     const dateText =
-      record.destructionDate !== undefined
+      record.destructionDate !== undefined && record.destructionDate !== null
         ? record.destructionDate
         : 'Destruction'
     component = (
@@ -290,9 +292,13 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
     linkPathname = `/dispatch/${record.dispatchJob}/show`
     source = 'dispatchJob'
     const actionText =
-      record.dispatchedDate !== undefined ? 'Dispatched at:' : 'Pending'
+      record.dispatchedDate !== undefined && record.dispatchedDate !== null
+        ? 'Dispatched at:'
+        : 'Pending'
     const dateText =
-      record.dispatchedDate !== undefined ? record.dispatchedDate : 'Dispatch'
+      record.dispatchedDate !== undefined && record.dispatchedDate !== null
+        ? record.dispatchedDate
+        : 'Dispatch'
     component = (
       <ActionLink
         actionText={actionText}
