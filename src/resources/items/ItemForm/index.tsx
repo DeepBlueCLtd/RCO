@@ -27,7 +27,7 @@ const schema = yup.object({
     .nullable()
     .test(
       'endDate',
-      'End date must be greater than start date',
+      'End date must be greater than or equal to start date',
       function (value) {
         const startDate = this.parent.startDate
         return startDate
