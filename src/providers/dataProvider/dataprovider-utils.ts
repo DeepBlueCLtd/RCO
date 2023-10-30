@@ -163,15 +163,22 @@ export const extendLifeCycle = (
   ...callbacks
 })
 
-const getReferenceIdFromField = (reference: string, prefix: string): number => {
-  return parseInt(reference.slice(prefix.length + 1, -5))
+const getReferenceIdFromField = (reference: string): number => {
+  // split into 3 elements
+  const tokens = reference.split('/')
+
+  if (tokens.length !== 3) {
+    console.warn('Tokens not parsing as expected', reference)
+  }
+
+  return parseInt(tokens[1])
 }
 
-const compareVersions = (v1: string, v2: string, prefix: string): number => {
+const compareVersions = (v1: string, v2: string): number => {
   if (typeof v2 !== 'string') return 1
 
-  const s1 = getReferenceIdFromField(v1, prefix)
-  const s2 = getReferenceIdFromField(v2, prefix)
+  const s1 = getReferenceIdFromField(v1)
+  const s2 = getReferenceIdFromField(v2)
 
   if (isNaN(s1) || isNaN(s2)) return NaN
   if (s1 < s2) {
@@ -209,13 +216,11 @@ export async function generateReference<T extends RaRecord>(
   }
 
   const greatestDispatch = dispatch.data.reduce((prev, current) =>
-    compareVersions(prev[fieldName], current[fieldName], prefix) === -1
-      ? current
-      : prev
+    compareVersions(prev[fieldName], current[fieldName]) === -1 ? current : prev
   )
 
   const referenceId = (
-    getReferenceIdFromField(greatestDispatch[fieldName], prefix) + 1
+    getReferenceIdFromField(greatestDispatch[fieldName]) + 1
   ).toLocaleString('en-US', {
     useGrouping: false
   })
