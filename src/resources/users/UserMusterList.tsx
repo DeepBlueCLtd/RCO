@@ -14,6 +14,7 @@ import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   open: boolean
@@ -31,16 +32,42 @@ const Title = (): React.ReactElement => {
   )
 }
 
+const Header = ({
+  configData
+}: {
+  configData: ConfigData | undefined
+}): React.ReactElement => {
+  return (
+    <Box textAlign='center' marginBottom={2}>
+      <Typography variant='h4'>{configData?.headerMarking}</Typography>
+    </Box>
+  )
+}
+
+const Footer = ({
+  configData
+}: {
+  configData: ConfigData | undefined
+}): React.ReactElement => {
+  return (
+    <Box position='absolute' bottom={0} textAlign='center' width='100%'>
+      <Typography variant='caption'>{configData?.headerMarking}</Typography>
+    </Box>
+  )
+}
+
 export default function UserMusterList<T extends User>(
   props: Props
 ): React.ReactElement {
   const { open, onClose } = props
   const { selectedIds } = useListContext()
   const userIds: number[] = selectedIds
+  const configData = useConfigData()
 
   return (
     <Printable open={open} onClose={onClose}>
       <>
+        <Header configData={configData} />
         {userIds.map((userId, index) => {
           return (
             <React.Fragment key={userId}>
@@ -119,6 +146,7 @@ export default function UserMusterList<T extends User>(
             </React.Fragment>
           )
         })}
+        <Footer configData={configData} />
       </>
     </Printable>
   )
