@@ -16,7 +16,6 @@ import { isNumber } from '../../../utils/number'
 const compareVersions = (v1: string, v2: string): number => {
   const s1 = parseInt(v1, 10)
   const s2 = parseInt(v2, 10)
-
   if (isNaN(s1) || isNaN(s2)) return NaN
   if (s1 < s2) {
     return -1
@@ -49,8 +48,12 @@ export const generateBatchId = async (
   const greatestBatch = batches.data.reduce((prev, current) => {
     // get the first number in the sequence, taken from here:
     // https://stackoverflow.com/a/609588/92441
+
+    if (!current.batchNumber) return prev
+
     const previousBatchIndex = prev.batchNumber.match(/\d+/)[0]
     const currentBatchIndex = current.batchNumber.match(/\d+/)[0]
+
     return compareVersions(previousBatchIndex, currentBatchIndex) === -1
       ? current
       : prev
@@ -86,6 +89,7 @@ const lifeCycles = (
           batchNumber
         }
       })
+
       await audit({
         activityType: AuditType.CREATE,
         resource: R_BATCHES,
