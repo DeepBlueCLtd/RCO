@@ -30,7 +30,10 @@ const schema = yup.object({
       'End date must be greater than start date',
       function (value) {
         const startDate = this.parent.startDate
-        return startDate ? dayjs(value).diff(startDate) > 0 : true
+        const allowance = -1000
+        // if they are the same value on screen, they can be a few hundred millis out
+        // disallow if difference less than a second
+        return startDate ? dayjs(value).diff(startDate) > allowance : true
       }
     ),
   batch: yup.number().required(),
