@@ -5,7 +5,8 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody
+  TableBody,
+  TableFooter
 } from '@mui/material'
 import { type ReactElement, useEffect, useState } from 'react'
 import {
@@ -22,6 +23,7 @@ import SourceField from './SourceField'
 import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 import React from 'react'
+import { useConfigData } from '../utils/useConfigData'
 
 type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
@@ -99,11 +101,43 @@ type Props = PartialBy<ListProps, 'children'> & {
   handleOpen: any
 }
 
+export const Header = ({
+  configData
+}: {
+  configData: ConfigData | undefined
+}): React.ReactElement => {
+  return (
+    <Box textAlign='center' marginBottom={2} marginLeft='15px'>
+      <Typography variant='caption'>{configData?.headerMarking}</Typography>
+    </Box>
+  )
+}
+
+export const Footer = ({
+  configData
+}: {
+  configData: ConfigData | undefined
+}): React.ReactElement => {
+  return (
+    <Box
+      textAlign='center'
+      bgcolor='white'
+      zIndex={999}
+      position='fixed'
+      bottom={5}
+      left={0}
+      right={0}>
+      <Typography variant='caption'>{configData?.headerMarking}</Typography>
+    </Box>
+  )
+}
+
 export default function VaultLocationReport(props: Props): ReactElement {
   const { open, handleOpen } = props
   const { selectedIds } = useListContext()
   const [locations, setLocations] = useState<ReferenceItemById>()
   const dataProvider = useDataProvider()
+  const configData = useConfigData()
 
   useEffect(() => {
     dataProvider
@@ -136,53 +170,66 @@ export default function VaultLocationReport(props: Props): ReactElement {
             }
             return (
               <React.Fragment key={id}>
-                <Box padding={'20px'} key={id}>
-                  <Typography variant='h4' textAlign='center' margin='10px'>
-                    VAL - Location Muster List
-                  </Typography>
-                  <Typography variant='h5' textAlign='center' margin='10px'>
-                    100% Muster List for {locations?.[id]?.name}, printed{' '}
-                    {DateTime.fromISO(new Date().toISOString()).toFormat(
-                      'dd/MMM/yyyy HH:mm'
-                    )}{' '}
-                    (
-                    {
-                      <Count
-                        resource={constants.R_ITEMS}
-                        sx={{ fontSize: '1.5rem' }}
-                        filter={{ vaultLocation: id }}
-                      />
-                    }{' '}
-                    items)
-                  </Typography>
-                  <ItemsReport
-                    filter={filter}
-                    {...props}
-                    footer={ProtectiveMarking}>
-                    <TextField<Item> source='itemNumber' label='Item Number' />
-                    <SourceField<Item>
-                      link='show'
-                      source='mediaType'
-                      reference={constants.R_MEDIA_TYPE}
-                      label='Media type'
-                    />
-                    <TextField<Item>
-                      source='consecSheets'
-                      label='Consec/Sheets'
-                    />
-                    <SourceField<Item>
-                      source='protectiveMarking'
-                      reference={constants.R_PROTECTIVE_MARKING}
-                    />
-                    <TextField<Item>
-                      source='musterRemarks'
-                      label='Muster remarks'
-                    />
-                  </ItemsReport>
-                  <ReportSignature>
-                    <Count resource={constants.R_ITEMS} filter={filter} />
-                  </ReportSignature>
-                </Box>
+                <Table>
+                  <TableHead>
+                    <Header configData={configData} />
+                  </TableHead>
+                  <TableBody>
+                    <Box padding={'20px'} key={id}>
+                      <Typography variant='h4' textAlign='center' margin='10px'>
+                        VAL - Location Muster List
+                      </Typography>
+                      <Typography variant='h5' textAlign='center' margin='10px'>
+                        100% Muster List for {locations?.[id]?.name}, printed{' '}
+                        {DateTime.fromISO(new Date().toISOString()).toFormat(
+                          'dd/MMM/yyyy HH:mm'
+                        )}{' '}
+                        (
+                        {
+                          <Count
+                            resource={constants.R_ITEMS}
+                            sx={{ fontSize: '1.5rem' }}
+                            filter={{ vaultLocation: id }}
+                          />
+                        }{' '}
+                        items)
+                      </Typography>
+                      <ItemsReport
+                        filter={filter}
+                        {...props}
+                        footer={ProtectiveMarking}>
+                        <TextField<Item>
+                          source='itemNumber'
+                          label='Item Number'
+                        />
+                        <SourceField<Item>
+                          link='show'
+                          source='mediaType'
+                          reference={constants.R_MEDIA_TYPE}
+                          label='Media type'
+                        />
+                        <TextField<Item>
+                          source='consecSheets'
+                          label='Consec/Sheets'
+                        />
+                        <SourceField<Item>
+                          source='protectiveMarking'
+                          reference={constants.R_PROTECTIVE_MARKING}
+                        />
+                        <TextField<Item>
+                          source='musterRemarks'
+                          label='Muster remarks'
+                        />
+                      </ItemsReport>
+                      <ReportSignature>
+                        <Count resource={constants.R_ITEMS} filter={filter} />
+                      </ReportSignature>
+                    </Box>
+                  </TableBody>
+                  <TableFooter>
+                    <Footer configData={configData} />
+                  </TableFooter>
+                </Table>
                 {selectedIds.length !== index + 1 && (
                   <div className='pagebreak' />
                 )}

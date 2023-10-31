@@ -1,14 +1,6 @@
 import { Close } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  IconButton,
-  Modal,
-  Typography,
-  type ModalProps
-} from '@mui/material'
+import { Box, Button, IconButton, Modal, type ModalProps } from '@mui/material'
 import FlexBox from '../FlexBox'
-import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   children?: React.ReactElement | React.ReactElement[]
@@ -19,7 +11,8 @@ const style = {
   background: '#fff',
   '@media print': {
     '@page': {
-      size: 'portrait'
+      size: 'portrait',
+      margin: '2mm'
     },
     '& .MuiBox-root .RaShow-card .MuiTypography-h4': {
       fontSize: '18px'
@@ -40,43 +33,10 @@ const style = {
   }
 }
 
-const Header = ({
-  configData
-}: {
-  configData: ConfigData | undefined
-}): React.ReactElement => {
-  return (
-    <Box textAlign='center' marginBottom={2}>
-      <Typography variant='caption'>{configData?.headerMarking}</Typography>
-    </Box>
-  )
-}
-
-const Footer = ({
-  configData
-}: {
-  configData: ConfigData | undefined
-}): React.ReactElement => {
-  return (
-    <Box
-      position='fixed'
-      left={0}
-      right={0}
-      bottom={0}
-      textAlign='center'
-      width='100%'
-      bgcolor='white'
-      zIndex={1000}>
-      <Typography variant='caption'>{configData?.headerMarking}</Typography>
-    </Box>
-  )
-}
-
 export default function Printable(
   props: Props & ModalProps
 ): React.ReactElement {
   const { children, onPrint, ...rest } = props
-  const configData = useConfigData()
 
   const handleClose = (): void => {
     rest?.onClose?.({}, 'escapeKeyDown')
@@ -97,7 +57,6 @@ export default function Printable(
           justifyContent='center'
           marginBottom='10px'
           position='relative'>
-          <Header configData={configData} />
           <Box position='absolute' top='10px' right='10px'>
             <IconButton onClick={handleClose}>
               <Close />
@@ -116,7 +75,6 @@ export default function Printable(
             Cancel
           </Button>
         </FlexBox>
-        <Footer configData={configData} />
       </Box>
     </Modal>
   )
