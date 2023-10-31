@@ -32,15 +32,20 @@ const style = { fontSize: '12px' }
 const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
   const { label } = props
   return (
-    <ReferenceField label={label} source='batch' reference={constants.R_ITEMS}>
-      <ReferenceField source='id' reference={constants.R_BATCHES}>
-        <SourceField<Item>
+    <ReferenceField
+      label={label}
+      source='batch'
+      reference={constants.R_BATCHES}>
+      <ReferenceField source='project' reference={constants.R_PROJECTS}>
+        <SourceField<Project>
           textProps={{ ...style }}
           source='id'
           reference={constants.R_PROJECTS}
         />
-        ,{' '}
-        <SourceField<Item>
+      </ReferenceField>
+      {' / '}
+      <ReferenceField source='platform' reference={constants.R_PLATFORMS}>
+        <SourceField<Platform>
           textProps={{ ...style }}
           source='id'
           reference={constants.R_PLATFORMS}
