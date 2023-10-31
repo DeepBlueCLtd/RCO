@@ -94,7 +94,7 @@ const CoreForm = (props: Props): React.ReactElement => {
   ): void => {
     const inputElement = e.target as HTMLInputElement
     const value = inputElement.value
-    setValue(source, value)
+    if (value) setValue(source, value)
   }
 
   return (

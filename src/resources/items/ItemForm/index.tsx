@@ -27,13 +27,14 @@ const schema = yup.object({
     .nullable()
     .test(
       'endDate',
-      'End date must be greater than start date',
+      'End date must be greater than or equal to start date',
       function (value) {
         const startDate = this.parent.startDate
-        const allowance = -1000
-        // if they are the same value on screen, they can be a few hundred millis out
-        // disallow if difference less than a second
-        return startDate ? dayjs(value).diff(startDate) > allowance : true
+        return startDate
+          ? value
+            ? dayjs(value).diff(startDate) >= 0
+            : true
+          : true
       }
     ),
   batch: yup.number().required(),
@@ -83,7 +84,8 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     const dateTime = DateTime.local().set({
       hour: 0,
       minute: 0,
-      second: 0
+      second: 0,
+      millisecond: 0
     })
     return {
       startDate: dateTime.toString(),
