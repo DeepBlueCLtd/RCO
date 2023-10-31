@@ -21,15 +21,13 @@ const lifeCycles = (
     const createdByAt = withCreatedByAt(record)
     return createdByAt
   },
-  afterCreate: async function afterCreate(
+  afterCreate: async (
     record: CreateResult<Dispatch>,
     dataProvider: DataProvider
-  ) {
+  ) => {
     try {
       const { data } = record
       const { id } = data
-
-      const configData = await provider.configData()
 
       const year: string = new Date().getFullYear().toString()
 
@@ -39,7 +37,7 @@ const lifeCycles = (
         R_DISPATCH,
         'name',
         undefined,
-        `${configData.reportPrefix}/V`
+        'RN'
       )
 
       const withRef = await dataProvider.update<Dispatch>(R_DISPATCH, {

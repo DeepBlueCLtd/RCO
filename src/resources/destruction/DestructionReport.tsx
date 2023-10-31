@@ -7,7 +7,8 @@ import {
   useRecordContext,
   TextField,
   ReferenceField,
-  type Identifier
+  type Identifier,
+  FunctionField
 } from 'react-admin'
 import {
   List as MuiList,
@@ -25,6 +26,7 @@ import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
 import React from 'react'
 import { type DestructionModal } from './DestructionShow'
+import { useConfigData } from '../../utils/useConfigData'
 
 const ItemsCount = (): React.ReactElement => {
   const record = useRecordContext()
@@ -233,7 +235,11 @@ const SignatureForms = (): React.ReactElement => {
   )
 }
 
-const TablesData = (): React.ReactElement => {
+const TablesData = ({
+  prefix
+}: {
+  prefix: string | undefined
+}): React.ReactElement => {
   const record = useRecordContext()
   const { total } = useGetList(constants.R_ITEMS, {
     filter: {
@@ -250,7 +256,7 @@ const TablesData = (): React.ReactElement => {
           margin: '20px 0'
         }}>
         It is certified that the {total} above mentioned item(s) of{' '}
-        {record.name} has been destroyed in the presence of:-
+        {`${prefix}/${record.name}`} has been destroyed in the presence of:-
       </Typography>
       <SignatureForms />
     </Box>
@@ -265,6 +271,7 @@ interface Props {
 
 export default function DestructionReport(props: Props): React.ReactElement {
   const { handleOpen, ...rest } = props
+  const configData = useConfigData()
 
   return (
     <Printable
@@ -275,7 +282,12 @@ export default function DestructionReport(props: Props): React.ReactElement {
       <Box padding={'20px'}>
         <Show component={'div'} actions={false}>
           <Typography variant='h5' textAlign='center' margin='10px'>
-            <TextField<Destruction> source='name' />
+            <FunctionField<Destruction>
+              source='name'
+              render={(record) => {
+                return <>{`${configData?.reportPrefix}/${record.name}`}</>
+              }}
+            />
           </Typography>
           <Typography variant='h6' textAlign='center' margin='10px'>
             CERTIFICATE OF DESTRUCTION OF DOCUMENTS
@@ -286,7 +298,7 @@ export default function DestructionReport(props: Props): React.ReactElement {
           actions={false}
           resource={constants.R_DESTRUCTION}>
           <ItemsCount />
-          <TablesData />
+          <TablesData prefix={configData?.reportPrefix} />
         </Show>
       </Box>
     </Printable>
