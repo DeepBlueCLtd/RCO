@@ -1,4 +1,4 @@
-import { DateField, Show, TextField } from 'react-admin'
+import { DateField, FunctionField, Show, TextField } from 'react-admin'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import { Typography } from '@mui/material'
 import ItemsReport from '../items/ItemsReport'
@@ -14,13 +14,18 @@ const DispatchDetail = (): React.ReactElement => {
 
   return (
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
-      <FieldWithLabel<Dispatch>
-        label='Serial No.'
-        source='name'
-        labelStyles={{ fontSize: '1rem' }}
-        textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
-      />
-      <Box fontWeight='bold'>
+      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+          Serial No.:{' '}
+        </Typography>
+        <FunctionField<Dispatch>
+          render={(record) => {
+            return `${configData?.reportPrefix}/${record.name}`
+          }}
+        />
+      </Box>
+
+      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
         <Typography fontWeight='bold'>
           From:
           <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
