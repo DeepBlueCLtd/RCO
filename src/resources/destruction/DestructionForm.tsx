@@ -54,9 +54,26 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const redirect = useRedirect()
   const notify = useNotify()
   const [update] = useUpdate()
+  const [lastDestruction, setLastDestruction] = useState<null | Destruction>(
+    null
+  )
 
-  const getName = (lastId: number, year: number): string => {
-    const id = lastId + 1
+  const getName = (lastId: number): string => {
+    if (!lastDestruction) {
+      return `DC/1/${year}`
+    }
+
+    const lastDestructionName = lastDestruction.name
+    const lastDestructionYear = parseInt(lastDestructionName.split('/')[2])
+
+    let id = lastId
+    if (lastDestructionYear < year) {
+      id = 1
+    } else {
+      const lastReferenceNumber = parseInt(lastDestructionName.split('/')[1])
+      id = lastReferenceNumber + 1
+    }
+
     return `DC/${id}/${year}`
   }
 
@@ -81,6 +98,19 @@ export default function DestructionForm(props: Props): React.ReactElement {
     }
   }, [isEdit])
 
+  useEffect(() => {
+    dataProvider
+      .getList<Destruction>(constants.R_DESTRUCTION, {
+        sort: { field: 'id', order: 'DESC' },
+        pagination: { perPage: 1, page: 1 },
+        filter: {}
+      })
+      .then(({ data }) => {
+        setLastDestruction(data[0])
+      })
+      .catch(console.log)
+  }, [])
+
   const onSuccess = (id?: number): void => {
     redirect(
       createPath({
@@ -94,7 +124,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const onSubmit = async (data: any): Promise<void> => {
     const { remarks, vault } = data
     try {
-      const name = getName(lastId, year)
+      const name = getName(lastId)
       const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
         name,
         remarks,
@@ -122,7 +152,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   if (typeof loading !== 'undefined' && loading) return <></>
 
-  const name = getName(lastId, year)
+  const name = getName(lastId)
 
   const updateJob = async (data: Destruction): Promise<void> => {
     await update(
@@ -157,12 +187,21 @@ export default function DestructionForm(props: Props): React.ReactElement {
           disabled: disabledFields.includes('year')
         }}
       />
-      <TextFields
-        fullWidth
-        value={name}
-        label='Reference'
-        disabled={disabledFields.includes('name')}
-      />
+      {isEdit ? (
+        <TextInput
+          fullWidth
+          disabled={disabledFields.includes('name')}
+          source='name'
+          label='Reference'
+        />
+      ) : (
+        <TextFields
+          fullWidth
+          value={name}
+          label='Reference'
+          disabled={disabledFields.includes('name')}
+        />
+      )}
       <ConditionalReferenceInput
         source='vault'
         reference={constants.R_VAULT}
