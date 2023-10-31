@@ -159,7 +159,7 @@ const CoreForm = (props: Props): React.ReactElement => {
           sx={sx}
           disabled={disabled}
           source='startDate'
-          label='Start'
+          label='Start (<esc> to clear)'
           variant='outlined'
           onKeyUp={(e) => {
             handleKeyUp(e, 'startDate')
