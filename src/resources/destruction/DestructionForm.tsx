@@ -17,6 +17,7 @@ import TextFields from '@mui/material/TextField'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { ConditionalReferenceInput } from '../batches/BatchForm'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   isEdit?: boolean
@@ -54,10 +55,15 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const redirect = useRedirect()
   const notify = useNotify()
   const [update] = useUpdate()
+  const configData = useConfigData()
 
-  const getName = (lastId: number, year: number): string => {
+  const getName = (
+    lastId: number,
+    year: number,
+    prefix: string = ''
+  ): string => {
     const id = lastId + 1
-    return `DC/${id}/${year}`
+    return `${prefix}/DC/${id}/${year}`
   }
 
   useEffect(() => {
@@ -94,7 +100,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const onSubmit = async (data: any): Promise<void> => {
     const { remarks, vault } = data
     try {
-      const name = getName(lastId, year)
+      const name = getName(lastId, year, configData?.reportPrefix)
       const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
         name,
         remarks,
@@ -122,8 +128,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   if (typeof loading !== 'undefined' && loading) return <></>
 
-  const name = getName(lastId, year)
-
+  const name = getName(lastId, year, configData?.reportPrefix)
   const updateJob = async (data: Destruction): Promise<void> => {
     await update(
       constants.R_DESTRUCTION,
