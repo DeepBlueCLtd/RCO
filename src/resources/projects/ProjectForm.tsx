@@ -7,12 +7,23 @@ import { Typography } from '@mui/material'
 import { ICON_PROJECT } from '../../constants'
 import { useConfigData } from '../../utils/useConfigData'
 import FlexBox from '../../components/FlexBox'
+import dayjs from 'dayjs'
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
   remarks: yup.string().optional().nullable(),
   startDate: yup.date().required(),
-  endDate: yup.date().required()
+  endDate: yup
+    .date()
+    .required()
+    .test(
+      'endDate',
+      'End date must be greater than or equal to start date',
+      function (value) {
+        const startDate = this.parent.startDate
+        return startDate ? dayjs(value).diff(startDate) >= 0 : true
+      }
+    )
 })
 
 const styles = {
