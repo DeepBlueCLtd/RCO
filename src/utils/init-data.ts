@@ -261,7 +261,9 @@ const loadDefaultData = async (
     protectionName: 'Prottection',
     catCode: 'Catt-Code',
     catHandle: 'Catt-Handle',
-    catCave: 'Catt-Cave'
+    catCave: 'Catt-Cave',
+    headerMarking: 'HEADER-MARKING',
+    reportPrefix: 'DBC/VAL'
   }
   const configData: ConfigData[] = [configDataItem]
   const defaultData: Omit<RCOStore, 'richItem'> = {

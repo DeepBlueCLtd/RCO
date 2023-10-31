@@ -306,4 +306,12 @@ type ConfigData = RCOResource & {
    * test value: `Cat-Cave`
    */
   catCave: string
+  /** prefix for reference numbers
+   * on printed forms
+   */
+  reportPrefix: string
+  /** text to go on header/footer of
+   * muster sheets
+   */
+  headerMarking: string
 }

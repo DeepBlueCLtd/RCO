@@ -57,7 +57,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   const getName = (lastId: number, year: number): string => {
     const id = lastId + 1
-    return `DC/V/${id}/${year}`
+    return `DC/${id}/${year}`
   }
 
   useEffect(() => {
