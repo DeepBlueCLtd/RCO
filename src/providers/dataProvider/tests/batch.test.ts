@@ -72,7 +72,7 @@ describe('CRUD operations on Batch Resource', () => {
     expect(firstCreateId).toEqual(firstCreatedBatch.data.id)
     const firstBatchId = firstResult.data.batchNumber
     expect(firstBatchId).toBeTruthy()
-    expect(firstBatchId).toEqual('V1/2025')
+    expect(firstBatchId).toEqual('1/2025')
 
     // now a second batch, to check the increment
     const secondResult = await provider.create<Batch>(R_BATCHES, {
@@ -87,7 +87,7 @@ describe('CRUD operations on Batch Resource', () => {
     expect(secondCreateId).toEqual(secondCreatedBatch.data.id)
     const secondBatchId = secondResult.data.batchNumber
     expect(secondBatchId).toBeTruthy()
-    expect(secondBatchId).toEqual('V2/2025')
+    expect(secondBatchId).toEqual('2/2025')
 
     // now a third batch, to check the comparator
     const thirdResult = await provider.create<Batch>(R_BATCHES, {
@@ -102,7 +102,7 @@ describe('CRUD operations on Batch Resource', () => {
     expect(thirdCreateId).toEqual(thirdCreatedBatch.data.id)
     const thirdBatchId = thirdResult.data.batchNumber
     expect(thirdBatchId).toBeTruthy()
-    expect(thirdBatchId).toEqual('V3/2025')
+    expect(thirdBatchId).toEqual('3/2025')
   })
 
   it('should update the batch', async () => {
