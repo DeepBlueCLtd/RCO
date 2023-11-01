@@ -64,17 +64,22 @@ export default function DestructionForm(props: Props): React.ReactElement {
     }
 
     const lastDestructionName = lastDestruction.name
-    const lastDestructionYear = parseInt(lastDestructionName.split('/')[2])
-
-    let id = lastId
-    if (lastDestructionYear < year) {
-      id = 1
+    if (!lastDestructionName) {
+      console.error('Should not have missing destruction name at this point')
+      return 'Pending'
     } else {
-      const lastReferenceNumber = parseInt(lastDestructionName.split('/')[1])
-      id = lastReferenceNumber + 1
-    }
+      const lastDestructionYear = parseInt(lastDestructionName.split('/')[2])
 
-    return `DC/${id}/${year}`
+      let id = lastId
+      if (lastDestructionYear < year) {
+        id = 1
+      } else {
+        const lastReferenceNumber = parseInt(lastDestructionName.split('/')[1])
+        id = lastReferenceNumber + 1
+      }
+
+      return `DC/${id}/${year}`
+    }
   }
 
   useEffect(() => {
