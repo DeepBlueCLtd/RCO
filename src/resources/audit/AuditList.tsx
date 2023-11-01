@@ -199,25 +199,41 @@ export default function AuditList({
             }}
           />
         )}
-        <TextField<Audit> source='ip' label='IP Address' />
         {/* Note: the following function is flexible, so it is able to show
         source value for different kinds of resource */}
-        <FunctionField<Audit>
-          label='Subject'
-          render={(record) => {
-            return (
-              <SourceField<Audit>
-                source='subjectId'
-                {...(record.subjectResource &&
-                resourcesRefKey[record.subjectResource]
-                  ? { sourceField: 'itemNumber' }
-                  : null)}
-                reference={record.subjectResource ?? undefined}
-                link='show'
-              />
-            )
-          }}
-        />
+        {!omit.includes('subjectId') && (
+          <FunctionField<Audit>
+            label='Subject Item'
+            render={(record) => {
+              return (
+                <>
+                  {record.subjectId !== null &&
+                    record.subjectResource !== null && (
+                      <SourceField<Audit>
+                        source='subjectId'
+                        reference={record.subjectResource}
+                        sourceField={resourcesRefKey[record.subjectResource]}
+                        link={() => {
+                          if (
+                            record.subjectResource &&
+                            record.subjectResource !== null &&
+                            referenceItems.includes(record.subjectResource)
+                          ) {
+                            return `/${record.subjectResource}/${record.subjectId}/show`
+                          }
+                          if (record.subjectResource === constants.R_ITEMS) {
+                            return `/${constants.R_RICH_ITEMS}/${record.subjectId}/show`
+                          }
+                          return 'show'
+                        }}
+                      />
+                    )}
+                </>
+              )
+            }}
+          />
+        )}
+        <TextField<Audit> source='ip' label='IP Address' />
       </DatagridConfigurable>
     </List>
   )
