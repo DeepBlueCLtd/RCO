@@ -7,7 +7,8 @@ import {
   Show,
   Count,
   useRecordContext,
-  DateField
+  DateField,
+  ReferenceField
 } from 'react-admin'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
@@ -22,7 +23,37 @@ interface Props {
   onClose?: () => void
 }
 
+interface CompositeFieldProps {
+  label: string
+}
+
 const style = { fontSize: '12px' }
+
+const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
+  const { label } = props
+  return (
+    <ReferenceField
+      label={label}
+      source='batch'
+      reference={constants.R_BATCHES}>
+      <ReferenceField source='project' reference={constants.R_PROJECTS}>
+        <SourceField<Project>
+          textProps={{ ...style }}
+          source='id'
+          reference={constants.R_PROJECTS}
+        />
+      </ReferenceField>
+      {' / '}
+      <ReferenceField source='platform' reference={constants.R_PLATFORMS}>
+        <SourceField<Platform>
+          textProps={{ ...style }}
+          source='id'
+          reference={constants.R_PLATFORMS}
+        />
+      </ReferenceField>
+    </ReferenceField>
+  )
+}
 
 const Title = (): React.ReactElement => {
   const record = useRecordContext()
@@ -101,6 +132,10 @@ export default function UserMusterList<T extends User>(
                       textProps={{ ...style }}
                       source='protectiveMarking'
                       reference={constants.R_PROTECTIVE_MARKING}
+                    />
+                    <CompositeField
+                      {...style}
+                      label={`${configData?.projectName} & Platform`}
                     />
                     <DateField<Item>
                       {...style}
