@@ -724,11 +724,11 @@ const ItemListData = ({
           render={(record) => {
             if (record?.loanedTo) {
               return users?.[record.loanedTo]?.name
-            } else if (record?.destructionDate) {
+            } else if (record?.destructionDate !== null) {
               return 'DESTROYED'
             } else if (record?.destruction !== null) {
               return 'DEST (PENDING)'
-            } else if (record?.dispatchedDate) {
+            } else if (record?.dispatchedDate !== null) {
               return 'SENT'
             } else if (record?.dispatchJob !== null) {
               return 'SENT (PENDING)'
