@@ -13,10 +13,10 @@ import {
 } from 'react-admin'
 import * as constants from '../../constants'
 import DatePicker from '../../components/DatePicker'
-import TextFields from '@mui/material/TextField'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { ConditionalReferenceInput } from '../batches/BatchForm'
+import { generateReference } from '../../providers/dataProvider/dataprovider-utils'
 
 interface Props {
   isEdit?: boolean
@@ -49,38 +49,28 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const [create] = useCreate()
   const [loading, setLoading] = useState(!isEdit)
   const [lastId, setLastId] = useState<number>(0)
-  const [year, setYear] = useState(new Date().getFullYear())
+  const [name, setName] = useState<string | null>(null)
   const createPath = useCreatePath()
   const redirect = useRedirect()
   const notify = useNotify()
   const [update] = useUpdate()
-  const [lastDestruction, setLastDestruction] = useState<null | Destruction>(
-    null
-  )
 
-  const getName = (lastId: number): string => {
-    if (!lastDestruction) {
-      return `DC/1/${year}`
-    }
-
-    const lastDestructionName = lastDestruction.name
-    if (!lastDestructionName) {
-      console.error('Should not have missing destruction name at this point')
-      return 'Pending'
-    } else {
-      const lastDestructionYear = parseInt(lastDestructionName.split('/')[2])
-
-      let id = lastId
-      if (lastDestructionYear < year) {
-        id = 1
-      } else {
-        const lastReferenceNumber = parseInt(lastDestructionName.split('/')[1])
-        id = lastReferenceNumber + 1
-      }
-
-      return `DC/${id}/${year}`
-    }
+  const getName = async (): Promise<string> => {
+    const name = await generateReference<Destruction>(
+      dataProvider,
+      new Date().getFullYear().toString(),
+      constants.R_DESTRUCTION,
+      'name',
+      undefined,
+      'DC',
+      0
+    )
+    return name
   }
+
+  useEffect(() => {
+    getName().then(setName).catch(console.log)
+  }, [])
 
   useEffect(() => {
     if (typeof loading === 'boolean' && loading) {
@@ -103,19 +93,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
     }
   }, [isEdit])
 
-  useEffect(() => {
-    dataProvider
-      .getList<Destruction>(constants.R_DESTRUCTION, {
-        sort: { field: 'id', order: 'DESC' },
-        pagination: { perPage: 1, page: 1 },
-        filter: {}
-      })
-      .then(({ data }) => {
-        setLastDestruction(data[0])
-      })
-      .catch(console.log)
-  }, [])
-
   const onSuccess = (id?: number): void => {
     redirect(
       createPath({
@@ -129,7 +106,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const onSubmit = async (data: any): Promise<void> => {
     const { remarks, vault } = data
     try {
-      const name = getName(lastId)
       const newD: Omit<Destruction, 'id' | 'createdAt' | 'createdBy'> = {
         name,
         remarks,
@@ -156,8 +132,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
   }
 
   if (typeof loading !== 'undefined' && loading) return <></>
-
-  const name = getName(lastId)
 
   const updateJob = async (data: Destruction): Promise<void> => {
     await update(
@@ -186,25 +160,17 @@ export default function DestructionForm(props: Props): React.ReactElement {
         source='year'
         variant='outlined'
         format='YYYY'
-        onChange={setYear}
         dataPickerProps={{
           views: ['year'],
-          disabled: disabledFields.includes('year')
+          disabled: true
         }}
       />
-      {isEdit ? (
+      {isEdit && (
         <TextInput
           fullWidth
           disabled={disabledFields.includes('name')}
           source='name'
           label='Reference'
-        />
-      ) : (
-        <TextFields
-          fullWidth
-          value={name}
-          label='Reference'
-          disabled={disabledFields.includes('name')}
         />
       )}
       <ConditionalReferenceInput

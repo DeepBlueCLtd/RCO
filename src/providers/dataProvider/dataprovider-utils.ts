@@ -171,7 +171,8 @@ export async function generateReference<T extends RaRecord>(
   filter: GetListParams['filter'] = {
     createdAt_gte: DateTime.now().startOf('year').toISO()
   },
-  prefix = 'RN'
+  prefix = 'RN',
+  index = 1
 ): Promise<string> {
   if (!isNumber(year)) throw new TypeError('Year invalid')
   const dispatch = await provider.getList<T>(resource, {
@@ -180,7 +181,7 @@ export async function generateReference<T extends RaRecord>(
     filter: { ...filter }
   })
   const currentYear = parseInt(year)
-  const lastDispatch = dispatch.data[1]
+  const lastDispatch = dispatch.data[index]
   const lastDispatchName = lastDispatch[fieldName] as string
   const generatedYear = parseInt(lastDispatchName.slice(-4))
   const counter =
