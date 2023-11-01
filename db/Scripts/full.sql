@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS batch (
 CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
 
-       name TEXT NOT NULL,
+       name TEXT,
        vault TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
