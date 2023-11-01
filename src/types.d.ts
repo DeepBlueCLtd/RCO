@@ -238,7 +238,7 @@ interface RCOStore {
 
 interface Destruction {
   readonly id: number
-  name: string
+  name: string | null
   vault: Vault['id']
   createdAt: string
   createdBy: User['id']
