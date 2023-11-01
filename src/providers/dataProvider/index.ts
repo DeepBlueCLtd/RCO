@@ -158,36 +158,45 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     const url = `${apiUrl}/${resource}/rows?${queryString.stringify({
       ...query
     })}`
-    return await axios.get(url).then((response) => {
-      const { data } = response.data
+    return await axios
+      .get(url)
+      .then((response) => {
+        const { data } = response.data
 
-      // dataprovider getList should return data with ids
-      if (resource === constants.R_CONFIG) {
-        data[0].id = 1
-      }
+        // dataprovider getList should return data with ids
+        if (resource === constants.R_CONFIG) {
+          data[0].id = 1
+        }
 
-      return { data, total: response.data.total }
-    })
+        return { data, total: response.data.total }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   getOne: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
 
-    return await axios.get(url).then((response) => {
-      let { data } = response.data
-      data = data[0]
+    return await axios
+      .get(url)
+      .then((response) => {
+        let { data } = response.data
+        data = data[0]
 
-      return { data }
-    })
+        return { data }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   getMany: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
-    return await axios.get(url).then((response) => {
-      const { data } = response.data
+    return await axios
+      .get(url)
+      .then((response) => {
+        const { data } = response.data
 
-      return { data, total: response.data.total }
-    })
+        return { data, total: response.data.total }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   getManyReference: async (resource: string, params: any) => {
@@ -232,11 +241,14 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
     const url = `${apiUrl}/${resource}/rows?${JSON.stringify(query)}`
 
-    return await axios.get(url).then((response) => {
-      const { data } = response.data
+    return await axios
+      .get(url)
+      .then((response) => {
+        const { data } = response.data
 
-      return { data, total: response.data.total }
-    })
+        return { data, total: response.data.total }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   create: async (resource: string, params: any) => {
@@ -251,11 +263,14 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       return acc
     }, {})
 
-    return await axios.post(url, { fields: params.data }).then((response) => {
-      return {
-        data: { id: response.data.data.lastInsertRowid, ...params.data }
-      }
-    })
+    return await axios
+      .post(url, { fields: params.data })
+      .then((response) => {
+        return {
+          data: { id: response.data.data.lastInsertRowid, ...params.data }
+        }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   update: async (resource: string, params: any) => {
@@ -264,11 +279,14 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     // remove the id property
     const { id, ...editData } = params.data
 
-    return await axios.put(url, { fields: editData }).then(() => {
-      return {
-        data: { id: params.id, ...params.data }
-      }
-    })
+    return await axios
+      .put(url, { fields: editData })
+      .then(() => {
+        return {
+          data: { id: params.id, ...params.data }
+        }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   updateMany: async (resource: string, params: any) => {
@@ -276,25 +294,34 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
     // remove the id property
     const { id, ...editData } = params.data
-    return await axios.put(url, { fields: editData }).then(async () => {
-      return { data: params.ids }
-    })
+    return await axios
+      .put(url, { fields: editData })
+      .then(async () => {
+        return { data: params.ids }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   delete: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
 
-    return await axios.delete(url).then(() => {
-      return { data: params.id }
-    })
+    return await axios
+      .delete(url)
+      .then(() => {
+        return { data: params.id }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   deleteMany: async (resource: string, params: any) => {
     const ids = params.ids.toString()
     const url = `${apiUrl}/${resource}/rows/${ids}`
 
-    return await axios.delete(url).then(() => {
-      return { data: params.ids }
-    })
+    return await axios
+      .delete(url)
+      .then(() => {
+        return { data: params.ids }
+      })
+      .catch(async (err) => await Promise.reject(err))
   }
 })
