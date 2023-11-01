@@ -39,7 +39,7 @@ export default function ItemHistory(): React.ReactElement {
                   {...(record.subjectResource === constants.R_ITEMS
                     ? { sourceField: 'itemNumber' }
                     : null)}
-                  reference={record.subjectResource ?? undefined}
+                  reference={record.subjectResource ?? null}
                   link='show'
                 />
               )
