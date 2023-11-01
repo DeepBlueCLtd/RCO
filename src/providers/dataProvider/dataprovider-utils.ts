@@ -179,7 +179,7 @@ export async function generateReference<T extends RaRecord>(
     pagination: { page: 1, perPage: 2 },
     filter: { ...filter }
   })
-  const currentYear = new Date().getFullYear()
+  const currentYear = parseInt(year)
   const lastDispatch = dispatch.data[1]
   const lastDispatchName = lastDispatch[fieldName] as string
   const generatedYear = parseInt(lastDispatchName.slice(-4))
