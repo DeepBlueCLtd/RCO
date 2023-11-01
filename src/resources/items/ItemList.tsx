@@ -722,20 +722,20 @@ const ItemListData = ({
         <FunctionField<RichItem>
           label='Location'
           render={(record) => {
-            if (record?.loanedTo) {
+            if (record.loanedTo) {
               return users?.[record.loanedTo]?.name
-            } else if (record?.destructionDate !== null) {
+            } else if (record.destructionDate !== null) {
               return 'DESTROYED'
-            } else if (record?.destruction !== null) {
+            } else if (record.destruction !== null) {
               return 'DEST (PENDING)'
-            } else if (record?.dispatchedDate !== null) {
+            } else if (record.dispatchedDate !== null) {
               return 'SENT'
-            } else if (record?.dispatchJob !== null) {
+            } else if (record.dispatchJob !== null) {
               return 'SENT (PENDING)'
             } else
               return (
-                record?.vaultLocation &&
-                vaultLocations?.[record?.vaultLocation]?.name
+                record.vaultLocation &&
+                vaultLocations?.[record.vaultLocation]?.name
               )
           }}
         />
