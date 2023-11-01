@@ -163,33 +163,6 @@ export const extendLifeCycle = (
   ...callbacks
 })
 
-const getReferenceIdFromField = (reference: string): number => {
-  // split into 3 elements
-  const tokens = reference.split('/')
-
-  if (tokens.length !== 3) {
-    console.warn('Tokens not parsing as expected', reference)
-  }
-
-  return parseInt(tokens[1])
-}
-
-const compareVersions = (v1: string, v2: string): number => {
-  if (typeof v2 !== 'string') return 1
-
-  const s1 = getReferenceIdFromField(v1)
-  const s2 = getReferenceIdFromField(v2)
-
-  if (isNaN(s1) || isNaN(s2)) return NaN
-  if (s1 < s2) {
-    return -1
-  } else if (s1 > s2) {
-    return 1
-  } else {
-    return 0
-  }
-}
-
 export async function generateReference<T extends RaRecord>(
   provider: DataProvider,
   year: string,
@@ -198,31 +171,22 @@ export async function generateReference<T extends RaRecord>(
   filter: GetListParams['filter'] = {
     createdAt_gte: DateTime.now().startOf('year').toISO()
   },
-  prefix = 'V'
+  prefix = 'RN'
 ): Promise<string> {
   if (!isNumber(year)) throw new TypeError('Year invalid')
   const dispatch = await provider.getList<T>(resource, {
-    sort: { field: 'id', order: 'ASC' },
-    pagination: { page: 1, perPage: 1000 },
+    sort: { field: 'id', order: 'DESC' },
+    pagination: { page: 1, perPage: 2 },
     filter: { ...filter }
   })
+  const currentYear = new Date().getFullYear()
+  const lastDispatch = dispatch.data[1]
+  const lastDispatchName = lastDispatch[fieldName] as string
+  const generatedYear = parseInt(lastDispatchName.slice(-4))
+  const counter =
+    generatedYear < currentYear
+      ? 1
+      : parseInt(lastDispatchName.split('/')[1]) + 1
 
-  if (dispatch.data.length === 0) {
-    return `${prefix}/0/${year}`
-  }
-
-  if (dispatch.data.length === 1) {
-    return `${prefix}/1/${year}`
-  }
-
-  const greatestDispatch = dispatch.data.reduce((prev, current) =>
-    compareVersions(prev[fieldName], current[fieldName]) === -1 ? current : prev
-  )
-
-  const referenceId = (
-    getReferenceIdFromField(greatestDispatch[fieldName]) + 1
-  ).toLocaleString('en-US', {
-    useGrouping: false
-  })
-  return `${prefix}/${referenceId}/${year}`
+  return `${prefix}/${counter}/${currentYear}`
 }
