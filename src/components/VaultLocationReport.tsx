@@ -14,7 +14,8 @@ import {
   TextField,
   useDataProvider,
   useListContext,
-  Count
+  Count,
+  useGetList
 } from 'react-admin'
 import ItemsReport from '../resources/items/ItemsReport'
 import Printable from './Printable'
@@ -31,13 +32,19 @@ interface Result {
   count: number
 }
 
-function ProtectiveMarking(): React.ReactElement {
-  const { data = [] } = useListContext<Item>()
+type filterType = Record<string, string | null>
+
+function ProtectiveMarking({
+  filter
+}: {
+  filter: filterType
+}): React.ReactElement {
+  const { data = [], isLoading } = useGetList(constants.R_ITEMS, { filter })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
   const sx = { padding: '3px' }
 
-  const getTableData = async (): Promise<Result[]> => {
+  const getTableData = async (): Promise<void> => {
     const items: Record<number, number> = {}
     data.forEach((item) => {
       const count = items[item.protectiveMarking]
@@ -68,12 +75,13 @@ function ProtectiveMarking(): React.ReactElement {
       const { name } = protectiveMarkingById[key]
       result.push({ name, count: items[key] })
     })
-    return result
+
+    setResult(result)
   }
 
   useEffect(() => {
-    getTableData().then(setResult).catch(console.log)
-  }, [data])
+    getTableData().catch(console.log)
+  }, [isLoading])
 
   return (
     <Box width={300} marginLeft='auto' marginTop={1} marginBottom={2}>
@@ -195,10 +203,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         }{' '}
                         items)
                       </Typography>
-                      <ItemsReport
-                        filter={filter}
-                        {...props}
-                        footer={ProtectiveMarking}>
+                      <ItemsReport filter={filter} {...props}>
                         <TextField<Item>
                           source='itemNumber'
                           label='Item Number'
@@ -226,6 +231,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         <Count resource={constants.R_ITEMS} filter={filter} />
                       </ReportSignature>
                     </Box>
+                    <ProtectiveMarking filter={filter} />
                   </TableBody>
                   <TableFooter>
                     <Footer configData={configData} />
