@@ -32,7 +32,7 @@ interface Result {
   count: number
 }
 
-type filterType = Record<string, string | null>;
+type filterType = Record<string, string | null>
 
 function ProtectiveMarking({
   filter
@@ -42,10 +42,9 @@ function ProtectiveMarking({
   const { data = [] } = useGetList(constants.R_ITEMS, { filter })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
-  const [loading, setLoading] = useState(true)
   const sx = { padding: '3px' }
 
-  const getTableData = async (): Promise<Result[]> => {
+  const getTableData = async (): Promise<void> => {
     const items: Record<number, number> = {}
     data.forEach((item) => {
       const count = items[item.protectiveMarking]
@@ -76,23 +75,13 @@ function ProtectiveMarking({
       const { name } = protectiveMarkingById[key]
       result.push({ name, count: items[key] })
     })
-    return result
+
+    setResult(result)
   }
 
   useEffect(() => {
-    setLoading(true)
-
-    getTableData()
-      .then((res) => {
-        setResult(res)
-      })
-      .catch(console.log)
-      .finally(() => {
-        setLoading(false)
-      })
+    getTableData().catch(console.log)
   }, [data])
-
-  if (loading) return <></>
 
   return (
     <Box width={300} marginLeft='auto' marginTop={1} marginBottom={2}>
