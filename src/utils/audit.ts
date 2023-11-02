@@ -23,26 +23,24 @@ export const trackEvent =
     subjectId,
     subjectResource
   }: AuditData) => {
-    try {
-      const user = getUser()
-      if (user !== undefined) {
-        const audit: Omit<Audit, 'id'> = {
-          user: user.id,
-          resource,
-          dataId,
-          activityType,
-          dateTime: new Date().toISOString(),
-          activityDetail,
-          label: getActivityTypeLabel(activityType),
-          securityRelated:
-            securityRelated !== undefined ? securityRelated : false,
-          subjectId,
-          subjectResource,
-          ip: getClientIp()
-        }
-        await dataProvider.create<Audit>(constants.R_AUDIT, {
-          data: audit
-        })
+    const user = getUser()
+    if (user !== undefined) {
+      const audit: Omit<Audit, 'id'> = {
+        user: user.id,
+        resource,
+        dataId,
+        activityType,
+        dateTime: new Date().toISOString(),
+        activityDetail,
+        label: getActivityTypeLabel(activityType),
+        securityRelated:
+          securityRelated !== undefined ? securityRelated : false,
+        subjectId,
+        subjectResource,
+        ip: getClientIp()
       }
-    } catch (error) {}
+      await dataProvider.create<Audit>(constants.R_AUDIT, {
+        data: audit
+      })
+    }
   }

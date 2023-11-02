@@ -76,33 +76,29 @@ const lifeCycles = (
     record: CreateResult<Batch>,
     dataProvider: DataProvider
   ) => {
-    try {
-      const { data } = record
-      const { id, yearOfReceipt: year } = data
-      const yearVal = year
-      const idVal: string = await generateBatchId(provider, year)
-      const batchNumber = `${idVal}/${yearVal}`
-      const withRef = await dataProvider.update<Batch>(R_BATCHES, {
-        id,
-        previousData: data,
-        data: {
-          batchNumber
-        }
-      })
+    const { data } = record
+    const { id, yearOfReceipt: year } = data
+    const yearVal = year
+    const idVal: string = await generateBatchId(provider, year)
+    const batchNumber = `${idVal}/${yearVal}`
+    const withRef = await dataProvider.update<Batch>(R_BATCHES, {
+      id,
+      previousData: data,
+      data: {
+        batchNumber
+      }
+    })
 
-      await audit({
-        activityType: AuditType.CREATE,
-        resource: R_BATCHES,
-        dataId: record.data.id,
-        subjectId: null,
-        subjectResource: null,
-        securityRelated: null,
-        activityDetail: null
-      })
-      return { ...record, data: withRef.data }
-    } catch (error) {
-      return record
-    }
+    await audit({
+      activityType: AuditType.CREATE,
+      resource: R_BATCHES,
+      dataId: record.data.id,
+      subjectId: null,
+      subjectResource: null,
+      securityRelated: null,
+      activityDetail: null
+    })
+    return { ...record, data: withRef.data }
   }
 })
 

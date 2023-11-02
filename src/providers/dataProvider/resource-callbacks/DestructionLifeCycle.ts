@@ -18,41 +18,36 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     record: CreateResult<Destruction>,
     dataProvider: DataProvider
   ) => {
-    try {
-      const { data } = record
-      const { id } = data
-      await audit({
-        activityType: AuditType.CREATE,
-        resource: R_DESTRUCTION,
-        dataId: id,
-        subjectId: null,
-        subjectResource: null,
-        activityDetail: null,
-        securityRelated: null
-      })
-      const year = new Date().getFullYear().toString()
+    const { data } = record
+    const { id } = data
+    await audit({
+      activityType: AuditType.CREATE,
+      resource: R_DESTRUCTION,
+      dataId: id,
+      subjectId: null,
+      subjectResource: null,
+      activityDetail: null,
+      securityRelated: null
+    })
+    const year = new Date().getFullYear().toString()
 
-      const name = await generateReference<Destruction>(
-        dataProvider,
-        year,
-        R_DESTRUCTION,
-        'name',
-        undefined,
-        'DC'
-      )
+    const name = await generateReference<Destruction>(
+      dataProvider,
+      year,
+      R_DESTRUCTION,
+      'name',
+      undefined,
+      'DC'
+    )
 
-      await dataProvider.update<Dispatch>(R_DESTRUCTION, {
-        id,
-        previousData: data,
-        data: {
-          name,
-          ...(process.env.MOCK ? { finalisedAt: 'null' } : null)
-        }
-      })
-      return record
-    } catch (error) {
-      console.log({ error })
-      return record
-    }
+    await dataProvider.update<Dispatch>(R_DESTRUCTION, {
+      id,
+      previousData: data,
+      data: {
+        name,
+        ...(process.env.MOCK ? { finalisedAt: 'null' } : null)
+      }
+    })
+    return record
   }
 })
