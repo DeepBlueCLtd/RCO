@@ -47,47 +47,42 @@ const lifeCycles = (
     record: CreateResult<Item>,
     dataProvider: DataProvider
   ) => {
-    try {
-      const { data } = record
-      const { batch, id } = data
-      const { data: batchObj } = await dataProvider.getOne<Batch>(R_BATCHES, {
-        id: batch
-      })
+    const { data } = record
+    const { batch, id } = data
+    const { data: batchObj } = await dataProvider.getOne<Batch>(R_BATCHES, {
+      id: batch
+    })
 
-      const items = await dataProvider.getList<Item>(R_ITEMS, {
-        filter: { batch },
-        sort: { field: 'id', order: 'ASC' },
-        pagination: { page: 1, perPage: 1000 }
-      })
-      const idVal: string = (
-        items.total !== undefined ? items.total : 1
-      ).toLocaleString('en-US', {
-        useGrouping: false
-      })
-      const batchNumber: string = batchObj.batchNumber
-      const itemNumber = `${batchNumber}/${idVal}`
-      const withItemRef = await dataProvider.update<Item>(R_ITEMS, {
-        id,
-        previousData: data,
-        data: {
-          itemNumber
-        }
-      })
-      await audit({
-        activityType: AuditType.CREATE,
-        resource: R_ITEMS,
-        dataId: id,
-        subjectId: null,
-        subjectResource: null,
-        securityRelated: null,
-        activityDetail: null
-      })
-      emitter.emit(SAVE_EVENT, itemNumber)
-      return { data: { ...record.data, ...withItemRef.data } }
-    } catch (error) {
-      console.log({ error })
-      return record
-    }
+    const items = await dataProvider.getList<Item>(R_ITEMS, {
+      filter: { batch },
+      sort: { field: 'id', order: 'ASC' },
+      pagination: { page: 1, perPage: 1000 }
+    })
+    const idVal: string = (
+      items.total !== undefined ? items.total : 1
+    ).toLocaleString('en-US', {
+      useGrouping: false
+    })
+    const batchNumber: string = batchObj.batchNumber
+    const itemNumber = `${batchNumber}/${idVal}`
+    const withItemRef = await dataProvider.update<Item>(R_ITEMS, {
+      id,
+      previousData: data,
+      data: {
+        itemNumber
+      }
+    })
+    await audit({
+      activityType: AuditType.CREATE,
+      resource: R_ITEMS,
+      dataId: id,
+      subjectId: null,
+      subjectResource: null,
+      securityRelated: null,
+      activityDetail: null
+    })
+    emitter.emit(SAVE_EVENT, itemNumber)
+    return { data: { ...record.data, ...withItemRef.data } }
   }
 })
 
