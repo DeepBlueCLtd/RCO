@@ -10,7 +10,7 @@ import { R_USERS } from '../constants'
 interface SourceFieldProps<T> {
   source: keyof T
   label?: string | false
-  reference?: string
+  reference: string | null
   sourceField?: string
   textProps?: TextFieldProps
   link?: LinkToType
@@ -43,7 +43,7 @@ const SourceField = <
     <ReferenceField
       link={link}
       source={source as string}
-      reference={reference !== undefined ? reference : (source as string)}
+      reference={reference !== null ? reference : (source as string)}
       label={label}>
       {reference !== undefined && reference === R_USERS ? (
         <FunctionField
