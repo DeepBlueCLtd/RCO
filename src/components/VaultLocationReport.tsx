@@ -130,10 +130,9 @@ export const Footer = ({
   return (
     <Box
       textAlign='center'
-      bgcolor='white'
       zIndex={999}
       position='fixed'
-      bottom={5}
+      bottom={1}
       left={0}
       right={0}>
       <Typography variant='caption'>{configData?.headerMarking}</Typography>
@@ -193,15 +192,12 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         {DateTime.fromISO(new Date().toISOString()).toFormat(
                           'dd/MMM/yyyy HH:mm'
                         )}{' '}
-                        (
-                        {
-                          <Count
-                            resource={constants.R_ITEMS}
-                            sx={{ fontSize: '1.5rem' }}
-                            filter={{ vaultLocation: id }}
-                          />
-                        }{' '}
-                        items)
+                        <Count
+                          resource={constants.R_ITEMS}
+                          sx={{ fontSize: '1.5rem' }}
+                          filter={{ vaultLocation: id }}
+                        />
+                        items
                       </Typography>
                       <ItemsReport filter={filter} {...props}>
                         <TextField<Item>
