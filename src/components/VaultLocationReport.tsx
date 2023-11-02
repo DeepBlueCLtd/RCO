@@ -14,7 +14,8 @@ import {
   TextField,
   useDataProvider,
   useListContext,
-  Count
+  Count,
+  useGetList
 } from 'react-admin'
 import ItemsReport from '../resources/items/ItemsReport'
 import Printable from './Printable'
@@ -31,10 +32,17 @@ interface Result {
   count: number
 }
 
-function ProtectiveMarking(): React.ReactElement {
-  const { data = [] } = useListContext<Item>()
+type filterType = Record<string, string | null>;
+
+function ProtectiveMarking({
+  filter
+}: {
+  filter: filterType
+}): React.ReactElement {
+  const { data = [] } = useGetList(constants.R_ITEMS, { filter })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
+  const [loading, setLoading] = useState(true)
   const sx = { padding: '3px' }
 
   const getTableData = async (): Promise<Result[]> => {
@@ -72,12 +80,19 @@ function ProtectiveMarking(): React.ReactElement {
   }
 
   useEffect(() => {
+    setLoading(true)
+
     getTableData()
       .then((res) => {
         setResult(res)
       })
       .catch(console.log)
+      .finally(() => {
+        setLoading(false)
+      })
   }, [data])
+
+  if (loading) return <></>
 
   return (
     <Box width={300} marginLeft='auto' marginTop={1} marginBottom={2}>
@@ -227,7 +242,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         <Count resource={constants.R_ITEMS} filter={filter} />
                       </ReportSignature>
                     </Box>
-                    <ProtectiveMarking />
+                    <ProtectiveMarking filter={filter} />
                   </TableBody>
                   <TableFooter>
                     <Footer configData={configData} />
