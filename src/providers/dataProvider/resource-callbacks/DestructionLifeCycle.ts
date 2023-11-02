@@ -1,6 +1,10 @@
 import { type CreateResult, type ResourceCallbacks } from 'ra-core'
 
-import { withCreatedByAt, type AuditFunctionType } from '../dataprovider-utils'
+import {
+  withCreatedByAt,
+  type AuditFunctionType,
+  generateReference
+} from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import { R_DESTRUCTION } from '../../../constants'
 import { type DataProvider, type CreateParams } from 'react-admin'
@@ -26,11 +30,22 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
         activityDetail: null,
         securityRelated: null
       })
+      const year = new Date().getFullYear().toString()
+
+      const name = await generateReference<Destruction>(
+        dataProvider,
+        year,
+        R_DESTRUCTION,
+        'name',
+        undefined,
+        'DC'
+      )
 
       await dataProvider.update<Dispatch>(R_DESTRUCTION, {
         id,
         previousData: data,
         data: {
+          name,
           ...(process.env.MOCK ? { finalisedAt: 'null' } : null)
         }
       })
