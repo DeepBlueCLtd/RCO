@@ -241,8 +241,8 @@ export default function DispatchShow(): React.ReactElement {
       securityRelated: false,
       resource: constants.R_DISPATCH,
       dataId: parseInt(id as string),
-      subjectId: id ? Number(id) : null,
-      subjectResource: constants.R_ITEMS
+      subjectId: null,
+      subjectResource: null
     }
     await audit(audiData)
     const ids = itemsAdded.map((item) => item.id)
@@ -328,16 +328,17 @@ function DispatchedItemList(
   const { data } = useGetOne<Dispatch>(constants.R_DISPATCH, {
     id: Number(id)
   })
-  const dispatched: boolean = data?.dispatchedAt !== undefined
+  const dispatched: boolean =
+    data?.dispatchedAt !== undefined && data?.dispatchedAt !== null
 
-  const destroyed: boolean = useMemo(() => {
+  const canEditItem: boolean = useMemo(() => {
     const permission = hasAccess(constants.R_ITEMS, { write: true })
     return !permission
   }, [data])
 
   const preferenceKey = `datagrid-${constants.R_DISPATCH}-${id}-items-list`
 
-  const bulkActionButtons: false | React.ReactElement = destroyed ? (
+  const bulkActionButtons: false | React.ReactElement = canEditItem ? (
     false
   ) : (
     <BulkActions
@@ -361,15 +362,23 @@ function DispatchedItemList(
           {title}
         </Typography>
       </legend>
-      <ItemList
-        storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
-        filter={{ dispatchJob: id }}
-        preferenceKey={preferenceKey}
-        bulkActionButtons={
-          bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
-        }
-        filtersShown={['q', 'batch', 'mediaType']}
-      />
+      {dispatched ? (
+        <Typography variant='caption' align='center' sx={{ fontWeight: '600' }}>
+          Items not shown for completed dispatch.
+          <br />
+          Note: this data can be determined in the backend
+        </Typography>
+      ) : (
+        <ItemList
+          storeKey={`${constants.R_DISPATCH}-${id}-items-list`}
+          filter={{ dispatchJob: id }}
+          preferenceKey={preferenceKey}
+          bulkActionButtons={
+            bulkActionButtons ?? <BulkActions preferenceKey={preferenceKey} />
+          }
+          filtersShown={['q', 'batch', 'mediaType']}
+        />
+      )}
     </Box>
   )
 }

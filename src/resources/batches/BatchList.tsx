@@ -187,7 +187,11 @@ export default function BatchList(): React.ReactElement {
           reference={constants.R_PLATFORMS}
           label='Platform'
         />
-        <SourceField<Batch> source='organisation' label='Organisation' />
+        <SourceField<Batch>
+          source='organisation'
+          label='Organisation'
+          reference={constants.R_ORGANISATION}
+        />
         <SourceField<Batch> source='vault' reference={constants.R_VAULT} />
         <TextField<Batch> source='remarks' />
         <TextField<Batch> source='receiptNotes' />
