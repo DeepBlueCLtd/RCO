@@ -61,6 +61,7 @@ import { Box } from '@mui/system'
 import { initialize } from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
 import { yupResolver } from '@hookform/resolvers/yup'
+import CustomNotification from './components/Notification'
 
 const style = {
   backgroundColor: 'white',
@@ -387,6 +388,7 @@ function App(): React.ReactElement {
       </Modal>
       <Suspense fallback={LoadingPage}>
         <Admin
+          notification={CustomNotification}
           dashboard={Welcome}
           dataProvider={dataProvider}
           loginPage={Login}

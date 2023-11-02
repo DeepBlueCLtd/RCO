@@ -99,13 +99,17 @@ interface ErrorDetails {
 function getErrorDetails(error: AxiosError): ErrorDetails {
   if (error.response) {
     const { data, status, statusText } = error.response
-    const message = (data as any)?.message || statusText
+    const message = `Error Code: ${status}, Message: ${
+      (data as any)?.message || statusText
+    }`
+
     return { message, status, data }
   } else if (error.request) {
-    const message = 'No response received from the server.'
-    return { message, status: error.request.status, data: null }
+    const status = error.request.status
+    const message = `Error Code: ${status}, Message: No response received from the server.`
+    return { message, status, data: null }
   } else {
-    const message = error.message
+    const message = `Error Code: 0, Message: ${error.message}`
     return { message, status: 0, data: null }
   }
 }
