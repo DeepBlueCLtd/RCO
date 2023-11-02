@@ -39,7 +39,7 @@ function ProtectiveMarking({
 }: {
   filter: filterType
 }): React.ReactElement {
-  const { data = [] } = useGetList(constants.R_ITEMS, { filter })
+  const { data = [], isLoading } = useGetList(constants.R_ITEMS, { filter })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
   const sx = { padding: '3px' }
@@ -81,7 +81,7 @@ function ProtectiveMarking({
 
   useEffect(() => {
     getTableData().catch(console.log)
-  }, [data])
+  }, [isLoading])
 
   return (
     <Box width={300} marginLeft='auto' marginTop={1} marginBottom={2}>
