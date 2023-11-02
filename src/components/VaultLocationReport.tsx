@@ -35,7 +35,7 @@ function ProtectiveMarking(): React.ReactElement {
   const { data = [] } = useListContext<Item>()
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
-  const [key, setKey] = useState(0)
+  const [loading, setLoading] = useState(true)
   const sx = { padding: '3px' }
 
   const getTableData = async (): Promise<Result[]> => {
@@ -73,16 +73,20 @@ function ProtectiveMarking(): React.ReactElement {
   }
 
   useEffect(() => {
+    setLoading(true)
+
     getTableData()
       .then((res) => {
         setResult(res)
-        setKey((prev) => prev + 1)
       })
       .catch(console.log)
+      .finally(() => { setLoading(false) })
   }, [data])
 
+  if (loading) return <></>
+
   return (
-    <Box width={300} marginLeft='auto' marginTop={1} marginBottom={2} key={key}>
+    <Box width={300} marginLeft='auto' marginTop={1} marginBottom={2}>
       <Table>
         <TableHead>
           <TableRow>
