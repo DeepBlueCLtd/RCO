@@ -19,7 +19,11 @@ import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
 
 const schema = yup.object({
-  mediaType: yup.number().required(),
+  mediaType: yup
+    .number()
+    .strict()
+    .required('Media Type is required')
+    .typeError('Media Type must be a number'),
   startDate: yup.date().optional().nullable(),
   endDate: yup
     .date()
@@ -37,9 +41,21 @@ const schema = yup.object({
           : true
       }
     ),
-  batch: yup.number().required(),
-  vaultLocation: yup.number().required(),
-  protectiveMarking: yup.number().required(),
+  batch: yup
+    .number()
+    .strict()
+    .required('Batch is required')
+    .typeError('Batch must be a number'),
+  vaultLocation: yup
+    .number()
+    .strict()
+    .required('Vault Location is required')
+    .typeError('Vault Location must be a number'),
+  protectiveMarking: yup
+    .number()
+    .strict()
+    .required('Protective Marking is required')
+    .typeError('Protective Marking must be a number'),
   editRemarks: yup.string()
 })
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
