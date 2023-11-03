@@ -12,7 +12,8 @@ import {
   useRedirect,
   UserMenu,
   type UserMenuProps,
-  useLogout
+  useLogout,
+  useNotify
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
@@ -49,6 +50,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const [authenticated, setAuthenticated] = useState(false)
   const logout = useLogout()
   const redirect = useRedirect()
+  const notify = useNotify()
 
   const [loggingPref, setLoggingPref] = useState<boolean>(
     localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
@@ -59,13 +61,15 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   }
 
   const handleLoadData = (): void => {
-    loadDefaultData(undefined).catch((error) => {
-      console.log({ error })
-    })
+    loadDefaultData(undefined).catch((err) =>
+      { notify(err.message, { type: 'error' }) }
+    )
   }
 
   const handleHighVolumeLoadData = (): void => {
-    loadDefaultData(undefined, true).catch(console.log)
+    loadDefaultData(undefined, true).catch((err) =>
+      { notify(err.message, { type: 'error' }) }
+    )
   }
 
   const handleLoggingPrefChange = (
@@ -92,7 +96,9 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         })
         window.dispatchEvent(storageEvent)
       })
-      .catch(console.error)
+      .catch((err) => {
+        notify(err.message, { type: 'error' })
+      })
   }
 
   useEffect(() => {

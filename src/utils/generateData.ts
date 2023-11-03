@@ -380,11 +380,7 @@ export const generateRichItems = async (
     })
   })
 
-  try {
-    await Promise.all(promises)
-  } catch (error) {
-    console.log(error)
-  }
+  await Promise.all(promises)
 }
 
 const richItemsGenerate = (
