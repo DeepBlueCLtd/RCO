@@ -1,7 +1,8 @@
 import {
   withLifecycleCallbacks,
   type DataProvider,
-  type ResourceCallbacks
+  type ResourceCallbacks,
+  HttpError
 } from 'react-admin'
 import * as constants from '../../constants'
 import { trackEvent } from '../../utils/audit'
@@ -14,7 +15,7 @@ import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import DispatchLifeCycle from './resource-callbacks/DispatchLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
-import axios from 'axios'
+import axios, { type AxiosError } from 'axios'
 import queryString from 'query-string'
 import localForageDataProvider from 'ra-data-local-forage'
 
@@ -89,6 +90,30 @@ const operators = ['_neq', '_eq', '_lte', '_gte']
 const SEARCH_OPERATOR = 'q'
 const nullOperators = ['__null', '__notnull']
 
+interface ErrorDetails {
+  message: string
+  status: number
+  data: any
+}
+
+function getErrorDetails(error: AxiosError): ErrorDetails {
+  if (error.response) {
+    const { data, status, statusText } = error.response
+    const message = `Error Code: ${status}, Message: ${
+      (data as any)?.message || statusText
+    }`
+
+    return { message, status, data }
+  } else if (error.request) {
+    const status = error.request.status
+    const message = `Error Code: ${status}, Message: No response received from the server.`
+    return { message, status, data: null }
+  } else {
+    const message = `Error Code: 0, Message: ${error.message}`
+    return { message, status: 0, data: null }
+  }
+}
+
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
     const { page, perPage } = params.pagination
@@ -158,36 +183,54 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     const url = `${apiUrl}/${resource}/rows?${queryString.stringify({
       ...query
     })}`
-    return await axios.get(url).then((response) => {
-      const { data } = response.data
+    return await axios
+      .get(url)
+      .then((response) => {
+        const { data } = response.data
 
-      // dataprovider getList should return data with ids
-      if (resource === constants.R_CONFIG) {
-        data[0].id = 1
-      }
+        // dataprovider getList should return data with ids
+        if (resource === constants.R_CONFIG) {
+          data[0].id = 1
+        }
 
-      return { data, total: response.data.total }
-    })
+        return { data, total: response.data.total }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   getOne: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
 
-    return await axios.get(url).then((response) => {
-      let { data } = response.data
-      data = data[0]
+    return await axios
+      .get(url)
+      .then((response) => {
+        let { data } = response.data
+        data = data[0]
 
-      return { data }
-    })
+        return { data }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   getMany: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
-    return await axios.get(url).then((response) => {
-      const { data } = response.data
+    return await axios
+      .get(url)
+      .then((response) => {
+        const { data } = response.data
 
-      return { data, total: response.data.total }
-    })
+        return { data, total: response.data.total }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   getManyReference: async (resource: string, params: any) => {
@@ -232,11 +275,17 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
     const url = `${apiUrl}/${resource}/rows?${JSON.stringify(query)}`
 
-    return await axios.get(url).then((response) => {
-      const { data } = response.data
+    return await axios
+      .get(url)
+      .then((response) => {
+        const { data } = response.data
 
-      return { data, total: response.data.total }
-    })
+        return { data, total: response.data.total }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   create: async (resource: string, params: any) => {
@@ -251,11 +300,17 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       return acc
     }, {})
 
-    return await axios.post(url, { fields: params.data }).then((response) => {
-      return {
-        data: { id: response.data.data.lastInsertRowid, ...params.data }
-      }
-    })
+    return await axios
+      .post(url, { fields: params.data })
+      .then((response) => {
+        return {
+          data: { id: response.data.data.lastInsertRowid, ...params.data }
+        }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   update: async (resource: string, params: any) => {
@@ -264,11 +319,17 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     // remove the id property
     const { id, ...editData } = params.data
 
-    return await axios.put(url, { fields: editData }).then(() => {
-      return {
-        data: { id: params.id, ...params.data }
-      }
-    })
+    return await axios
+      .put(url, { fields: editData })
+      .then(() => {
+        return {
+          data: { id: params.id, ...params.data }
+        }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   updateMany: async (resource: string, params: any) => {
@@ -276,25 +337,40 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
     // remove the id property
     const { id, ...editData } = params.data
-    return await axios.put(url, { fields: editData }).then(async () => {
-      return { data: params.ids }
-    })
+    return await axios
+      .put(url, { fields: editData })
+      .then(async () => {
+        return { data: params.ids }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   },
 
   delete: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
 
-    return await axios.delete(url).then(() => {
-      return { data: params.id }
-    })
+    return await axios
+      .delete(url)
+      .then(() => {
+        return { data: params.id }
+      })
+      .catch(async (err) => await Promise.reject(err))
   },
 
   deleteMany: async (resource: string, params: any) => {
     const ids = params.ids.toString()
     const url = `${apiUrl}/${resource}/rows/${ids}`
 
-    return await axios.delete(url).then(() => {
-      return { data: params.ids }
-    })
+    return await axios
+      .delete(url)
+      .then(() => {
+        return { data: params.ids }
+      })
+      .catch(async (err) => {
+        const { message, status, data } = getErrorDetails(err) ?? {}
+        return await Promise.reject(new HttpError(message, status, data))
+      })
   }
 })

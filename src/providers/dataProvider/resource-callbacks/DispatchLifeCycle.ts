@@ -25,42 +25,38 @@ const lifeCycles = (
     record: CreateResult<Dispatch>,
     dataProvider: DataProvider
   ) => {
-    try {
-      const { data } = record
-      const { id } = data
+    const { data } = record
+    const { id } = data
 
-      const year: string = new Date().getFullYear().toString()
+    const year: string = new Date().getFullYear().toString()
 
-      const name: string = await generateReference<Dispatch>(
-        provider,
-        year,
-        R_DISPATCH,
-        'name',
-        undefined,
-        'RN'
-      )
+    const name: string = await generateReference<Dispatch>(
+      provider,
+      year,
+      R_DISPATCH,
+      'name',
+      undefined,
+      'RN'
+    )
 
-      const withRef = await dataProvider.update<Dispatch>(R_DISPATCH, {
-        id,
-        previousData: data,
-        data: {
-          name,
-          ...(process.env.MOCK ? { dispatchedAt: 'null' } : null)
-        }
-      })
-      await audit({
-        activityType: AuditType.CREATE,
-        resource: R_DISPATCH,
-        dataId: record.data.id,
-        subjectId: null,
-        subjectResource: null,
-        securityRelated: null,
-        activityDetail: null
-      })
-      return { ...record, data: withRef.data }
-    } catch (error) {
-      return record
-    }
+    const withRef = await dataProvider.update<Dispatch>(R_DISPATCH, {
+      id,
+      previousData: data,
+      data: {
+        name,
+        ...(process.env.MOCK ? { dispatchedAt: 'null' } : null)
+      }
+    })
+    await audit({
+      activityType: AuditType.CREATE,
+      resource: R_DISPATCH,
+      dataId: record.data.id,
+      subjectId: null,
+      subjectResource: null,
+      securityRelated: null,
+      activityDetail: null
+    })
+    return { ...record, data: withRef.data }
   }
 })
 
