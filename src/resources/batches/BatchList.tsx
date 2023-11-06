@@ -114,6 +114,12 @@ export default function BatchList(): React.ReactElement {
       sort={sort()}
       source='platform_eq'
     />,
+    <SourceInput
+      reference={constants.R_DEPARTMENT}
+      key='department'
+      sort={sort()}
+      source='department'
+    />,
     <PlatformFilter
       reference={constants.R_PLATFORMS}
       label='Active Platforms'

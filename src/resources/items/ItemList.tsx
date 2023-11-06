@@ -141,6 +141,12 @@ const getFilters = (
       reference={constants.R_BATCHES}
       optionField='batchNumber'
     />,
+    <SourceInput
+      reference={constants.R_DEPARTMENT}
+      key='department'
+      sort={sort()}
+      source='department'
+    />,
     <TextInput key='remarks' source='remarks' />,
     <DateFilter
       source='createdAt'
