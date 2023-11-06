@@ -51,7 +51,7 @@ import { useConfigData } from '../../utils/useConfigData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
-const omitColumns: Array<keyof Item> = [
+const omitColumns: Array<keyof RichItem> = [
   'id',
   'createdAt',
   'createdBy',
@@ -65,7 +65,9 @@ const omitColumns: Array<keyof Item> = [
   'protectionString',
   'destruction',
   'dispatchJob',
-  'legacyMediaType'
+  'legacyMediaType',
+  'department',
+  'vault'
 ]
 
 const getFilters = (
@@ -778,6 +780,16 @@ const ItemListData = ({
           link='show'
           source='platform'
           reference={constants.R_PLATFORMS}
+        />
+        <SourceField<RichItem>
+          source='department'
+          label='Department'
+          reference={constants.R_DEPARTMENT}
+        />
+        <SourceField<RichItem>
+          source='vault'
+          label='Vault'
+          reference={constants.R_VAULT}
         />
         {projectName && (
           <SourceField<RichItem>

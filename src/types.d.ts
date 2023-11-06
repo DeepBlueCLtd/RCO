@@ -201,6 +201,8 @@ type Item = ResourceWithCreation & {
 type RichItem = Item & {
   project: Project['id']
   platform: Platform['id']
+  vault: Vault['id']
+  department: Department['id']
 }
 
 interface RCOStore {
