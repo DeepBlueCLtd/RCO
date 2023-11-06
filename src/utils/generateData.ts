@@ -348,6 +348,7 @@ export const generateRichItems = async (
   const fetchedRichItems = (
     await dataProvider.getList<RichItem>(constants.R_RICH_ITEMS, params)
   ).data.map((item) => item.id)
+
   if (fetchedRichItems.length > 0)
     await dataProvider.deleteMany<RichItem>(constants.R_RICH_ITEMS, {
       ids: fetchedRichItems
@@ -373,11 +374,10 @@ export const generateRichItems = async (
       params
     )
 
-    const { data: fetchedVaults } = await dataProvider.getList<Department>(
-      constants.R_DEPARTMENT,
+    const { data: fetchedVaults } = await dataProvider.getList<Vault>(
+      constants.R_VAULT,
       params
     )
-
     richItems.push(
       ...richItemsGenerate(
         fetchedItems,
@@ -417,10 +417,9 @@ const richItemsGenerate = (
       id: item.id,
       platform: generateRandomNumber(0, platforms.length),
       project: generateRandomNumber(0, projects.length),
-      department: `${generateRandomNumber(1, departments.length + 1)}-${
-        ID_FIX[constants.R_DEPARTMENT]
-      }`,
-      vault: generateRandomNumber(1, vaults.length + 1) ? 'VAULT' : 'LEGACY'
+      department:
+        departments?.[generateRandomNumber(0, departments.length)]?.id,
+      vault: vaults?.[generateRandomNumber(0, vaults.length)]?.id
     })
   }
   return richItems
