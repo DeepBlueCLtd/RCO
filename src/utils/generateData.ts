@@ -332,6 +332,8 @@ interface Params {
   project: Project[]
   platform: Platform[]
   item: Item[]
+  department: Department[]
+  vault: Vault[]
 }
 
 export const generateRichItems = async (
@@ -366,12 +368,30 @@ export const generateRichItems = async (
       constants.R_PLATFORMS,
       params
     )
+    const { data: fetchedDepartments } = await dataProvider.getList<Department>(
+      constants.R_DEPARTMENT,
+      params
+    )
+
+    const { data: fetchedVaults } = await dataProvider.getList<Department>(
+      constants.R_DEPARTMENT,
+      params
+    )
+
     richItems.push(
-      ...richItemsGenerate(fetchedItems, fetchedPlatforms, fetchedProjects)
+      ...richItemsGenerate(
+        fetchedItems,
+        fetchedPlatforms,
+        fetchedProjects,
+        fetchedDepartments,
+        fetchedVaults
+      )
     )
   } else {
-    const { project, platform, item } = data
-    richItems.push(...richItemsGenerate(item, platform, project))
+    const { project, platform, item, department, vault } = data
+    richItems.push(
+      ...richItemsGenerate(item, platform, project, department, vault)
+    )
   }
 
   const promises = richItems.map(async (richItem) => {
@@ -386,7 +406,9 @@ export const generateRichItems = async (
 const richItemsGenerate = (
   items: Item[],
   platforms: Platform[],
-  projects: Project[]
+  projects: Project[],
+  departments: Department[],
+  vaults: Vault[]
 ): RichItem[] => {
   const richItems: RichItem[] = []
   for (const item of items) {
@@ -394,7 +416,11 @@ const richItemsGenerate = (
       ...item,
       id: item.id,
       platform: generateRandomNumber(0, platforms.length),
-      project: generateRandomNumber(0, projects.length)
+      project: generateRandomNumber(0, projects.length),
+      department: `${generateRandomNumber(1, departments.length + 1)}-${
+        ID_FIX[constants.R_DEPARTMENT]
+      }`,
+      vault: generateRandomNumber(1, vaults.length + 1) ? 'VAULT' : 'LEGACY'
     })
   }
   return richItems

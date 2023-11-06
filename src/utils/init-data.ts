@@ -320,7 +320,14 @@ const loadDefaultData = async (
     !!process.env.MOCK
   )
 
-  await generateRichItems(dataprovider, { project, platform, item })
+  await generateRichItems(dataprovider, {
+    project,
+    platform,
+    item,
+    department,
+    vault
+  })
+
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
       if (key === constants.R_ITEMS) {
