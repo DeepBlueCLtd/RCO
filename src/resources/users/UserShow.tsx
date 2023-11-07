@@ -268,7 +268,7 @@ const UserShowComp = ({
               <DateInput
                 disabled
                 source='departedDate'
-                label='Departed'
+                label={showReturn ? 'Departed' : 'Due to depart by'}
                 sx={{ flex: 1 }}
               />
             </FlexBox>
