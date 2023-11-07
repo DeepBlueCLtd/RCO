@@ -8,13 +8,14 @@ import {
   FilterButton,
   SelectColumnsButton,
   useShowContext,
-  type SelectColumnsButtonProps
+  type SelectColumnsButtonProps,
+  FunctionField
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
 import { ICON_ITEM, ICON_DETAILS } from '../../constants'
 import ItemList, { BulkActions } from '../items/ItemList'
-import TopToolbarField from '../../components/TopToolbarField'
+import TopToolbarField, { sx } from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
 import { Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
@@ -31,7 +32,12 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField<Batch> source='batchNumber' />
+      <TopToolbarField<Batch> source='batchNumber'>
+        <FunctionField<Batch>
+          sx={sx}
+          render={(record) => `${record.vault?.[0]}${record.batchNumber}`}
+        />
+      </TopToolbarField>
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
       <HistoryButton
         onClick={() => {

@@ -3,7 +3,12 @@ import * as constants from '../constants'
 import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton, useGetList, useRedirect } from 'react-admin'
+import {
+  CreateButton,
+  FunctionField,
+  useGetList,
+  useRedirect
+} from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import useCanAccess from '../hooks/useCanAccess'
@@ -32,6 +37,14 @@ const useStyles = makeStyles({
     justifyContent: 'center'
   }
 })
+
+const BatchComponent = (): React.ReactElement => {
+  return (
+    <FunctionField<Batch>
+      render={(record) => `${record.vault?.[0]}${record.batchNumber}`}
+    />
+  )
+}
 
 export default function Welcome(): React.ReactElement {
   const filter = process.env.MOCK
@@ -96,7 +109,7 @@ export default function Welcome(): React.ReactElement {
           resource={constants.R_BATCHES}
           itemsCount={10}
           fields={[
-            { source: 'batchNumber' },
+            { source: 'batchNumber', component: BatchComponent },
             { source: 'platform', reference: constants.R_PLATFORMS },
             {
               source: 'project',

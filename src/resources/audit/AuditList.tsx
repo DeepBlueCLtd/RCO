@@ -12,7 +12,8 @@ import {
   DatagridConfigurable,
   type DatagridConfigurableProps,
   FilterButton,
-  ExportButton
+  ExportButton,
+  useGetList
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -114,6 +115,27 @@ export const ListActions = (props: ListActionsProps): React.ReactElement => {
   )
 }
 
+interface ItemProps {
+  record: Item
+}
+
+export const ItemName = ({ record }: ItemProps): React.ReactElement => {
+  const { data: richItemRecord } = useGetList<RichItem>(
+    constants.R_RICH_ITEMS,
+    {
+      filter: { id: record.id },
+      pagination: { page: 1, perPage: 1 }
+    }
+  )
+
+  return (
+    <>
+      {richItemRecord?.[0]?.vault ? `${richItemRecord?.[0]?.vault?.[0]}` : ''}
+      {richItemRecord?.[0]?.itemNumber}
+    </>
+  )
+}
+
 interface AuditListProps extends DatagridConfigurableProps {
   filter?: FilterType
   data?: Audit[]
@@ -174,23 +196,29 @@ export default function AuditList({
               return (
                 <>
                   {record.resource !== null ? (
-                    <SourceField<Audit>
-                      source='dataId'
-                      reference={record.resource}
-                      sourceField={resourcesRefKey[record.resource]}
-                      link={() => {
-                        if (
-                          record.resource &&
-                          referenceItems.includes(record.resource)
-                        ) {
-                          return `/${record.resource}/${record.dataId}/show`
-                        }
-                        if (record.resource === constants.R_ITEMS) {
-                          return `/${constants.R_RICH_ITEMS}/${record.dataId}/show`
-                        }
-                        return 'show'
-                      }}
-                    />
+                    record.resource !== constants.R_ITEMS ? (
+                      <SourceField<Audit>
+                        source='dataId'
+                        reference={record.resource}
+                        sourceField={resourcesRefKey[record.resource]}
+                        link={() => {
+                          if (
+                            record.resource &&
+                            referenceItems.includes(record.resource)
+                          ) {
+                            return `/${record.resource}/${record.dataId}/show`
+                          }
+                          if (record.resource === constants.R_ITEMS) {
+                            return `/${constants.R_RICH_ITEMS}/${record.dataId}/show`
+                          }
+                          return 'show'
+                        }}
+                      />
+                    ) : (
+                      <FunctionField<RichItem>
+                        render={(record) => <ItemName record={record} />}
+                      />
+                    )
                   ) : (
                     <TextField<Audit> source='dataId' label='Item' />
                   )}

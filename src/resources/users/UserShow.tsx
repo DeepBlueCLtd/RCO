@@ -17,7 +17,8 @@ import {
   useUpdate,
   useNotify,
   DateInput,
-  useDataProvider
+  useDataProvider,
+  FunctionField
 } from 'react-admin'
 import { Chip, Typography, Button, Modal } from '@mui/material'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
@@ -415,7 +416,10 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField<Item> source='itemNumber' label='Reference' />
+      <FunctionField<RichItem>
+        label='Reference'
+        render={(record) => `${record.vault?.[0]}${record.itemNumber}`}
+      />
       <SourceField<Item>
         link='show'
         source='mediaType'
