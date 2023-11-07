@@ -8,7 +8,8 @@ import {
   Count,
   useRecordContext,
   DateField,
-  ReferenceField
+  ReferenceField,
+  FunctionField
 } from 'react-admin'
 import ItemsReport from '../items/ItemsReport'
 import SourceField from '../../components/SourceField'
@@ -17,6 +18,7 @@ import ReportSignature from '../../components/ReportSignature'
 import { DateTime } from 'luxon'
 import { useConfigData } from '../../utils/useConfigData'
 import { Footer, Header } from '../../components/VaultLocationReport'
+import { ItemName } from '../audit/AuditList'
 
 interface Props {
   open: boolean
@@ -116,10 +118,8 @@ export default function UserMusterList<T extends User>(
                     headStyle={{
                       fontSize: '12px'
                     }}>
-                    <TextField<Item>
-                      {...style}
-                      source='itemNumber'
-                      label='Item Number'
+                    <FunctionField<RichItem>
+                      render={(record) => <ItemName record={record} />}
                     />
                     <SourceField<Item>
                       textProps={{ ...style }}

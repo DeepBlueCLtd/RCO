@@ -15,7 +15,8 @@ import {
   useDataProvider,
   useListContext,
   Count,
-  useGetList
+  useGetList,
+  FunctionField
 } from 'react-admin'
 import ItemsReport from '../resources/items/ItemsReport'
 import Printable from './Printable'
@@ -25,6 +26,7 @@ import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 import React from 'react'
 import { useConfigData } from '../utils/useConfigData'
+import { ItemName } from '../resources/audit/AuditList'
 
 type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
@@ -200,9 +202,8 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         items
                       </Typography>
                       <ItemsReport filter={filter} {...props}>
-                        <TextField<Item>
-                          source='itemNumber'
-                          label='Item Number'
+                        <FunctionField<RichItem>
+                          render={(record) => <ItemName record={record} />}
                         />
                         <SourceField<Item>
                           link='show'
