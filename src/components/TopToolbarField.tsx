@@ -3,7 +3,7 @@ import { Show, type ShowProps, TextField } from 'react-admin'
 import { type ReactElement } from 'react'
 import { type SystemStyleObject } from '@mui/system'
 
-const sx = (theme: Theme): SystemStyleObject<Theme> => {
+export const sx = (theme: Theme): SystemStyleObject<Theme> => {
   const color: string = `${theme.palette.common.white} !important`
 
   return {

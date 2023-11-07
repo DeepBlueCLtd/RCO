@@ -17,7 +17,8 @@ import {
   type SelectColumnsButtonProps,
   DateField,
   TextField,
-  FunctionField
+  FunctionField,
+  ReferenceField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -717,7 +718,10 @@ const ItemListData = ({
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField<RichItem> source='itemNumber' label='Reference' />
+        <FunctionField<RichItem>
+          label='Reference'
+          render={(record) => `${record.vault?.[0]}${record.itemNumber}`}
+        />
         <TextField<RichItem> source='id' />
         <TextField<RichItem> source='createdAt' label='Created At' />
         <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
@@ -770,12 +774,14 @@ const ItemListData = ({
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField<RichItem>
+        <ReferenceField<RichItem>
           link={false}
-          source='batch'
           reference={constants.R_BATCHES}
-          sourceField='batchNumber'
-        />
+          source='batch'>
+          <FunctionField<Batch>
+            render={(record) => `${record.vault?.[0]}-${record.batchNumber}`}
+          />
+        </ReferenceField>
         <SourceField<RichItem>
           link='show'
           source='platform'
