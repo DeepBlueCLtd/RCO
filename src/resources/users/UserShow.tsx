@@ -241,7 +241,7 @@ const UserShowComp = ({
 
   return (
     <>
-      <FlexBox>
+      <FlexBox alignItems='start'>
         <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
           <legend>
             <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
