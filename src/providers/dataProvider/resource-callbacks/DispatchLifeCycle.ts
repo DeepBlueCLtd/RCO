@@ -36,7 +36,7 @@ const lifeCycles = (
       R_DISPATCH,
       'name',
       undefined,
-      'RN'
+      'VAULT'
     )
 
     const withRef = await dataProvider.update<Dispatch>(R_DISPATCH, {
