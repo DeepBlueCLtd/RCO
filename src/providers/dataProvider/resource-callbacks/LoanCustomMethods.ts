@@ -1,7 +1,7 @@
 import { type DataProvider } from 'ra-core'
 import { trackEvent } from '../../../utils/audit'
 import { nowDate } from '../dataprovider-utils'
-import { R_ITEMS, R_USERS } from '../../../constants'
+import { R_ITEMS, R_LOAN_USERS, R_USERS } from '../../../constants'
 import { AuditType } from '../../../utils/activity-types'
 
 export const customMethods = (
@@ -24,10 +24,27 @@ export const customMethods = (
       })
 
       const {
-        data: { id }
+        data: { id, staffNumber }
       } = await this.getOne<User>(R_USERS, {
         id: holder
       })
+
+      if (process.env.MOCK) {
+        const { data } = await this.getMany<LoanUser>(R_LOAN_USERS, {
+          ids: [holder]
+        })
+        if (data.length) {
+          await this.update<LoanUser>(R_LOAN_USERS, {
+            id: holder,
+            data: { numItems: data[0].numItems + items.length },
+            previousData: data
+          })
+        } else {
+          await this.create<LoanUser>(R_LOAN_USERS, {
+            data: { id: holder, numItems: items.length, staffNumber }
+          })
+        }
+      }
 
       const promisees = items.map(async (item) => {
         // TODO: TAHA - we should also include an audit for the `R_USER` where the item is the subject.
@@ -93,6 +110,35 @@ export const customMethods = (
           })
         }
       })
+
+      if (process.env.MOCK) {
+        const users = itemsData
+          .filter((item) => item.loanedTo !== null)
+          .map((item) => item.loanedTo)
+          .filter((user) => user !== null) as number[]
+
+        users.map(async (user) => {
+          const { data: loaned } = await this.getOne<LoanUser>(R_LOAN_USERS, {
+            id: user
+          })
+          let count = 0
+
+          for (let i = 0; i < itemsData.length; i++) {
+            if (itemsData[i].loanedTo === user) {
+              count++
+            }
+          }
+
+          if (loaned.numItems - count !== 0)
+            await this.update<LoanUser>(R_LOAN_USERS, {
+              id: user,
+              data: { numItems: loaned.numItems - count },
+              previousData: loaned
+            })
+          else await this.delete<LoanUser>(R_LOAN_USERS, { id: user })
+        })
+      }
+
       await this.updateMany(R_ITEMS, {
         ids: items,
         data: {
