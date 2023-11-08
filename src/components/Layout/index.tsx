@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Login, Loop } from '@mui/icons-material'
+import { Login } from '@mui/icons-material'
 import { Box, Icon, Typography, Button, Switch } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
@@ -18,7 +18,6 @@ import {
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
-import loadDefaultData from '../../utils/init-data'
 import * as constants from '../../constants'
 import { getUser } from '../../providers/authProvider'
 
@@ -58,18 +57,6 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 
   const handleLogin = (): void => {
     redirect('/login')
-  }
-
-  const handleLoadData = (): void => {
-    loadDefaultData(undefined).catch((err) =>
-      { notify(err.message, { type: 'error' }) }
-    )
-  }
-
-  const handleHighVolumeLoadData = (): void => {
-    loadDefaultData(undefined, true).catch((err) =>
-      { notify(err.message, { type: 'error' }) }
-    )
   }
 
   const handleLoggingPrefChange = (
@@ -121,28 +108,6 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         </Button>
       )}
       {authenticated && <Logout onClick={handleLogOut} />}
-      <Button
-        classes={{ root: styles.root, startIcon: styles.startIcon }}
-        onClick={handleLoadData}
-        startIcon={
-          <Icon>
-            <Loop sx={{ width: '20px', height: '20px' }} />
-          </Icon>
-        }>
-        <Typography sx={{ textTransform: 'none' }}>Load data</Typography>
-      </Button>
-      <Button
-        classes={{ root: styles.root, startIcon: styles.startIcon }}
-        onClick={handleHighVolumeLoadData}
-        startIcon={
-          <Icon>
-            <Loop sx={{ width: '20px', height: '20px' }} />
-          </Icon>
-        }>
-        <Typography sx={{ textTransform: 'none' }}>
-          Load data (high volume)
-        </Typography>
-      </Button>
       <div style={{ display: 'flex' }}>
         <Switch checked={loggingPref} onChange={handleLoggingPrefChange} />
         <Button>
