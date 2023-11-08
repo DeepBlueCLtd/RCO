@@ -331,20 +331,25 @@ const UserShowComp = ({
       </FlexBox>
 
       <Modal open={departOpen} onClose={handleDepartClose}>
-        <DepartOrganisation
-          handleClose={handleDepartClose}
-          record={record}
-          setShowReturn={setShowReturn}
-          audit={audit}
-        />
+        <div>
+          <DepartOrganisation
+            handleClose={handleDepartClose}
+            record={record}
+            setShowReturn={setShowReturn}
+            audit={audit}
+          />
+        </div>
       </Modal>
 
       <Modal open={resetOpen} onClose={handleResetClose}>
-        <ResetPassword
-          handleClose={handleResetClose}
-          record={record}
-          audit={audit}
-        />
+        <div>
+          {' '}
+          <ResetPassword
+            handleClose={handleResetClose}
+            record={record}
+            audit={audit}
+          />
+        </div>
       </Modal>
     </>
   )
