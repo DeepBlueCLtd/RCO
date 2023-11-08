@@ -5,7 +5,8 @@ import {
   TextField,
   TopToolbar,
   useRecordContext,
-  SearchInput
+  SearchInput,
+  FilterButton
 } from 'react-admin'
 import { Button, Chip } from '@mui/material'
 import { Article } from '@mui/icons-material'
@@ -14,12 +15,21 @@ import { rolesOptions } from '../../utils/options'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
 import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
+import { ActiveFilter } from '../platforms/PlatformList'
 
 interface Props {
   name: string
 }
 
-const filters = [<SearchInput source='q' key='q' alwaysOn />]
+const filters = [
+  <SearchInput source='q' key='q' alwaysOn />,
+  <ActiveFilter
+    source='departedDate_gte'
+    label='Active Users'
+    val={new Date().toISOString()}
+    key='Active Users'
+  />
+]
 
 export default function UserList(props: Props): React.ReactElement {
   const { name } = props
@@ -32,6 +42,7 @@ export default function UserList(props: Props): React.ReactElement {
   const ListActions = (): React.ReactElement => {
     return (
       <TopToolbar>
+        <FilterButton />
         {hasWriteAccess ? <CreateButton to={`${basePath}/create`} /> : null}
       </TopToolbar>
     )
