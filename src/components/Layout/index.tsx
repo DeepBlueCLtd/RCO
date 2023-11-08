@@ -59,6 +59,18 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     redirect('/login')
   }
 
+  // const handleLoadData = (): void => {
+  //   loadDefaultData(undefined).catch((err) =>
+  //     { notify(err.message, { type: 'error' }) }
+  //   )
+  // }
+
+  // const handleHighVolumeLoadData = (): void => {
+  //   loadDefaultData(undefined, true).catch((err) =>
+  //     { notify(err.message, { type: 'error' }) }
+  //   )
+  // }
+
   const handleLoggingPrefChange = (
     _: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
@@ -108,6 +120,28 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         </Button>
       )}
       {authenticated && <Logout onClick={handleLogOut} />}
+      {/* <Button
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        onClick={handleLoadData}
+        startIcon={
+          <Icon>
+            <Loop sx={{ width: '20px', height: '20px' }} />
+          </Icon>
+        }>
+        <Typography sx={{ textTransform: 'none' }}>Load data</Typography>
+      </Button>
+      <Button
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        onClick={handleHighVolumeLoadData}
+        startIcon={
+          <Icon>
+            <Loop sx={{ width: '20px', height: '20px' }} />
+          </Icon>
+        }>
+        <Typography sx={{ textTransform: 'none' }}>
+          Load data (high volume)
+        </Typography>
+      </Button> */}
       <div style={{ display: 'flex' }}>
         <Switch checked={loggingPref} onChange={handleLoggingPrefChange} />
         <Button>
