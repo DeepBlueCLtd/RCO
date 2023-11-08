@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Login } from '@mui/icons-material'
-import { Box, Icon, Typography, Button, Switch } from '@mui/material'
+import { Box, Icon, Typography, Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import {
@@ -51,9 +51,9 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const redirect = useRedirect()
   const notify = useNotify()
 
-  const [loggingPref, setLoggingPref] = useState<boolean>(
-    localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
-  )
+  // const [loggingPref, setLoggingPref] = useState<boolean>(
+  //   localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
+  // )
 
   const handleLogin = (): void => {
     redirect('/login')
@@ -71,20 +71,20 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   //   )
   // }
 
-  const handleLoggingPrefChange = (
-    _: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ): void => {
-    setLoggingPref(checked)
-    localStorage.setItem(constants.LOGGING_ENABLED, checked.toString())
+  // const handleLoggingPrefChange = (
+  //   _: React.ChangeEvent<HTMLInputElement>,
+  //   checked: boolean
+  // ): void => {
+  //   setLoggingPref(checked)
+  //   localStorage.setItem(constants.LOGGING_ENABLED, checked.toString())
 
-    const storageEvent = new StorageEvent('storage', {
-      key: constants.LOGGING_ENABLED,
-      newValue: checked.toString()
-    })
+  //   const storageEvent = new StorageEvent('storage', {
+  //     key: constants.LOGGING_ENABLED,
+  //     newValue: checked.toString()
+  //   })
 
-    window.dispatchEvent(storageEvent)
-  }
+  //   window.dispatchEvent(storageEvent)
+  // }
 
   const handleLogOut = (): void => {
     logout()
@@ -142,12 +142,12 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           Load data (high volume)
         </Typography>
       </Button> */}
-      <div style={{ display: 'flex' }}>
+      {/* <div style={{ display: 'flex' }}>
         <Switch checked={loggingPref} onChange={handleLoggingPrefChange} />
         <Button>
           <Typography sx={{ textTransform: 'none' }}>Logging</Typography>
         </Button>
-      </div>
+      </div> */}
     </UserMenu>
   )
 }
