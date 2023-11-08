@@ -24,7 +24,7 @@ interface Props {
 interface ActiveFilterType {
   label: string
   source: string
-  val?: boolean
+  val?: boolean | string
 }
 
 export const ActiveFilter = ({
