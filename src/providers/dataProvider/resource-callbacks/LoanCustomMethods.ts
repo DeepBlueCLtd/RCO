@@ -117,25 +117,29 @@ export const customMethods = (
           .map((item) => item.loanedTo)
           .filter((user) => user !== null) as number[]
 
-        users.map(async (user) => {
-          const { data: loaned } = await this.getOne<LoanUser>(R_LOAN_USERS, {
-            id: user
-          })
-          let count = 0
+        users.forEach((user) => {
+          const fn = async (): Promise<void> => {
+            const { data: loaned } = await this.getOne<LoanUser>(R_LOAN_USERS, {
+              id: user
+            })
+            let count = 0
 
-          for (let i = 0; i < itemsData.length; i++) {
-            if (itemsData[i].loanedTo === user) {
-              count++
+            for (let i = 0; i < itemsData.length; i++) {
+              if (itemsData[i].loanedTo === user) {
+                count++
+              }
             }
+
+            if (loaned.numItems - count !== 0)
+              await this.update<LoanUser>(R_LOAN_USERS, {
+                id: user,
+                data: { numItems: loaned.numItems - count },
+                previousData: loaned
+              })
+            else await this.delete<LoanUser>(R_LOAN_USERS, { id: user })
           }
 
-          if (loaned.numItems - count !== 0)
-            await this.update<LoanUser>(R_LOAN_USERS, {
-              id: user,
-              data: { numItems: loaned.numItems - count },
-              previousData: loaned
-            })
-          else await this.delete<LoanUser>(R_LOAN_USERS, { id: user })
+          fn().catch(console.log)
         })
       }
 
