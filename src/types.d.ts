@@ -278,6 +278,13 @@ interface Dispatch {
   reportPrintedAt: string | null
 }
 
+/** type of data returned from the `loanUser` view */
+interface LoanUser {
+  id: User['id']
+  numItems: number // count of items this user has on loan
+  staffNumber: User['staffNumber']
+}
+
 /** per instance config data. It is just intended to be one row deep */
 type ConfigData = RCOResource & {
   /** singular name for project resource

@@ -37,7 +37,7 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
       R_DESTRUCTION,
       'name',
       undefined,
-      'DC'
+      'VAULT'
     )
 
     await dataProvider.update<Dispatch>(R_DESTRUCTION, {
