@@ -70,7 +70,8 @@ export default function UserList(props: Props): React.ReactElement {
       actions={<ListActions />}
       perPage={25}
       resource={cName}
-      filters={filters}>
+      filters={filters}
+      filterDefaultValues={{ departedDate_gte: true }}>
       <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
