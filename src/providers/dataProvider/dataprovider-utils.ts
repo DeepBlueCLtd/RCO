@@ -171,7 +171,7 @@ export async function generateReference<T extends RaRecord>(
   filter: GetListParams['filter'] = {
     createdAt_gte: DateTime.now().startOf('year').toISO()
   },
-  prefix = 'RN',
+  prefix = 'VAULT',
   index = 1
 ): Promise<string> {
   if (!isNumber(year)) throw new TypeError('Year invalid')
