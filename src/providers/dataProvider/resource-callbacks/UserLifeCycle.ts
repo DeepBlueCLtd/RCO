@@ -20,7 +20,7 @@ const lifeCycles = (
   return {
     beforeCreate: async (record: CreateParams<User>) => {
       record.data.departedDate = DateTime.now()
-        .plus({ years: 5 })
+        .plus({ years: 10 })
         .toJSDate()
         .toISOString()
       return withCreatedByAt(record)
