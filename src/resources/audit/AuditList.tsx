@@ -116,21 +116,21 @@ export const ListActions = (props: ListActionsProps): React.ReactElement => {
   )
 }
 
-interface ItemProps {
-  record: Item
+interface AuditProps {
+  record: Audit
 }
 
-export const ItemName = ({ record }: ItemProps): React.ReactElement => {
+export const ItemName = ({ record }: AuditProps): React.ReactElement => {
   const { data: richItemRecord } = useGetList<RichItem>(
     constants.R_RICH_ITEMS,
     {
-      filter: { id: record.id },
+      filter: { id: record.dataId },
       pagination: { page: 1, perPage: 1 }
     }
   )
 
   return (
-    <Link to={`/${constants.R_RICH_ITEMS}/${record.id}/show`}>
+    <Link to={`/${constants.R_RICH_ITEMS}/${record.dataId}/show`}>
       {richItemRecord?.[0]?.vault ? `${richItemRecord?.[0]?.vault?.[0]}` : ''}
       {richItemRecord?.[0]?.itemNumber}
     </Link>
@@ -181,7 +181,7 @@ export default function AuditList({
           reference={constants.R_USERS}
           link='show'
         />
-        <DateField<Audit> source='dateTime' label='Date Time' showTime />;
+        <DateField<Audit> source='dateTime' label='Date Time' showTime />
         <TextField<Audit> source='label' label='Activity Type' />
         <TextField<Audit>
           source='activityDetail'
@@ -213,7 +213,7 @@ export default function AuditList({
                         }}
                       />
                     ) : (
-                      <FunctionField<RichItem>
+                      <FunctionField<Audit>
                         render={(record) => <ItemName record={record} />}
                       />
                     )
