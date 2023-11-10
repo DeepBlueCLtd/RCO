@@ -9,8 +9,11 @@ import {
   type UpdateResult,
   type CreateParams,
   type ResourceCallbacks,
-  type UpdateParams
+  type UpdateParams,
+  type CreateResult,
+  type DataProvider
 } from 'react-admin'
+import { DateTime } from 'luxon'
 
 const lifeCycles = (
   audit: AuditFunctionType
@@ -44,6 +47,17 @@ const lifeCycles = (
         audit(auditObj).catch(console.log)
       }
 
+      return result
+    },
+    afterCreate: async (
+      result: CreateResult<User>,
+      dataProvider: DataProvider
+    ): Promise<CreateResult<User>> => {
+      await dataProvider.update<User>(R_USERS, {
+        id: result.data.id,
+        data: { departedDate: DateTime.local().plus({ years: 10 }) },
+        previousData: result.data
+      })
       return result
     }
   }
