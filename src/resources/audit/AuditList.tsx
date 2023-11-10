@@ -118,37 +118,75 @@ export const ListActions = (props: ListActionsProps): React.ReactElement => {
 
 interface AuditProps {
   record: Audit
+  id: number | string | null
 }
 
-export const BatchName = ({ record }: AuditProps): React.ReactElement => {
+export const BatchName = ({ id }: AuditProps): React.ReactElement => {
   const { data: batch } = useGetList<Batch>(constants.R_BATCHES, {
-    filter: { id: record.id },
+    filter: { id },
     pagination: { page: 1, perPage: 1 }
   })
-
   return (
-    <Link to={`/${constants.R_BATCHES}/${record.id}/show`}>
+    <Link to={`/${constants.R_BATCHES}/${id}/show`}>
       {batch?.[0]?.vault ? `${batch?.[0]?.vault?.[0]}` : ''}
       {batch?.[0]?.batchNumber}
     </Link>
   )
 }
 
-export const ItemName = ({ record }: AuditProps): React.ReactElement => {
+export const ItemName = ({ id }: AuditProps): React.ReactElement => {
   const { data: richItemRecord } = useGetList<RichItem>(
     constants.R_RICH_ITEMS,
     {
-      filter: { id: record.dataId },
+      filter: { id },
       pagination: { page: 1, perPage: 1 }
     }
   )
-
   return (
-    <Link to={`/${constants.R_RICH_ITEMS}/${record.dataId}/show`}>
+    <Link to={`/${constants.R_RICH_ITEMS}/${id}/show`}>
       {richItemRecord?.[0]?.vault ? `${richItemRecord?.[0]?.vault?.[0]}` : ''}
       {richItemRecord?.[0]?.itemNumber}
     </Link>
   )
+}
+
+const renderLabel = (
+  id: number | string | null,
+  resource: string | null,
+  idField: string
+): React.ReactElement => {
+  if (resource) {
+    switch (resource) {
+      case constants.R_ITEMS:
+        return (
+          <FunctionField<Audit>
+            render={(audit) => <ItemName record={audit} id={id} />}
+          />
+        )
+      case constants.R_BATCHES:
+        return (
+          <FunctionField<Audit>
+            render={(audit) => <BatchName record={audit} id={id} />}
+          />
+        )
+      default:
+        return (
+          <SourceField<Audit>
+            source={idField as keyof Audit}
+            reference={resource}
+            sourceField={resourcesRefKey[resource]}
+            link={() => {
+              if (referenceItems.includes(resource)) {
+                return `/${resource}/${id}/show`
+              }
+              return 'show'
+            }}
+          />
+        )
+    }
+  } else {
+    return <div></div>
+  }
 }
 
 interface AuditListProps extends DatagridConfigurableProps {
@@ -209,32 +247,8 @@ export default function AuditList({
             label='Name'
             render={(record) => {
               return (
-                <>
-                  {record.resource !== null ? (
-                    record.resource !== constants.R_ITEMS ? (
-                      <SourceField<Audit>
-                        source='dataId'
-                        reference={record.resource}
-                        sourceField={resourcesRefKey[record.resource]}
-                        link={() => {
-                          if (
-                            record.resource &&
-                            referenceItems.includes(record.resource)
-                          ) {
-                            return `/${record.resource}/${record.dataId}/show`
-                          }
-                          return 'show'
-                        }}
-                      />
-                    ) : (
-                      <FunctionField<Audit>
-                        render={(record) => <ItemName record={record} />}
-                      />
-                    )
-                  ) : (
-                    <TextField<Audit> source='dataId' label='Item' />
-                  )}
-                </>
+                record.dataId &&
+                renderLabel(record.dataId, record.resource, 'dataId')
               )
             }}
           />
@@ -246,29 +260,12 @@ export default function AuditList({
             label='Subject Item'
             render={(record) => {
               return (
-                <>
-                  {record.subjectId !== null &&
-                    record.subjectResource !== null && (
-                      <SourceField<Audit>
-                        source='subjectId'
-                        reference={record.subjectResource}
-                        sourceField={resourcesRefKey[record.subjectResource]}
-                        link={() => {
-                          if (
-                            record.subjectResource &&
-                            record.subjectResource !== null &&
-                            referenceItems.includes(record.subjectResource)
-                          ) {
-                            return `/${record.subjectResource}/${record.subjectId}/show`
-                          }
-                          if (record.subjectResource === constants.R_ITEMS) {
-                            return `/${constants.R_RICH_ITEMS}/${record.subjectId}/show`
-                          }
-                          return 'show'
-                        }}
-                      />
-                    )}
-                </>
+                record.subjectId &&
+                renderLabel(
+                  record.subjectId,
+                  record.subjectResource,
+                  'subjectId'
+                )
               )
             }}
           />
