@@ -13,7 +13,8 @@ import {
   type DatagridConfigurableProps,
   FilterButton,
   ExportButton,
-  useGetList
+  useGetList,
+  Link
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -129,10 +130,10 @@ export const ItemName = ({ record }: ItemProps): React.ReactElement => {
   )
 
   return (
-    <>
+    <Link to={`/${constants.R_RICH_ITEMS}/${record.id}/show`}>
       {richItemRecord?.[0]?.vault ? `${richItemRecord?.[0]?.vault?.[0]}` : ''}
       {richItemRecord?.[0]?.itemNumber}
-    </>
+    </Link>
   )
 }
 
@@ -207,9 +208,6 @@ export default function AuditList({
                             referenceItems.includes(record.resource)
                           ) {
                             return `/${record.resource}/${record.dataId}/show`
-                          }
-                          if (record.resource === constants.R_ITEMS) {
-                            return `/${constants.R_RICH_ITEMS}/${record.dataId}/show`
                           }
                           return 'show'
                         }}
