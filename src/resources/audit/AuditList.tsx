@@ -120,6 +120,20 @@ interface AuditProps {
   record: Audit
 }
 
+export const BatchName = ({ record }: AuditProps): React.ReactElement => {
+  const { data: batch } = useGetList<Batch>(constants.R_BATCHES, {
+    filter: { id: record.id },
+    pagination: { page: 1, perPage: 1 }
+  })
+
+  return (
+    <Link to={`/${constants.R_BATCHES}/${record.id}/show`}>
+      {batch?.[0]?.vault ? `${batch?.[0]?.vault?.[0]}` : ''}
+      {batch?.[0]?.batchNumber}
+    </Link>
+  )
+}
+
 export const ItemName = ({ record }: AuditProps): React.ReactElement => {
   const { data: richItemRecord } = useGetList<RichItem>(
     constants.R_RICH_ITEMS,
