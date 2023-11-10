@@ -62,7 +62,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
       constants.R_DESTRUCTION,
       'name',
       undefined,
-      'DC',
+      'VAULT',
       0
     )
     return name

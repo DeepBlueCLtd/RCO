@@ -171,7 +171,7 @@ export async function generateReference<T extends RaRecord>(
   filter: GetListParams['filter'] = {
     createdAt_gte: DateTime.now().startOf('year').toISO()
   },
-  prefix = 'RN',
+  prefix = 'VAULT',
   index = 1
 ): Promise<string> {
   if (!isNumber(year)) throw new TypeError('Year invalid')
@@ -180,14 +180,17 @@ export async function generateReference<T extends RaRecord>(
     pagination: { page: 1, perPage: 2 },
     filter: { ...filter }
   })
+
   const currentYear = parseInt(year)
   const lastDispatch = dispatch.data[index]
-  const lastDispatchName = lastDispatch[fieldName] as string
-  const generatedYear = parseInt(lastDispatchName.slice(-4))
-  const counter =
-    generatedYear < currentYear
-      ? 1
-      : parseInt(lastDispatchName.split('/')[1]) + 1
+  if (lastDispatch) {
+    const lastDispatchName = lastDispatch[fieldName] as string
+    const generatedYear = parseInt(lastDispatchName.slice(-4))
+    const counter =
+      generatedYear < currentYear
+        ? 1
+        : parseInt(lastDispatchName.split('/')[1]) + 1
 
-  return `${prefix}/${counter}/${currentYear}`
+    return `${prefix}/${counter}/${currentYear}`
+  } else return `${prefix}/1/${currentYear}`
 }
