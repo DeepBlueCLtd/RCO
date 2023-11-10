@@ -50,7 +50,7 @@ const SourceField = <
         <FunctionField
           label={label}
           {...textProps}
-          render={(record: User) => `${record.name} (${record.staffNumber})`}
+          render={(record: User) => `${record.name}`}
         />
       ) : (
         <TextField source={sourceField} {...textProps} />
