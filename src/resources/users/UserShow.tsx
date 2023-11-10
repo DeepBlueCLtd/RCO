@@ -277,6 +277,7 @@ const UserShowComp = ({
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
                 disabled={cannotDepart()}
+                title='Mark departure date to now, to prevent login'
                 onClick={handleDepartUser}>
                 Depart Organisation
               </Button>
@@ -299,6 +300,7 @@ const UserShowComp = ({
                 }
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
+                title='Clear user password. After logging in with username in both boxes they will be invited to enter a new one'
                 onClick={handleResetPassowrd}>
                 Reset Password
               </Button>
@@ -307,6 +309,7 @@ const UserShowComp = ({
               <Button
                 disabled={!showReturn}
                 variant='outlined'
+                title='Set their departure date to 10 years in the future'
                 startIcon={<KeyboardReturn />}
                 onClick={handleUserReturn}>
                 Return to Organisation

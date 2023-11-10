@@ -48,7 +48,6 @@ describe('CRUD operations on User', () => {
   })
 
   it('should create user', async () => {
-    const randomDepartDate = generateRandomDate()[0].toString()
     const userListBeforeCreate = await provider.getList<User>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
@@ -59,9 +58,11 @@ describe('CRUD operations on User', () => {
 
     const createdUser = (
       await provider.create<User>(R_USERS, {
-        data: generateUserForTesting({ departedDate: randomDepartDate })
+        data: generateUserForTesting()
       })
     ).data
+
+    const randomDepartDate = createdUser.departedDate as string
 
     expect(createdUser).toBeDefined()
 

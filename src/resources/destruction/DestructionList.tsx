@@ -43,7 +43,13 @@ export default function DestructionList(): React.ReactElement {
     setOpen(open)
   }
   return (
-    <List filters={filters}>
+    <List
+      filters={filters}
+      filterDefaultValues={
+        process.env.MOCK
+          ? { finalisedAt_eq: false }
+          : { finalisedAt__null: true }
+      }>
       <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField<Destruction> source='name' label='Reference' />
         <ConditionalDateField<Destruction>
