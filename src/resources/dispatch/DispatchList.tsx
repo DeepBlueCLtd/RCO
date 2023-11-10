@@ -17,6 +17,8 @@ import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import { useLocation } from 'react-router-dom'
 import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
@@ -42,6 +44,7 @@ const BulkActions = (): React.ReactElement => {
   const dataProvider = useDataProvider()
   const refresh = useRefresh()
   const notify = useNotify()
+  const audit = useAudit()
 
   const receiptReceived = async (): Promise<void> => {
     await dataProvider.updateMany<Dispatch>(constants.R_DISPATCH, {
@@ -50,6 +53,17 @@ const BulkActions = (): React.ReactElement => {
         receiptReceived: nowDate()
       }
     })
+
+    await audit({
+      resource: constants.R_DISPATCH,
+      activityType: AuditType.RECEIPT_NOTE_RECEIVED,
+      dataId: null,
+      activityDetail: `Recipt note received for: ${selectedIds.join(',')}`,
+      securityRelated: false,
+      subjectResource: constants.R_DISPATCH,
+      subjectId: null
+    })
+
     refresh()
     notify(`Receipt Received for ${selectedIds.length} items`, {
       type: 'success'
