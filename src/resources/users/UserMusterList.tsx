@@ -119,7 +119,7 @@ export default function UserMusterList<T extends User>(
                       fontSize: '12px'
                     }}>
                     <FunctionField<RichItem>
-                      render={(record) => <ItemName record={record} />}
+                      render={(record) => <ItemName id={record.id} />}
                     />
                     <SourceField<Item>
                       textProps={{ ...style }}

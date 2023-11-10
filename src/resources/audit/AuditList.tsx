@@ -117,7 +117,6 @@ export const ListActions = (props: ListActionsProps): React.ReactElement => {
 }
 
 interface AuditProps {
-  record: Audit
   id: number | string | null
 }
 
@@ -158,17 +157,9 @@ const renderLabel = (
   if (resource) {
     switch (resource) {
       case constants.R_ITEMS:
-        return (
-          <FunctionField<Audit>
-            render={(audit) => <ItemName record={audit} id={id} />}
-          />
-        )
+        return <FunctionField<Audit> render={() => <ItemName id={id} />} />
       case constants.R_BATCHES:
-        return (
-          <FunctionField<Audit>
-            render={(audit) => <BatchName record={audit} id={id} />}
-          />
-        )
+        return <FunctionField<Audit> render={() => <BatchName id={id} />} />
       default:
         return (
           <SourceField<Audit>
