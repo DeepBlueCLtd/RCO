@@ -84,7 +84,7 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
       filters={filters}
       filterDefaultValues={
         process.env.MOCK
-          ? { dispatchedAt_eq: true }
+          ? { dispatchedAt_eq: false }
           : { dispatchedAt__null: true }
       }>
       <Datagrid

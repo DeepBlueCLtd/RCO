@@ -47,7 +47,7 @@ export default function DestructionList(): React.ReactElement {
       filters={filters}
       filterDefaultValues={
         process.env.MOCK
-          ? { finalisedAt_eq: true }
+          ? { finalisedAt_eq: false }
           : { finalisedAt__null: true }
       }>
       <Datagrid rowClick='show' bulkActionButtons={false}>
