@@ -9,7 +9,7 @@ import {
   type DatagridProps
 } from 'react-admin'
 import { makeStyles } from '@mui/styles'
-import { Link, type To } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import { ICON_BATCH, R_BATCHES } from '../constants'
@@ -50,6 +50,7 @@ interface Field<T> {
   reference?: string
   component?: React.FC<any>
   label?: string
+  sortable?: boolean
 }
 
 interface Props<T> extends DatagridProps {
@@ -60,17 +61,16 @@ interface Props<T> extends DatagridProps {
   filter?: FilterPayload
   search?: string
   rowStyle?: (data: T) => SxProps
-  to?: To
+  isTitleClickable?: boolean
 }
 
 function Column<T extends Batch | Dispatch | LoanUser>(
   props: Field<T>
 ): React.ReactElement {
-  const { source, reference, component, label = '' } = props
+  const { source, reference, component, label = '', sortable } = props
   if (typeof component !== 'undefined') {
     return React.createElement(component, { source })
   }
-
   if (typeof reference !== 'undefined') {
     return (
       <SourceField<T>
@@ -78,10 +78,11 @@ function Column<T extends Batch | Dispatch | LoanUser>(
         source={source}
         reference={reference}
         label={label}
+        textProps={{ sortable }}
       />
     )
   }
-  return <TextField source={source as string} />
+  return <TextField source={source as string} sortable={sortable} />
 }
 
 interface RecentCardProps extends DatagridProps {
@@ -89,11 +90,11 @@ interface RecentCardProps extends DatagridProps {
   label?: string
   resource?: string
   search?: string
-  to?: To
+  isTitleClickable?: boolean
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', children, search, to } = props
+  const { label, resource = '', children, search, isTitleClickable } = props
   const classes = useStyles()
   return (
     <Box>
@@ -108,18 +109,19 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
             }}>
             {resource === R_BATCHES ? <ICON_BATCH /> : ''}
             <Typography variant='h6'>
-              {typeof label !== 'undefined' && (
-                <Link
-                  to={
-                    to ?? {
+              {typeof label !== 'undefined' &&
+                (isTitleClickable !== false ? (
+                  <Link
+                    to={{
                       pathname: resource,
                       ...(search !== undefined ? { search } : null)
-                    }
-                  }
-                  className={classes.label}>
-                  {label}
-                </Link>
-              )}
+                    }}
+                    className={classes.label}>
+                    {label}
+                  </Link>
+                ) : (
+                  <div className={classes.label}>{label}</div>
+                ))}
             </Typography>
           </div>
           <Box sx={{ mt: 2 }} className={classes.container}>
@@ -142,11 +144,15 @@ export default function Recent<T extends Batch | Dispatch | LoanUser>(
     search,
     rowStyle,
     rowClick,
-    to
+    isTitleClickable
   } = props
 
   return (
-    <RecentCard label={label} resource={resource} search={search} to={to}>
+    <RecentCard
+      label={label}
+      resource={resource}
+      search={search}
+      isTitleClickable={isTitleClickable}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}
@@ -163,7 +169,7 @@ export default function Recent<T extends Batch | Dispatch | LoanUser>(
             bulkActionButtons={false}
             rowClick={rowClick ?? 'show'}>
             {fields.map((column, index) => (
-              <Column<T> key={index} {...column} />
+              <Column<T> key={index} {...column} sortable={false} />
             ))}
           </Datagrid>
         </List>

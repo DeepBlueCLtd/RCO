@@ -36,6 +36,7 @@ const useStyles = makeStyles({
 const BatchComponent = (): React.ReactElement => {
   return (
     <FunctionField<Batch>
+      sortable={false}
       render={(record) => `${record.vault?.[0]}${record.batchNumber}`}
     />
   )
@@ -103,10 +104,8 @@ export default function Welcome(): React.ReactElement {
           search='order=DESC&sort=createdAt'
         />
         <Recent<LoanUser>
+          isTitleClickable={false}
           label='Items on Loan'
-          to={{
-            pathname: constants.R_RICH_ITEMS
-          }}
           resource={constants.R_LOAN_USERS}
           fields={[{ source: 'staffNumber' }, { source: 'numItems' }]}
           rowClick={(id) => {
