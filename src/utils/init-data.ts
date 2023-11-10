@@ -320,6 +320,10 @@ const loadDefaultData = async (
     !!process.env.MOCK
   )
 
+  await dataprovider.create<LoanUser>(constants.R_LOAN_USERS, {
+    data: []
+  })
+
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
       if (key === constants.R_ITEMS) {

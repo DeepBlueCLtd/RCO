@@ -28,6 +28,7 @@ const SourceField = <
     | Project
     | ProtectiveMarking
     | MediaType
+    | LoanUser
 >(
   props: SourceFieldProps<T>
 ): React.ReactElement => {

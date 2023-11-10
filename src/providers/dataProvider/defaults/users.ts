@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon'
+
 const users: User[] = [
   {
     id: 1,
@@ -7,7 +9,7 @@ const users: User[] = [
     createdAt: '',
     createdBy: 2,
     staffNumber: 'd-1',
-    departedDate: null
+    departedDate: DateTime.local().plus({ years: 5 }).toISO()
   },
   {
     id: 2,
@@ -17,7 +19,7 @@ const users: User[] = [
     createdAt: '',
     createdBy: 2,
     staffNumber: 'd-2',
-    departedDate: null
+    departedDate: DateTime.local().plus({ years: 5 }).toISO()
   },
   {
     id: 3,
@@ -27,7 +29,7 @@ const users: User[] = [
     createdAt: '',
     createdBy: 2,
     staffNumber: 'd-3',
-    departedDate: null
+    departedDate: DateTime.local().plus({ years: 5 }).toISO()
   },
   {
     id: 4,
@@ -37,7 +39,7 @@ const users: User[] = [
     createdAt: '',
     createdBy: 2,
     staffNumber: 'd-4',
-    departedDate: null
+    departedDate: DateTime.local().plus({ years: 5 }).toISO()
   }
 ]
 
