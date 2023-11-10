@@ -104,12 +104,11 @@ export default function Welcome(): React.ReactElement {
         />
         <Recent<LoanUser>
           label='Items on Loan'
+          to={{
+            pathname: constants.R_RICH_ITEMS
+          }}
           resource={constants.R_LOAN_USERS}
-          fields={[
-            { source: 'id', reference: constants.R_USERS, label: 'Name' },
-            { source: 'staffNumber' },
-            { source: 'numItems' }
-          ]}
+          fields={[{ source: 'staffNumber' }, { source: 'numItems' }]}
           rowClick={(id) => {
             const path = `/${constants.R_RICH_ITEMS}?filter={"loanedTo":${id}}`
             redirect(path)

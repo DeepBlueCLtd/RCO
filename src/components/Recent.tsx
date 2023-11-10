@@ -9,7 +9,7 @@ import {
   type DatagridProps
 } from 'react-admin'
 import { makeStyles } from '@mui/styles'
-import { Link } from 'react-router-dom'
+import { Link, type To } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import { ICON_BATCH, R_BATCHES } from '../constants'
@@ -60,6 +60,7 @@ interface Props<T> extends DatagridProps {
   filter?: FilterPayload
   search?: string
   rowStyle?: (data: T) => SxProps
+  to?: To
 }
 
 function Column<T extends Batch | Dispatch | LoanUser>(
@@ -88,12 +89,12 @@ interface RecentCardProps extends DatagridProps {
   label?: string
   resource?: string
   search?: string
+  to?: To
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', children, search } = props
+  const { label, resource = '', children, search, to } = props
   const classes = useStyles()
-
   return (
     <Box>
       <Card variant='outlined'>
@@ -109,10 +110,12 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
             <Typography variant='h6'>
               {typeof label !== 'undefined' && (
                 <Link
-                  to={{
-                    pathname: resource,
-                    ...(search !== undefined ? { search } : null)
-                  }}
+                  to={
+                    to ?? {
+                      pathname: resource,
+                      ...(search !== undefined ? { search } : null)
+                    }
+                  }
                   className={classes.label}>
                   {label}
                 </Link>
@@ -138,11 +141,12 @@ export default function Recent<T extends Batch | Dispatch | LoanUser>(
     filter,
     search,
     rowStyle,
-    rowClick
+    rowClick,
+    to
   } = props
 
   return (
-    <RecentCard label={label} resource={resource} search={search}>
+    <RecentCard label={label} resource={resource} search={search} to={to}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}
