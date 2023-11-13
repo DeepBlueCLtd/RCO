@@ -92,14 +92,13 @@ const BulkActions = (): React.ReactElement => {
   return (
     <>
       <FlexBox>
-        {showReceiptButton && (
-          <Button
-            onClick={receiptReceived as any}
-            size='small'
-            variant='outlined'>
-            Receipt Note Received
-          </Button>
-        )}
+        <Button
+          disabled={!showReceiptButton}
+          onClick={receiptReceived as any}
+          size='small'
+          variant='outlined'>
+          Receipt Note Received
+        </Button>
       </FlexBox>
     </>
   )
