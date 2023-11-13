@@ -96,7 +96,15 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
     : 'simple-dispatch-list'
 
   return (
-    <List hasCreate storeKey={storeKey} filters={filters}>
+    <List
+      hasCreate
+      storeKey={storeKey}
+      filters={filters}
+      filterDefaultValues={
+        process.env.MOCK
+          ? { dispatchedAt_eq: false }
+          : { dispatchedAt__null: true }
+      }>
       <Datagrid
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>

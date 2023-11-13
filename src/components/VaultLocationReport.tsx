@@ -203,7 +203,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                       </Typography>
                       <ItemsReport filter={filter} {...props}>
                         <FunctionField<RichItem>
-                          render={(record) => <ItemName record={record} />}
+                          render={(record) => <ItemName id={record.id} />}
                         />
                         <SourceField<Item>
                           link='show'

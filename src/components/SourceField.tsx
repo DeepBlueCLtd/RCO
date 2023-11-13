@@ -28,6 +28,7 @@ const SourceField = <
     | Project
     | ProtectiveMarking
     | MediaType
+    | LoanUser
 >(
   props: SourceFieldProps<T>
 ): React.ReactElement => {
@@ -49,7 +50,7 @@ const SourceField = <
         <FunctionField
           label={label}
           {...textProps}
-          render={(record: User) => `${record.name} (${record.staffNumber})`}
+          render={(record: User) => `${record.name}`}
         />
       ) : (
         <TextField source={sourceField} {...textProps} />

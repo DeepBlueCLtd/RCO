@@ -11,6 +11,7 @@ import {
   type ResourceCallbacks,
   type UpdateParams
 } from 'react-admin'
+import { DateTime } from 'luxon'
 
 const lifeCycles = (
   audit: AuditFunctionType
@@ -18,6 +19,10 @@ const lifeCycles = (
   let passwordAssigned = false
   return {
     beforeCreate: async (record: CreateParams<User>) => {
+      record.data.departedDate = DateTime.now()
+        .plus({ years: 10 })
+        .toJSDate()
+        .toISOString()
       return withCreatedByAt(record)
     },
     beforeUpdate: async (record: UpdateParams<User>) => {

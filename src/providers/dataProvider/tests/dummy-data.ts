@@ -134,7 +134,7 @@ export const generateUserForTesting = ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
   password: password ?? undefined,
-  ...(departedDate ? { departedDate } : { departedDate: null }),
+  ...(departedDate ? { departedDate } : null),
   role: 'rco-user',
   staffNumber: 'd-1'
 })

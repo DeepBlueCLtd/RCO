@@ -44,6 +44,7 @@ export const R_BATCH_CODE = 'batchCode'
 export const R_BATCH_HANDLE = 'batchHandle'
 export const R_VAULT = 'vault'
 export const R_RICH_ITEMS = 'richItem'
+export const R_LOAN_USERS = 'loanUsers'
 
 export const ID_FIX: Record<string, string> = {
   [R_CAT_CAVE]: 'catCave',
@@ -77,6 +78,7 @@ export type ResourceTypes =
   | typeof R_CONFIG
   | typeof R_VAULT
   | typeof R_RICH_ITEMS
+  | typeof R_LOAN_USERS
 
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
