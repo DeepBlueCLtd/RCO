@@ -9,7 +9,8 @@ import {
   useNotify,
   useRefresh,
   useRecordContext,
-  SearchInput
+  SearchInput,
+  useGetMany
 } from 'react-admin'
 import { Button } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -19,6 +20,7 @@ import { useLocation } from 'react-router-dom'
 import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
+import { useEffect, useState } from 'react'
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
@@ -45,6 +47,19 @@ const BulkActions = (): React.ReactElement => {
   const refresh = useRefresh()
   const notify = useNotify()
   const audit = useAudit()
+  const { data } = useGetMany<Dispatch>(constants.R_DISPATCH, {
+    ids: selectedIds
+  })
+
+  const [showReceiptButton, setShowReceiptButton] = useState<
+    boolean | undefined
+  >(true)
+
+  useEffect(() => {
+    setShowReceiptButton(
+      data?.every((d) => d.dispatchedAt !== null && d.receiptReceived === null)
+    )
+  }, [selectedIds])
 
   const receiptReceived = async (): Promise<void> => {
     await dataProvider.updateMany<Dispatch>(constants.R_DISPATCH, {
@@ -77,12 +92,14 @@ const BulkActions = (): React.ReactElement => {
   return (
     <>
       <FlexBox>
-        <Button
-          onClick={receiptReceived as any}
-          size='small'
-          variant='outlined'>
-          Receipt Note Received
-        </Button>
+        {showReceiptButton && (
+          <Button
+            onClick={receiptReceived as any}
+            size='small'
+            variant='outlined'>
+            Receipt Note Received
+          </Button>
+        )}
       </FlexBox>
     </>
   )
