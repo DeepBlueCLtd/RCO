@@ -9,7 +9,8 @@ import {
   useNotify,
   useRefresh,
   useRecordContext,
-  SearchInput
+  SearchInput,
+  useGetMany
 } from 'react-admin'
 import { Button } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -17,6 +18,9 @@ import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import { useLocation } from 'react-router-dom'
 import NullUndefinedFilter from '../../components/NullUndefinedFilter'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
+import { useEffect, useState } from 'react'
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
@@ -42,6 +46,20 @@ const BulkActions = (): React.ReactElement => {
   const dataProvider = useDataProvider()
   const refresh = useRefresh()
   const notify = useNotify()
+  const audit = useAudit()
+  const { data } = useGetMany<Dispatch>(constants.R_DISPATCH, {
+    ids: selectedIds
+  })
+
+  const [showReceiptButton, setShowReceiptButton] = useState<
+    boolean | undefined
+  >(true)
+
+  useEffect(() => {
+    setShowReceiptButton(
+      data?.every((d) => d.dispatchedAt !== null && d.receiptReceived === null)
+    )
+  }, [selectedIds])
 
   const receiptReceived = async (): Promise<void> => {
     await dataProvider.updateMany<Dispatch>(constants.R_DISPATCH, {
@@ -50,6 +68,21 @@ const BulkActions = (): React.ReactElement => {
         receiptReceived: nowDate()
       }
     })
+
+    const promises = selectedIds.map(async (id) => {
+      await audit({
+        resource: constants.R_DISPATCH,
+        activityType: AuditType.RECEIPT_NOTE_RECEIVED,
+        dataId: id,
+        activityDetail: 'Receipt note received',
+        securityRelated: false,
+        subjectResource: null,
+        subjectId: null
+      })
+    })
+
+    await Promise.all(promises)
+
     refresh()
     notify(`Receipt Received for ${selectedIds.length} items`, {
       type: 'success'
@@ -60,6 +93,7 @@ const BulkActions = (): React.ReactElement => {
     <>
       <FlexBox>
         <Button
+          disabled={!showReceiptButton}
           onClick={receiptReceived as any}
           size='small'
           variant='outlined'>
