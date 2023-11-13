@@ -76,7 +76,7 @@ const BulkActions = (): React.ReactElement => {
         dataId: id,
         activityDetail: 'Receipt note received',
         securityRelated: false,
-        subjectResource: constants.R_DISPATCH,
+        subjectResource: null,
         subjectId: null
       })
     })
