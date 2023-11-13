@@ -54,15 +54,19 @@ const BulkActions = (): React.ReactElement => {
       }
     })
 
-    await audit({
-      resource: constants.R_DISPATCH,
-      activityType: AuditType.RECEIPT_NOTE_RECEIVED,
-      dataId: null,
-      activityDetail: `Recipt note received for: ${selectedIds.join(',')}`,
-      securityRelated: false,
-      subjectResource: constants.R_DISPATCH,
-      subjectId: null
+    const promises = selectedIds.map(async (id) => {
+      await audit({
+        resource: constants.R_DISPATCH,
+        activityType: AuditType.RECEIPT_NOTE_RECEIVED,
+        dataId: id,
+        activityDetail: 'Receipt note received',
+        securityRelated: false,
+        subjectResource: constants.R_DISPATCH,
+        subjectId: null
+      })
     })
+
+    await Promise.all(promises)
 
     refresh()
     notify(`Receipt Received for ${selectedIds.length} items`, {
