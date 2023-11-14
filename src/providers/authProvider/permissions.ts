@@ -1,5 +1,4 @@
 import * as constants from '../../constants'
-type UserRoles = UserRole
 
 const basePermissions = {
   [constants.R_PROJECTS]: { read: true, write: true, delete: false },
@@ -15,7 +14,7 @@ const basePermissions = {
   'welcome-page': { read: true }
 }
 
-const permissions: Record<UserRoles, ResourcePermissions> = {
+const permissions: Record<UserRole, ResourcePermissions> = {
   'rco-user': { ...basePermissions },
   'rco-power-user': {
     ...basePermissions,
@@ -27,7 +26,7 @@ const permissions: Record<UserRoles, ResourcePermissions> = {
 
 export default permissions
 
-export const getPermissionsByRoles = (role: UserRoles): ResourcePermissions => {
+export const getPermissionsByRoles = (role: UserRole): ResourcePermissions => {
   const userPermissions = permissions[role]
   return userPermissions
 }
