@@ -17,7 +17,6 @@ interface Permission {
   read?: boolean
   write?: boolean
   delete?: boolean
-  all?: '*'
 }
 
 /** the set of routes for a resource */
