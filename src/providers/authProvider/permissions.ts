@@ -1,28 +1,32 @@
 import * as constants from '../../constants'
-type UserRoles = UserRole
 
-const permissions: Record<UserRoles, ResourcePermissions> = {
-  'rco-user': {
-    [constants.R_PROJECTS]: { read: true, write: true, delete: false },
-    [constants.R_BATCHES]: { read: true, write: true, delete: false },
-    [constants.R_ITEMS]: { read: true, write: true, delete: false },
-    [constants.R_USERS]: { read: true, write: true, delete: false },
-    [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
-    [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
-    [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
-    [constants.R_DESTRUCTION]: { read: true, write: true, delete: false },
-    [constants.R_DISPATCH]: { read: true, write: true, delete: false },
-    'reference-data': { read: true, write: false, delete: false },
-    'welcome-page': { read: true }
-  },
+const basePermissions = {
+  [constants.R_PROJECTS]: { read: true, write: true, delete: false },
+  [constants.R_BATCHES]: { read: true, write: true, delete: false },
+  [constants.R_ITEMS]: { read: true, write: true, delete: false },
+  [constants.R_USERS]: { read: true, write: true, delete: false },
+  [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
+  [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
+  [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
+  [constants.R_DESTRUCTION]: { read: true, write: true, delete: false },
+  [constants.R_DISPATCH]: { read: true, write: true, delete: false },
+  'reference-data': { read: true, write: false, delete: false },
+  'welcome-page': { read: true }
+}
+
+const permissions: Record<UserRole, ResourcePermissions> = {
+  'rco-user': { ...basePermissions },
   'rco-power-user': {
-    '*': { all: '*' }
+    ...basePermissions,
+    [constants.R_PLATFORMS]: { read: true, write: true, delete: false },
+    [constants.R_VAULT_LOCATION]: { read: true, write: true, delete: false },
+    'reference-data': { read: true, write: true, delete: false }
   }
 }
 
 export default permissions
 
-export const getPermissionsByRoles = (role: UserRoles): ResourcePermissions => {
+export const getPermissionsByRoles = (role: UserRole): ResourcePermissions => {
   const userPermissions = permissions[role]
   return userPermissions
 }
@@ -37,17 +41,11 @@ export const canAccess = (
   const resourcePermissions =
     typeof permissions[resource] !== 'undefined'
       ? permissions[resource]
-      : typeof permissions['*'] !== 'undefined'
-      ? permissions['*']
       : undefined
 
   if (typeof resourcePermissions === 'undefined') return false
 
-  // check if user have * permissions
-  if (resourcePermissions.all === '*') {
-    return true
-  } else if (
-    actions.all === '*' &&
+  if (
     resourcePermissions.read === true &&
     resourcePermissions.delete === true &&
     resourcePermissions.write === true

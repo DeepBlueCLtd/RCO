@@ -41,19 +41,16 @@ export const protectedRoutes = (
   const permission =
     typeof permissions[resource] !== 'undefined'
       ? permissions[resource]
-      : permissions['*']
+      : { read: false, write: false }
 
   if (typeof permission === 'undefined') return {}
 
-  const { write, read, all } = permission
+  const { write, read } = permission
 
-  const hastReadPermission =
-    typeof read !== 'undefined' && read ? true : all === '*'
+  const hastReadPermission = !!(typeof read !== 'undefined' && read)
 
   const hastWritePermission =
-    hastReadPermission && typeof write !== 'undefined' && write
-      ? true
-      : all === '*'
+    !!(hastReadPermission && typeof write !== 'undefined' && write)
 
   return {
     create: hastWritePermission ? routes.create : undefined,

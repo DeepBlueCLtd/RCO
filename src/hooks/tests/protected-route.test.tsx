@@ -15,6 +15,30 @@ const resourceRoutes: ResourceRoutes = {
   list: Element
 }
 
+const resources = [
+  constants.R_PROJECTS,
+  constants.R_BATCHES,
+  constants.R_ITEMS,
+  constants.R_USERS,
+  constants.R_PLATFORMS,
+  constants.R_VAULT_LOCATION,
+  constants.R_ADDRESSES,
+  constants.R_DESTRUCTION,
+  constants.R_DISPATCH,
+  'reference-data'
+]
+
+const checkDeletePermission = (role: UserRole): void => {
+  const userPermissions = getPermissionsByRoles(role)
+
+  resources.forEach((permission) => {
+    const hasDeletePermission = canAccess(userPermissions, permission, {
+      delete: true
+    })
+    expect(hasDeletePermission).toBeFalsy()
+  })
+}
+
 describe('protected routes ', () => {
   // no longer required as unauthorized users can't see any data
 
@@ -60,11 +84,17 @@ describe('protected routes ', () => {
 
   it('power user can access all resource', () => {
     const permissions = getPermissionsByRoles('rco-power-user')
-    const hasReadPermission = canAccess(permissions, '*', {
-      read: true,
-      write: true,
-      delete: true
+    resources.forEach((permission) => {
+      const hasAllPermissions = canAccess(permissions, permission, {
+        read: true,
+        write: true
+      })
+      expect(hasAllPermissions).toBeTruthy()
     })
-    expect(hasReadPermission).toBeTruthy()
+  })
+
+  it('no user is allowed to delete any resource', () => {
+    const roles = ['rco-power-user', 'rco-user'] as UserRole[]
+    roles.forEach((role) => { checkDeletePermission(role) })
   })
 })

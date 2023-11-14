@@ -363,7 +363,7 @@ export default function UserShow(): React.ReactElement {
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState(false)
   const [filteredData, setFilteredData] = useState<Audit[]>([])
-  const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
+  const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
   const audit = useAudit()
 
@@ -390,7 +390,7 @@ export default function UserShow(): React.ReactElement {
     <Show
       resource={constants.R_USERS}
       actions={
-        hasDeleteAccess && (
+        hasWriteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>
             <EditButton />
             <HistoryButton

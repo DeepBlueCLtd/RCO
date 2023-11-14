@@ -320,7 +320,7 @@ function App(): React.ReactElement {
     write: canAccess(permissions, 'reference-data', { write: true })
   }
 
-  const userPermission = permissions[constants.R_USERS] ?? permissions['*']
+  const userPermission = permissions[constants.R_USERS]
 
   return (
     <div>
@@ -578,10 +578,10 @@ const createRoutes = (
   permissions?: Permission
 ): React.ReactNode[] => {
   const cName: string = name
-  const { read, write, all } =
+  const { read, write } =
     typeof permissions !== 'undefined'
       ? permissions
-      : { read: false, write: false, all: undefined }
+      : { read: false, write: false }
   const routes: React.ReactElement[] = []
   const {
     create = ReferenceDataCreate,
@@ -589,7 +589,7 @@ const createRoutes = (
     list = ReferenceDataList,
     show = ReferenceDataShow
   } = elements
-  if (read === true || all === '*') {
+  if (read === true) {
     routes.push(
       ...[
         <Route
@@ -605,7 +605,7 @@ const createRoutes = (
       ]
     )
   }
-  if (write === true || all === '*') {
+  if (write === true) {
     routes.push(
       ...[
         <Route
