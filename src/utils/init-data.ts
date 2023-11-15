@@ -261,7 +261,9 @@ const loadDefaultData = async (
     protectionName: 'Prottection',
     catCode: 'Catt-Code',
     catHandle: 'Catt-Handle',
-    catCave: 'Catt-Cave'
+    catCave: 'Catt-Cave',
+    headerMarking: 'HEADER-MARKING',
+    reportPrefix: 'DBC/VAL'
   }
   const configData: ConfigData[] = [configDataItem]
   const defaultData: Omit<RCOStore, 'richItem'> = {
@@ -318,7 +320,10 @@ const loadDefaultData = async (
     !!process.env.MOCK
   )
 
-  await generateRichItems(dataprovider, { project, platform, item })
+  await dataprovider.create<LoanUser>(constants.R_LOAN_USERS, {
+    data: []
+  })
+
   for (const [key, value] of Object.entries(defaultData)) {
     if (map[key] !== undefined) {
       if (key === constants.R_ITEMS) {
@@ -336,6 +341,15 @@ const loadDefaultData = async (
         }
     }
   }
+
+  await generateRichItems(dataprovider, {
+    project,
+    platform,
+    item,
+    department,
+    vault
+  })
+
   return dataprovider
 }
 

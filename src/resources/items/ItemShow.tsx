@@ -3,15 +3,17 @@ import {
   DateInput,
   EditButton,
   Form,
+  FunctionField,
   Link,
   Loading,
   Show,
   TextInput,
   TopToolbar,
+  useGetList,
   useShowContext
 } from 'react-admin'
 import * as constants from '../../constants'
-import TopToolbarField from '../../components/TopToolbarField'
+import TopToolbarField, { sx as SX } from '../../components/TopToolbarField'
 import { Box, Typography, type Theme } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import SourceField from '../../components/SourceField'
@@ -274,9 +276,11 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
     linkPathname = `/destruction/${record.destruction}/show`
     source = 'destruction'
     const actionText =
-      record.destructionDate !== undefined ? 'Destroyed at:' : 'Pending'
+      record.destructionDate !== undefined && record.destructionDate !== null
+        ? 'Destroyed at:'
+        : 'Pending'
     const dateText =
-      record.destructionDate !== undefined
+      record.destructionDate !== undefined && record.destructionDate !== null
         ? record.destructionDate
         : 'Destruction'
     component = (
@@ -290,9 +294,13 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
     linkPathname = `/dispatch/${record.dispatchJob}/show`
     source = 'dispatchJob'
     const actionText =
-      record.dispatchedDate !== undefined ? 'Dispatched at:' : 'Pending'
+      record.dispatchedDate !== undefined && record.dispatchedDate !== null
+        ? 'Dispatched at:'
+        : 'Pending'
     const dateText =
-      record.dispatchedDate !== undefined ? record.dispatchedDate : 'Dispatch'
+      record.dispatchedDate !== undefined && record.dispatchedDate !== null
+        ? record.dispatchedDate
+        : 'Dispatch'
     component = (
       <ActionLink
         actionText={actionText}
@@ -344,9 +352,28 @@ const ItemShowActions = ({
   record
 }: ItemShowProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
+  const { data: richItemRecord } = useGetList<RichItem>(
+    constants.R_RICH_ITEMS,
+    {
+      filter: { id: record.id },
+      pagination: { perPage: 1, page: 1 }
+    }
+  )
+
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <TopToolbarField<Item> source='itemNumber' />
+      <TopToolbarField<Item> source='itemNumber'>
+        <FunctionField<RichItem>
+          sx={SX}
+          render={() =>
+            `${
+              richItemRecord?.[0]?.vault
+                ? `${richItemRecord?.[0]?.vault?.[0]}`
+                : ''
+            }${richItemRecord?.[0]?.itemNumber}`
+          }
+        />
+      </TopToolbarField>
       <StatusText record={record} />
       {hasAccess(constants.R_ITEMS, { write: true }) && (
         <EditButton to={`/${constants.R_RICH_ITEMS}/${record.id}`} />

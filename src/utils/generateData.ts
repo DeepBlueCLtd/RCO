@@ -332,6 +332,8 @@ interface Params {
   project: Project[]
   platform: Platform[]
   item: Item[]
+  department: Department[]
+  vault: Vault[]
 }
 
 export const generateRichItems = async (
@@ -346,6 +348,7 @@ export const generateRichItems = async (
   const fetchedRichItems = (
     await dataProvider.getList<RichItem>(constants.R_RICH_ITEMS, params)
   ).data.map((item) => item.id)
+
   if (fetchedRichItems.length > 0)
     await dataProvider.deleteMany<RichItem>(constants.R_RICH_ITEMS, {
       ids: fetchedRichItems
@@ -366,12 +369,29 @@ export const generateRichItems = async (
       constants.R_PLATFORMS,
       params
     )
+    const { data: fetchedDepartments } = await dataProvider.getList<Department>(
+      constants.R_DEPARTMENT,
+      params
+    )
+
+    const { data: fetchedVaults } = await dataProvider.getList<Vault>(
+      constants.R_VAULT,
+      params
+    )
     richItems.push(
-      ...richItemsGenerate(fetchedItems, fetchedPlatforms, fetchedProjects)
+      ...richItemsGenerate(
+        fetchedItems,
+        fetchedPlatforms,
+        fetchedProjects,
+        fetchedDepartments,
+        fetchedVaults
+      )
     )
   } else {
-    const { project, platform, item } = data
-    richItems.push(...richItemsGenerate(item, platform, project))
+    const { project, platform, item, department, vault } = data
+    richItems.push(
+      ...richItemsGenerate(item, platform, project, department, vault)
+    )
   }
 
   const promises = richItems.map(async (richItem) => {
@@ -380,17 +400,15 @@ export const generateRichItems = async (
     })
   })
 
-  try {
-    await Promise.all(promises)
-  } catch (error) {
-    console.log(error)
-  }
+  await Promise.all(promises)
 }
 
 const richItemsGenerate = (
   items: Item[],
   platforms: Platform[],
-  projects: Project[]
+  projects: Project[],
+  departments: Department[],
+  vaults: Vault[]
 ): RichItem[] => {
   const richItems: RichItem[] = []
   for (const item of items) {
@@ -398,7 +416,10 @@ const richItemsGenerate = (
       ...item,
       id: item.id,
       platform: generateRandomNumber(0, platforms.length),
-      project: generateRandomNumber(0, projects.length)
+      project: generateRandomNumber(0, projects.length),
+      department:
+        departments?.[generateRandomNumber(0, departments.length)]?.id,
+      vault: vaults?.[generateRandomNumber(0, vaults.length)]?.id
     })
   }
   return richItems

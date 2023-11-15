@@ -17,7 +17,6 @@ interface Permission {
   read?: boolean
   write?: boolean
   delete?: boolean
-  all?: '*'
 }
 
 /** the set of routes for a resource */
@@ -201,6 +200,8 @@ type Item = ResourceWithCreation & {
 type RichItem = Item & {
   project: Project['id']
   platform: Platform['id']
+  vault: Vault['id']
+  department: Department['id']
 }
 
 interface RCOStore {
@@ -238,7 +239,7 @@ interface RCOStore {
 
 interface Destruction {
   readonly id: number
-  name: string
+  name: string | null
   vault: Vault['id']
   createdAt: string
   createdBy: User['id']
@@ -276,6 +277,13 @@ interface Dispatch {
   reportPrintedAt: string | null
 }
 
+/** type of data returned from the `loanUser` view */
+interface LoanUser {
+  id: User['id']
+  numItems: number // count of items this user has on loan
+  staffNumber: User['staffNumber']
+}
+
 /** per instance config data. It is just intended to be one row deep */
 type ConfigData = RCOResource & {
   /** singular name for project resource
@@ -306,4 +314,12 @@ type ConfigData = RCOResource & {
    * test value: `Cat-Cave`
    */
   catCave: string
+  /** prefix for reference numbers
+   * on printed forms
+   */
+  reportPrefix: string
+  /** text to go on header/footer of
+   * muster sheets
+   */
+  headerMarking: string
 }

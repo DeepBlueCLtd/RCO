@@ -1,6 +1,10 @@
 import { type CreateResult, type ResourceCallbacks } from 'ra-core'
 
-import { withCreatedByAt, type AuditFunctionType } from '../dataprovider-utils'
+import {
+  withCreatedByAt,
+  type AuditFunctionType,
+  generateReference
+} from '../dataprovider-utils'
 import { AuditType } from '../../../utils/activity-types'
 import { R_DESTRUCTION } from '../../../constants'
 import { type DataProvider, type CreateParams } from 'react-admin'
@@ -14,30 +18,36 @@ export default (audit: AuditFunctionType): ResourceCallbacks<any> => ({
     record: CreateResult<Destruction>,
     dataProvider: DataProvider
   ) => {
-    try {
-      const { data } = record
-      const { id } = data
-      await audit({
-        activityType: AuditType.CREATE,
-        resource: R_DESTRUCTION,
-        dataId: id,
-        subjectId: null,
-        subjectResource: null,
-        activityDetail: null,
-        securityRelated: null
-      })
+    const { data } = record
+    const { id } = data
+    await audit({
+      activityType: AuditType.CREATE,
+      resource: R_DESTRUCTION,
+      dataId: id,
+      subjectId: null,
+      subjectResource: null,
+      activityDetail: null,
+      securityRelated: null
+    })
+    const year = new Date().getFullYear().toString()
 
-      await dataProvider.update<Dispatch>(R_DESTRUCTION, {
-        id,
-        previousData: data,
-        data: {
-          ...(process.env.MOCK ? { finalisedAt: 'null' } : null)
-        }
-      })
-      return record
-    } catch (error) {
-      console.log({ error })
-      return record
-    }
+    const name = await generateReference<Destruction>(
+      dataProvider,
+      year,
+      R_DESTRUCTION,
+      'name',
+      undefined,
+      'VAULT'
+    )
+
+    await dataProvider.update<Dispatch>(R_DESTRUCTION, {
+      id,
+      previousData: data,
+      data: {
+        name,
+        ...(process.env.MOCK ? { finalisedAt: 'null' } : null)
+      }
+    })
+    return record
   }
 })

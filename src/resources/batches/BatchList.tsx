@@ -12,7 +12,8 @@ import {
   useGetList,
   useGetMany,
   type SortPayload,
-  type SelectColumnsButtonProps
+  type SelectColumnsButtonProps,
+  FunctionField
 } from 'react-admin'
 import CreatedByMeFilter from '../../components/CreatedByMeFilter'
 import DateFilter, { ResetDateFilter } from '../../components/DateFilter'
@@ -114,6 +115,12 @@ export default function BatchList(): React.ReactElement {
       sort={sort()}
       source='platform_eq'
     />,
+    <SourceInput
+      reference={constants.R_DEPARTMENT}
+      key='department'
+      sort={sort()}
+      source='department'
+    />,
     <PlatformFilter
       reference={constants.R_PLATFORMS}
       label='Active Platforms'
@@ -167,7 +174,10 @@ export default function BatchList(): React.ReactElement {
         bulkActionButtons={false}
         preferenceKey={preferenceKey}>
         <TextField<Batch> source='id' />
-        <TextField<Batch> label='Reference' source='batchNumber' />
+        <FunctionField<Batch>
+          label='Reference'
+          render={(record) => `${record.vault?.[0]}${record?.batchNumber}`}
+        />
         <SourceField<Batch>
           source='department'
           label='Department'
@@ -187,7 +197,11 @@ export default function BatchList(): React.ReactElement {
           reference={constants.R_PLATFORMS}
           label='Platform'
         />
-        <SourceField<Batch> source='organisation' label='Organisation' />
+        <SourceField<Batch>
+          source='organisation'
+          label='Organisation'
+          reference={constants.R_ORGANISATION}
+        />
         <SourceField<Batch> source='vault' reference={constants.R_VAULT} />
         <TextField<Batch> source='remarks' />
         <TextField<Batch> source='receiptNotes' />

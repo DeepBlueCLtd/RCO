@@ -17,7 +17,8 @@ import {
   type SelectColumnsButtonProps,
   DateField,
   TextField,
-  FunctionField
+  FunctionField,
+  ReferenceField
 } from 'react-admin'
 import SourceInput from '../../components/SourceInput'
 import * as constants from '../../constants'
@@ -51,7 +52,7 @@ import { useConfigData } from '../../utils/useConfigData'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
-const omitColumns: Array<keyof Item> = [
+const omitColumns: Array<keyof RichItem> = [
   'id',
   'createdAt',
   'createdBy',
@@ -65,7 +66,9 @@ const omitColumns: Array<keyof Item> = [
   'protectionString',
   'destruction',
   'dispatchJob',
-  'legacyMediaType'
+  'legacyMediaType',
+  'department',
+  'vault'
 ]
 
 const getFilters = (
@@ -138,6 +141,12 @@ const getFilters = (
       sort={sort('batchNumber')}
       reference={constants.R_BATCHES}
       optionField='batchNumber'
+    />,
+    <SourceInput
+      reference={constants.R_DEPARTMENT}
+      key='department'
+      sort={sort()}
+      source='department'
     />,
     <TextInput key='remarks' source='remarks' />,
     <DateFilter
@@ -245,11 +254,23 @@ const getItemStates = (
       anyDestructed: filteredData.some(
         (f) => f.destruction !== undefined && f.destruction !== null
       ),
+      anyPendingDestruction: filteredData.some(
+        (f) =>
+          f.destruction !== undefined &&
+          f.destruction !== null &&
+          (f.destructionDate === undefined || f.destructionDate === null)
+      ),
       anyLoaned: filteredData.some(
         (f) => f.loanedTo !== undefined && f.loanedTo !== null
       ),
       anyDispatched: filteredData.some(
         (f) => f.dispatchedDate !== undefined && f.dispatchedDate !== null
+      ),
+      anyPendingDispatch: filteredData.some(
+        (f) =>
+          f.dispatchJob !== undefined &&
+          f.dispatchJob !== null &&
+          (f.dispatchedDate === undefined || f.dispatchedDate === null)
       ),
       allDispatched: filteredData.every(
         (f) => f.dispatchedDate !== undefined && f.dispatchedDate !== null
@@ -304,6 +325,8 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
   const [allLoaned, setAllLoaned] = useState(false)
   const [isDestruction, setIsDestruction] = useState(false)
   const [isAnyLoaned, setIsAnyLoaned] = useState(false)
+  const [isAnyPendingDispatch, setIsAnyPendingDispatch] = useState(false)
+  const [isAnyPendingDestruction, setIsAnyPendingDestruction] = useState(false)
   const [isAnyDispatched, setIsAnyDispatched] = useState(false)
   const [isAllDispatched, setIsAllDispatched] = useState(false)
 
@@ -318,14 +341,18 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
       noneLoanedVal,
       allLoanedVal,
       anyDestructed,
+      anyPendingDestruction,
       anyLoaned,
       anyDispatched,
+      anyPendingDispatch,
       allDispatched
     } = getItemStates(selectedIds, data)
     setNoneLoaned(noneLoanedVal)
     setAllLoaned(allLoanedVal)
+    setIsAnyPendingDestruction(anyPendingDestruction)
     setIsDestruction(anyDestructed)
     setIsAnyLoaned(anyLoaned)
+    setIsAnyPendingDispatch(anyPendingDispatch)
     setIsAnyDispatched(anyDispatched)
     setIsAllDispatched(allDispatched)
   }, [selectedIds, data])
@@ -446,13 +473,19 @@ export const BulkActions = (props: BulkActionsProps): React.ReactElement => {
     )
   }
 
-  const isItemNormal = !isDestruction && !isAnyLoaned && !isAnyDispatched
+  const isItemNormal =
+    !isDestruction &&
+    !isAnyLoaned &&
+    !isAnyDispatched &&
+    !isAnyPendingDispatch &&
+    !isAnyPendingDestruction
   const bulkActionsStyle = {
     display: 'flex',
     marginLeft: 2
   }
 
-  const canBeLoaned = !isDestruction && !isAnyDispatched && loan
+  const canBeLoaned =
+    !isDestruction && !isAnyDispatched && loan && !isAnyPendingDispatch
   const disableLoanItemsBulkActions = !(
     canBeLoaned &&
     hasAccess(constants.R_ITEMS, { write: true }) &&
@@ -691,26 +724,31 @@ const ItemListData = ({
         }
         preferenceKey={preferenceKey}
         omit={omitColumns}>
-        <TextField<RichItem> source='itemNumber' label='Reference' />
+        <FunctionField<RichItem>
+          label='Reference'
+          render={(record) => `${record.vault?.[0]}${record.itemNumber}`}
+        />
         <TextField<RichItem> source='id' />
         <TextField<RichItem> source='createdAt' label='Created At' />
         <SourceField<Batch> source='createdBy' reference={constants.R_USERS} />
         <FunctionField<RichItem>
           label='Location'
           render={(record) => {
-            if (record?.loanedTo) {
+            if (record.loanedTo) {
               return users?.[record.loanedTo]?.name
-            }
-            if (record?.destructionDate) {
+            } else if (record.destructionDate !== null) {
               return 'DESTROYED'
-            }
-            if (record?.dispatchedDate) {
+            } else if (record.destruction !== null) {
+              return 'DEST (PENDING)'
+            } else if (record.dispatchedDate !== null) {
               return 'SENT'
-            }
-            return (
-              record?.vaultLocation &&
-              vaultLocations?.[record?.vaultLocation]?.name
-            )
+            } else if (record.dispatchJob !== null) {
+              return 'SENT (PENDING)'
+            } else
+              return (
+                record.vaultLocation &&
+                vaultLocations?.[record.vaultLocation]?.name
+              )
           }}
         />
         <SourceField<RichItem>
@@ -742,16 +780,28 @@ const ItemListData = ({
           source='protectiveMarking'
           reference={constants.R_PROTECTIVE_MARKING}
         />
-        <SourceField<RichItem>
+        <ReferenceField<RichItem>
           link={false}
-          source='batch'
           reference={constants.R_BATCHES}
-          sourceField='batchNumber'
-        />
+          source='batch'>
+          <FunctionField<Batch>
+            render={(record) => `${record.vault?.[0]}-${record.batchNumber}`}
+          />
+        </ReferenceField>
         <SourceField<RichItem>
           link='show'
           source='platform'
           reference={constants.R_PLATFORMS}
+        />
+        <SourceField<RichItem>
+          source='department'
+          label='Department'
+          reference={constants.R_DEPARTMENT}
+        />
+        <SourceField<RichItem>
+          source='vault'
+          label='Vault'
+          reference={constants.R_VAULT}
         />
         {projectName && (
           <SourceField<RichItem>

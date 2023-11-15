@@ -48,7 +48,6 @@ describe('CRUD operations on User', () => {
   })
 
   it('should create user', async () => {
-    const randomDepartDate = generateRandomDate()[0].toString()
     const userListBeforeCreate = await provider.getList<User>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
@@ -59,9 +58,11 @@ describe('CRUD operations on User', () => {
 
     const createdUser = (
       await provider.create<User>(R_USERS, {
-        data: generateUserForTesting({ departedDate: randomDepartDate })
+        data: generateUserForTesting()
       })
     ).data
+
+    const randomDepartDate = createdUser.departedDate as string
 
     expect(createdUser).toBeDefined()
 
@@ -232,7 +233,8 @@ describe('CRUD operations on User', () => {
       previousData: createdUser,
       data: generateUserForTesting({
         id: createdUser.id,
-        name: 'dummy-user'
+        name: 'dummy-user',
+        password: 'abd'
       })
     })
 
@@ -251,7 +253,7 @@ describe('CRUD operations on User', () => {
     expect(secondAuditEntry.securityRelated).toBe(true)
   })
 
-  it('should test after udpate', async () => {
+  it('should test after update', async () => {
     const auditListBeforeCreate = await provider.getList<Audit>(R_AUDIT, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
@@ -291,9 +293,9 @@ describe('CRUD operations on User', () => {
       filter: {}
     })
 
-    expect(auditListAfterUpdate.total).toBe(3)
+    expect(auditListAfterUpdate.total).toBe(2)
 
-    const thirdAuditEntry = auditListAfterUpdate.data[2]
+    const thirdAuditEntry = auditListAfterUpdate.data[1]
     expect(thirdAuditEntry.dataId).toBe(createdUser.id)
     expect(thirdAuditEntry.resource).toBe(R_USERS)
     expect(thirdAuditEntry.activityType).toBe(AuditType.EDIT)

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Login, Loop } from '@mui/icons-material'
-import { Box, Icon, Typography, Button, Switch } from '@mui/material'
+import { Login } from '@mui/icons-material'
+import { Box, Icon, Typography, Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import {
@@ -12,12 +12,12 @@ import {
   useRedirect,
   UserMenu,
   type UserMenuProps,
-  useLogout
+  useLogout,
+  useNotify
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
-import loadDefaultData from '../../utils/init-data'
 import * as constants from '../../constants'
 import { getUser } from '../../providers/authProvider'
 
@@ -49,39 +49,42 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const [authenticated, setAuthenticated] = useState(false)
   const logout = useLogout()
   const redirect = useRedirect()
+  const notify = useNotify()
 
-  const [loggingPref, setLoggingPref] = useState<boolean>(
-    localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
-  )
+  // const [loggingPref, setLoggingPref] = useState<boolean>(
+  //   localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
+  // )
 
   const handleLogin = (): void => {
     redirect('/login')
   }
 
-  const handleLoadData = (): void => {
-    loadDefaultData(undefined).catch((error) => {
-      console.log({ error })
-    })
-  }
+  // const handleLoadData = (): void => {
+  //   loadDefaultData(undefined).catch((err) =>
+  //     { notify(err.message, { type: 'error' }) }
+  //   )
+  // }
 
-  const handleHighVolumeLoadData = (): void => {
-    loadDefaultData(undefined, true).catch(console.log)
-  }
+  // const handleHighVolumeLoadData = (): void => {
+  //   loadDefaultData(undefined, true).catch((err) =>
+  //     { notify(err.message, { type: 'error' }) }
+  //   )
+  // }
 
-  const handleLoggingPrefChange = (
-    _: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ): void => {
-    setLoggingPref(checked)
-    localStorage.setItem(constants.LOGGING_ENABLED, checked.toString())
+  // const handleLoggingPrefChange = (
+  //   _: React.ChangeEvent<HTMLInputElement>,
+  //   checked: boolean
+  // ): void => {
+  //   setLoggingPref(checked)
+  //   localStorage.setItem(constants.LOGGING_ENABLED, checked.toString())
 
-    const storageEvent = new StorageEvent('storage', {
-      key: constants.LOGGING_ENABLED,
-      newValue: checked.toString()
-    })
+  //   const storageEvent = new StorageEvent('storage', {
+  //     key: constants.LOGGING_ENABLED,
+  //     newValue: checked.toString()
+  //   })
 
-    window.dispatchEvent(storageEvent)
-  }
+  //   window.dispatchEvent(storageEvent)
+  // }
 
   const handleLogOut = (): void => {
     logout()
@@ -92,7 +95,9 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         })
         window.dispatchEvent(storageEvent)
       })
-      .catch(console.error)
+      .catch((err) => {
+        notify(err.message, { type: 'error' })
+      })
   }
 
   useEffect(() => {
@@ -115,7 +120,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         </Button>
       )}
       {authenticated && <Logout onClick={handleLogOut} />}
-      <Button
+      {/* <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}
         startIcon={
@@ -136,13 +141,13 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         <Typography sx={{ textTransform: 'none' }}>
           Load data (high volume)
         </Typography>
-      </Button>
-      <div style={{ display: 'flex' }}>
+      </Button> */}
+      {/* <div style={{ display: 'flex' }}>
         <Switch checked={loggingPref} onChange={handleLoggingPrefChange} />
         <Button>
           <Typography sx={{ textTransform: 'none' }}>Logging</Typography>
         </Button>
-      </div>
+      </div> */}
     </UserMenu>
   )
 }

@@ -88,6 +88,21 @@ describe('CRUD operations on Batch Resource', () => {
     const secondBatchId = secondResult.data.batchNumber
     expect(secondBatchId).toBeTruthy()
     expect(secondBatchId).toEqual('2/2025')
+
+    // now a third batch, to check the comparator
+    const thirdResult = await provider.create<Batch>(R_BATCHES, {
+      data: generateDummyBatchForTesting()
+    })
+    const thirdCreateId = thirdResult.data.id
+    expect(thirdCreateId).toBeDefined()
+    const thirdCreatedBatch = await provider.getOne<Batch>(R_BATCHES, {
+      id: thirdCreateId
+    })
+    expect(thirdCreatedBatch).toBeDefined()
+    expect(thirdCreateId).toEqual(thirdCreatedBatch.data.id)
+    const thirdBatchId = thirdResult.data.batchNumber
+    expect(thirdBatchId).toBeTruthy()
+    expect(thirdBatchId).toEqual('3/2025')
   })
 
   it('should update the batch', async () => {

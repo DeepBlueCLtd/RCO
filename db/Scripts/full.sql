@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS batch (
 CREATE TABLE IF NOT EXISTS destruction(
        id INTEGER PRIMARY KEY,
 
-       name TEXT NOT NULL,
+       name TEXT,
        vault TEXT NOT NULL,
 
        createdAt TEXT NOT NULL,
@@ -279,6 +279,8 @@ CREATE TABLE if not exists  configData (
   protectionName  TEXT NOT NULL,
   catCode  TEXT NOT NULL,
   catHandle  TEXT NOT NULL,
-  catCave  TEXT NOT NULL
+  catCave  TEXT NOT NULL,
+  headerMarking TEXT NOT NULL,
+  reportPrefix TEXT NOT NULL
 )
 

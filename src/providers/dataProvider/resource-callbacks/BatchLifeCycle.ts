@@ -14,9 +14,8 @@ import {
 import { isNumber } from '../../../utils/number'
 
 const compareVersions = (v1: string, v2: string): number => {
-  const s1 = parseInt(v1)
-  const s2 = parseInt(v2)
-
+  const s1 = parseInt(v1, 10)
+  const s2 = parseInt(v2, 10)
   if (isNaN(s1) || isNaN(s2)) return NaN
   if (s1 < s2) {
     return -1
@@ -47,18 +46,22 @@ export const generateBatchId = async (
   }
 
   const greatestBatch = batches.data.reduce((prev, current) => {
-    const previousBatchIndex = prev.batchNumber.split('/')[0]
-    const currentBatchIndex = current.batchNumber.split('/')[0]
+    // get the first number in the sequence, taken from here:
+    // https://stackoverflow.com/a/609588/92441
+
+    if (!current.batchNumber) return prev
+
+    const previousBatchIndex = prev.batchNumber.match(/\d+/)[0]
+    const currentBatchIndex = current.batchNumber.match(/\d+/)[0]
+
     return compareVersions(previousBatchIndex, currentBatchIndex) === -1
       ? current
       : prev
   })
-  return (parseInt(greatestBatch.batchNumber.split('/')[0]) + 1).toLocaleString(
-    'en-US',
-    {
-      useGrouping: false
-    }
-  )
+  const newId = greatestBatch.batchNumber.match(/\d+/)[0]
+  return (parseInt(newId, 10) + 1).toLocaleString('en-US', {
+    useGrouping: false
+  })
 }
 
 const lifeCycles = (
@@ -73,32 +76,29 @@ const lifeCycles = (
     record: CreateResult<Batch>,
     dataProvider: DataProvider
   ) => {
-    try {
-      const { data } = record
-      const { id, yearOfReceipt: year } = data
-      const yearVal = year
-      const idVal: string = await generateBatchId(provider, year)
-      const batchNumber = `${idVal}/${yearVal}`
-      const withRef = await dataProvider.update<Batch>(R_BATCHES, {
-        id,
-        previousData: data,
-        data: {
-          batchNumber
-        }
-      })
-      await audit({
-        activityType: AuditType.CREATE,
-        resource: R_BATCHES,
-        dataId: record.data.id,
-        subjectId: null,
-        subjectResource: null,
-        securityRelated: null,
-        activityDetail: null
-      })
-      return { ...record, data: withRef.data }
-    } catch (error) {
-      return record
-    }
+    const { data } = record
+    const { id, yearOfReceipt: year } = data
+    const yearVal = year
+    const idVal: string = await generateBatchId(provider, year)
+    const batchNumber = `${idVal}/${yearVal}`
+    const withRef = await dataProvider.update<Batch>(R_BATCHES, {
+      id,
+      previousData: data,
+      data: {
+        batchNumber
+      }
+    })
+
+    await audit({
+      activityType: AuditType.CREATE,
+      resource: R_BATCHES,
+      dataId: record.data.id,
+      subjectId: null,
+      subjectResource: null,
+      securityRelated: null,
+      activityDetail: null
+    })
+    return { ...record, data: withRef.data }
   }
 })
 

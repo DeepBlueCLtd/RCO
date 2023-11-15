@@ -92,9 +92,13 @@ const CoreForm = (props: Props): React.ReactElement => {
     e: React.KeyboardEvent<HTMLDivElement>,
     source: string
   ): void => {
-    const inputElement = e.target as HTMLInputElement
-    const value = inputElement.value
-    setValue(source, value)
+    if (e.key === 'Escape') {
+      setValue(source, null)
+    } else {
+      const inputElement = e.target as HTMLInputElement
+      const value = inputElement.value
+      if (value) setValue(source, value)
+    }
   }
 
   return (
@@ -155,7 +159,7 @@ const CoreForm = (props: Props): React.ReactElement => {
           sx={sx}
           disabled={disabled}
           source='startDate'
-          label='Start'
+          label='Start (<esc> to clear)'
           variant='outlined'
           onKeyUp={(e) => {
             handleKeyUp(e, 'startDate')

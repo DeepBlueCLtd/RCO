@@ -3,7 +3,7 @@ import * as constants from '../constants'
 import { ICON_PROJECT, ICON_BATCH, ICON_DISPATCH } from '../constants'
 import Recent from '../components/Recent'
 import FlexBox from '../components/FlexBox'
-import { CreateButton, useGetList, useRedirect } from 'react-admin'
+import { CreateButton, FunctionField, useRedirect } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import { makeStyles } from '@mui/styles'
 import useCanAccess from '../hooks/useCanAccess'
@@ -33,21 +33,18 @@ const useStyles = makeStyles({
   }
 })
 
-export default function Welcome(): React.ReactElement {
-  const filter = process.env.MOCK
-    ? { loanedTo_neq: undefined }
-    : { loanedTo_neq: null }
+const BatchComponent = (): React.ReactElement => {
+  return (
+    <FunctionField<Batch>
+      sortable={false}
+      render={(record) => `${record.vault?.[0]}${record.batchNumber}`}
+    />
+  )
+}
 
+export default function Welcome(): React.ReactElement {
   const styles = useStyles()
   const { hasAccess, loading } = useCanAccess()
-  const { data } = useGetList<Item>(constants.R_RICH_ITEMS, {
-    sort: { field: 'id', order: 'ASC' },
-    filter,
-    pagination: { page: 1, perPage: 500 }
-  })
-  const usersHaveLoan: Array<User['id']> = []
-  data?.forEach((d) => (d.loanedTo ? usersHaveLoan.push(d.loanedTo) : null))
-  const uniqueUsers = [...new Set(usersHaveLoan)]
   const configData = useConfigData()
   const redirect = useRedirect()
 
@@ -96,7 +93,7 @@ export default function Welcome(): React.ReactElement {
           resource={constants.R_BATCHES}
           itemsCount={10}
           fields={[
-            { source: 'batchNumber' },
+            { source: 'batchNumber', component: BatchComponent },
             { source: 'platform', reference: constants.R_PLATFORMS },
             {
               source: 'project',
@@ -106,15 +103,11 @@ export default function Welcome(): React.ReactElement {
           ]}
           search='order=DESC&sort=createdAt'
         />
-        <Recent<User>
+        <Recent<LoanUser>
+          isTitleClickable={false}
           label='Items on Loan'
-          resource={constants.R_USERS}
-          fields={[{ source: 'name' }]}
-          filter={{ id: uniqueUsers }}
-          itemsCount={undefined}
-          search={`filter=${JSON.stringify({
-            id: uniqueUsers
-          })}`}
+          resource={constants.R_LOAN_USERS}
+          fields={[{ source: 'staffNumber' }, { source: 'numItems' }]}
           rowClick={(id) => {
             const path = `/${constants.R_RICH_ITEMS}?filter={"loanedTo":${id}}`
             redirect(path)

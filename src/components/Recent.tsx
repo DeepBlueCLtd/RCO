@@ -50,6 +50,7 @@ interface Field<T> {
   reference?: string
   component?: React.FC<any>
   label?: string
+  sortable?: boolean
 }
 
 interface Props<T> extends DatagridProps {
@@ -60,16 +61,16 @@ interface Props<T> extends DatagridProps {
   filter?: FilterPayload
   search?: string
   rowStyle?: (data: T) => SxProps
+  isTitleClickable?: boolean
 }
 
-function Column<T extends Batch | User | Dispatch>(
+function Column<T extends Batch | Dispatch | LoanUser>(
   props: Field<T>
 ): React.ReactElement {
-  const { source, reference, component, label = '' } = props
+  const { source, reference, component, label = '', sortable } = props
   if (typeof component !== 'undefined') {
     return React.createElement(component, { source })
   }
-
   if (typeof reference !== 'undefined') {
     return (
       <SourceField<T>
@@ -77,10 +78,11 @@ function Column<T extends Batch | User | Dispatch>(
         source={source}
         reference={reference}
         label={label}
+        textProps={{ sortable }}
       />
     )
   }
-  return <TextField source={source as string} />
+  return <TextField source={source as string} sortable={sortable} />
 }
 
 interface RecentCardProps extends DatagridProps {
@@ -88,12 +90,12 @@ interface RecentCardProps extends DatagridProps {
   label?: string
   resource?: string
   search?: string
+  isTitleClickable?: boolean
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', children, search } = props
+  const { label, resource = '', children, search, isTitleClickable } = props
   const classes = useStyles()
-
   return (
     <Box>
       <Card variant='outlined'>
@@ -107,16 +109,19 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
             }}>
             {resource === R_BATCHES ? <ICON_BATCH /> : ''}
             <Typography variant='h6'>
-              {typeof label !== 'undefined' && (
-                <Link
-                  to={{
-                    pathname: resource,
-                    ...(search !== undefined ? { search } : null)
-                  }}
-                  className={classes.label}>
-                  {label}
-                </Link>
-              )}
+              {typeof label !== 'undefined' &&
+                (isTitleClickable !== false ? (
+                  <Link
+                    to={{
+                      pathname: resource,
+                      ...(search !== undefined ? { search } : null)
+                    }}
+                    className={classes.label}>
+                    {label}
+                  </Link>
+                ) : (
+                  <div className={classes.label}>{label}</div>
+                ))}
             </Typography>
           </div>
           <Box sx={{ mt: 2 }} className={classes.container}>
@@ -127,7 +132,7 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
     </Box>
   )
 }
-export default function Recent<T extends Batch | User | Dispatch>(
+export default function Recent<T extends Batch | Dispatch | LoanUser>(
   props: Props<T>
 ): React.ReactElement {
   const {
@@ -138,11 +143,16 @@ export default function Recent<T extends Batch | User | Dispatch>(
     filter,
     search,
     rowStyle,
-    rowClick
+    rowClick,
+    isTitleClickable
   } = props
 
   return (
-    <RecentCard label={label} resource={resource} search={search}>
+    <RecentCard
+      label={label}
+      resource={resource}
+      search={search}
+      isTitleClickable={isTitleClickable}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}
@@ -159,7 +169,7 @@ export default function Recent<T extends Batch | User | Dispatch>(
             bulkActionButtons={false}
             rowClick={rowClick ?? 'show'}>
             {fields.map((column, index) => (
-              <Column<T> key={index} {...column} />
+              <Column<T> key={index} {...column} sortable={false} />
             ))}
           </Datagrid>
         </List>

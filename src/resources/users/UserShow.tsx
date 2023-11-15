@@ -16,7 +16,9 @@ import {
   useShowContext,
   useUpdate,
   useNotify,
-  DateInput
+  DateInput,
+  useDataProvider,
+  FunctionField
 } from 'react-admin'
 import { Chip, Typography, Button, Modal } from '@mui/material'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
@@ -30,6 +32,8 @@ import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
 import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
 import { DateTime } from 'luxon'
+import useAudit, { type AuditFunction } from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 const style = {
   position: 'absolute',
@@ -47,25 +51,37 @@ interface Props {
   handleClose: () => void
   record?: User
   setShowReturn?: React.Dispatch<React.SetStateAction<boolean>>
+  audit: AuditFunction
 }
 
 const DepartOrganisation = ({
   handleClose,
   record,
-  setShowReturn
+  setShowReturn,
+  audit
 }: Props): React.ReactElement => {
-  const [update] = useUpdate()
+  const dataProvider = useDataProvider()
 
   const handleDepartUser = (): void => {
-    update(R_USERS, {
-      id: record?.id,
-      previousData: record,
-      data: { departedDate: nowDate() }
-    })
-      .then(() => {
-        if (setShowReturn !== undefined) setShowReturn(true)
+    audit({
+      activityType: AuditType.USER_DEPARTED,
+      securityRelated: true,
+      resource: R_USERS,
+      subjectId: record?.id !== undefined ? record.id : null,
+      dataId: record?.id !== undefined ? record.id : null,
+      subjectResource: null,
+      activityDetail: 'User departed organisation'
+    }).catch(console.log)
+
+    dataProvider
+      .update(R_USERS, {
+        id: record?.id,
+        previousData: record,
+        data: { departedDate: nowDate() }
       })
       .catch(console.log)
+
+    if (setShowReturn !== undefined) setShowReturn(true)
     handleClose()
   }
   return (
@@ -86,10 +102,24 @@ const DepartOrganisation = ({
   )
 }
 
-const ResetPassword = ({ handleClose, record }: Props): React.ReactElement => {
+const ResetPassword = ({
+  handleClose,
+  record,
+  audit
+}: Props): React.ReactElement => {
   const [update] = useUpdate()
 
   const handlePasswordReset = (): void => {
+    audit({
+      activityType: AuditType.PASSWORD_RESET,
+      securityRelated: true,
+      resource: R_USERS,
+      subjectId: record?.id !== undefined ? record.id : null,
+      dataId: record?.id !== undefined ? record.id : null,
+      subjectResource: null,
+      activityDetail: 'Password reset'
+    }).catch(console.log)
+
     update(R_USERS, {
       id: record?.id,
       previousData: record,
@@ -97,6 +127,7 @@ const ResetPassword = ({ handleClose, record }: Props): React.ReactElement => {
     }).catch(console.log)
     handleClose()
   }
+
   return (
     <Box sx={style}>
       <Typography variant='h6'>
@@ -116,9 +147,13 @@ const ResetPassword = ({ handleClose, record }: Props): React.ReactElement => {
 
 interface UserShowCompType {
   setRecord: React.Dispatch<React.SetStateAction<User | undefined>>
+  audit: AuditFunction
 }
 
-const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
+const UserShowComp = ({
+  setRecord,
+  audit
+}: UserShowCompType): React.ReactElement => {
   const { record, isLoading } = useShowContext<User>()
   const [departOpen, setDepartOpen] = useState(false)
   const [resetOpen, setResetopen] = useState(false)
@@ -173,6 +208,16 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
 
   const handleUserReturn = (): void => {
     if (record !== null && record !== undefined) {
+      audit({
+        activityType: AuditType.USER_RETURNED,
+        securityRelated: true,
+        resource: R_USERS,
+        subjectId: record?.id !== undefined ? record.id : null,
+        dataId: record?.id !== undefined ? record.id : null,
+        subjectResource: null,
+        activityDetail: 'User returned to organisation'
+      }).catch(console.log)
+
       update(constants.R_USERS, {
         id: record.id,
         previousData: record,
@@ -196,7 +241,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
 
   return (
     <>
-      <FlexBox>
+      <FlexBox alignItems='start'>
         <Box component='fieldset' style={{ width: '550px', padding: '0 15px' }}>
           <legend>
             <Typography variant='h5' align='center' sx={{ fontWeight: '600' }}>
@@ -223,7 +268,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               <DateInput
                 disabled
                 source='departedDate'
-                label='Departed'
+                label={showReturn ? 'Departed' : 'Due to depart by'}
                 sx={{ flex: 1 }}
               />
             </FlexBox>
@@ -232,6 +277,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
                 disabled={cannotDepart()}
+                title='Mark departure date to now, to prevent login'
                 onClick={handleDepartUser}>
                 Depart Organisation
               </Button>
@@ -254,6 +300,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
                 }
                 variant='outlined'
                 sx={{ marginBottom: 1 }}
+                title='Clear user password. After logging in with username in both boxes they will be invited to enter a new one'
                 onClick={handleResetPassowrd}>
                 Reset Password
               </Button>
@@ -262,6 +309,7 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
               <Button
                 disabled={!showReturn}
                 variant='outlined'
+                title='Set their departure date to 10 years in the future'
                 startIcon={<KeyboardReturn />}
                 onClick={handleUserReturn}>
                 Return to Organisation
@@ -286,15 +334,25 @@ const UserShowComp = ({ setRecord }: UserShowCompType): React.ReactElement => {
       </FlexBox>
 
       <Modal open={departOpen} onClose={handleDepartClose}>
-        <DepartOrganisation
-          handleClose={handleDepartClose}
-          record={record}
-          setShowReturn={setShowReturn}
-        />
+        <div>
+          <DepartOrganisation
+            handleClose={handleDepartClose}
+            record={record}
+            setShowReturn={setShowReturn}
+            audit={audit}
+          />
+        </div>
       </Modal>
 
       <Modal open={resetOpen} onClose={handleResetClose}>
-        <ResetPassword handleClose={handleResetClose} record={record} />
+        <div>
+          {' '}
+          <ResetPassword
+            handleClose={handleResetClose}
+            record={record}
+            audit={audit}
+          />
+        </div>
       </Modal>
     </>
   )
@@ -305,8 +363,9 @@ export default function UserShow(): React.ReactElement {
   const { hasAccess } = useCanAccess()
   const [open, setOpen] = useState(false)
   const [filteredData, setFilteredData] = useState<Audit[]>([])
-  const hasDeleteAccess = hasAccess(R_USERS, { delete: true })
+  const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
+  const audit = useAudit()
 
   useEffect(() => {
     if (data != null)
@@ -331,7 +390,7 @@ export default function UserShow(): React.ReactElement {
     <Show
       resource={constants.R_USERS}
       actions={
-        hasDeleteAccess && (
+        hasWriteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>
             <EditButton />
             <HistoryButton
@@ -342,7 +401,7 @@ export default function UserShow(): React.ReactElement {
           </TopToolbar>
         )
       }>
-      <UserShowComp setRecord={setRecord} />
+      <UserShowComp setRecord={setRecord} audit={audit} />
       <ResourceHistoryModal
         // filter={filter}
         open={open}
@@ -365,7 +424,10 @@ function ItemListDataTable(
       omit={props?.omit}
       preferenceKey={props.preferenceKey}
       {...props}>
-      <TextField<Item> source='itemNumber' label='Reference' />
+      <FunctionField<RichItem>
+        label='Reference'
+        render={(record) => `${record.vault?.[0]}${record.itemNumber}`}
+      />
       <SourceField<Item>
         link='show'
         source='mediaType'

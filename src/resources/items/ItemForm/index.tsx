@@ -19,7 +19,11 @@ import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
 
 const schema = yup.object({
-  mediaType: yup.number().required(),
+  mediaType: yup
+    .number()
+    .strict()
+    .required('Media Type is required')
+    .typeError('Media Type must be a number'),
   startDate: yup.date().optional().nullable(),
   endDate: yup
     .date()
@@ -27,15 +31,31 @@ const schema = yup.object({
     .nullable()
     .test(
       'endDate',
-      'End date must be greater than start date',
+      'End date must be greater than or equal to start date',
       function (value) {
         const startDate = this.parent.startDate
-        return startDate ? dayjs(value).diff(startDate) > 0 : true
+        return startDate
+          ? value
+            ? dayjs(value).diff(startDate) >= 0
+            : true
+          : true
       }
     ),
-  batch: yup.number().required(),
-  vaultLocation: yup.number().required(),
-  protectiveMarking: yup.number().required(),
+  batch: yup
+    .number()
+    .strict()
+    .required('Batch is required')
+    .typeError('Batch must be a number'),
+  vaultLocation: yup
+    .number()
+    .strict()
+    .required('Vault Location is required')
+    .typeError('Vault Location must be a number'),
+  protectiveMarking: yup
+    .number()
+    .strict()
+    .required('Protective Marking is required')
+    .typeError('Protective Marking must be a number'),
   editRemarks: yup.string()
 })
 export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
@@ -80,7 +100,8 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
     const dateTime = DateTime.local().set({
       hour: 0,
       minute: 0,
-      second: 0
+      second: 0,
+      millisecond: 0
     })
     return {
       startDate: dateTime.toString(),

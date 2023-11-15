@@ -10,7 +10,7 @@ import { R_USERS } from '../constants'
 interface SourceFieldProps<T> {
   source: keyof T
   label?: string | false
-  reference?: string
+  reference: string | null
   sourceField?: string
   textProps?: TextFieldProps
   link?: LinkToType
@@ -28,6 +28,7 @@ const SourceField = <
     | Project
     | ProtectiveMarking
     | MediaType
+    | LoanUser
 >(
   props: SourceFieldProps<T>
 ): React.ReactElement => {
@@ -43,13 +44,13 @@ const SourceField = <
     <ReferenceField
       link={link}
       source={source as string}
-      reference={reference !== undefined ? reference : (source as string)}
+      reference={reference !== null ? reference : (source as string)}
       label={label}>
       {reference !== undefined && reference === R_USERS ? (
         <FunctionField
           label={label}
           {...textProps}
-          render={(record: User) => `${record.name} (${record.staffNumber})`}
+          render={(record: User) => `${record.name}`}
         />
       ) : (
         <TextField source={sourceField} {...textProps} />

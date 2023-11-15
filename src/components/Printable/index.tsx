@@ -11,7 +11,8 @@ const style = {
   background: '#fff',
   '@media print': {
     '@page': {
-      size: 'portrait'
+      size: 'portrait',
+      margin: '2mm'
     },
     '& .MuiBox-root .RaShow-card .MuiTypography-h4': {
       fontSize: '18px'
@@ -32,13 +33,6 @@ const style = {
   }
 }
 
-const buttonSx = {
-  position: 'fixed',
-  right: '10px',
-  top: '10px',
-  zIndex: '9'
-}
-
 export default function Printable(
   props: Props & ModalProps
 ): React.ReactElement {
@@ -57,11 +51,19 @@ export default function Printable(
 
   return (
     <Modal sx={style} hideBackdrop className='printable' {...rest}>
-      <Box width='100%' height='100%' overflow='auto'>
-        <IconButton sx={buttonSx} onClick={handleClose}>
-          <Close />
-        </IconButton>
-        <Box sx={{ padding: '30px' }}>{children}</Box>
+      <Box width='100%' height='100%' display='flex' flexDirection='column'>
+        <Box
+          display='flex'
+          justifyContent='center'
+          marginBottom='10px'
+          position='relative'>
+          <Box position='absolute' top='10px' right='10px'>
+            <IconButton onClick={handleClose}>
+              <Close />
+            </IconButton>
+          </Box>
+        </Box>
+        <Box sx={{ padding: '30px', overflowY: 'auto' }}>{children}</Box>
         <FlexBox
           className='noprint'
           marginBottom='20px'
