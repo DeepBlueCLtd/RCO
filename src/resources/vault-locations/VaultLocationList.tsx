@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import {
   BooleanField,
   CreateButton,
@@ -7,14 +7,14 @@ import {
   List,
   SearchInput,
   TextField,
-  TopToolbar
+  TopToolbar,
+  useRedirect
 } from 'react-admin'
 import FlexBox from '../../components/FlexBox'
 import VaultLocationReport from '../../components/VaultLocationReport'
 import * as constants from '../../constants'
 import { Button } from '@mui/material'
 import { Article } from '@mui/icons-material'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import DatagridConfigurableWithShow from '../../components/DatagridConfigurableWithShow'
 import HistoryButton from '../../components/HistoryButton'
 import { ActiveFilter } from '../platforms/PlatformList'
@@ -39,21 +39,12 @@ const ListActions = ({
 )
 
 export default function VaultLocationList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
   const [openMusterList, setOpenMusterList] = useState(false)
-  const [record, setRecord] = useState<IntegerReferenceItem>()
+  const redirect = useRedirect()
 
   const { hasAccess } = useCanAccess()
 
   const hasWriteAccess = hasAccess(constants.R_VAULT_LOCATION, { write: true })
-
-  const filter = useMemo(
-    () =>
-      record?.id !== undefined
-        ? { dataId: record.id, resource: constants.R_VAULT_LOCATION }
-        : undefined,
-    [record]
-  )
 
   const handleOpen = (open: boolean) => () => {
     setOpenMusterList(open)
@@ -100,21 +91,18 @@ export default function VaultLocationList(): React.ReactElement {
               <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
-                  setRecord(record)
-                  setOpen(true)
+                  redirect(
+                    `/audit?filter=${JSON.stringify({
+                      dataId: record.id,
+                      resource: constants.R_VAULT_LOCATION
+                    })}`
+                  )
                 }}
               />
             )
           }}
         />
       </DatagridConfigurableWithShow>
-      <ResourceHistoryModal
-        filter={filter}
-        open={open}
-        close={() => {
-          setOpen(false)
-        }}
-      />
       <VaultLocationReport open={openMusterList} handleOpen={handleOpen} />
     </List>
   )

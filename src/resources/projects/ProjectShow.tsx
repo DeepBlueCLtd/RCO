@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Box,
   Card,
@@ -17,12 +17,10 @@ import {
   TopToolbar,
   useShowContext
 } from 'react-admin'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
-import { type HistoryProps, type ShowActionProps } from '../batches/BatchShow'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import { useConfigData } from '../../utils/useConfigData'
 import FlexBox from '../../components/FlexBox'
 import HistoryButton from '../../components/HistoryButton'
@@ -43,28 +41,12 @@ export const ValueField = ({
   )
 }
 
-const HistoryModal = ({
-  handleOpen,
-  open
-}: HistoryProps): React.ReactElement => {
-  const { record } = useShowContext<Batch>()
-  if (record === undefined) return <></>
-  const filter = { dataId: record.id, resource: constants.R_PROJECTS }
-  return (
-    <ResourceHistoryModal
-      open={open}
-      close={() => {
-        handleOpen(false)
-      }}
-      filter={filter}
-    />
-  )
-}
-
-const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
+const Actions = (): React.ReactElement => {
   const { id = '' } = useParams()
   const projectId: string = id
   const { hasAccess } = useCanAccess()
+  const { record } = useShowContext()
+  const navigate = useNavigate()
 
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
@@ -79,7 +61,12 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
       ) : null}
       <HistoryButton
         onClick={() => {
-          handleOpen(true)
+          navigate(
+            `/audit?filter=${JSON.stringify({
+              dataId: record.id,
+              resource: constants.R_PROJECTS
+            })}`
+          )
         }}
       />
     </TopToolbar>
@@ -89,13 +76,9 @@ const Actions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
 export default function ProjectShow(): React.ReactElement {
   const configData = useConfigData()
   const pageTitle = `${configData?.projectName} Show`
-  const [open, setOpen] = useState(false)
 
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
   return (
-    <Show actions={<Actions handleOpen={handleOpen} />}>
+    <Show actions={<Actions />}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_PROJECT /> {pageTitle}
       </Typography>
@@ -106,7 +89,6 @@ export default function ProjectShow(): React.ReactElement {
           <Created />
         </CardContent>
       </Card>
-      <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
   )
 }

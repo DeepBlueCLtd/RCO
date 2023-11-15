@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 import {
   CreateButton,
   Datagrid,
@@ -9,10 +9,10 @@ import {
   BooleanField,
   TextField,
   FilterButton,
-  SearchInput
+  SearchInput,
+  useRedirect
 } from 'react-admin'
 import useCanAccess from '../hooks/useCanAccess'
-import ResourceHistoryModal from './ResourceHistory'
 import * as constants from '../constants'
 import HistoryButton from './HistoryButton'
 import { ActiveFilter } from '../resources/platforms/PlatformList'
@@ -33,8 +33,7 @@ export default function ReferenceDataList({
   name
 }: PropType): React.ReactElement {
   const cName: string = name
-  const [open, setOpen] = useState<boolean>()
-  const [record, setRecord] = useState<IntegerReferenceItem>()
+  const redirect = useRedirect()
 
   const { hasAccess } = useCanAccess()
 
@@ -46,18 +45,6 @@ export default function ReferenceDataList({
       <FilterButton />
     </TopToolbar>
   )
-
-  const filter = useMemo(
-    () =>
-      record?.id !== undefined
-        ? { dataId: record.id, resource: cName }
-        : undefined,
-    [record]
-  )
-
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
 
   const notShowActive = (name: string): boolean => name === constants.R_AUDIT
 
@@ -89,21 +76,18 @@ export default function ReferenceDataList({
               <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
-                  setRecord(record)
-                  handleOpen(true)
+                  redirect(
+                    `/audit?filter=${JSON.stringify({
+                      dataId: record.id,
+                      resource: cName
+                    })}`
+                  )
                 }}
               />
             )
           }}
         />
       </Datagrid>
-      <ResourceHistoryModal
-        filter={filter}
-        open={open}
-        close={() => {
-          handleOpen(false)
-        }}
-      />
     </List>
   )
 }

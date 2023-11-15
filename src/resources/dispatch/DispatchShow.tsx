@@ -11,7 +11,8 @@ import {
   useUpdate,
   useRefresh,
   useUpdateMany,
-  useGetList
+  useGetList,
+  useRedirect
 } from 'react-admin'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
@@ -29,20 +30,19 @@ import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
 import { type AuditData } from '../../utils/audit'
 
 interface ShowActionsProps {
-  handleOpen: (open: DestructionModal) => void
   showEdit: boolean
 }
 
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
-  const { handleOpen, showEdit } = props
+  const { showEdit } = props
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const dispatched = typeof record?.dispatchedAt !== 'undefined'
+  const redirect = useRedirect()
 
   return (
     <>
@@ -54,7 +54,12 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
           )}
           <HistoryButton
             onClick={() => {
-              handleOpen('history')
+              redirect(
+                `/audit?filter=${JSON.stringify({
+                  dataId: record.id,
+                  resource: constants.R_DISPATCH
+                })}`
+              )
             }}
           />
           {showEdit && <EditButton />}
@@ -284,20 +289,9 @@ export default function DispatchShow(): React.ReactElement {
             handleOpen={handleOpen}
           />
           <HastenerReport open={open === 'hastener'} handleOpen={handleOpen} />
-          <ResourceHistoryModal
-            filter={{
-              resource: constants.R_DISPATCH,
-              dataId: parseInt(id as string)
-            }}
-            open={open === 'history'}
-            close={() => {
-              handleOpen('')
-            }}
-          />
           <Show
             actions={
               <ShowActions
-                handleOpen={handleOpen}
                 showEdit={
                   record?.dispatchedAt === null ||
                   record?.dispatchedAt === undefined ||

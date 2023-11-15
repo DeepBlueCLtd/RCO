@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   DateInput,
   EditButton,
@@ -10,6 +10,7 @@ import {
   TextInput,
   TopToolbar,
   useGetList,
+  useRedirect,
   useShowContext
 } from 'react-admin'
 import * as constants from '../../constants'
@@ -17,7 +18,6 @@ import TopToolbarField, { sx as SX } from '../../components/TopToolbarField'
 import { Box, Typography, type Theme } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
 import SourceField from '../../components/SourceField'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import { type SystemStyleObject } from '@mui/system'
 import ProtectionBlockInputs from '../../components/ProtectionBlockInputs'
 import FlexBox from '../../components/FlexBox'
@@ -343,14 +343,11 @@ const StatusText = ({ record }: StatusTextProps): React.ReactElement | null => {
 }
 
 interface ItemShowProps {
-  handleOpen: (open: boolean) => void
   record: Item
 }
 
-const ItemShowActions = ({
-  handleOpen,
-  record
-}: ItemShowProps): React.ReactElement => {
+const ItemShowActions = ({ record }: ItemShowProps): React.ReactElement => {
+  const redirect = useRedirect()
   const { hasAccess } = useCanAccess()
   const { data: richItemRecord } = useGetList<RichItem>(
     constants.R_RICH_ITEMS,
@@ -380,7 +377,12 @@ const ItemShowActions = ({
       )}
       <HistoryButton
         onClick={() => {
-          handleOpen(true)
+          redirect(
+            `/audit?filter=${JSON.stringify({
+              dataId: record.id,
+              resource: constants.R_ITEMS
+            })}`
+          )
         }}
       />
     </TopToolbar>
@@ -388,40 +390,16 @@ const ItemShowActions = ({
 }
 
 export default function ItemShow(): React.ReactElement {
-  const [open, setOpen] = useState(false)
   const [record, setRecord] = useState<Item | undefined>()
-
-  const filter = useMemo(
-    () =>
-      record?.id !== undefined
-        ? { dataId: record.id, resource: constants.R_ITEMS }
-        : undefined,
-    [record]
-  )
-
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
 
   return (
     <Show
       resource={constants.R_ITEMS}
-      actions={
-        record !== undefined && (
-          <ItemShowActions handleOpen={handleOpen} record={record} />
-        )
-      }>
+      actions={record !== undefined && <ItemShowActions record={record} />}>
       <FlexBox columnGap={0} padding='10px' alignItems='start'>
         <ShowForm setRecord={setRecord} />
         <ItemHistory />
       </FlexBox>
-      <ResourceHistoryModal
-        filter={filter}
-        open={open}
-        close={() => {
-          handleOpen(false)
-        }}
-      />
     </Show>
   )
 }
