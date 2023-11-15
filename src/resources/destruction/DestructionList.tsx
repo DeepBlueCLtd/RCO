@@ -3,12 +3,11 @@ import {
   FunctionField,
   List,
   SearchInput,
-  TextField
+  TextField,
+  useRedirect
 } from 'react-admin'
 import SourceField from '../../components/SourceField'
 import * as constants from '../../constants'
-import ResourceHistoryModal from '../../components/ResourceHistory'
-import { useMemo, useState } from 'react'
 import HistoryButton from '../../components/HistoryButton'
 import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 import { ConditionalDateField } from '../dispatch/DispatchList'
@@ -28,20 +27,8 @@ const filters = [
 ]
 
 export default function DestructionList(): React.ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
-  const [record, setRecord] = useState<Destruction>()
+  const redirect = useRedirect()
 
-  const filter = useMemo(
-    () =>
-      record?.id !== undefined
-        ? { dataId: record.id, resource: constants.R_DESTRUCTION }
-        : undefined,
-    [record]
-  )
-
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
   return (
     <List
       filters={filters}
@@ -72,8 +59,12 @@ export default function DestructionList(): React.ReactElement {
               <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
-                  setRecord(record)
-                  handleOpen(true)
+                  redirect(
+                    `/audit?filter=${JSON.stringify({
+                      dataId: record.id,
+                      resource: constants.R_DESTRUCTION
+                    })}`
+                  )
                 }}
               />
             )
@@ -81,13 +72,6 @@ export default function DestructionList(): React.ReactElement {
         />
         <TextField<Destruction> source='remarks' />
       </Datagrid>
-      <ResourceHistoryModal
-        filter={filter}
-        open={open}
-        close={() => {
-          handleOpen(false)
-        }}
-      />
     </List>
   )
 }

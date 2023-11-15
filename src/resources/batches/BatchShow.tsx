@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   CreateButton,
   EditButton,
@@ -9,7 +9,8 @@ import {
   SelectColumnsButton,
   useShowContext,
   type SelectColumnsButtonProps,
-  FunctionField
+  FunctionField,
+  useRedirect
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 import * as constants from '../../constants'
@@ -19,7 +20,6 @@ import TopToolbarField, { sx } from '../../components/TopToolbarField'
 import { ItemAssetReport } from '../items/ItemsReport'
 import { Typography } from '@mui/material'
 import useCanAccess from '../../hooks/useCanAccess'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import BatchForm from './BatchForm'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import HistoryButton from '../../components/HistoryButton'
@@ -28,8 +28,11 @@ export interface ShowActionProps {
   handleOpen: (open: boolean) => void
 }
 
-const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
+const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
+  const { record } = useShowContext()
+  const redirect = useRedirect()
+
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
       <TopToolbarField<Batch> source='batchNumber'>
@@ -41,7 +44,12 @@ const ShowActions = ({ handleOpen }: ShowActionProps): React.ReactElement => {
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
       <HistoryButton
         onClick={() => {
-          handleOpen(true)
+          redirect(
+            `/audit?filter=${JSON.stringify({
+              dataId: record.id,
+              resource: constants.R_BATCHES
+            })}`
+          )
         }}
       />
     </TopToolbar>
@@ -80,36 +88,13 @@ export interface HistoryProps {
   open: boolean
 }
 
-const HistoryModal = ({
-  handleOpen,
-  open
-}: HistoryProps): React.ReactElement => {
-  const { record } = useShowContext<Batch>()
-  if (record === undefined) return <></>
-  const filter = { dataId: record.id, resource: constants.R_BATCHES }
-  return (
-    <ResourceHistoryModal
-      open={open}
-      close={() => {
-        handleOpen(false)
-      }}
-      filter={filter}
-    />
-  )
-}
-
 export default function BatchShow(): React.ReactElement {
   const { id } = useParams()
   const pageTitle = 'Batch Show'
-  const [open, setOpen] = useState(false)
   const preferenceKey = `datagrid-${constants.R_BATCHES}-${id}-items-list`
 
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
-
   return (
-    <Show actions={<ShowActions handleOpen={handleOpen} />}>
+    <Show actions={<ShowActions />}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
         <constants.ICON_BATCH /> {pageTitle}
       </Typography>
@@ -129,7 +114,6 @@ export default function BatchShow(): React.ReactElement {
           <BatchForm isShow />
         </TabbedShowLayout.Tab>
       </TabbedShowLayout>
-      <HistoryModal handleOpen={handleOpen} open={open} />
     </Show>
   )
 }

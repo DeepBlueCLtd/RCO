@@ -25,9 +25,8 @@ import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
 import { KeyboardReturn, Warning } from '@mui/icons-material'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import * as constants from '../../constants'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
 import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
@@ -361,11 +360,11 @@ const UserShowComp = ({
 export default function UserShow(): React.ReactElement {
   const [record, setRecord] = useState<User>()
   const { hasAccess } = useCanAccess()
-  const [open, setOpen] = useState(false)
   const [filteredData, setFilteredData] = useState<Audit[]>([])
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
   const audit = useAudit()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (data != null)
@@ -380,10 +379,6 @@ export default function UserShow(): React.ReactElement {
       )
   }, [data, record, isLoading])
 
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
-
   if (isLoading) return <Loading />
 
   return (
@@ -395,21 +390,13 @@ export default function UserShow(): React.ReactElement {
             <EditButton />
             <HistoryButton
               onClick={() => {
-                handleOpen(true)
+                navigate('/audit', { state: { data: filteredData } })
               }}
             />
           </TopToolbar>
         )
       }>
       <UserShowComp setRecord={setRecord} audit={audit} />
-      <ResourceHistoryModal
-        // filter={filter}
-        open={open}
-        data={filteredData}
-        close={() => {
-          handleOpen(false)
-        }}
-      />
     </Show>
   )
 }

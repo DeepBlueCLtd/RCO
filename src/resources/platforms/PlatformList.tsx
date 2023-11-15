@@ -1,5 +1,5 @@
 import { Chip } from '@mui/material'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   BooleanField,
   CreateButton,
@@ -10,11 +10,11 @@ import {
   FilterButton,
   useListContext,
   FunctionField,
-  SearchInput
+  SearchInput,
+  useRedirect
 } from 'react-admin'
 import useCanAccess from '../../hooks/useCanAccess'
 import * as constants from '../../constants'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
 
 interface Props {
@@ -49,20 +49,8 @@ export default function PlatformList(props: Props): React.ReactElement {
   const cName: string = name
   const basePath: string = `/${cName}`
   const { hasAccess } = useCanAccess()
-  const [open, setOpen] = useState<boolean>(false)
-  const [record, setRecord] = useState<IntegerReferenceItem>()
+  const redirect = useRedirect()
 
-  const filter = useMemo(
-    () =>
-      record?.id !== undefined
-        ? { dataId: record.id, resource: cName }
-        : undefined,
-    [record]
-  )
-
-  const handleOpen = (open: boolean): void => {
-    setOpen(open)
-  }
   const ListActions = (): React.ReactElement => (
     <TopToolbar>
       {hasAccess(constants.R_PLATFORMS, { write: true }) ? (
@@ -93,21 +81,18 @@ export default function PlatformList(props: Props): React.ReactElement {
               <HistoryButton
                 onClick={(e) => {
                   e.stopPropagation()
-                  setRecord(record)
-                  handleOpen(true)
+                  redirect(
+                    `/audit?filter=${JSON.stringify({
+                      dataId: record.id,
+                      resource: cName
+                    })}`
+                  )
                 }}
               />
             )
           }}
         />
       </Datagrid>
-      <ResourceHistoryModal
-        filter={filter}
-        open={open}
-        close={() => {
-          handleOpen(false)
-        }}
-      />
     </List>
   )
 }

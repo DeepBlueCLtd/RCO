@@ -14,7 +14,8 @@ import {
   useUpdateMany,
   useGetList,
   TopToolbar,
-  EditButton
+  EditButton,
+  useRedirect
 } from 'react-admin'
 import { Box, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
@@ -27,7 +28,6 @@ import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
-import ResourceHistoryModal from '../../components/ResourceHistory'
 import HistoryButton from '../../components/HistoryButton'
 import { type AuditData } from '../../utils/audit'
 import { ConditionalDateField } from '../dispatch/DispatchList'
@@ -41,18 +41,14 @@ const Finalised = (): React.ReactElement => {
   return <Typography variant='body2'>{label}</Typography>
 }
 
-interface ShowActionsProps {
-  handleOpen: (open: DestructionModal) => void
-}
-
-const ShowActions = (props: ShowActionsProps): React.ReactElement => {
-  const { handleOpen } = props
+const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const record = useRecordContext()
   const finalised =
     typeof record?.finalisedAt !== 'undefined' &&
     record?.finalisedAt !== null &&
     record?.finalisedAt !== 'null'
+  const redirect = useRedirect()
 
   return (
     <>
@@ -62,7 +58,12 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
         )}
         <HistoryButton
           onClick={() => {
-            handleOpen('history')
+            redirect(
+              `/audit?filter=${JSON.stringify({
+                resource: constants.R_DESTRUCTION,
+                dataId: record.id
+              })}`
+            )
           }}
         />
       </TopToolbar>
@@ -223,19 +224,7 @@ export default function DestructionShow(): React.ReactElement {
             open={open === 'report'}
             handleOpen={handleOpen}
           />
-          <ResourceHistoryModal
-            filter={{
-              resource: constants.R_DESTRUCTION,
-              dataId: parseInt(id as string)
-            }}
-            open={open === 'history'}
-            close={() => {
-              handleOpen('')
-            }}
-          />
-          <Show
-            component={'div'}
-            actions={<ShowActions handleOpen={handleOpen} />}>
+          <Show component={'div'} actions={<ShowActions />}>
             <SimpleShowLayout>
               <TextField<Destruction> source='name' label='Reference' />
               <ConditionalDateField<Destruction>

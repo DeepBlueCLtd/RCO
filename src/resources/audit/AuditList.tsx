@@ -196,6 +196,7 @@ export default function AuditList({
   const storeKey = searchParams.get('filter')
     ? 'filtered-audit-list'
     : 'simple-audit-list'
+  const filteredData = location.state?.filter
 
   return (
     <List
@@ -211,7 +212,11 @@ export default function AuditList({
       actions={actions ?? <ListActions />}>
       <DatagridConfigurable
         omit={omit}
-        {...(data !== undefined ? { data } : null)}
+        {...(data !== undefined
+          ? { data }
+          : filteredData !== undefined
+          ? { data: filteredData }
+          : null)}
         bulkActionButtons={false}
         sx={{
           '&  .RaDatagrid-rowCell': {
