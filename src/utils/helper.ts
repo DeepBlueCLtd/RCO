@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
 import { DateTime } from 'luxon'
 
 export const transformProtectionValues = (
@@ -50,4 +50,22 @@ export const checkIfDateHasPassed = (dateString: string): boolean => {
   const dateTime = DateTime.fromJSDate(jsDate)
   const currentDateTime = DateTime.local()
   return currentDateTime > dateTime
+}
+
+interface InsertPassword {
+  password: string
+  userId: number
+}
+
+export const insertPassword = async ({
+  password,
+  userId
+}: InsertPassword): Promise<AxiosResponse> => {
+  const res = await axios.post(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/insert-password'
+      : '/api/insert-password',
+    { fields: { password, userId } }
+  )
+  return res
 }

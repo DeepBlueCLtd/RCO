@@ -58,10 +58,11 @@ import {
   Typography
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { initialize } from './utils/helper'
+import { initialize, insertPassword } from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import CustomNotification from './components/Notification'
+import { nowDate } from './providers/dataProvider/dataprovider-utils'
 
 const style = {
   backgroundColor: 'white',
@@ -180,12 +181,22 @@ function App(): React.ReactElement {
 
       if (user) {
         const hashedPassword = bcrypt.hashSync(newPassword)
-        await dataProvider.update<User>(constants.R_USERS, {
-          id: user.id,
-          previousData: user,
-          data: { password: hashedPassword }
+
+        insertPassword({
+          password: hashedPassword,
+          userId: user.id as number
         })
-        setResetPasswordOpen(false)
+          .then(async (res) => {
+            if (res.status === 201) {
+              await dataProvider.update<User>(constants.R_USERS, {
+                id: user.id,
+                previousData: user,
+                data: { password: hashedPassword, lastUpdatedAt: nowDate() }
+              })
+              setResetPasswordOpen(false)
+            }
+          })
+          .catch(console.log)
       }
     }
   }
