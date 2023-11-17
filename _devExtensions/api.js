@@ -1,6 +1,8 @@
 const BS3Database = require('better-sqlite3')
 const path = require('path')
 
+const tableName = 'passwords'
+
 const getIp = {
   method: 'GET',
   path: '/api/ip',
@@ -9,15 +11,30 @@ const getIp = {
   }
 }
 
+const removeOldestPassword = (db, userId) => {
+  const query = `DELETE FROM ${tableName} WHERE userId = ? ORDER BY createdAt LIMIT 1`
+  db.prepare(query).run(userId)
+}
+
+const checkCoundAndRemoveOldestPassword = (db, userId) => {
+  const countQuery = `SELECT COUNT(*) as count FROM ${tableName} WHERE userId = ?`
+  const count = db.prepare(countQuery).get(userId).count
+
+  if (count >= 5) {
+    removeOldestPassword(db, userId)
+  }
+}
+
 const insertPasswordRecord = {
   method: 'POST',
   path: '/api/insert-password',
   handler: (req, res) => {
     const db = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
-    const tableName = 'passwords'
 
     const { fields: queryFields } = req.body
     queryFields.createdAt = new Date().toISOString()
+
+    checkCoundAndRemoveOldestPassword(db, queryFields.userId)
 
     const fields = Object.fromEntries(
       Object.entries(queryFields).filter(([_, value]) => value !== null)
