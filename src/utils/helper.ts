@@ -1,4 +1,4 @@
-import axios, { type AxiosResponse } from 'axios'
+import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { DateTime } from 'luxon'
 
 export const transformProtectionValues = (
@@ -68,4 +68,37 @@ export const insertPassword = async ({
     { fields: { password, userId } }
   )
   return res
+}
+
+interface ErrorDetails {
+  message: string
+  status: number
+  data: any
+}
+
+export const getErrorDetails = (error: AxiosError): ErrorDetails => {
+  if (error.response) {
+    const { data, status, statusText } = error.response
+    const message = `Error Code: ${status}, Message: ${
+      (data as any)?.message || statusText
+    }`
+
+    return { message, status, data }
+  } else if (error.request) {
+    const status = error.request.status
+    const message = `Error Code: ${status}, Message: No response received from the server.`
+    return { message, status, data: null }
+  } else {
+    const message = `Error Code: 0, Message: ${error.message}`
+    return { message, status: 0, data: null }
+  }
+}
+
+export const isDateNotInPastDays = (
+  isoDateString: string,
+  diffDays: number
+): boolean => {
+  const dateToCheck = DateTime.fromISO(isoDateString)
+  const currentDate = DateTime.now()
+  return currentDate.diff(dateToCheck, 'days').days > diffDays
 }

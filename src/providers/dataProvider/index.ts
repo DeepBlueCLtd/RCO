@@ -15,9 +15,10 @@ import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import DispatchLifeCycle from './resource-callbacks/DispatchLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
-import axios, { type AxiosError } from 'axios'
+import axios from 'axios'
 import queryString from 'query-string'
 import localForageDataProvider from 'ra-data-local-forage'
+import { getErrorDetails } from '../../utils/helper'
 
 export const lifecycleCallbacks = (
   audit: AuditFunctionType,
@@ -89,30 +90,6 @@ export const getDataProvider = async (
 const operators = ['_neq', '_eq', '_lte', '_gte']
 const SEARCH_OPERATOR = 'q'
 const nullOperators = ['__null', '__notnull']
-
-interface ErrorDetails {
-  message: string
-  status: number
-  data: any
-}
-
-function getErrorDetails(error: AxiosError): ErrorDetails {
-  if (error.response) {
-    const { data, status, statusText } = error.response
-    const message = `Error Code: ${status}, Message: ${
-      (data as any)?.message || statusText
-    }`
-
-    return { message, status, data }
-  } else if (error.request) {
-    const status = error.request.status
-    const message = `Error Code: ${status}, Message: No response received from the server.`
-    return { message, status, data: null }
-  } else {
-    const message = `Error Code: 0, Message: ${error.message}`
-    return { message, status: 0, data: null }
-  }
-}
 
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {

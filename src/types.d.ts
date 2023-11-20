@@ -85,6 +85,7 @@ type User = ResourceWithCreation & {
   role: UserRole
   staffNumber: string
   departedDate: string | null
+  lastUpdatedAt: string | null
 }
 
 type Audit = RCOResource & {

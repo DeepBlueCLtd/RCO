@@ -8,7 +8,7 @@ import {
 } from 'react-admin'
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useContext, useEffect, useState } from 'react'
 import {
   AllInbox,
   Groups,
@@ -58,11 +58,17 @@ import {
   Typography
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { initialize, insertPassword } from './utils/helper'
+import {
+  getErrorDetails,
+  initialize,
+  insertPassword,
+  isDateNotInPastDays
+} from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import CustomNotification from './components/Notification'
 import { nowDate } from './providers/dataProvider/dataprovider-utils'
+import { Context as NotificationContext } from './context/NotificationContext'
 
 const style = {
   backgroundColor: 'white',
@@ -116,6 +122,7 @@ function App(): React.ReactElement {
   const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
 
   const [showPassword, setShowPassword] = React.useState(false)
+  const { notify } = useContext(NotificationContext)
 
   const handleClickShowPassword = (): void => {
     setShowPassword((show) => !show)
@@ -183,7 +190,7 @@ function App(): React.ReactElement {
         const hashedPassword = bcrypt.hashSync(newPassword)
 
         insertPassword({
-          password: hashedPassword,
+          password: newPassword,
           userId: user.id as number
         })
           .then(async (res) => {
@@ -196,7 +203,9 @@ function App(): React.ReactElement {
               setResetPasswordOpen(false)
             }
           })
-          .catch(console.log)
+          .catch((err) => {
+            notify(getErrorDetails(err).message, { type: 'error' })
+          })
       }
     }
   }
@@ -280,11 +289,16 @@ function App(): React.ReactElement {
         const user = await authProvider.getIdentity()
 
         if (user) {
-          const { data } = await dataProvider.getOne<User>(constants.R_USERS, {
+          const {
+            data: { password, lastUpdatedAt }
+          } = await dataProvider.getOne<User>(constants.R_USERS, {
             id: Number(user.id)
           })
 
-          if (!data.password) {
+          if (
+            !password ||
+            (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
+          ) {
             setResetPasswordOpen(true)
           } else {
             setResetPasswordOpen(false)
