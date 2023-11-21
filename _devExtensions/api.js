@@ -1,6 +1,7 @@
 const BS3Database = require('better-sqlite3')
 const path = require('path')
 const bcrypt = require('bcryptjs')
+const passwordValidationSchema = require('./password-validation.schema')
 
 const tableName = 'passwords'
 
@@ -12,45 +13,46 @@ const getIp = {
   }
 }
 
-const removeOldestPassword = (db, userId) => {
-  const query = `DELETE FROM ${tableName} WHERE userId = ? ORDER BY createdAt LIMIT 1`
-  db.prepare(query).run(userId)
+const removeOldPasswords = (db, userId) => {
+  const deleteQuery = `
+    DELETE FROM ${tableName}
+    WHERE userId = ?
+    AND createdAt NOT IN (
+      SELECT createdAt FROM ${tableName}
+      WHERE userId = ?
+      ORDER BY createdAt DESC
+      LIMIT 4
+    )
+  `
+  db.prepare(deleteQuery).run(userId, userId)
 }
 
-const checkCoundAndRemoveOldestPassword = (db, userId) => {
-  const countQuery = `SELECT COUNT(*) as count FROM ${tableName} WHERE userId = ?`
-  const count = db.prepare(countQuery).get(userId).count
-
-  if (count >= 5) {
-    removeOldestPassword(db, userId)
-  }
-}
 const checkAgainstLastFivePassowrds = (db, userId, password) => {
   const query = `SELECT password FROM ${tableName} WHERE userId = ? ORDER BY createdAt DESC LIMIT 5`
   const rows = db.prepare(query).all(userId)
   const recentPasswords = rows.map((row) => row.password)
-  recentPasswords.forEach((p) => {
-    if (bcrypt.compareSync(password, p))
-      throw new Error(
-        'Password cannot be the same as any of the last five passwords.'
-      )
-  })
+  if (recentPasswords.some((p) => bcrypt.compareSync(password, p)))
+    throw new Error(
+      'Password cannot be the same as any of the last five passwords.'
+    )
 }
 
 const insertPasswordRecord = {
   method: 'POST',
   path: '/api/insert-password',
-  handler: (req, res) => {
+  handler: async (req, res) => {
+    let db
     try {
-      const db = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
-
+      db = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
       const { fields: queryFields } = req.body
       queryFields.createdAt = new Date().toISOString()
 
       const { userId, password } = queryFields
 
-      checkCoundAndRemoveOldestPassword(db, userId)
+      await passwordValidationSchema.validate(password)
+
       checkAgainstLastFivePassowrds(db, userId, password)
+      removeOldPasswords(db, userId)
 
       queryFields.password = bcrypt.hashSync(password)
 
@@ -87,7 +89,7 @@ const insertPasswordRecord = {
         error: error
       })
     } finally {
-      db.close()
+      if (db) db.close()
     }
   }
 }
