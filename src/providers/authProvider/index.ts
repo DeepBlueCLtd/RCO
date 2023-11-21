@@ -70,11 +70,23 @@ const createUserToken = async (
   })
 }
 
+const updateLockouAttempts = async (
+  val: number,
+  dataProvider: DataProvider,
+  previousData: User
+): Promise<void> => {
+  await dataProvider.update<User>(constants.R_USERS, {
+    id: previousData.id,
+    data: { lockoutAttempts: val },
+    previousData
+  })
+}
+
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
     login: async ({ staffNumber, password }) => {
-      const data = await dataProvider.getList(constants.R_USERS, {
+      const data = await dataProvider.getList<User>(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { page: 1, perPage: 1 },
         filter: { staffNumber }
@@ -87,11 +99,19 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           user.departedDate !== undefined &&
           user.departedDate !== null &&
           checkIfDateHasPassed(user.departedDate)
+
+        if (user.lockoutAttempts >= 5) {
+          throw new Error(
+            'Your account is locked. Please contact your administrator'
+          )
+        }
+
         if (
           user.password &&
           bcrypt.compareSync(password, user.password) &&
           !hasUserDeparted
         ) {
+          await updateLockouAttempts(0, dataProvider, user)
           await createUserToken(user, audit)
           return await Promise.resolve(data)
         } else if (
@@ -99,10 +119,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           password === user.staffNumber &&
           !hasUserDeparted
         ) {
+          await updateLockouAttempts(0, dataProvider, user)
           await createUserToken(user, audit)
         } else if (hasUserDeparted) {
           throw new Error('User has departed organisation')
         } else {
+          await updateLockouAttempts(
+            user.lockoutAttempts + 1,
+            dataProvider,
+            user
+          )
           throw new Error('Wrong password')
         }
       } else {

@@ -69,6 +69,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import CustomNotification from './components/Notification'
 import { nowDate } from './providers/dataProvider/dataprovider-utils'
 import { Context as NotificationContext } from './context/NotificationContext'
+import { type AxiosError, isAxiosError } from 'axios'
 
 const style = {
   backgroundColor: 'white',
@@ -177,6 +178,22 @@ function App(): React.ReactElement {
     }
   }
 
+  const checkPasswordAge = async (
+    id: number,
+    dataProvider: DataProvider
+  ): Promise<void> => {
+    const {
+      data: { lastUpdatedAt }
+    } = await dataProvider.getOne<User>(constants.R_USERS, {
+      id
+    })
+
+    if (lastUpdatedAt !== null && !isDateNotInPastDays(lastUpdatedAt, 1))
+      throw new Error(
+        'Password update not allowed. Please wait at least one day before updating your password again.'
+      )
+  }
+
   const onSubmit = async (data: PasswordForm): Promise<void> => {
     const { newPassword } = data
     if (
@@ -186,26 +203,28 @@ function App(): React.ReactElement {
     ) {
       const user = await authProvider.getIdentity()
 
-      if (user) {
-        const hashedPassword = bcrypt.hashSync(newPassword)
+      try {
+        if (user) {
+          await checkPasswordAge(user.id as number, dataProvider)
 
-        insertPassword({
-          password: newPassword,
-          userId: user.id as number
-        })
-          .then(async (res) => {
-            if (res.status === 201) {
-              await dataProvider.update<User>(constants.R_USERS, {
-                id: user.id,
-                previousData: user,
-                data: { password: hashedPassword, lastUpdatedAt: nowDate() }
-              })
-              setResetPasswordOpen(false)
-            }
+          const res = await insertPassword({
+            password: newPassword,
+            userId: user.id as number
           })
-          .catch((err) => {
-            notify(getErrorDetails(err).message, { type: 'error' })
-          })
+          if (res.status === 201) {
+            const hashedPassword = bcrypt.hashSync(newPassword)
+            await dataProvider.update<User>(constants.R_USERS, {
+              id: user.id,
+              previousData: user,
+              data: { password: hashedPassword, lastUpdatedAt: nowDate() }
+            })
+            setResetPasswordOpen(false)
+          }
+        }
+      } catch (err) {
+        if (isAxiosError(err))
+          notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
+        else notify((err as Error).message, { type: 'error' })
       }
     }
   }

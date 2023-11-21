@@ -29,6 +29,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     | 'staffNumber'
     | 'departedDate'
     | 'lastUpdatedAt'
+    | 'lockoutAttempts'
   > = {
     name: '',
     password: '',

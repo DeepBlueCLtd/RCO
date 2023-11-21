@@ -137,7 +137,8 @@ export const generateUserForTesting = ({
   ...(departedDate ? { departedDate } : null),
   role: 'rco-user',
   staffNumber: 'd-1',
-  lastUpdatedAt: null
+  lastUpdatedAt: null,
+  lockoutAttempts: 0
 })
 
 interface VaultLocationProps {

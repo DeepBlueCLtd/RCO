@@ -322,7 +322,8 @@ export const generateUsers = (length: number): User[] => {
       role: getRandomRole(),
       createdAt: nowDate(),
       departedDate: null,
-      lastUpdatedAt: null
+      lastUpdatedAt: null,
+      lockoutAttempts: 0
     }
     users.push(obj)
   }

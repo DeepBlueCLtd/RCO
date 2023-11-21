@@ -10,7 +10,8 @@ const users: User[] = [
     createdBy: 2,
     staffNumber: 'd-1',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
-    lastUpdatedAt: null
+    lastUpdatedAt: null,
+    lockoutAttempts: 0
   },
   {
     id: 2,
@@ -21,7 +22,8 @@ const users: User[] = [
     createdBy: 2,
     staffNumber: 'd-2',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
-    lastUpdatedAt: null
+    lastUpdatedAt: null,
+    lockoutAttempts: 0
   },
   {
     id: 3,
@@ -32,7 +34,8 @@ const users: User[] = [
     createdBy: 2,
     staffNumber: 'd-3',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
-    lastUpdatedAt: null
+    lastUpdatedAt: null,
+    lockoutAttempts: 0
   },
   {
     id: 4,
@@ -43,7 +46,8 @@ const users: User[] = [
     createdBy: 2,
     staffNumber: 'd-4',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
-    lastUpdatedAt: null
+    lastUpdatedAt: null,
+    lockoutAttempts: 0
   }
 ]
 
