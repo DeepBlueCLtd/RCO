@@ -2,6 +2,7 @@ const BS3Database = require('better-sqlite3')
 const path = require('path')
 const bcrypt = require('bcryptjs')
 const passwordValidationSchema = require('./password-validation.schema')
+const loginController = require('./login-controller')
 
 const tableName = 'passwords'
 
@@ -115,7 +116,14 @@ const insertPasswordRecord = {
   }
 }
 
+const login = {
+  method: 'POST',
+  path: '/api/login',
+  handler: loginController
+}
+
 module.exports = {
   getIp,
-  insertPasswordRecord
+  insertPasswordRecord,
+  login
 }

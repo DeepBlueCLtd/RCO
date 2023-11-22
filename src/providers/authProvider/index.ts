@@ -8,9 +8,9 @@ import { trackEvent } from '../../utils/audit'
 import { AuditType } from '../../utils/activity-types'
 import { decryptData, encryptData } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
-import bcrypt from 'bcryptjs'
 import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
-import { checkIfDateHasPassed } from '../../utils/helper'
+import { getErrorDetails, login } from '../../utils/helper'
+import { isAxiosError } from 'axios'
 
 export const getUser = (): User | undefined => {
   const encryptedUser = getCookie(constants.TOKEN_KEY)
@@ -70,69 +70,17 @@ const createUserToken = async (
   })
 }
 
-const updateLockouAttempts = async (
-  val: number,
-  dataProvider: DataProvider,
-  previousData: User
-): Promise<void> => {
-  await dataProvider.update<User>(constants.R_USERS, {
-    id: previousData.id,
-    data: { lockoutAttempts: val },
-    previousData
-  })
-}
-
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
     login: async ({ staffNumber, password }) => {
-      const data = await dataProvider.getList<User>(constants.R_USERS, {
-        sort: { field: 'id', order: 'ASC' },
-        pagination: { page: 1, perPage: 1 },
-        filter: { staffNumber }
-      })
-      const user = data.data.find(
-        (item: any) => item.staffNumber === staffNumber
-      )
-      if (user !== undefined) {
-        const hasUserDeparted =
-          user.departedDate !== undefined &&
-          user.departedDate !== null &&
-          checkIfDateHasPassed(user.departedDate)
-
-        if (user.lockoutAttempts >= 5) {
-          throw new Error(
-            'Your account is locked. Please contact your administrator'
-          )
-        }
-
-        if (
-          user.password &&
-          bcrypt.compareSync(password, user.password) &&
-          !hasUserDeparted
-        ) {
-          await updateLockouAttempts(0, dataProvider, user)
-          await createUserToken(user, audit)
-          return await Promise.resolve(data)
-        } else if (
-          !user.password &&
-          password === user.staffNumber &&
-          !hasUserDeparted
-        ) {
-          await updateLockouAttempts(0, dataProvider, user)
-          await createUserToken(user, audit)
-        } else if (hasUserDeparted) {
-          throw new Error('User has departed organisation')
-        } else {
-          await updateLockouAttempts(
-            user.lockoutAttempts + 1,
-            dataProvider,
-            user
-          )
-          throw new Error('Wrong password')
-        }
-      } else {
-        throw new Error('Wrong username')
+      try {
+        const res = await login({ password, staffNumber })
+        await createUserToken(res.data.data, audit)
+        return await Promise.resolve(res.data.data)
+      } catch (error) {
+        if (isAxiosError(error)) throw new Error(getErrorDetails(error).message)
+        throw new Error((error as Error).message)
       }
     },
     logout: async (): Promise<void> => {

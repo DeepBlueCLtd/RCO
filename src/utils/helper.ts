@@ -102,3 +102,21 @@ export const isDateNotInPastDays = (
   const currentDate = DateTime.now()
   return currentDate.diff(dateToCheck, 'days').days > diffDays
 }
+
+interface Login {
+  password: string
+  staffNumber: string
+}
+
+export const login = async ({
+  password,
+  staffNumber
+}: Login): Promise<AxiosResponse> => {
+  const res = await axios.post(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/login'
+      : '/api/login',
+    { password, staffNumber }
+  )
+  return res
+}
