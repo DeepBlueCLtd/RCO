@@ -1,7 +1,9 @@
-CREATE TABLE IF NOT EXISTS passwords (
+--Pragmas
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS passwords(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   userId INTEGER NOT NULL,
   password  TEXT NOT NULL,
   createdAt TEXT NOT NULL
-
 ) 
