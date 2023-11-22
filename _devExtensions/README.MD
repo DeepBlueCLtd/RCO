@@ -1,0 +1,1 @@
+This folder contains the set of extensions that are run in development mode. In development mode we do not wish the server to serve the passive site - that is done in a separate process.
