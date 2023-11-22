@@ -108,8 +108,10 @@ CREATE TABLE IF NOT EXISTS user (
        role TEXT,  /* Should be string Ex.: 'rco-user, 'rco-power-user' */
        staffNumber TEXT NOT NULL,
        departedDate TEXT,
+       lastUpdatedAt TEXT,
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
+       lockoutAttempts INTEGER NOT NULL DEFAULT 0,
 
        FOREIGN KEY (createdBy) REFERENCES user(id)
 ) WITHOUT ROWID;

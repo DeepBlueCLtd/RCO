@@ -8,7 +8,7 @@ import {
 } from 'react-admin'
 import { Route } from 'react-router-dom'
 import MyLayout from './components/Layout'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useContext, useEffect, useState } from 'react'
 import {
   AllInbox,
   Groups,
@@ -18,7 +18,6 @@ import {
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 import { useForm } from 'react-hook-form'
-import bcrypt from 'bcryptjs'
 import * as yup from 'yup'
 
 // pages
@@ -58,10 +57,17 @@ import {
   Typography
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { initialize } from './utils/helper'
+import {
+  getErrorDetails,
+  initialize,
+  insertAndUpdatePassword,
+  isDateNotInPastDays
+} from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import CustomNotification from './components/Notification'
+import { Context as NotificationContext } from './context/NotificationContext'
+import { type AxiosError, isAxiosError } from 'axios'
 
 const style = {
   backgroundColor: 'white',
@@ -115,6 +121,7 @@ function App(): React.ReactElement {
   const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
 
   const [showPassword, setShowPassword] = React.useState(false)
+  const { notify } = useContext(NotificationContext)
 
   const handleClickShowPassword = (): void => {
     setShowPassword((show) => !show)
@@ -169,6 +176,26 @@ function App(): React.ReactElement {
     }
   }
 
+  const checkPasswordAge = async (
+    id: number,
+    dataProvider: DataProvider
+  ): Promise<void> => {
+    const {
+      data: { lastUpdatedAt }
+    } = await dataProvider.getOne<User>(constants.R_USERS, {
+      id
+    })
+
+    if (
+      lastUpdatedAt !== null &&
+      lastUpdatedAt !== '' &&
+      !isDateNotInPastDays(lastUpdatedAt, 1)
+    )
+      throw new Error(
+        'Password update not allowed. Please wait at least one day before updating your password again.'
+      )
+  }
+
   const onSubmit = async (data: PasswordForm): Promise<void> => {
     const { newPassword } = data
     if (
@@ -178,14 +205,23 @@ function App(): React.ReactElement {
     ) {
       const user = await authProvider.getIdentity()
 
-      if (user) {
-        const hashedPassword = bcrypt.hashSync(newPassword)
-        await dataProvider.update<User>(constants.R_USERS, {
-          id: user.id,
-          previousData: user,
-          data: { password: hashedPassword }
-        })
-        setResetPasswordOpen(false)
+      try {
+        if (user) {
+          await checkPasswordAge(user.id as number, dataProvider)
+
+          const res = await insertAndUpdatePassword({
+            password: newPassword,
+            userId: user.id as number
+          })
+          if (res.status === 201) {
+            setResetPasswordOpen(false)
+            notify(res.data.message)
+          }
+        }
+      } catch (err) {
+        if (isAxiosError(err))
+          notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
+        else notify((err as Error).message, { type: 'error' })
       }
     }
   }
@@ -269,11 +305,16 @@ function App(): React.ReactElement {
         const user = await authProvider.getIdentity()
 
         if (user) {
-          const { data } = await dataProvider.getOne<User>(constants.R_USERS, {
+          const {
+            data: { password, lastUpdatedAt }
+          } = await dataProvider.getOne<User>(constants.R_USERS, {
             id: Number(user.id)
           })
 
-          if (!data.password) {
+          if (
+            !password ||
+            (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
+          ) {
             setResetPasswordOpen(true)
           } else {
             setResetPasswordOpen(false)

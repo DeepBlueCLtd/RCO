@@ -122,7 +122,7 @@ const ResetPassword = ({
     update(R_USERS, {
       id: record?.id,
       previousData: record,
-      data: { password: '' }
+      data: { password: '', lockoutAttempts: 0 }
     }).catch(console.log)
     handleClose()
   }

@@ -3011,6 +3011,14 @@ better-sqlite3@^8.1.0:
     bindings "^1.5.0"
     prebuild-install "^7.1.0"
 
+better-sqlite3@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-9.1.1.tgz#f139b180a08ed396e660a0601a46ceefd78b832c"
+  integrity sha512-FhW7bS7cXwkB2SFnPJrSGPmQerVSCzwBgmQ1cIRcYKxLsyiKjljzCbyEqqhYXo5TTBqt5BISiBj2YE2Sy2ynaA==
+  dependencies:
+    bindings "^1.5.0"
+    prebuild-install "^7.1.1"
+
 big-integer@^1.6.16:
   version "1.6.51"
   resolved "https://registry.npmjs.org/big-integer/-/big-integer-1.6.51.tgz"
@@ -6404,7 +6412,7 @@ postcss@^8.4.21:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-prebuild-install@^7.1.0:
+prebuild-install@^7.1.0, prebuild-install@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-7.1.1.tgz#de97d5b34a70a0c81334fd24641f2a1702352e45"
   integrity sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==
