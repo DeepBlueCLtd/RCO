@@ -57,7 +57,7 @@ interface InsertPassword {
   userId: number
 }
 
-export const insertPassword = async ({
+export const insertAndUpdatePassword = async ({
   password,
   userId
 }: InsertPassword): Promise<AxiosResponse> => {

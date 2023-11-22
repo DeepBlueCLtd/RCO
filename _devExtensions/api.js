@@ -37,13 +37,30 @@ const checkAgainstLastFivePassowrds = (db, userId, password) => {
     )
 }
 
+const updateUserPassword = (db, userId, password) => {
+  const hashedPassword = bcrypt.hashSync(password)
+  const query = `
+    UPDATE user
+    SET password = ?, lastUpdatedAt = ? 
+    WHERE id = ?;
+  `
+  db.prepare(query).run(hashedPassword, new Date().toISOString(), userId)
+}
+
 const insertPasswordRecord = {
   method: 'POST',
   path: '/api/insert-password',
   handler: async (req, res) => {
-    let db
+    let securityDb
+    let mainDb
+
     try {
-      db = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
+      securityDb = new BS3Database(
+        path.join(process.cwd(), 'db/Security.sqlite')
+      )
+
+      mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
+
       const { fields: queryFields } = req.body
       queryFields.createdAt = new Date().toISOString()
 
@@ -51,8 +68,8 @@ const insertPasswordRecord = {
 
       await passwordValidationSchema.validate(password)
 
-      checkAgainstLastFivePassowrds(db, userId, password)
-      removeOldPasswords(db, userId)
+      checkAgainstLastFivePassowrds(securityDb, userId, password)
+      removeOldPasswords(securityDb, userId)
 
       queryFields.password = bcrypt.hashSync(password)
 
@@ -78,9 +95,12 @@ const insertPasswordRecord = {
 
       const query = `INSERT INTO ${tableName} ${values}`
 
-      const data = db.prepare(query).run()
+      const data = securityDb.prepare(query).run()
+
+      updateUserPassword(mainDb, userId, password)
+
       res.status(201).json({
-        message: 'Row inserted',
+        message: 'Password updated!',
         data
       })
     } catch (error) {
@@ -89,7 +109,8 @@ const insertPasswordRecord = {
         error: error
       })
     } finally {
-      if (db) db.close()
+      if (securityDb) securityDb.close()
+      if (mainDb) mainDb.close()
     }
   }
 }

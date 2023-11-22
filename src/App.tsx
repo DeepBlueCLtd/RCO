@@ -18,7 +18,6 @@ import {
 import { getDataProvider } from './providers/dataProvider'
 import rcoAuthProvider from './providers/authProvider'
 import { useForm } from 'react-hook-form'
-import bcrypt from 'bcryptjs'
 import * as yup from 'yup'
 
 // pages
@@ -61,13 +60,12 @@ import { Box } from '@mui/system'
 import {
   getErrorDetails,
   initialize,
-  insertPassword,
+  insertAndUpdatePassword,
   isDateNotInPastDays
 } from './utils/helper'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import CustomNotification from './components/Notification'
-import { nowDate } from './providers/dataProvider/dataprovider-utils'
 import { Context as NotificationContext } from './context/NotificationContext'
 import { type AxiosError, isAxiosError } from 'axios'
 
@@ -207,18 +205,13 @@ function App(): React.ReactElement {
         if (user) {
           await checkPasswordAge(user.id as number, dataProvider)
 
-          const res = await insertPassword({
+          const res = await insertAndUpdatePassword({
             password: newPassword,
             userId: user.id as number
           })
           if (res.status === 201) {
-            const hashedPassword = bcrypt.hashSync(newPassword)
-            await dataProvider.update<User>(constants.R_USERS, {
-              id: user.id,
-              previousData: user,
-              data: { password: hashedPassword, lastUpdatedAt: nowDate() }
-            })
             setResetPasswordOpen(false)
+            notify(res.data.message)
           }
         }
       } catch (err) {
