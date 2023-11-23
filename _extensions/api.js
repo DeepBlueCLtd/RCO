@@ -1,6 +1,6 @@
 const path = require('path')
 const express = require('express')
-const { insertPasswordRecord } = require('../_devExtensions/api')
+const { insertPasswordRecord, login } = require('../_devExtensions/api')
 
 const getIp = {
   method: 'GET',
@@ -23,5 +23,6 @@ const rcoClient = {
 module.exports = {
   getIp,
   rcoClient,
-  insertPasswordRecord
+  insertPasswordRecord,
+  login
 }
