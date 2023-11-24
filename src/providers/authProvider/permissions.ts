@@ -4,6 +4,7 @@ const basePermissions = {
   [constants.R_PROJECTS]: { read: true, write: true, delete: false },
   [constants.R_BATCHES]: { read: true, write: true, delete: false },
   [constants.R_ITEMS]: { read: true, write: true, delete: false },
+  [constants.R_ALL_ITEMS]: { read: true, write: true, delete: false },
   [constants.R_USERS]: { read: true, write: true, delete: false },
   [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
   [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
