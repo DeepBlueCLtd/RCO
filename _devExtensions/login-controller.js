@@ -57,7 +57,7 @@ const loginController = (req, res) => {
     const { password, staffNumber } = req.body
 
     if (!password || !staffNumber)
-      throw new Error('Password and staffNumber is required')
+      throw new Error('Password and username is required')
 
     db = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
 
