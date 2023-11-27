@@ -8,7 +8,6 @@ import Container from '@mui/material/Container'
 import { useLogin, useNotify } from 'react-admin'
 import AppIcon from '../assets/rco_transparent.png'
 import * as constants from '../constants'
-import './login.css'
 
 export default function Login(): React.ReactElement {
   const login = useLogin()
