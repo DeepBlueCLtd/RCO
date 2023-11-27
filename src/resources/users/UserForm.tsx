@@ -57,7 +57,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           sx={{ width: '100%', flex: 1 }}
           choices={rolesOptions}
         />
-        <TextInput source='staffNumber' label='Staff number' sx={{ flex: 1 }} />
+        <TextInput source='staffNumber' label='Username' sx={{ flex: 1 }} />
       </FlexBox>
     </SimpleForm>
   )

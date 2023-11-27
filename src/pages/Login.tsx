@@ -74,7 +74,7 @@ export default function Login(): React.ReactElement {
               required
               fullWidth
               id='username'
-              label='Staff Number'
+              label='Username'
               name='staffNumber'
               autoComplete='staffNumber'
               autoFocus

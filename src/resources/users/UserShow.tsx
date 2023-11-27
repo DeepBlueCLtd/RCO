@@ -259,7 +259,7 @@ const UserShowComp = ({
               <TextInput
                 disabled
                 source='staffNumber'
-                label='Staff number'
+                label='Username'
                 sx={{ flex: 1 }}
               />
             </FlexBox>
