@@ -21,3 +21,7 @@
     page-break-after: always;
   }
 }
+
+::-ms-reveal {
+  display: none;
+}
