@@ -108,7 +108,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 
           if (user.lockoutAttempts >= 5) {
             throw new Error(
-              'Your account is locked. Please contact your administrator'
+              'Your account is locked. Please contact your administrator (' + user.lockoutAttempts + ')'
             )
           }
 
