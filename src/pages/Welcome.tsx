@@ -107,7 +107,10 @@ export default function Welcome(): React.ReactElement {
           isTitleClickable={false}
           label='Items on Loan'
           resource={constants.R_LOAN_USERS}
-          fields={[{ source: 'staffNumber' }, { source: 'numItems' }]}
+          fields={[
+            { source: 'staffNumber', label: 'Username' },
+            { source: 'numItems' }
+          ]}
           rowClick={(id) => {
             const path = `/${constants.R_RICH_ITEMS}?filter={"loanedTo":${id}}`
             redirect(path)

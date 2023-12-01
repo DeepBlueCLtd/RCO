@@ -5,30 +5,13 @@ import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { useLogin, useNotify } from 'react-admin'
-import {
-  IconButton,
-  InputAdornment,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
-} from '@mui/material'
 import AppIcon from '../assets/rco_transparent.png'
 import * as constants from '../constants'
 
 export default function Login(): React.ReactElement {
   const login = useLogin()
   const notify = useNotify()
-
-  const [showPassword, setShowPassword] = React.useState(false)
-
-  const handleClickShowPassword = (): void => {
-    setShowPassword((show) => !show)
-  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
@@ -58,39 +41,6 @@ export default function Login(): React.ReactElement {
           minWidth: '100vw',
           paddingTop: '10%'
         }}>
-        <TableContainer
-          sx={{
-            background: 'white',
-            maxWidth: '500px',
-            margin: 'auto',
-            width: '100%',
-            textAlign: 'center',
-            marginBottom: '20px'
-          }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell align='center' sx={{ fontWeight: '600' }}>
-                  Staff Number
-                </TableCell>
-                <TableCell align='center' sx={{ fontWeight: '600' }}>
-                  Password
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell align='center'>d-1</TableCell>
-                <TableCell align='center'>admin</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell align='center'>d-2</TableCell>
-                <TableCell align='center'>user</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-
         <CssBaseline />
         <Box
           sx={{
@@ -124,7 +74,7 @@ export default function Login(): React.ReactElement {
               required
               fullWidth
               id='username'
-              label='Staff Number'
+              label='Username'
               name='staffNumber'
               autoComplete='staffNumber'
               autoFocus
@@ -135,19 +85,11 @@ export default function Login(): React.ReactElement {
               required
               name='password'
               label='Password'
-              type={showPassword ? 'text' : 'password'}
               id='password'
               autoComplete='current-password'
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <IconButton onClick={handleClickShowPassword} edge='end'>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
+              type='password'
             />
+
             <Button
               type='submit'
               fullWidth
