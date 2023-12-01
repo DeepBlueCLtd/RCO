@@ -24,7 +24,7 @@ const validateUser = (staffNumber, password, db) => {
   }
 
   if (user.lockoutAttempts >= 5)
-    throw new Error('Your account is locked. Please contact your administrator')
+    throw new Error('Your account is locked. Please contact your administrator [' + user.lockoutAttempts + ']')
 
   const hasUserDeparted =
     user.departedDate !== undefined &&
