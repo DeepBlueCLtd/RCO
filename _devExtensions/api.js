@@ -3,7 +3,7 @@ const path = require('path')
 const bcrypt = require('bcryptjs')
 const passwordValidationSchema = require('./password-validation.schema')
 const loginController = require('./login-controller')
-
+const changePasswordController = require('./changePassword-controller')
 const tableName = 'passwords'
 
 const getIp = {
@@ -122,8 +122,15 @@ const login = {
   handler: loginController
 }
 
+const changepassword = {
+  method: 'POST',
+  path: '/api/changepassword',
+  handler: changePasswordController
+}
+
 module.exports = {
   getIp,
   insertPasswordRecord,
-  login
+  login,
+  changepassword
 }
