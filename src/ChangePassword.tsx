@@ -19,6 +19,8 @@ import * as constants from './constants'
 import { getErrorDetails, isDateNotInPastDays } from './utils/helper'
 import { type AxiosError, isAxiosError } from 'axios'
 import { changeAndUpdatePassword } from './utils/helper'
+import { AuditType } from './utils/activity-types'
+import { trackEvent } from './utils/audit'
 
 interface ChangePasswordForm {
   currentPassword: string
@@ -46,6 +48,7 @@ const ChangePassword = ({
     newPassword: resetPasswordValidationSchema,
     reTypePassword: resetPasswordValidationSchema
   })
+  const audit = trackEvent(dataProvider)
   const {
     register,
     handleSubmit,
@@ -97,6 +100,15 @@ const ChangePassword = ({
           })
           if (res.status === 201) {
             setOpenChangePasswordModal(false)
+            await audit({
+              resource: constants.R_USERS,
+              activityType: AuditType.CHANGE_PASSWORD,
+              dataId: user.id as number,
+              activityDetail: 'User Password Changed',
+              securityRelated: true,
+              subjectResource: null,
+              subjectId: null
+            })
             notify(res.data.message)
           }
         }
@@ -122,7 +134,6 @@ const ChangePassword = ({
       backgroundColor: '#1F3860'
     }
   }
-
   return (
     <div>
       <Modal

@@ -5,7 +5,6 @@ const passwordValidationSchema = require('./password-validation.schema')
 const tableName = 'passwords'
 
 const updateUserPassword = (db, userId, password) => {
-  console.log(userId, password)
   const hashedPassword = bcrypt.hashSync(password)
   const query = `
       UPDATE user
