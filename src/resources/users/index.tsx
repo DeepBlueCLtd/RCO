@@ -21,7 +21,10 @@ const UserEdit = (): React.ReactElement => {
   const path: string = `/${constants.R_USERS}`
 
   return (
-    <Edit resource={constants.R_USERS} redirect={path}>
+    <Edit
+      mutationMode='pessimistic'
+      resource={constants.R_USERS}
+      redirect={path}>
       <UserForm isEdit />
     </Edit>
   )
