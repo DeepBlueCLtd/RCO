@@ -4,7 +4,7 @@ import VaultLocationForm from './VaultLocationForm'
 import VaultLocationList from './VaultLocationList'
 import ReferenceDataShow from '../reference-data/ReferenceDataShow'
 import { R_VAULT_LOCATION } from '../../constants'
-
+import * as constants from '../../constants'
 const VaultLocationCreate = (): React.ReactElement => {
   return (
     <Create>
@@ -15,7 +15,7 @@ const VaultLocationCreate = (): React.ReactElement => {
 
 export const VaultLocationEdit = (): React.ReactElement => {
   return (
-    <Edit>
+    <Edit mutationMode={constants.MUTATION_MODE}>
       <VaultLocationForm />
     </Edit>
   )

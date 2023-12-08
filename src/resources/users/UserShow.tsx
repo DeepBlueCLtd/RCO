@@ -126,7 +126,7 @@ const ResetPassword = ({
         previousData: record,
         data: { password: '', lockoutAttempts: 0 }
       },
-      { mutationMode: 'pessimistic' }
+      { mutationMode: 'optimistic' }
     ).catch(console.log)
     handleClose()
   }

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
 import UserForm from './UserForm'
-
 import * as constants from '../../constants'
 
 const UserList = React.lazy(async () => await import('./UserList'))
@@ -22,7 +21,7 @@ const UserEdit = (): React.ReactElement => {
 
   return (
     <Edit
-      mutationMode='pessimistic'
+      mutationMode={constants.MUTATION_MODE}
       resource={constants.R_USERS}
       redirect={path}>
       <UserForm isEdit />

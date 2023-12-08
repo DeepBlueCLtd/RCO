@@ -1,6 +1,7 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
 import DestructionForm from './DestructionForm'
+import * as constants from '../../constants'
 
 const DestructionList = React.lazy(
   async () => await import('./DestructionList')
@@ -19,7 +20,7 @@ const DestructionCreate = (): React.ReactElement => {
 
 const DestructionEdit = (): React.ReactElement => {
   return (
-    <Edit>
+    <Edit mutationMode={constants.MUTATION_MODE}>
       <DestructionForm disabledFields={['year', 'name']} isEdit />
     </Edit>
   )

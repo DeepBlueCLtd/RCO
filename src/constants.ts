@@ -80,6 +80,7 @@ export type ResourceTypes =
   | typeof R_RICH_ITEMS
   | typeof R_LOAN_USERS
 
+
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 export const AUTH_STATE_CHANGED = 'AUTH_STATE_CHANGED'
@@ -103,3 +104,5 @@ export const DATA_VERSION = 'DATA_VERSION'
 export const SAVE_EVENT = 'save'
 export const ITEM_CLONE = 'item_clone'
 export const ITEM_SAVE = 'item_save'
+
+export const MUTATION_MODE = 'optimistic'
