@@ -104,4 +104,4 @@ export const SAVE_EVENT = 'save'
 export const ITEM_CLONE = 'item_clone'
 export const ITEM_SAVE = 'item_save'
 
-export const CHANGE_PASSWORD_EVENT = 'CHANGE_PASSWORD_EVENT'
+export const CHANGE_PASSWORD_EVENT = 'change_password'

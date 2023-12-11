@@ -23,7 +23,8 @@ import { getUser } from '../../providers/authProvider'
 import LockResetIcon from '@mui/icons-material/LockReset'
 import { CHANGE_PASSWORD_EVENT } from '../../constants'
 
-interface Events {
+// eslint-disable-next-line
+type Events = {
   [CHANGE_PASSWORD_EVENT]: null
 }
 export const emitter = mitt<Events>()
