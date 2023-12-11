@@ -358,7 +358,7 @@ function App(): React.ReactElement {
     initialize().catch(console.log)
   }, [])
 
-  const handleChangePassword = () => {
+  const handleChangePassword = (): void => {
     setOpenChangePasswordModal(true)
   }
   useEffect(() => {
@@ -382,6 +382,7 @@ function App(): React.ReactElement {
     <div>
       <Modal open={resetPasswordOpen}>
         <Box sx={style}>
+          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <Typography>
               <p>

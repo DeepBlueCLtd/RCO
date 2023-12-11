@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Login } from '@mui/icons-material'
 import { Box, Icon, Typography, Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import mitt from 'mitt';
+import mitt from 'mitt'
 import {
   AppBar,
   type AppBarProps,
@@ -20,10 +20,10 @@ import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
 import * as constants from '../../constants'
 import { getUser } from '../../providers/authProvider'
-import LockResetIcon from '@mui/icons-material/LockReset';
-import { CHANGE_PASSWORD_EVENT } from '../../constants';
+import LockResetIcon from '@mui/icons-material/LockReset'
+import { CHANGE_PASSWORD_EVENT } from '../../constants'
 
-type Events = {
+interface Events {
   [CHANGE_PASSWORD_EVENT]: null
 }
 export const emitter = mitt<Events>()
@@ -123,20 +123,24 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         </Button>
       )}
       {authenticated && <Logout onClick={handleLogOut} />}
-      <Button onClick={()=> emitter.emit(CHANGE_PASSWORD_EVENT,null)} 
-      sx={{
-        color: '#383838', 
-        fontSize: '14px',
-        paddingY: '6px', 
-        paddingX: '16px',
-        textTransform: 'capitalize',
-        '& .MuiSvgIcon-root': {
-          marginRight: '11px',
-        },
-      }}
-      ><LockResetIcon/>Change Password</Button>
+      <Button
+        onClick={() => {
+          emitter.emit(CHANGE_PASSWORD_EVENT, null)
+        }}
+        sx={{
+          color: '#383838',
+          fontSize: '14px',
+          paddingY: '6px',
+          paddingX: '16px',
+          textTransform: 'capitalize',
+          '& .MuiSvgIcon-root': {
+            marginRight: '11px'
+          }
+        }}>
+        <LockResetIcon />
+        Change Password
+      </Button>
 
-      
       {/* <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}
@@ -165,7 +169,6 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           <Typography sx={{ textTransform: 'none' }}>Logging</Typography>
         </Button>
       </div> */}
-      
     </UserMenu>
   )
 }

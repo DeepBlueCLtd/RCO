@@ -16,9 +16,12 @@ import * as yup from 'yup'
 import { resetPasswordValidationSchema } from './utils/password-validation.schema'
 import { Context as NotificationContext } from './context/NotificationContext'
 import * as constants from './constants'
-import { getErrorDetails, isDateNotInPastDays } from './utils/helper'
+import {
+  getErrorDetails,
+  isDateNotInPastDays,
+  changeAndUpdatePassword
+} from './utils/helper'
 import { type AxiosError, isAxiosError } from 'axios'
-import { changeAndUpdatePassword } from './utils/helper'
 import { AuditType } from './utils/activity-types'
 import { trackEvent } from './utils/audit'
 
@@ -28,7 +31,7 @@ interface ChangePasswordForm {
   reTypePassword: string
 }
 
-type ChangePasswordModal = {
+interface ChangePasswordModal {
   openChangePasswordModal: boolean
   setOpenChangePasswordModal: React.Dispatch<React.SetStateAction<boolean>>
   authProvider: AuthProvider
@@ -40,7 +43,7 @@ const ChangePassword = ({
   setOpenChangePasswordModal,
   authProvider,
   dataProvider
-}: ChangePasswordModal) => {
+}: ChangePasswordModal): React.ReactElement => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showRetypePassword, setShowRetypePassword] = useState(false)
@@ -138,8 +141,11 @@ const ChangePassword = ({
     <div>
       <Modal
         open={openChangePasswordModal}
-        onClose={() => setOpenChangePasswordModal(false)}>
+        onClose={() => {
+          setOpenChangePasswordModal(false)
+        }}>
         <Box sx={style}>
+          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <Typography>
               <p>
@@ -168,9 +174,9 @@ const ChangePassword = ({
                 endAdornment: (
                   <InputAdornment position='end'>
                     <IconButton
-                      onClick={() =>
+                      onClick={() => {
                         setShowCurrentPassword(!showCurrentPassword)
-                      }
+                      }}
                       edge='end'>
                       {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -190,7 +196,9 @@ const ChangePassword = ({
                 endAdornment: (
                   <InputAdornment position='end'>
                     <IconButton
-                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      onClick={() => {
+                        setShowNewPassword(!showNewPassword)
+                      }}
                       edge='end'>
                       {showNewPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -210,7 +218,9 @@ const ChangePassword = ({
                 endAdornment: (
                   <InputAdornment position='end'>
                     <IconButton
-                      onClick={() => setShowRetypePassword(!showRetypePassword)}
+                      onClick={() => {
+                        setShowRetypePassword(!showRetypePassword)
+                      }}
                       edge='end'>
                       {showRetypePassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
