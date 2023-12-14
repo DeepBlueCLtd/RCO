@@ -28,7 +28,6 @@ const getIp = async (): Promise<string | undefined> => {
     )
     return data.data?.ip
   } catch (error) {
-    console.log(error)
     return undefined
   }
 }
@@ -66,6 +65,26 @@ export const insertAndUpdatePassword = async ({
       ? 'http://localhost:8000/api/insert-password'
       : '/api/insert-password',
     { fields: { password, userId } }
+  )
+  return res
+}
+
+interface ChangePassword {
+  password: string
+  currentPassword:string
+  userId: number
+}
+
+export const changeAndUpdatePassword = async ({
+  password,
+  currentPassword,
+  userId
+}: ChangePassword): Promise<AxiosResponse> => {
+  const res = await axios.post(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/changepassword'
+      : '/api/changepassword',
+    { fields: { userId, password, currentPassword } }
   )
   return res
 }

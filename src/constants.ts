@@ -15,6 +15,8 @@ export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'dd/MMM/yyyy HH:mm'
 export const TOKEN_KEY = 'rco-user'
 
+export const MUTATION_MODE = 'optimistic'
+
 // major table/resource names
 export const R_USERS = 'user'
 export const R_BATCHES = 'batch'
@@ -80,7 +82,6 @@ export type ResourceTypes =
   | typeof R_RICH_ITEMS
   | typeof R_LOAN_USERS
 
-
 // preferences
 export const LOGGING_ENABLED = 'LOGGING_ENABLED'
 export const AUTH_STATE_CHANGED = 'AUTH_STATE_CHANGED'
@@ -105,4 +106,4 @@ export const SAVE_EVENT = 'save'
 export const ITEM_CLONE = 'item_clone'
 export const ITEM_SAVE = 'item_save'
 
-export const MUTATION_MODE = 'optimistic'
+export const CHANGE_PASSWORD_EVENT = 'change_password'
