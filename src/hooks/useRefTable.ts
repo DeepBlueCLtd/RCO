@@ -1,7 +1,7 @@
 import {
   useCreate,
   useDataProvider,
-  useDeleteMany,
+  // useDeleteMany,
   useRedirect
 } from 'react-admin'
 import { R_ITEMS } from '../constants'
@@ -17,7 +17,7 @@ export default function useRefTable(
   resource: string
 ): DBMethods {
   const [create] = useCreate()
-  const [deleteMany] = useDeleteMany()
+  // const [deleteMany] = useDeleteMany()
   const redirect = useRedirect()
   const dataProvider = useDataProvider()
 
@@ -33,12 +33,13 @@ export default function useRefTable(
           (item: Record<string, any>) => item.id
         )
 
-        if (idsToDelete.length)
-          deleteMany(refTable, { ids: idsToDelete })
-            .then(() => {
-              createRecord(id, data)
-            })
-            .catch(console.log)
+        if (idsToDelete.length > 0)
+          {dataProvider.deleteMany(refTable, { ids: idsToDelete })
+          .then(() => {
+            createRecord(id, data)
+          })
+          .catch(console.log)
+          }    
         else createRecord(id, data)
       })
       .catch(console.log)

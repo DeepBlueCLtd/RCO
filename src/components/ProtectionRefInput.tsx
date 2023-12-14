@@ -187,8 +187,8 @@ export default function ProtectionRefInput<
           gap: 0.5
         }}>
         {Array.isArray(selected) ? (
-          selected.map((value: T['id']) => (
-            <Chip key={value} label={getLabelById(value)} />
+          selected.map((value: T['id'], index: number) => (
+            <Chip key={`${value}-${index}`} label={getLabelById(value)} />
           ))
         ) : (
           <Typography key={selected}>{getLabelById(selected)}</Typography>
