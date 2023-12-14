@@ -119,11 +119,15 @@ const ResetPassword = ({
       activityDetail: 'Password reset'
     }).catch(console.log)
 
-    update(R_USERS, {
-      id: record?.id,
-      previousData: record,
-      data: { password: '', lockoutAttempts: 0 }
-    }).catch(console.log)
+    update(
+      R_USERS,
+      {
+        id: record?.id,
+        previousData: record,
+        data: { password: '', lockoutAttempts: 0 }
+      },
+      { mutationMode: 'optimistic' }
+    ).catch(console.log)
     handleClose()
   }
 

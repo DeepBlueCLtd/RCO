@@ -1,6 +1,6 @@
 import React from 'react'
 import { Create, Edit, Show } from 'react-admin'
-
+import * as constants from '../../constants'
 const AddressList = React.lazy(async () => await import('./AddressList'))
 const AddressForm = React.lazy(async () => await import('./AddressForm'))
 
@@ -14,7 +14,7 @@ const AddressCreate = (): React.ReactElement => {
 
 export const AddressEdit = (): React.ReactElement => {
   return (
-    <Edit>
+    <Edit mutationMode={constants.MUTATION_MODE}>
       <AddressForm />
     </Edit>
   )
