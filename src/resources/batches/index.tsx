@@ -56,7 +56,7 @@ const Actions = (): React.ReactElement => {
 
 const BatchEdit = (): React.ReactElement => {
   return (
-    <Edit actions={<Actions />} mutationMode='pessimistic'>
+    <Edit mutationMode={constants.MUTATION_MODE} actions={<Actions />}>
       <BatchForm isEdit />
     </Edit>
   )

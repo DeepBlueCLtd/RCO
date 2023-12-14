@@ -15,6 +15,8 @@ export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'dd/MMM/yyyy HH:mm'
 export const TOKEN_KEY = 'rco-user'
 
+export const MUTATION_MODE = 'optimistic'
+
 // major table/resource names
 export const R_USERS = 'user'
 export const R_BATCHES = 'batch'

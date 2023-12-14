@@ -1,7 +1,7 @@
 import React from 'react'
 import { Create, Edit } from 'react-admin'
 import ReferenceDataForm from './ReferenceDataForm'
-
+import * as constants from '../../constants'
 interface PropType {
   name: string
 }
@@ -19,7 +19,10 @@ export const ReferenceDataEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
 
   return (
-    <Edit redirect={`/${cName}`} resource={cName}>
+    <Edit
+      mutationMode={constants.MUTATION_MODE}
+      redirect={`/${cName}`}
+      resource={cName}>
       <ReferenceDataForm isEdit name={cName} />
     </Edit>
   )

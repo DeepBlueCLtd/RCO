@@ -25,7 +25,7 @@ const DispatchCreate = (): React.ReactElement => {
 
 export const DispatchEdit = (): React.ReactElement => {
   return (
-    <Edit>
+    <Edit mutationMode={constants.MUTATION_MODE}>
       <DispatchForm edit />
     </Edit>
   )
