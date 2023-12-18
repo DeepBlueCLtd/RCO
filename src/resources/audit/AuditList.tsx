@@ -14,7 +14,8 @@ import {
   FilterButton,
   ExportButton,
   useGetList,
-  Link
+  Link,
+  BooleanField
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -236,7 +237,11 @@ export default function AuditList({
           label='Activity Details'
           sx={{ wordBreak: 'break-all', display: 'inline-block' }}
         />
-        <TextField<Audit> source='securityRelated' label='Security Related' />
+        <BooleanField<Audit>
+          source='securityRelated'
+          label='Security Related'
+          looseValue
+        />
         <TextField<Audit> source='resource' label='Resource' />
         {!omit.includes('dataId') && (
           <FunctionField<Audit>
