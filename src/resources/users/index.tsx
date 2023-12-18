@@ -25,11 +25,11 @@ const UserEdit = (): React.ReactElement => {
   return (
     <Edit
       mutationOptions={{
-        onSuccess: (data: User) => {
-          audit({
+        onSuccess: async (data: User) => {
+          await audit({
             resource: constants.R_USERS,
             activityType: AuditType.EDIT,
-            dataId: data.id as number,
+            dataId: data.id ,
             activityDetail: 'User edited',
             securityRelated: true,
             subjectResource: null,
