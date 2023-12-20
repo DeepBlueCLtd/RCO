@@ -116,10 +116,10 @@ function App(): React.ReactElement {
   })
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false)
 
-  const handleOnIdle = () => {
-    return removeToken()
+  const handleOnIdle = (): void => {
+    removeToken()
   }
-  const handleOnAction = () => {
+  const handleOnAction = (): void => {
     reset()
   }
   const { reset } = useIdleTimer({
