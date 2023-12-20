@@ -16,7 +16,7 @@ import {
   VisibilityOff
 } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import rcoAuthProvider from './providers/authProvider'
+import rcoAuthProvider, { removeToken } from './providers/authProvider'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -71,6 +71,7 @@ import { type AxiosError, isAxiosError } from 'axios'
 import ChangePassword from './ChangePassword'
 import { emitter } from './components/Layout/index'
 import { CHANGE_PASSWORD_EVENT } from './constants'
+import { useIdleTimer } from 'react-idle-timer'
 
 const style = {
   backgroundColor: 'white',
@@ -114,6 +115,18 @@ function App(): React.ReactElement {
     retypePassword: resetPasswordValidationSchema
   })
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false)
+
+  const handleOnIdle = () => {
+    return removeToken()
+  }
+  const handleOnAction = () => {
+    reset()
+  }
+  const { reset } = useIdleTimer({
+    timeout: 1000 * 60 * 60,
+    onIdle: handleOnIdle,
+    onActive: handleOnAction
+  })
 
   const {
     register,

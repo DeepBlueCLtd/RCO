@@ -49,6 +49,7 @@
     "react": "^18.2.0",
     "react-admin": "4.13.1",
     "react-dom": "^18.2.0",
+    "react-idle-timer": "^5.7.2",
     "react-router-dom": "^6.9.0",
     "soul-cli": "^0.6.1",
     "vite": "^4.2.0",
