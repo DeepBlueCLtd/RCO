@@ -65,7 +65,6 @@ const filters = [
     label='User'
   />,
   <TextInput source='resource' key='resource' label='Resource' />,
-  <TextInput source='item' key='Item' />,
   <SecurityRelatedFilter
     source='securityRelated'
     key='securityRelated'
