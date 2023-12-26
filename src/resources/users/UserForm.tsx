@@ -1,5 +1,11 @@
 import React from 'react'
-import { SimpleForm, TextInput, useEditContext, SelectInput } from 'react-admin'
+import {
+  SimpleForm,
+  TextInput,
+  useEditContext,
+  SelectInput,
+  DateTimeInput
+} from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import EditToolBar from '../../components/EditToolBar'
@@ -59,6 +65,11 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         />
         <TextInput source='staffNumber' label='Username' sx={{ flex: 1 }} />
       </FlexBox>
+      <DateTimeInput
+        source='departedDate'
+        label='Departure Date'
+        sx={{ width: '50%' }}
+      />
     </SimpleForm>
   )
 }
