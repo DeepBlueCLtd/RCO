@@ -66,7 +66,6 @@ const filters = [
     label='User'
   />,
   <TextInput source='resource' key='resource' label='Resource' />,
-  <NumberInput key='data' source='dataId' label='Data (expert users only)' />,
   <SecurityRelatedFilter
     source='securityRelated'
     key='securityRelated'
@@ -74,9 +73,14 @@ const filters = [
   />,
   <DateFilter key='createdAt' source='dateTime' label='Created At' />,
   <NumberInput
+    key='data'
+    source='dataId'
+    label='Subject (expert users only)'
+  />,
+  <NumberInput
     key='subject'
     source='subjectId'
-    label='Subject (expert users only)'
+    label='Object (expert users only)'
   />
 ]
 
