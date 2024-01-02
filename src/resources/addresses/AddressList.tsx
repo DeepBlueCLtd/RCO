@@ -17,7 +17,7 @@ export default function AddressList(): React.ReactElement {
         <TextField<Address> source='fullAddress' />
         <BooleanField<Address> source='active' looseValue />
         <DateField<Address> source='createdAt' />
-        <TextField<Address> source='Remarks' />
+        <TextField<Address> source='remarks' />
       </Datagrid>
     </List>
   )
