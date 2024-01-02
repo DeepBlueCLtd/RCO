@@ -23,6 +23,7 @@ const Actions = ({ resource }: ShowActionProps): React.ReactElement => {
   const redirect = useRedirect()
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
+      <EditButton />
       <HistoryButton
         onClick={() => {
           redirect(
@@ -58,9 +59,14 @@ export default function ReferenceDataShow({
             <TextField<VaultLocation> variant='h6' source='name' />
           </ValueField>
           {name === R_MEDIA_TYPE ? (
-            <ValueField label='Item size' sx={{ visibility: 'hidden' }}>
-              <TextField variant='h6' source='itemSize' />
-            </ValueField>
+            <Typography>
+              <ValueField label='Item size' sx={{ visibility: 'show' }}>
+                <TextField variant='h6' source='itemSize' />
+                &nbsp;
+                <span style={{ fontWeight: 'bold' }}>(Note: </span> Item-size is
+                stored to facilitate future shelf loading calculations)
+              </ValueField>
+            </Typography>
           ) : null}
           <ValueField label='active'>
             <BooleanField<VaultLocation> source='active' looseValue />
