@@ -15,7 +15,8 @@ import {
   ExportButton,
   useGetList,
   Link,
-  BooleanField
+  BooleanField,
+  NumberInput
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -71,7 +72,16 @@ const filters = [
     label='Security Related'
   />,
   <DateFilter key='createdAt' source='dateTime' label='Created At' />,
-  <SourceInput key='subject' source='subjectId' reference={constants.R_USERS} />
+  <NumberInput
+    key='data'
+    source='dataId'
+    label='Subject (expert users only)'
+  />,
+  <NumberInput
+    key='subject'
+    source='subjectId'
+    label='Object (expert users only)'
+  />
 ]
 
 const resourcesRefKey: Record<string, string> = {
@@ -244,7 +254,7 @@ export default function AuditList({
         <TextField<Audit> source='resource' label='Resource' />
         {!omit.includes('dataId') && (
           <FunctionField<Audit>
-            label='Name'
+            label='Subject '
             render={(record) => {
               return (
                 record.dataId &&
@@ -257,7 +267,7 @@ export default function AuditList({
         source value for different kinds of resource */}
         {!omit.includes('subjectId') && (
           <FunctionField<Audit>
-            label='Subject Item'
+            label='Object'
             render={(record) => {
               return (
                 record.subjectId &&
