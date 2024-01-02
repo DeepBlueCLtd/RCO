@@ -3,7 +3,10 @@ import preval from 'preval.macro'
 
 const Footer = (): React.ReactElement => {
   const buildDate = preval`module.exports = new Date().toISOString().slice(0, 19).replace('T', ' ')`
-  const trimmedAppBuildDate = buildDate.substring(0, buildDate.length - 3)
+  const trimmedAppBuildDate = `Build Date: ${buildDate.substring(
+    0,
+    buildDate.length - 3
+  )}`
 
   return (
     <div
