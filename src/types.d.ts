@@ -261,7 +261,7 @@ interface Address {
   createdAt: string
   fullAddress: string
   active: boolean
-  Remarks: string
+  remarks: string
 }
 
 interface Dispatch {

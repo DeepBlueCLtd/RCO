@@ -96,7 +96,7 @@ export const getAddresses = (
         id: index + 1,
         fullAddress: `${ctr} Some St, Some Town, Some County, DD${ctr} ${ctr}EF`,
         createdAt: DateTime.now().toISO() ?? '',
-        Remarks: '',
+        remarks: '',
         active
       }
     })
