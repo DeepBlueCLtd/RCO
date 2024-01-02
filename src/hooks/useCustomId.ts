@@ -14,7 +14,7 @@ export default function useCustomid(): UseCustomId {
   const { getValues } = useFormContext()
   const [create] = useCreate() as any
   const resource = useResourceContext()
-  const { total = 0 } = useGetList(resource, {
+  const results = useGetList(resource, {
     sort: { field: 'id', order: 'DESC' },
     pagination: { page: 1, perPage: 1 }
   })
@@ -26,8 +26,8 @@ export default function useCustomid(): UseCustomId {
     const values = getValues()
 
     const preFix = ID_FIX?.[resource]
-    const totalItems: number = total
-    const recordNumber = totalItems + 1
+    const maxId: number = results.data?.length ? results.data[0].id : 0
+    const recordNumber = maxId + 1
     const id =
       typeof preFix !== 'undefined' ? `${preFix}-${recordNumber}` : recordNumber
 
