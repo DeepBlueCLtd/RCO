@@ -254,7 +254,7 @@ export default function AuditList({
         <TextField<Audit> source='resource' label='Resource' />
         {!omit.includes('dataId') && (
           <FunctionField<Audit>
-            label='Name '
+            label='Subject '
             render={(record) => {
               return (
                 record.dataId &&
@@ -267,7 +267,7 @@ export default function AuditList({
         source value for different kinds of resource */}
         {!omit.includes('subjectId') && (
           <FunctionField<Audit>
-            label='Subject Item'
+            label='Object'
             render={(record) => {
               return (
                 record.subjectId &&
