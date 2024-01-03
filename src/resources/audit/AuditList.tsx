@@ -7,7 +7,6 @@ import {
   DateTimeInput,
   useListContext,
   AutocompleteArrayInput,
-  TextInput,
   FunctionField,
   DatagridConfigurable,
   type DatagridConfigurableProps,
@@ -16,7 +15,8 @@ import {
   useGetList,
   Link,
   BooleanField,
-  NumberInput
+  NumberInput,
+  SelectInput
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -43,6 +43,21 @@ const SecurityRelatedFilter = ({
 
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
+const availableResources = [
+  'user',
+  'item',
+  'batch',
+  'destruction',
+  'vaultLocation',
+  'dispatch',
+  'project',
+  'platform',
+  'mediaType'
+]
+const yourListOfResources = availableResources.map((resource) => ({
+  id: resource,
+  name: resource
+}))
 
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
 const filters = [
@@ -65,7 +80,13 @@ const filters = [
     key='user'
     label='User'
   />,
-  <TextInput source='resource' key='resource' label='Resource' />,
+  <SelectInput
+    source='resource'
+    key='resource'
+    label='Resource'
+    choices={yourListOfResources}
+  />,
+
   <SecurityRelatedFilter
     source='securityRelated'
     key='securityRelated'
