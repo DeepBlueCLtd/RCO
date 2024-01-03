@@ -25,7 +25,7 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import { useLocation } from 'react-router-dom'
-
+import { availableResources, cosmeticLabels } from './config'
 interface Props {
   label: string
   source: string
@@ -43,20 +43,10 @@ const SecurityRelatedFilter = ({
 
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
-const availableResources = [
-  'user',
-  'item',
-  'batch',
-  'destruction',
-  'vaultLocation',
-  'dispatch',
-  'project',
-  'platform',
-  'mediaType'
-]
+
 const yourListOfResources = availableResources.map((resource) => ({
   id: resource,
-  name: resource
+  name: cosmeticLabels[resource as keyof typeof cosmeticLabels]
 }))
 
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
@@ -272,7 +262,16 @@ export default function AuditList({
           label='Security Related'
           looseValue
         />
-        <TextField<Audit> source='resource' label='Resource' />
+        <FunctionField<Audit>
+          source='resource'
+          label='Resource'
+          render={(record) => (
+            <span>
+              {cosmeticLabels[record.resource as keyof typeof cosmeticLabels] ||
+                record.resource}
+            </span>
+          )}
+        />
         {!omit.includes('dataId') && (
           <FunctionField<Audit>
             label='Subject '
