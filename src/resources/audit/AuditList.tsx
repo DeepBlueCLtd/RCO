@@ -25,7 +25,7 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import { useLocation } from 'react-router-dom'
-import { availableResources, cosmeticLabels } from './config'
+
 interface Props {
   label: string
   source: string
@@ -44,9 +44,11 @@ const SecurityRelatedFilter = ({
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
 
-const yourListOfResources = availableResources.map((resource) => ({
+const yourListOfResources = constants.availableResources.map((resource) => ({
   id: resource,
-  name: cosmeticLabels[resource as keyof typeof cosmeticLabels]
+  name: constants.cosmeticLabels[
+    resource as keyof typeof constants.cosmeticLabels
+  ]
 }))
 
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
@@ -267,8 +269,9 @@ export default function AuditList({
           label='Resource'
           render={(record) => (
             <span>
-              {cosmeticLabels[record.resource as keyof typeof cosmeticLabels] ||
-                record.resource}
+              {constants.cosmeticLabels[
+                record.resource as keyof typeof constants.cosmeticLabels
+              ] || record.resource}
             </span>
           )}
         />

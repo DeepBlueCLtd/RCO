@@ -107,3 +107,27 @@ export const ITEM_CLONE = 'item_clone'
 export const ITEM_SAVE = 'item_save'
 
 export const CHANGE_PASSWORD_EVENT = 'change_password'
+
+
+export const availableResources = [
+  R_USERS,
+  R_ITEMS,
+  R_BATCHES,
+  R_DESTRUCTION,
+  R_VAULT_LOCATION,
+  R_DISPATCH,
+  R_PROJECTS,
+  R_MEDIA_TYPE,
+  R_PLATFORMS
+]
+export const cosmeticLabels = {
+  [R_USERS]: 'User',
+  [R_ITEMS]: 'Item',
+  [R_BATCHES]: 'Batch',
+  [R_DESTRUCTION]: 'Destruction',
+  [R_VAULT_LOCATION]: 'Vault Location',
+  [R_DISPATCH]: 'Dispatch',
+  [R_PROJECTS]: 'Project',
+  [R_MEDIA_TYPE]: 'Media Type',
+  [R_PLATFORMS]: 'Platform'
+}
