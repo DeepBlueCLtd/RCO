@@ -7,7 +7,6 @@ import {
   DateTimeInput,
   useListContext,
   AutocompleteArrayInput,
-  TextInput,
   FunctionField,
   DatagridConfigurable,
   type DatagridConfigurableProps,
@@ -16,7 +15,8 @@ import {
   useGetList,
   Link,
   BooleanField,
-  NumberInput
+  NumberInput,
+  SelectInput
 } from 'react-admin'
 import * as constants from '../../constants'
 import ActivityTypes from '../../utils/activity-types'
@@ -25,11 +25,29 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import { useLocation } from 'react-router-dom'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   label: string
   source: string
 }
+export const availableResources = [
+  constants.R_USERS,
+  constants.R_ITEMS,
+  constants.R_BATCHES,
+  constants.R_DESTRUCTION,
+  constants.R_VAULT_LOCATION,
+  constants.R_DISPATCH,
+  constants.R_PROJECTS,
+  constants.R_MEDIA_TYPE,
+  constants.R_PLATFORMS,
+  constants.R_ORGANISATION,
+  constants.R_CAT_CAVE,
+  constants.R_CAT_CODE,
+  constants.R_CAT_HANDLE,
+  constants.R_DEPARTMENT,
+  constants.R_PROTECTIVE_MARKING
+]
 
 const SecurityRelatedFilter = ({
   label,
@@ -43,47 +61,7 @@ const SecurityRelatedFilter = ({
 
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
-
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
-const filters = [
-  <DateTimeInput
-    key='startDate'
-    source='dateTime_gte'
-    label='After'
-    alwaysOn={true}
-  />,
-  <DateTimeInput key='endDate' source='dateTime_lte' label='Before' />,
-  <AutocompleteArrayInput
-    source='label'
-    choices={choices}
-    key='Activity Type'
-    label='Activity Type'
-  />,
-  <SourceInput
-    reference={constants.R_USERS}
-    source='user'
-    key='user'
-    label='User'
-  />,
-  <TextInput source='resource' key='resource' label='Resource' />,
-  <SecurityRelatedFilter
-    source='securityRelated'
-    key='securityRelated'
-    label='Security Related'
-  />,
-  <DateFilter key='createdAt' source='dateTime' label='Created At' />,
-  <NumberInput
-    key='data'
-    source='dataId'
-    label='Subject (expert users only)'
-  />,
-  <NumberInput
-    key='subject'
-    source='subjectId'
-    label='Object (expert users only)'
-  />
-]
-
 const resourcesRefKey: Record<string, string> = {
   [constants.R_BATCHES]: 'batchNumber',
   [constants.R_ITEMS]: 'itemNumber',
@@ -208,6 +186,67 @@ export default function AuditList({
     : 'simple-audit-list'
   const filteredData = location.state?.filter
 
+  const ConfigData = useConfigData()
+  const labelledResources = availableResources.map((resource) => ({
+    id: resource,
+    name:
+      resource === constants.R_PROJECTS
+        ? ConfigData?.projectName
+        : constants.cosmeticLabels[
+            resource as keyof typeof constants.cosmeticLabels
+          ]
+  }))
+
+  const filters = [
+    <DateTimeInput
+      key='startDate'
+      source='dateTime_gte'
+      label='After'
+      alwaysOn={true}
+    />,
+    <DateTimeInput key='endDate' source='dateTime_lte' label='Before' />,
+    <AutocompleteArrayInput
+      source='label'
+      choices={choices}
+      key='Activity Type'
+      label='Activity Type'
+    />,
+    <SourceInput
+      reference={constants.R_USERS}
+      source='user'
+      key='user'
+      label='User'
+    />,
+    <SelectInput
+      choices={labelledResources}
+      source='resource'
+      key='resource'
+      label='Resource'
+    />,
+
+    <SecurityRelatedFilter
+      source='securityRelated'
+      key='securityRelated'
+      label='Security Related'
+    />,
+    <DateFilter key='createdAt' source='dateTime' label='Created At' />,
+    <NumberInput
+      key='data'
+      source='dataId'
+      label='Subject (expert users only)'
+    />,
+    <NumberInput
+      key='subject'
+      source='subjectId'
+      label='Object (expert users only)'
+    />
+  ]
+  const renderResource = (record: Audit): string => {
+    const resourceName = labelledResources.find(
+      (r) => r.id === record.resource
+    )?.name
+    return String(resourceName ?? record.resource)
+  }
   return (
     <List
       perPage={25}
@@ -251,7 +290,12 @@ export default function AuditList({
           label='Security Related'
           looseValue
         />
-        <TextField<Audit> source='resource' label='Resource' />
+
+        <FunctionField<Audit>
+          source='resource'
+          label='Resource'
+          render={renderResource}
+        />
         {!omit.includes('dataId') && (
           <FunctionField<Audit>
             label='Subject '
