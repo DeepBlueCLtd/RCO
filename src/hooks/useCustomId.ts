@@ -14,9 +14,9 @@ export default function useCustomid(): UseCustomId {
   const { getValues } = useFormContext()
   const [create] = useCreate() as any
   const resource = useResourceContext()
-  const { total = 0 } = useGetList(resource, {
-    sort: { field: 'id', order: 'DESC' },
-    pagination: { page: 1, perPage: 1 }
+  const {data : existingRcordes} = useGetList(resource, {
+    sort: {field: 'id', order: "DESC"},
+    pagination: {page: 1, perPage: 1}
   })
   const createPath = useCreatePath()
   const redirect = useRedirect()
@@ -26,10 +26,9 @@ export default function useCustomid(): UseCustomId {
     const values = getValues()
 
     const preFix = ID_FIX?.[resource]
-    const totalItems: number = total
-    const recordNumber = totalItems + 1
+    const highestId = existingRcordes?.[0]?.id || 0;
     const id =
-      typeof preFix !== 'undefined' ? `${preFix}-${recordNumber}` : recordNumber
+      typeof preFix !== 'undefined' ? `${preFix}-${highestId + 1}` : highestId + 1
 
     const data = { id, ...values }
 
