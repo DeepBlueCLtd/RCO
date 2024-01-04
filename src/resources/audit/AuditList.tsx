@@ -241,6 +241,12 @@ export default function AuditList({
       label='Object (expert users only)'
     />
   ]
+  const renderResource = (record: Audit): string => {
+    const resourceName = yourListOfResources.find(
+      (r) => r.id === record.resource
+    )?.name
+    return String(resourceName ?? record.resource)
+  }
   return (
     <List
       perPage={25}
@@ -284,17 +290,11 @@ export default function AuditList({
           label='Security Related'
           looseValue
         />
+
         <FunctionField<Audit>
           source='resource'
           label='Resource'
-          render={(record) => (
-            <span>
-              {String(
-                yourListOfResources.find((r) => r.id === record.resource)
-                  ?.name || record.resource
-              )}
-            </span>
-          )}
+          render={renderResource}
         />
         {!omit.includes('dataId') && (
           <FunctionField<Audit>
