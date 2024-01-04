@@ -25,11 +25,29 @@ import SourceField from '../../components/SourceField'
 import SourceInput from '../../components/SourceInput'
 import StyledTopToolbar from '../../components/StyledTopToolbar'
 import { useLocation } from 'react-router-dom'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface Props {
   label: string
   source: string
 }
+export const availableResources = [
+  constants.R_USERS,
+  constants.R_ITEMS,
+  constants.R_BATCHES,
+  constants.R_DESTRUCTION,
+  constants.R_VAULT_LOCATION,
+  constants.R_DISPATCH,
+  constants.R_PROJECTS,
+  constants.R_MEDIA_TYPE,
+  constants.R_PLATFORMS,
+  constants.R_ORGANISATION,
+  constants.R_CAT_CAVE,
+  constants.R_CAT_CODE,
+  constants.R_CAT_HANDLE,
+  constants.R_DEPARTMENT,
+  constants.R_PROTECTIVE_MARKING
+]
 
 const SecurityRelatedFilter = ({
   label,
@@ -43,60 +61,7 @@ const SecurityRelatedFilter = ({
 
   return <Chip sx={{ marginBottom: 1 }} label={label} />
 }
-
-const yourListOfResources = constants.availableResources.map((resource) => ({
-  id: resource,
-  name: constants.cosmeticLabels[
-    resource as keyof typeof constants.cosmeticLabels
-  ]
-}))
-
 const choices = ActivityTypes.map((v) => ({ name: v.label, id: v.label }))
-const filters = [
-  <DateTimeInput
-    key='startDate'
-    source='dateTime_gte'
-    label='After'
-    alwaysOn={true}
-  />,
-  <DateTimeInput key='endDate' source='dateTime_lte' label='Before' />,
-  <AutocompleteArrayInput
-    source='label'
-    choices={choices}
-    key='Activity Type'
-    label='Activity Type'
-  />,
-  <SourceInput
-    reference={constants.R_USERS}
-    source='user'
-    key='user'
-    label='User'
-  />,
-  <SelectInput
-    source='resource'
-    key='resource'
-    label='Resource'
-    choices={yourListOfResources}
-  />,
-
-  <SecurityRelatedFilter
-    source='securityRelated'
-    key='securityRelated'
-    label='Security Related'
-  />,
-  <DateFilter key='createdAt' source='dateTime' label='Created At' />,
-  <NumberInput
-    key='data'
-    source='dataId'
-    label='Subject (expert users only)'
-  />,
-  <NumberInput
-    key='subject'
-    source='subjectId'
-    label='Object (expert users only)'
-  />
-]
-
 const resourcesRefKey: Record<string, string> = {
   [constants.R_BATCHES]: 'batchNumber',
   [constants.R_ITEMS]: 'itemNumber',
@@ -221,6 +186,61 @@ export default function AuditList({
     : 'simple-audit-list'
   const filteredData = location.state?.filter
 
+  const ConfigData = useConfigData()
+  const yourListOfResources = availableResources.map((resource) => ({
+    id: resource,
+    name:
+      resource === constants.R_PROJECTS
+        ? ConfigData?.projectName
+        : constants.cosmeticLabels[
+            resource as keyof typeof constants.cosmeticLabels
+          ]
+  }))
+
+  const filters = [
+    <DateTimeInput
+      key='startDate'
+      source='dateTime_gte'
+      label='After'
+      alwaysOn={true}
+    />,
+    <DateTimeInput key='endDate' source='dateTime_lte' label='Before' />,
+    <AutocompleteArrayInput
+      source='label'
+      choices={choices}
+      key='Activity Type'
+      label='Activity Type'
+    />,
+    <SourceInput
+      reference={constants.R_USERS}
+      source='user'
+      key='user'
+      label='User'
+    />,
+    <SelectInput
+      choices={yourListOfResources}
+      source='resource'
+      key='resource'
+      label='Resource'
+    />,
+
+    <SecurityRelatedFilter
+      source='securityRelated'
+      key='securityRelated'
+      label='Security Related'
+    />,
+    <DateFilter key='createdAt' source='dateTime' label='Created At' />,
+    <NumberInput
+      key='data'
+      source='dataId'
+      label='Subject (expert users only)'
+    />,
+    <NumberInput
+      key='subject'
+      source='subjectId'
+      label='Object (expert users only)'
+    />
+  ]
   return (
     <List
       perPage={25}
@@ -269,9 +289,10 @@ export default function AuditList({
           label='Resource'
           render={(record) => (
             <span>
-              {constants.cosmeticLabels[
-                record.resource as keyof typeof constants.cosmeticLabels
-              ] || record.resource}
+              {String(
+                yourListOfResources.find((r) => r.id === record.resource)
+                  ?.name || record.resource
+              )}
             </span>
           )}
         />
