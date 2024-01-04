@@ -187,7 +187,7 @@ export default function AuditList({
   const filteredData = location.state?.filter
 
   const ConfigData = useConfigData()
-  const yourListOfResources = availableResources.map((resource) => ({
+  const labelledResources = availableResources.map((resource) => ({
     id: resource,
     name:
       resource === constants.R_PROJECTS
@@ -218,7 +218,7 @@ export default function AuditList({
       label='User'
     />,
     <SelectInput
-      choices={yourListOfResources}
+      choices={labelledResources}
       source='resource'
       key='resource'
       label='Resource'
@@ -242,7 +242,7 @@ export default function AuditList({
     />
   ]
   const renderResource = (record: Audit): string => {
-    const resourceName = yourListOfResources.find(
+    const resourceName = labelledResources.find(
       (r) => r.id === record.resource
     )?.name
     return String(resourceName ?? record.resource)
