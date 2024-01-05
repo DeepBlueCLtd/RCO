@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Create, Edit, useEditContext } from 'react-admin'
+import { Create, Edit, useEditContext, useRedirect } from 'react-admin'
 import UserForm from './UserForm'
 import * as constants from '../../constants'
 import useAudit from '../../hooks/useAudit'
@@ -20,10 +20,9 @@ const UserCreate = (): React.ReactElement => {
 }
 
 const UserEdit = (): React.ReactElement => {
-  const path: string = `/${constants.R_USERS}`
   const audit = useAudit()
   const [prev, setPrev] = useState<User>()
-
+  const redirect = useRedirect()
   return (
     <Edit
       mutationOptions={{
@@ -39,11 +38,11 @@ const UserEdit = (): React.ReactElement => {
             subjectResource: null,
             subjectId: null
           })
+          redirect(`/${constants.R_USERS}/${data?.id}/show`)
         }
       }}
       mutationMode={constants.MUTATION_MODE}
-      resource={constants.R_USERS}
-      redirect={path}>
+      resource={constants.R_USERS}>
       <EditVal setPrev={setPrev} />
     </Edit>
   )

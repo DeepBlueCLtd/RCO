@@ -156,6 +156,7 @@ export default function ItemForm({ isEdit }: FormProps): React.ReactElement {
             openRemarks={openRemarks}
             setOpenRemarks={setOpenRemarks}
             onSave={onSave}
+            isEdit
           />
         }>
         <CoreForm

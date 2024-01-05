@@ -1,5 +1,5 @@
 import React from 'react'
-import { Create, Edit } from 'react-admin'
+import { Create, Edit, useRedirect } from 'react-admin'
 import ReferenceDataForm from './ReferenceDataForm'
 import * as constants from '../../constants'
 interface PropType {
@@ -17,11 +17,16 @@ const RerferenceDataCreate = ({ name }: PropType): React.ReactElement => {
 
 export const ReferenceDataEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
+  const redirect = useRedirect()
 
   return (
     <Edit
       mutationMode={constants.MUTATION_MODE}
-      redirect={`/${cName}`}
+      mutationOptions={{
+        onSuccess: (data: { vaultNumber: string; id: number }): void => {
+          redirect(`/${cName}/${data?.id}/show`)
+        }
+      }}
       resource={cName}>
       <ReferenceDataForm isEdit name={cName} />
     </Edit>

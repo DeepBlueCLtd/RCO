@@ -55,8 +55,16 @@ const Actions = (): React.ReactElement => {
 }
 
 const BatchEdit = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Edit mutationMode={constants.MUTATION_MODE} actions={<Actions />}>
+    <Edit
+      mutationMode={constants.MUTATION_MODE}
+      actions={<Actions />}
+      mutationOptions={{
+        onSuccess: (data: { batchNumber: string; id: number }): void => {
+          redirect(`/${constants.R_BATCHES}/${data?.id}/show`)
+        }
+      }}>
       <BatchForm isEdit />
     </Edit>
   )
