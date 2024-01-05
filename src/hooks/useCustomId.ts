@@ -28,7 +28,7 @@ export default function useCustomid(): UseCustomId {
     const preFix = ID_FIX?.[resource]
     const highestId = existingRcordes?.[0]?.id || 0;
     const id =
-      typeof preFix !== 'undefined' ? `${preFix}-${highestId + 1}` : highestId + 1
+      typeof preFix !== 'undefined' ? `${preFix}-${(highestId as number) + 1}` : (highestId as number) + 1
 
     const data = { id, ...values }
 
