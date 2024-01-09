@@ -37,11 +37,8 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
     return formattedDate
   }
 
-  const now = formatter(DateTime.now())
   const gteKeyName: string = `${source}_gte`
   const lteKeyName: string = `${source}_lte`
-
-  const todayFilter: Filter = { key: lteKeyName, value: now }
 
   const resetTodayFilter: Filter = { key: source, value: undefined }
   const resetGTFilter: Filter = { key: gteKeyName, value: undefined }
@@ -64,6 +61,10 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
       return [
         resetTodayFilter,
         {
+          key: lteKeyName,
+          value: DateTime.now().endOf('day').toISO() ?? ''
+        },
+        {
           key: gteKeyName,
           value: minusFromNow('week')
         }
@@ -71,7 +72,10 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
     case 'past_month':
       return [
         resetTodayFilter,
-        todayFilter,
+        {
+          key: lteKeyName,
+          value: DateTime.now().endOf('day').toISO() ?? ''
+        },
         {
           key: gteKeyName,
           value: minusFromNow('month')
@@ -80,7 +84,10 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
     case 'past_year':
       return [
         resetTodayFilter,
-        todayFilter,
+        {
+          key: lteKeyName,
+          value: DateTime.now().endOf('day').toISO() ?? ''
+        },
         {
           key: gteKeyName,
           value: minusFromNow('year')
