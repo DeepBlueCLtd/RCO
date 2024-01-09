@@ -63,7 +63,6 @@ const getFilter = (value: Values, source: string, format: string): Filter[] => {
     case 'past_week':
       return [
         resetTodayFilter,
-        todayFilter,
         {
           key: gteKeyName,
           value: minusFromNow('week')
