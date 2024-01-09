@@ -56,7 +56,7 @@ const EditVal = ({ setPrev }: EditValType): React.ReactElement => {
   const { record } = useEditContext()
 
   useEffect(() => {
-    setPrev(record)
+    setPrev(record as User)
   }, [record, setPrev])
 
   return <UserForm isEdit />
