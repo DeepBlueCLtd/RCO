@@ -99,7 +99,7 @@ export default function ItemsReport(
   const { footer, children, headStyle = {}, sx = {}, ...rest } = props
   return (
     <List
-      resource={constants.R_ITEMS}
+      resource={constants.R_RICH_ITEMS}
       pagination={false}
       actions={false}
       sx={{ margin: '20px 0' }}
@@ -165,6 +165,18 @@ const referenceFields: RefFieldType[] = [
     resource: constants.R_BATCHES,
     source: 'batchNumber',
     label: 'Batch'
+  },
+  {
+    name: 'project',
+    resource: constants.R_PROJECTS,
+    source: 'name',
+    label: 'Project'
+  },
+  {
+    name: 'platform',
+    resource: constants.R_PLATFORMS,
+    source: 'name',
+    label: 'Platform'
   }
 ]
 
