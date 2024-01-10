@@ -42,6 +42,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     role: 'rco-user'
   }
   const { record } = useEditContext()
+  const isPowerUser = record?.role === ''
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
 
   return (
@@ -62,6 +63,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           optionText='label'
           sx={{ width: '100%', flex: 1 }}
           choices={rolesOptions}
+          disabled={isPowerUser}
         />
         <TextInput source='staffNumber' label='Username' sx={{ flex: 1 }} />
       </FlexBox>
