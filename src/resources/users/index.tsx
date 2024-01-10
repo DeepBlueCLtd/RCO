@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Create, Edit, useEditContext, useRedirect } from 'react-admin'
 import UserForm from './UserForm'
 import * as constants from '../../constants'
@@ -54,8 +54,11 @@ interface EditValType {
 
 const EditVal = ({ setPrev }: EditValType): React.ReactElement => {
   const { record } = useEditContext()
-  console.log(record)
-  setPrev(record)
+
+  useEffect(() => {
+    setPrev(record as User)
+  }, [record, setPrev])
+
   return <UserForm isEdit />
 }
 
