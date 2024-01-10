@@ -22,7 +22,7 @@ import { DateTime } from 'luxon'
 import { Download } from '@mui/icons-material'
 import Printable from '../../components/Printable'
 import FlexBox from '../../components/FlexBox'
-
+import { useConfigData } from '../../utils/useConfigData'
 type Props = PartialBy<ListProps, 'children'> & {
   footer?: React.FunctionComponent
   headStyle?: Record<string, any>
@@ -134,52 +134,6 @@ export default function ItemsReport(
     </List>
   )
 }
-
-const referenceFields: RefFieldType[] = [
-  {
-    name: 'vaultLocation',
-    resource: constants.R_VAULT_LOCATION,
-    source: 'name',
-    label: 'Vault Location'
-  },
-  {
-    name: 'createdBy_eq',
-    resource: constants.R_USERS,
-    source: 'name',
-    label: 'Created By'
-  },
-  {
-    name: 'createdBy',
-    resource: constants.R_USERS,
-    source: 'name',
-    label: 'Created By'
-  },
-  {
-    name: 'protectiveMarking',
-    resource: constants.R_PROTECTIVE_MARKING,
-    source: 'name',
-    label: 'Protective Marking'
-  },
-  {
-    name: 'batch',
-    resource: constants.R_BATCHES,
-    source: 'batchNumber',
-    label: 'Batch'
-  },
-  {
-    name: 'project',
-    resource: constants.R_PROJECTS,
-    source: 'name',
-    label: 'Project'
-  },
-  {
-    name: 'platform',
-    resource: constants.R_PLATFORMS,
-    source: 'name',
-    label: 'Platform'
-  }
-]
-
 const fields: FieldType[] = [
   {
     name: 'mediaType',
@@ -218,6 +172,52 @@ export function ItemAssetReport(props: Props): React.ReactElement {
   }
 
   const { data } = useGetIdentity()
+  const configDate = useConfigData()
+
+  const referenceFields: RefFieldType[] = [
+    {
+      name: 'vaultLocation',
+      resource: constants.R_VAULT_LOCATION,
+      source: 'name',
+      label: 'Vault Location'
+    },
+    {
+      name: 'createdBy_eq',
+      resource: constants.R_USERS,
+      source: 'name',
+      label: 'Created By'
+    },
+    {
+      name: 'createdBy',
+      resource: constants.R_USERS,
+      source: 'name',
+      label: 'Created By'
+    },
+    {
+      name: 'protectiveMarking',
+      resource: constants.R_PROTECTIVE_MARKING,
+      source: 'name',
+      label: 'Protective Marking'
+    },
+    {
+      name: 'batch',
+      resource: constants.R_BATCHES,
+      source: 'batchNumber',
+      label: 'Batch'
+    },
+    {
+      name: 'project',
+      resource: constants.R_PROJECTS,
+      source: 'name',
+      label: configDate?.projectName ?? 'Default Label'
+    },
+    {
+      name: 'platform',
+      resource: constants.R_PLATFORMS,
+      source: 'name',
+      label: 'Platform'
+    }
+  ]
 
   const handleOpen = (open: boolean) => () => {
     setOpen(open)
