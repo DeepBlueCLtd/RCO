@@ -55,7 +55,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     borderRadius: 2
   }
   const { record } = useEditContext()
-  const isPowerUser = record?.role === 'rco-power-user'
+  const isPowerUser = record?.role === 'rco-power-user' ?? false
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
   const massage =
     'Sorry, you are not a Power User. Only Power Users can access and modify their profiles.'
