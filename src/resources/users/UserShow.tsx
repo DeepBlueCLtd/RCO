@@ -370,7 +370,7 @@ export default function UserShow(): React.ReactElement {
   const navigate = useNavigate()
 
   if (isLoading) return <Loading />
-  const isRecPowerUser = record?.role === 'rco-power-user' ?? false
+  const isRecPowerUser = record?.role === 'rco-power-user'
   const editButtonDisabled = !isRecPowerUser
 
   return (
