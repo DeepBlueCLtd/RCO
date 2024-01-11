@@ -370,6 +370,8 @@ export default function UserShow(): React.ReactElement {
   const navigate = useNavigate()
 
   if (isLoading) return <Loading />
+  const isRecPowerUser = record?.role === 'rco-power-user' ?? false
+  const editButtonDisabled = !isRecPowerUser
 
   return (
     <Show
@@ -377,7 +379,7 @@ export default function UserShow(): React.ReactElement {
       actions={
         hasWriteAccess && (
           <TopToolbar sx={{ alignItems: 'center' }}>
-            <EditButton />
+            <EditButton disabled={editButtonDisabled} />
             <HistoryButton
               onClick={() => {
                 if (record) {

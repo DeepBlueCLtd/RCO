@@ -12,6 +12,7 @@ import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
 import FlexBox from '../../components/FlexBox'
+import { Box } from '@mui/system'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -41,11 +42,24 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     password: '',
     role: 'rco-user'
   }
+  const style = {
+    position: 'absolute',
+    top: '20%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 600,
+    textAlign: 'center',
+    color: 'gray',
+    border: '3px solid silver',
+    p: 4,
+    borderRadius: 2
+  }
   const { record } = useEditContext()
   const isPowerUser = record?.role === 'rco-power-user'
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
-
-  return (
+  const massage =
+    'Sorry, you are not a Power User. Only Power Users can access and modify their profiles.'
+  return isPowerUser ? (
     <SimpleForm
       record={{ ...record, password: '' }}
       toolbar={<EditToolBar />}
@@ -74,5 +88,9 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         sx={{ width: '50%' }}
       />
     </SimpleForm>
+  ) : (
+    <Box sx={style}>
+      <Typography variant='h6'>{massage}</Typography>
+    </Box>
   )
 }
