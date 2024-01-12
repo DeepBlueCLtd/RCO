@@ -33,7 +33,7 @@ import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
 import { DateTime } from 'luxon'
 import useAudit, { type AuditFunction } from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
-
+import { getUser } from '../../providers/authProvider'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -349,7 +349,6 @@ const UserShowComp = ({
 
       <Modal open={resetOpen} onClose={handleResetClose}>
         <div>
-          {' '}
           <ResetPassword
             handleClose={handleResetClose}
             record={record}
@@ -370,7 +369,8 @@ export default function UserShow(): React.ReactElement {
   const navigate = useNavigate()
 
   if (isLoading) return <Loading />
-  const isRecPowerUser = record?.role === 'rco-power-user'
+  const getCurrentUser = getUser()
+  const isRecPowerUser = getCurrentUser?.role === 'rco-power-user'
   const editButtonDisabled = !isRecPowerUser
 
   return (

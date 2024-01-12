@@ -13,7 +13,7 @@ import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-
+import { getUser } from '../../providers/authProvider'
 const schema = yup.object({
   name: yup.string().required(),
   role: yup
@@ -55,7 +55,8 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     borderRadius: 2
   }
   const { record } = useEditContext()
-  const isPowerUser = record?.role === 'rco-power-user'
+  const currentUser = getUser()
+  const isPowerUser = currentUser?.role === 'rco-power-user'
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
   const massage =
     'Sorry, you are not a Power User. Only Power Users can access and modify their profiles.'
