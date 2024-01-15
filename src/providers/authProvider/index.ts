@@ -144,6 +144,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         try {
           const res = await login({ password, staffNumber })
           await createUserToken(res.data.data, audit)
+          sessionStorage.setItem('login', 'true')
           return await Promise.resolve(res.data.data)
         } catch (error) {
           if (isAxiosError(error))
