@@ -194,7 +194,7 @@ function App(): React.ReactElement {
     if (
       lastUpdatedAt !== null &&
       lastUpdatedAt !== '' &&
-      !isDateNotInPastDays(lastUpdatedAt, 1)
+      !isDateNotInPastDays(lastUpdatedAt, 0)
     )
       throw new Error(
         'Password update not allowed. Please wait at least one day before updating your password again.'
