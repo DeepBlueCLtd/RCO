@@ -192,7 +192,7 @@ function App(): React.ReactElement {
     })
 
     if (
-      lastUpdatedAt !== null &&
+      typeof lastUpdatedAt === 'string' &&
       lastUpdatedAt !== '' &&
       !isDateNotInPastDays(lastUpdatedAt, 0)
     )
