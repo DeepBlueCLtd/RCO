@@ -44,7 +44,7 @@ const setToken = (token: string): void => {
   document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
 }
 
-export const removeToken = (): void => {
+export const removeUserToken = (): void => {
   removeCookie(constants.TOKEN_KEY)
 }
 
@@ -164,7 +164,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         securityRelated: null,
         activityDetail: null
       })
-      removeToken()
+      removeUserToken()
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
@@ -177,7 +177,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     checkError: async (error): Promise<any> => {
       const status = error.status
       if (status === 401 || status === 403) {
-        removeToken()
+        removeUserToken()
         await Promise.reject(
           new Error('Server returned code ' + String(status))
         )
