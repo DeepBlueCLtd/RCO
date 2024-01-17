@@ -90,6 +90,11 @@ export const getDataProvider = async (
 const operators = ['_neq', '_eq', '_lte', '_gte']
 const SEARCH_OPERATOR = 'q'
 const nullOperators = ['__null', '__notnull']
+const bridgingTables = [
+  constants.R_ITEMS_CODE,
+  constants.R_ITEMS_CAVE,
+  constants.R_ITEMS_HANDLE
+]
 
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
@@ -325,15 +330,9 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       })
   },
 
-  // Note: Deletion is not supported
+  // Note: Deletion is not supported (except for bridging tables)
   delete: async (resource: string, params: any) => {
-    if (
-      [
-        constants.R_ITEMS_CODE,
-        constants.R_ITEMS_CAVE,
-        constants.R_ITEMS_HANDLE
-      ].includes(resource)
-    ) {
+    if (bridgingTables.includes(resource)) {
       const url = `${apiUrl}/${resource}/rows/${params.id}`
       return await axios.delete(url).then(() => ({ data: params.id }))
     } else {
@@ -341,15 +340,9 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     }
   },
 
-  // Note: Deletion is not supported
+  // Note: Deletion is not supported (except for bridging tables)
   deleteMany: async (resource: string, params: any) => {
-    if (
-      [
-        constants.R_ITEMS_CODE,
-        constants.R_ITEMS_CAVE,
-        constants.R_ITEMS_HANDLE
-      ].includes(resource)
-    ) {
+    if (bridgingTables.includes(resource)) {
       const ids = params.ids.toString()
       const url = `${apiUrl}/${resource}/rows/${ids}`
       return await axios.delete(url).then(() => {
