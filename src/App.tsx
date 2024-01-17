@@ -16,7 +16,7 @@ import {
   VisibilityOff
 } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import rcoAuthProvider from './providers/authProvider'
+import rcoAuthProvider, { removeUserToken } from './providers/authProvider'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -232,6 +232,11 @@ function App(): React.ReactElement {
   }
 
   useEffect(() => {
+    // Check if session not exist. clear the user token from cookies
+    const storedSessionData = sessionStorage.getItem(constants.SESSION_LOGIN)
+    if (storedSessionData === null) {
+      removeUserToken()
+    }
     const storedValue = localStorage.getItem(constants.LOGGING_ENABLED)
     if (storedValue !== null) {
       setLoggingPref(storedValue === 'true')

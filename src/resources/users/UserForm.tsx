@@ -62,7 +62,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     'Sorry, you are not a Power User. Only Power Users can access and modify their profiles.'
   return isPowerUser ? (
     <SimpleForm
-      record={{ ...record, password: '' }}
+      record={{ ...record }}
       toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
