@@ -37,11 +37,10 @@ interface ActionsProps {
 
 const Actions = (props: ActionsProps): React.ReactElement => {
   const { onSuccess, setOpenRemarks, vLocationAudits } = props
-  const redirect = useRedirect()
+
   const onSuccessWithRemarksClose = (data: any): void => {
     onSuccess(data)
     setOpenRemarks(false)
-    redirect(`/${constants.R_RICH_ITEMS}/${data?.id}/show`)
   }
 
   return (
