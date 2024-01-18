@@ -1,9 +1,4 @@
-import {
-  useCreate,
-  useDataProvider,
-  useRedirect
-  // useDeleteMany,
-} from 'react-admin'
+import { useCreate, useDataProvider, useRedirect } from 'react-admin'
 import * as constants from '../constants'
 
 interface DBMethods {
@@ -17,7 +12,6 @@ export default function useRefTable(
   resource: string
 ): DBMethods {
   const [create] = useCreate()
-  // const [deleteMany] = useDeleteMany()
   const dataProvider = useDataProvider()
   const redirect = useRedirect()
 
