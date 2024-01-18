@@ -24,8 +24,15 @@ const DispatchCreate = (): React.ReactElement => {
 }
 
 export const DispatchEdit = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Edit mutationMode={constants.MUTATION_MODE}>
+    <Edit
+      mutationMode={constants.MUTATION_MODE}
+      mutationOptions={{
+        onSuccess: (data: Dispatch) => {
+          redirect(`/${constants.R_DISPATCH}/${data.id}/show`)
+        }
+      }}>
       <DispatchForm edit />
     </Edit>
   )

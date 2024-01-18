@@ -94,7 +94,7 @@ const common = yup
   .matches(/[0-9]/, 'Password must contain at least one numeric digit')
   .matches(
     /[!@#$%^&*(),.?":{}|<>]/,
-    'Password must contain at least one special character'
+    'Special character required - !@#$%^&*(),.?":{}|<>'
   )
   .test(
     'no-common-patterns',

@@ -37,10 +37,11 @@ interface ActionsProps {
 
 const Actions = (props: ActionsProps): React.ReactElement => {
   const { onSuccess, setOpenRemarks, vLocationAudits } = props
-
+  const redirect = useRedirect()
   const onSuccessWithRemarksClose = (data: any): void => {
     onSuccess(data)
     setOpenRemarks(false)
+    redirect(`/${constants.R_RICH_ITEMS}/${data?.id}/show`)
   }
 
   return (
@@ -71,10 +72,11 @@ interface Props {
   onSave: (event: React.SyntheticEvent) => void
   setOpenRemarks: React.Dispatch<boolean>
   openRemarks: boolean
+  isEdit: boolean
 }
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
-  const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
+  const { onSuccess, onSave, openRemarks, setOpenRemarks, isEdit } = props
   const { notify } = useContext(NotificationContext)
   const { reset, getValues, setValue } = useFormContext()
   const [alwaysEnable, setAlwaysEnable] = useState(false)
@@ -141,7 +143,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       itemId
     )
     setTimeout(() => {
-      if (!clone) {
+      if (!clone && !isEdit) {
         redirect(path)
       }
     }, 0)
