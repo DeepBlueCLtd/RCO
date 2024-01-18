@@ -375,23 +375,21 @@ export default function UserShow(): React.ReactElement {
     <Show
       resource={constants.R_USERS}
       actions={
-        hasWriteAccess && (
-          <TopToolbar sx={{ alignItems: 'center' }}>
-            <EditButton />
-            <HistoryButton
-              onClick={() => {
-                if (record) {
-                  navigate(
-                    `/audit?filter=${JSON.stringify({
-                      resource: constants.R_USERS,
-                      dataId: record.id ?? ''
-                    })}`
-                  )
-                }
-              }}
-            />
-          </TopToolbar>
-        )
+        <TopToolbar sx={{ alignItems: 'center' }}>
+          {hasWriteAccess && <EditButton />}
+          <HistoryButton
+            onClick={() => {
+              if (record) {
+                navigate(
+                  `/audit?filter=${JSON.stringify({
+                    resource: constants.R_USERS,
+                    dataId: record.id ?? ''
+                  })}`
+                )
+              }
+            }}
+          />
+        </TopToolbar>
       }>
       <UserShowComp setRecord={setRecord} audit={audit} />
     </Show>
