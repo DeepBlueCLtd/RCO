@@ -14,8 +14,9 @@ export const LOCAL_STORAGE_DB_KEY = 'rco-'
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'dd/MMM/yyyy HH:mm'
 export const TOKEN_KEY = 'rco-user'
-
 export const MUTATION_MODE = 'optimistic'
+// session storage value.
+export const SESSION_LOGIN = 'login'
 
 // major table/resource names
 export const R_USERS = 'user'
@@ -108,8 +109,6 @@ export const ITEM_SAVE = 'item_save'
 
 export const CHANGE_PASSWORD_EVENT = 'change_password'
 
-
-
 export const cosmeticLabels = {
   [R_USERS]: 'User',
   [R_ITEMS]: 'Item',
@@ -125,6 +124,5 @@ export const cosmeticLabels = {
   [R_CAT_CODE]: 'Cat Code',
   [R_CAT_HANDLE]: 'Cat Handle',
   [R_DEPARTMENT]: 'Department',
-  [R_PROTECTIVE_MARKING]: 'Protective Marking',
-
+  [R_PROTECTIVE_MARKING]: 'Protective Marking'
 }

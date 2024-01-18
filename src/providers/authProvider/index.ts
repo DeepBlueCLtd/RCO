@@ -39,12 +39,12 @@ const getCookie = (name: string): string | null => {
 
 const setToken = (token: string): void => {
   const date = new Date()
-  date.setTime(date.getTime() + 1 * 60 * 60 * 1000)
+  date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
   const expires = date.toUTCString()
   document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
 }
 
-export const removeToken = (): void => {
+export const removeUserToken = (): void => {
   removeCookie(constants.TOKEN_KEY)
 }
 
@@ -144,6 +144,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         try {
           const res = await login({ password, staffNumber })
           await createUserToken(res.data.data, audit)
+          sessionStorage.setItem('login', 'true')
           return await Promise.resolve(res.data.data)
         } catch (error) {
           if (isAxiosError(error))
@@ -163,7 +164,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         securityRelated: null,
         activityDetail: null
       })
-      removeToken()
+      removeUserToken()
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
@@ -176,7 +177,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     checkError: async (error): Promise<any> => {
       const status = error.status
       if (status === 401 || status === 403) {
-        removeToken()
+        removeUserToken()
         await Promise.reject(
           new Error('Server returned code ' + String(status))
         )

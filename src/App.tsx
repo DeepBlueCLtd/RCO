@@ -16,7 +16,7 @@ import {
   VisibilityOff
 } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import rcoAuthProvider from './providers/authProvider'
+import rcoAuthProvider, { removeUserToken } from './providers/authProvider'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -71,6 +71,7 @@ import { type AxiosError, isAxiosError } from 'axios'
 import ChangePassword from './ChangePassword'
 import { emitter } from './components/Layout/index'
 import { CHANGE_PASSWORD_EVENT } from './constants'
+import { useIdleTimer } from 'react-idle-timer'
 
 const style = {
   backgroundColor: 'white',
@@ -114,6 +115,18 @@ function App(): React.ReactElement {
     retypePassword: resetPasswordValidationSchema
   })
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false)
+
+  const handleOnIdle = (): void => {
+    removeUserToken()
+  }
+  const handleOnAction = (): void => {
+    reset()
+  }
+  const { reset } = useIdleTimer({
+    timeout: 1000 * 60 * 60,
+    onIdle: handleOnIdle,
+    onActive: handleOnAction
+  })
 
   const {
     register,
@@ -232,6 +245,11 @@ function App(): React.ReactElement {
   }
 
   useEffect(() => {
+    // Check if session not exist. clear the user token from cookies
+    const storedSessionData = sessionStorage.getItem(constants.SESSION_LOGIN)
+    if (storedSessionData === null) {
+      removeUserToken()
+    }
     const storedValue = localStorage.getItem(constants.LOGGING_ENABLED)
     if (storedValue !== null) {
       setLoggingPref(storedValue === 'true')
