@@ -39,7 +39,7 @@ const getCookie = (name: string): string | null => {
 
 const setToken = (token: string): void => {
   const date = new Date()
-  date.setTime(date.getTime() + 1 * 60 * 60 * 1000)
+  date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
   const expires = date.toUTCString()
   document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
 }
