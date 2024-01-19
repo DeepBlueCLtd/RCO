@@ -13,6 +13,8 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import useCustomid from '../../hooks/useCustomId'
 import { useFormContext } from 'react-hook-form'
+import FlexBox from '../../components/FlexBox'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -73,8 +75,20 @@ const FormContent = ({
     setIsValid(isValid)
   }, [isValid])
 
+  const warningTextForId =
+    'Warning: editing the id of a Department that is in use may lead to data corruption.  The id of a department must not be modified if data has been assigned to that department.'
+
   return (
     <>
+      {name === constants.R_DEPARTMENT && (
+        <FlexBox justifyContent='end'>
+          <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
+          <Typography
+            sx={{ fontWeight: '300', fontSize: '16px', color: 'red' }}>
+            {warningTextForId}
+          </Typography>
+        </FlexBox>
+      )}
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       {name === constants.R_MEDIA_TYPE ? (
         <NumberInput
