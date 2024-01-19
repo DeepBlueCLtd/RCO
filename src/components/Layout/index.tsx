@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Login } from '@mui/icons-material'
 import { Box, Icon, Typography, Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-
+import mitt from 'mitt'
 import {
   AppBar,
   type AppBarProps,
@@ -20,6 +20,14 @@ import Footer from './Footer'
 import AppIcon from '../../assets/app-icon.png'
 import * as constants from '../../constants'
 import { getUser } from '../../providers/authProvider'
+import LockResetIcon from '@mui/icons-material/LockReset'
+import { CHANGE_PASSWORD_EVENT } from '../../constants'
+
+// eslint-disable-next-line
+type Events = {
+  [CHANGE_PASSWORD_EVENT]: null
+}
+export const emitter = mitt<Events>()
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -50,15 +58,12 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
   const logout = useLogout()
   const redirect = useRedirect()
   const notify = useNotify()
-
   // const [loggingPref, setLoggingPref] = useState<boolean>(
   //   localStorage.getItem(constants.LOGGING_ENABLED) === 'true' ?? false
   // )
-
   const handleLogin = (): void => {
     redirect('/login')
   }
-
   // const handleLoadData = (): void => {
   //   loadDefaultData(undefined).catch((err) =>
   //     { notify(err.message, { type: 'error' }) }
@@ -85,7 +90,6 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 
   //   window.dispatchEvent(storageEvent)
   // }
-
   const handleLogOut = (): void => {
     logout()
       .then(() => {
@@ -120,6 +124,24 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         </Button>
       )}
       {authenticated && <Logout onClick={handleLogOut} />}
+      <Button
+        onClick={() => {
+          emitter.emit(CHANGE_PASSWORD_EVENT, null)
+        }}
+        sx={{
+          color: '#383838',
+          fontSize: '14px',
+          paddingY: '6px',
+          paddingX: '16px',
+          textTransform: 'capitalize',
+          '& .MuiSvgIcon-root': {
+            marginRight: '11px'
+          }
+        }}>
+        <LockResetIcon />
+        Change Password
+      </Button>
+
       {/* <Button
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         onClick={handleLoadData}

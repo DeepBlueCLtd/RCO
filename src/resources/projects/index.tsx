@@ -1,6 +1,7 @@
 import React from 'react'
-import { Create, Edit } from 'react-admin'
+import { Create, Edit, useRedirect } from 'react-admin'
 import ProjectForm from './ProjectForm'
+import * as constants from '../../constants'
 
 const ProjectList = React.lazy(async () => await import('./ProjectList'))
 const ProjectShow = React.lazy(async () => await import('./ProjectShow'))
@@ -14,8 +15,15 @@ const ProjectCreate = (): React.ReactElement => {
 }
 
 const ProjectEdit = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Edit>
+    <Edit
+      mutationMode={constants.MUTATION_MODE}
+      mutationOptions={{
+        onSuccess: (data: { projectNumber: string; id: number }): void => {
+          redirect(`/${constants.R_PROJECTS}/${data?.id}/show`)
+        }
+      }}>
       <ProjectForm isEdit />
     </Edit>
   )

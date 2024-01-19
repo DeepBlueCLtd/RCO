@@ -79,7 +79,7 @@ const FormContent = ({
       {name === constants.R_MEDIA_TYPE ? (
         <NumberInput
           source='itemSize'
-          sx={{ width: '100%', visibility: 'hidden' }}
+          sx={{ width: '100%', visibility: 'show' }}
           defaultValue={10}
         />
       ) : null}

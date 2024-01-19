@@ -71,10 +71,11 @@ interface Props {
   onSave: (event: React.SyntheticEvent) => void
   setOpenRemarks: React.Dispatch<boolean>
   openRemarks: boolean
+  isEdit: boolean
 }
 
 const ItemFormToolbar = (props: Props): React.ReactElement => {
-  const { onSuccess, onSave, openRemarks, setOpenRemarks } = props
+  const { onSuccess, onSave, openRemarks, setOpenRemarks, isEdit } = props
   const { notify } = useContext(NotificationContext)
   const { reset, getValues, setValue } = useFormContext()
   const [alwaysEnable, setAlwaysEnable] = useState(false)
@@ -141,7 +142,7 @@ const ItemFormToolbar = (props: Props): React.ReactElement => {
       itemId
     )
     setTimeout(() => {
-      if (!clone) {
+      if (!clone && !isEdit) {
         redirect(path)
       }
     }, 0)

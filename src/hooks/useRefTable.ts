@@ -1,14 +1,9 @@
-import {
-  useCreate,
-  useDataProvider,
-  useDeleteMany,
-  useRedirect
-} from 'react-admin'
-import { R_ITEMS } from '../constants'
+import { useCreate, useDataProvider, useRedirect } from 'react-admin'
+import * as constants from '../constants'
 
 interface DBMethods {
   createRecord: (id: number, data?: number[]) => void
-  updateRecord: (id: number, data?: number[]) => void
+  updateRecord: (id: number, data?: number[]) => Promise<unknown>
 }
 
 export default function useRefTable(
@@ -17,31 +12,43 @@ export default function useRefTable(
   resource: string
 ): DBMethods {
   const [create] = useCreate()
-  const [deleteMany] = useDeleteMany()
-  const redirect = useRedirect()
   const dataProvider = useDataProvider()
+  const redirect = useRedirect()
 
-  const updateRecord = (id: number, data?: number[]): void => {
-    dataProvider
-      .getList(refTable, {
-        pagination: { page: 1, perPage: 100 },
-        sort: { field: 'id', order: 'ASC' },
-        filter: { [resource]: id }
-      })
-      .then(({ data: tableData = [] }) => {
-        const idsToDelete = tableData.map(
-          (item: Record<string, any>) => item.id
-        )
-
-        if (idsToDelete.length)
-          deleteMany(refTable, { ids: idsToDelete })
-            .then(() => {
-              createRecord(id, data)
-            })
-            .catch(console.log)
-        else createRecord(id, data)
-      })
-      .catch(console.log)
+  const updateRecord = async (
+    id: number,
+    data?: number[]
+  ): Promise<unknown> => {
+    return await new Promise((resolve, reject): void => {
+      dataProvider
+        .getList(refTable, {
+          pagination: { page: 1, perPage: 100 },
+          sort: { field: 'id', order: 'ASC' },
+          filter: { [resource]: id }
+        })
+        .then(({ data: tableData = [] }) => {
+          const idsToDelete = tableData.map(
+            (item: Record<string, any>) => item.id
+          )
+          if (idsToDelete.length > 0) {
+            dataProvider
+              .deleteMany(refTable, { ids: idsToDelete })
+              .then(() => {
+                createRecord(id, data)
+                resolve(null)
+              })
+              .catch((err) => {
+                reject(err)
+              })
+          } else {
+            createRecord(id, data)
+            resolve(null)
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
   }
 
   const createRecord = (id: number, data?: number[]): void => {
@@ -54,7 +61,7 @@ export default function useRefTable(
           }
         })
       })
-      if (resource !== R_ITEMS) redirect(`/${resource}`)
+      if (resource !== constants.R_ITEMS) redirect(`/${resource}`)
     } catch (error: any) {
       console.log(error)
     }

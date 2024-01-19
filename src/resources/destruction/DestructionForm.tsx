@@ -12,7 +12,6 @@ import {
   useUpdate
 } from 'react-admin'
 import * as constants from '../../constants'
-import DatePicker from '../../components/DatePicker'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { ConditionalReferenceInput } from '../batches/BatchForm'
@@ -38,7 +37,7 @@ const DestructionFormToolbar = (
 
   return (
     <Toolbar>
-      <SaveButton label={isEdit ? 'Save' : 'Create'} alwaysEnable />
+      <SaveButton label={isEdit ? 'Save' : 'Create'} />
     </Toolbar>
   )
 }
@@ -155,16 +154,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
       toolbar={<DestructionFormToolbar isEdit={isEdit} />}
       resolver={yupResolver(schema)}
       onSubmit={handleSubmit as any}>
-      <DatePicker
-        label='Year'
-        source='year'
-        variant='outlined'
-        format='YYYY'
-        dataPickerProps={{
-          views: ['year'],
-          disabled: true
-        }}
-      />
       {isEdit && (
         <TextInput
           fullWidth

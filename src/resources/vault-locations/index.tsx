@@ -1,10 +1,10 @@
 import React from 'react'
-import { Create, Edit } from 'react-admin'
+import { Create, Edit, useRedirect } from 'react-admin'
 import VaultLocationForm from './VaultLocationForm'
 import VaultLocationList from './VaultLocationList'
 import ReferenceDataShow from '../reference-data/ReferenceDataShow'
 import { R_VAULT_LOCATION } from '../../constants'
-
+import * as constants from '../../constants'
 const VaultLocationCreate = (): React.ReactElement => {
   return (
     <Create>
@@ -14,8 +14,15 @@ const VaultLocationCreate = (): React.ReactElement => {
 }
 
 export const VaultLocationEdit = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Edit>
+    <Edit
+      mutationMode={constants.MUTATION_MODE}
+      mutationOptions={{
+        onSuccess: (data: { vaultNumber: string; id: number }): void => {
+          redirect(`/${constants.R_VAULT_LOCATION}/${data?.id}/show`)
+        }
+      }}>
       <VaultLocationForm />
     </Edit>
   )

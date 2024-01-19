@@ -119,11 +119,15 @@ const ResetPassword = ({
       activityDetail: 'Password reset'
     }).catch(console.log)
 
-    update(R_USERS, {
-      id: record?.id,
-      previousData: record,
-      data: { password: '', lockoutAttempts: 0 }
-    }).catch(console.log)
+    update(
+      R_USERS,
+      {
+        id: record?.id,
+        previousData: record,
+        data: { password: '', lockoutAttempts: 0 }
+      },
+      { mutationMode: 'optimistic' }
+    ).catch(console.log)
     handleClose()
   }
 
@@ -360,24 +364,10 @@ const UserShowComp = ({
 export default function UserShow(): React.ReactElement {
   const [record, setRecord] = useState<User>()
   const { hasAccess } = useCanAccess()
-  const [filteredData, setFilteredData] = useState<Audit[]>([])
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
-  const { isLoading, data } = useGetList<Audit>(R_AUDIT, {})
+  const { isLoading } = useGetList<Audit>(R_AUDIT, {})
   const audit = useAudit()
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (data != null)
-      setFilteredData(
-        data.filter((audit) => {
-          return (
-            audit.user === record?.id ||
-            audit.subjectId === record?.id ||
-            (audit.dataId === record?.id && audit.resource === R_USERS)
-          )
-        })
-      )
-  }, [data, record, isLoading])
 
   if (isLoading) return <Loading />
 
@@ -385,16 +375,21 @@ export default function UserShow(): React.ReactElement {
     <Show
       resource={constants.R_USERS}
       actions={
-        hasWriteAccess && (
-          <TopToolbar sx={{ alignItems: 'center' }}>
-            <EditButton />
-            <HistoryButton
-              onClick={() => {
-                navigate('/audit', { state: { data: filteredData } })
-              }}
-            />
-          </TopToolbar>
-        )
+        <TopToolbar sx={{ alignItems: 'center' }}>
+          {hasWriteAccess && <EditButton />}
+          <HistoryButton
+            onClick={() => {
+              if (record) {
+                navigate(
+                  `/audit?filter=${JSON.stringify({
+                    resource: constants.R_USERS,
+                    dataId: record.id ?? ''
+                  })}`
+                )
+              }
+            }}
+          />
+        </TopToolbar>
       }>
       <UserShowComp setRecord={setRecord} audit={audit} />
     </Show>

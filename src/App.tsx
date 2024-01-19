@@ -16,7 +16,7 @@ import {
   VisibilityOff
 } from '@mui/icons-material'
 import { getDataProvider } from './providers/dataProvider'
-import rcoAuthProvider from './providers/authProvider'
+import rcoAuthProvider, { removeUserToken } from './providers/authProvider'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -68,6 +68,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import CustomNotification from './components/Notification'
 import { Context as NotificationContext } from './context/NotificationContext'
 import { type AxiosError, isAxiosError } from 'axios'
+import ChangePassword from './ChangePassword'
+import { emitter } from './components/Layout/index'
+import { CHANGE_PASSWORD_EVENT } from './constants'
+import { useIdleTimer } from 'react-idle-timer'
 
 const style = {
   backgroundColor: 'white',
@@ -110,6 +114,20 @@ function App(): React.ReactElement {
     newPassword: resetPasswordValidationSchema,
     retypePassword: resetPasswordValidationSchema
   })
+  const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false)
+
+  const handleOnIdle = (): void => {
+    removeUserToken()
+  }
+  const handleOnAction = (): void => {
+    reset()
+  }
+  const { reset } = useIdleTimer({
+    timeout: 1000 * 60 * 60,
+    onIdle: handleOnIdle,
+    onActive: handleOnAction
+  })
+
   const {
     register,
     handleSubmit,
@@ -187,9 +205,9 @@ function App(): React.ReactElement {
     })
 
     if (
-      lastUpdatedAt !== null &&
+      typeof lastUpdatedAt === 'string' &&
       lastUpdatedAt !== '' &&
-      !isDateNotInPastDays(lastUpdatedAt, 1)
+      !isDateNotInPastDays(lastUpdatedAt, 0)
     )
       throw new Error(
         'Password update not allowed. Please wait at least one day before updating your password again.'
@@ -227,6 +245,11 @@ function App(): React.ReactElement {
   }
 
   useEffect(() => {
+    // Check if session not exist. clear the user token from cookies
+    const storedSessionData = sessionStorage.getItem(constants.SESSION_LOGIN)
+    if (storedSessionData === null) {
+      removeUserToken()
+    }
     const storedValue = localStorage.getItem(constants.LOGGING_ENABLED)
     if (storedValue !== null) {
       setLoggingPref(storedValue === 'true')
@@ -353,6 +376,16 @@ function App(): React.ReactElement {
     initialize().catch(console.log)
   }, [])
 
+  const handleChangePassword = (): void => {
+    setOpenChangePasswordModal(true)
+  }
+  useEffect(() => {
+    emitter.on(CHANGE_PASSWORD_EVENT, handleChangePassword)
+    return () => {
+      emitter.off(CHANGE_PASSWORD_EVENT, handleChangePassword)
+    }
+  }, [setOpenChangePasswordModal])
+
   if (dataProvider === undefined) return LoadingPage
   if (authProvider === undefined) return LoadingPage
 
@@ -373,15 +406,15 @@ function App(): React.ReactElement {
               <p>
                 <b>Please provide an initial password</b>
               </p>
-              <p>
-                The password should include these items:
-                <ul>
-                  <li>At least 10 characters in length</li>
-                  <li>Upper and lower case letters</li>
-                  <li>At least one digit</li>
-                  <li>At least one special character</li>
-                </ul>
-              </p>
+              <p>The password should include these items:</p>
+            </Typography>
+            <Typography>
+              <ul>
+                <li>At least 10 characters in length</li>
+                <li>Upper and lower case letters</li>
+                <li>At least one digit</li>
+                <li>At least one special character</li>
+              </ul>
             </Typography>
 
             <TextField
@@ -590,6 +623,12 @@ function App(): React.ReactElement {
           />
         </Admin>
       </Suspense>
+      <ChangePassword
+        openChangePasswordModal={openChangePasswordModal}
+        setOpenChangePasswordModal={setOpenChangePasswordModal}
+        authProvider={authProvider}
+        dataProvider={dataProvider}
+      />
     </div>
   )
 }

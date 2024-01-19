@@ -14,6 +14,9 @@ export const LOCAL_STORAGE_DB_KEY = 'rco-'
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'dd/MMM/yyyy HH:mm'
 export const TOKEN_KEY = 'rco-user'
+export const MUTATION_MODE = 'optimistic'
+// session storage value.
+export const SESSION_LOGIN = 'login'
 
 // major table/resource names
 export const R_USERS = 'user'
@@ -103,3 +106,23 @@ export const DATA_VERSION = 'DATA_VERSION'
 export const SAVE_EVENT = 'save'
 export const ITEM_CLONE = 'item_clone'
 export const ITEM_SAVE = 'item_save'
+
+export const CHANGE_PASSWORD_EVENT = 'change_password'
+
+export const cosmeticLabels = {
+  [R_USERS]: 'User',
+  [R_ITEMS]: 'Item',
+  [R_BATCHES]: 'Batch',
+  [R_DESTRUCTION]: 'Destruction',
+  [R_VAULT_LOCATION]: 'Vault Location',
+  [R_DISPATCH]: 'Dispatch',
+  [R_PROJECTS]: 'Project',
+  [R_MEDIA_TYPE]: 'Media Type',
+  [R_PLATFORMS]: 'Platform',
+  [R_ORGANISATION]: 'Organization',
+  [R_CAT_CAVE]: 'Cat Cave',
+  [R_CAT_CODE]: 'Cat Code',
+  [R_CAT_HANDLE]: 'Cat Handle',
+  [R_DEPARTMENT]: 'Department',
+  [R_PROTECTIVE_MARKING]: 'Protective Marking'
+}

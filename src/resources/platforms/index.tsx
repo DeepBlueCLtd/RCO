@@ -1,5 +1,12 @@
 import React from 'react'
-import { SimpleForm, TextInput, BooleanInput, Create, Edit } from 'react-admin'
+import {
+  SimpleForm,
+  TextInput,
+  BooleanInput,
+  Create,
+  Edit,
+  useRedirect
+} from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import PlatformList from './PlatformList'
@@ -42,8 +49,16 @@ const PlatformCreate = ({ name }: PropType): React.ReactElement => {
 
 const PlatformEdit = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
+  const redirect = useRedirect()
+
   return (
-    <Edit redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
+    <Edit
+      resource={constants.R_PLATFORMS}
+      mutationOptions={{
+        onSuccess: (data: { platformNumber: string; id: number }): void => {
+          redirect(`/${cName}/${data?.id}/show`)
+        }
+      }}>
       <PlatformForm />
     </Edit>
   )
