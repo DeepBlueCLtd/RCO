@@ -294,7 +294,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     const url = `${apiUrl}/${resource}/rows/${params.id}`
 
     // remove the id property
-    const { id, ...editData } = params.data
+    const { ...editData } = params.data
 
     return await axios
       .put(url, { fields: editData })

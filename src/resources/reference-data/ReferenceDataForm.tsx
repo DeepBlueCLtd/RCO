@@ -5,7 +5,10 @@ import {
   SaveButton,
   SimpleForm,
   TextInput,
-  Toolbar
+  Toolbar,
+  useNotify,
+  useRecordContext,
+  useUpdate
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -32,14 +35,43 @@ export default function ReferenceDataForm(
   }
 
   const ReferenceToolbar = ({
-    isEdit
+    isEdit,
+    name
   }: {
     isEdit?: boolean
+    name?: string
   }): React.ReactElement => {
     const createRecord = useCustomid()
+    const record = useRecordContext()
+    const { getValues } = useFormContext()
+    const notify = useNotify()
+    const [update] = useUpdate()
+
+    const onSave = (): void => {
+      const values = getValues()
+      const data = { ...values }
+      update(constants.R_DEPARTMENT, {
+        id: record.id,
+        data,
+        previousData: record
+      }).catch((error) => {
+        console.log(error)
+        notify(
+          'Can\'t change it because it is used as a foreign key in another table. ',
+          {
+            type: 'error'
+          }
+        )
+      })
+    }
+
     return isEdit ? (
       <Toolbar>
-        <SaveButton />
+        {name === constants.R_DEPARTMENT ? (
+          <SaveButton onClick={onSave} />
+        ) : (
+          <SaveButton />
+        )}
       </Toolbar>
     ) : (
       <EditToolBar type='button' onClick={createRecord} isValid={isValid} />
@@ -48,7 +80,7 @@ export default function ReferenceDataForm(
 
   return (
     <SimpleForm
-      toolbar={<ReferenceToolbar isEdit={isEdit} />}
+      toolbar={<ReferenceToolbar isEdit={isEdit} name={name} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <FormContent name={name} isEdit={isEdit} setIsValid={setIsValid} />
@@ -76,11 +108,11 @@ const FormContent = ({
   }, [isValid])
 
   const warningTextForId =
-    'Warning: editing the id of a Department that is in use may lead to data corruption.  The id of a department must not be modified if data has been assigned to that department.'
+    'Warning: Editing the id of a Department that is in use may lead to data corruption.  The id of a department must not be modified if data has been assigned to that department.'
 
   return (
     <>
-      {name === constants.R_DEPARTMENT && (
+      {name === constants.R_DEPARTMENT && isEdit && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
           <Typography
