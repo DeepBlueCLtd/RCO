@@ -196,7 +196,7 @@ const FormContent = ({
   }, [isValid])
 
   useEffect(() => {
-    if (Object.keys(dirtyFields).includes('id')) {
+    if (dirtyFields.id !== undefined && dirtyFields.id === true) {
       setIsIDChanged(true)
     }
   }, [{ ...dirtyFields }])
