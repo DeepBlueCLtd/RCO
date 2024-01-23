@@ -86,13 +86,15 @@ export default function ReferenceData(): React.ReactElement {
   const rarelyUsedRoutes = [
     { path: '/organisation', title: 'Organisation' },
     { path: '/protectiveMarking', title: 'Protective Marking' },
+    { path: '/mediaType', title: 'Media Type' },
+    { path: '/vault', title: 'Vault' }
+  ]
+
+  const rarelyThirdRowUsedRoutes = [
     { path: '/catCode', title: configData?.catCode ?? 'Cat Code' },
     { path: '/catHandle', title: configData?.catHandle ?? 'Cat Handle' },
     { path: '/catCave', title: configData?.catCave ?? 'Cat Cave' },
-    { path: '/mediaType', title: 'Media Type' },
-    { path: '/department', title: 'Department' },
-
-    { path: '/vault', title: 'Vault' }
+    { path: '/department', title: 'Department' }
   ]
   return (
     <div>
@@ -105,6 +107,15 @@ export default function ReferenceData(): React.ReactElement {
 
       <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
         {rarelyUsedRoutes.map((route) => (
+          <CardWithNavigation isRarelyUsed key={route.title} {...route} />
+        ))}
+      </Box>
+
+      <Typography padding='20px' sx={{ fontWeight: '600', fontSize: '18px' }}>
+        Maintainers Only
+      </Typography>
+      <Box display='flex' flexWrap='wrap' gap='20px' padding='20px'>
+        {rarelyThirdRowUsedRoutes.map((route) => (
           <CardWithNavigation isRarelyUsed key={route.title} {...route} />
         ))}
       </Box>

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import {
   BooleanInput,
+  Button,
   NumberInput,
   SaveButton,
   SimpleForm,
   TextInput,
-  Toolbar
+  Toolbar,
+  useNotify,
+  useRecordContext,
+  useRedirect,
+  useUpdate
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -13,16 +18,117 @@ import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
 import useCustomid from '../../hooks/useCustomId'
 import { useFormContext } from 'react-hook-form'
+import FlexBox from '../../components/FlexBox'
+import { Modal, Typography } from '@mui/material'
+import { Box } from '@mui/system'
 
 const schema = yup.object({
   name: yup.string().required()
 })
+interface Props {
+  handleClose: () => void
+  name?: string
+}
+const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
+  const style = {
+    position: 'absolute',
+    top: '50%',
+
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 800,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4
+  }
+  const record = useRecordContext()
+  const { getValues } = useFormContext()
+  const notify = useNotify()
+  const [update] = useUpdate()
+  const values = getValues()
+  const redirect = useRedirect()
+
+  const onSave = (): void => {
+    const data = { ...values }
+    update(constants.R_DEPARTMENT, {
+      id: record.id,
+      data,
+      previousData: record
+    })
+      .then(() => {
+        if (name === constants.R_DEPARTMENT) {
+          redirect(`/${constants.R_DEPARTMENT}`)
+        } else {
+          redirect(`/${name}/${data?.id}/show`)
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+        notify('Changing the id of a row may cause an element does not exist', {
+          type: 'error'
+        })
+      })
+  }
+
+  return (
+    <Box sx={style}>
+      <Typography variant='h6'>
+        Changing the Id of a row that is in use in VAL may silently fail. Please
+        check the displayed value.
+      </Typography>
+      <FlexBox marginTop='20px' justifyContent='center'>
+        <Button
+          variant='contained'
+          onClick={onSave}
+          style={{ padding: '5px 15px', fontSize: '16px' }}>
+          <Typography>Confirm</Typography>
+        </Button>
+        <Button
+          variant='outlined'
+          color='secondary'
+          onClick={handleClose}
+          style={{ padding: '5px 15px', fontSize: '16px' }}>
+          <Typography>Cancel</Typography>
+        </Button>
+      </FlexBox>
+    </Box>
+  )
+}
+interface Props {
+  handleClose: () => void
+  name?: string
+  isconfirm?: boolean
+}
+const PopUpId = ({
+  handleClose,
+  name,
+  isconfirm
+}: Props): React.ReactElement => {
+  return (
+    <Modal open={!!isconfirm} onClose={handleClose}>
+      <div>
+        <ChangeId handleClose={handleClose} name={name} />
+      </div>
+    </Modal>
+  )
+}
 
 export default function ReferenceDataForm(
   props: FormProps
 ): React.ReactElement {
   const { isEdit, name } = props
   const [isValid, setIsValid] = useState<boolean>(false)
+  const [isconfirm, setIsConfirm] = useState<boolean>(false)
+  const [isIDChanged, setIsIDChanged] = useState<boolean>(false)
+
+  const openConfirmationBox = (): void => {
+    setIsConfirm(true)
+  }
+
+  const closeConfirmationBox = (): void => {
+    setIsConfirm(false)
+  }
 
   const defaultValues = {
     name: '',
@@ -30,14 +136,20 @@ export default function ReferenceDataForm(
   }
 
   const ReferenceToolbar = ({
-    isEdit
+    isEdit,
+    name
   }: {
     isEdit?: boolean
+    name?: string
   }): React.ReactElement => {
     const createRecord = useCustomid()
     return isEdit ? (
       <Toolbar>
-        <SaveButton />
+        {name === constants.R_DEPARTMENT && isIDChanged ? (
+          <SaveButton onClick={openConfirmationBox} />
+        ) : (
+          <SaveButton />
+        )}
       </Toolbar>
     ) : (
       <EditToolBar type='button' onClick={createRecord} isValid={isValid} />
@@ -46,35 +158,64 @@ export default function ReferenceDataForm(
 
   return (
     <SimpleForm
-      toolbar={<ReferenceToolbar isEdit={isEdit} />}
+      toolbar={<ReferenceToolbar isEdit={isEdit} name={name} />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
-      <FormContent name={name} isEdit={isEdit} setIsValid={setIsValid} />
+      <FormContent
+        name={name}
+        isEdit={isEdit}
+        setIsValid={setIsValid}
+        setIsIDChanged={setIsIDChanged}
+      />
+      <PopUpId
+        handleClose={closeConfirmationBox}
+        name={name}
+        isconfirm={isconfirm}
+      />
     </SimpleForm>
   )
 }
 
 type FormContentType = FormProps & {
   setIsValid: React.Dispatch<React.SetStateAction<boolean>>
+  setIsIDChanged: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const FormContent = ({
   name,
   isEdit,
-  setIsValid
+  setIsValid,
+  setIsIDChanged
 }: FormContentType): React.ReactElement => {
   const {
-    formState: { isValid }
+    formState: { isValid, dirtyFields }
   } = useFormContext()
-
   const isNotActive = (name: string): boolean => name === constants.R_AUDIT
 
   useEffect(() => {
     setIsValid(isValid)
   }, [isValid])
 
+  useEffect(() => {
+    if (dirtyFields.id !== undefined && dirtyFields.id === true) {
+      setIsIDChanged(true)
+    }
+  }, [{ ...dirtyFields }])
+
+  const warningTextForId =
+    'Warning: Editing the id of a Department that is in use may lead to data corruption.  The id of a department must not be modified if data has been assigned to that department.'
+
   return (
     <>
+      {name === constants.R_DEPARTMENT && isEdit && (
+        <FlexBox justifyContent='end'>
+          <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
+          <Typography
+            sx={{ fontWeight: '300', fontSize: '16px', color: 'red' }}>
+            {warningTextForId}
+          </Typography>
+        </FlexBox>
+      )}
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       {name === constants.R_MEDIA_TYPE ? (
         <NumberInput
