@@ -17,9 +17,11 @@ import {
   useGetList,
   useRecordContext,
   useResourceContext,
-  type Identifier
+  type Identifier,
+  useRedirect
 } from 'react-admin'
 import { Box } from '@mui/system'
+import { R_RICH_ITEMS } from '../constants'
 
 interface Props<T, RefTable> {
   reference: string
@@ -66,6 +68,8 @@ export default function ProtectionRefInput<
     getValues,
     reset
   } = useFormContext()
+  const redirect = useRedirect()
+
   const [valueLabel, setValueLabel] = useState<string>('')
   type SelectedIdType = T['id'] | Array<T['id']>
 
@@ -163,6 +167,10 @@ export default function ProtectionRefInput<
       if (record?.id) {
         // onValueChange(getPreviousValue())
         updateRecord(record.id as number, selectedData as number[])
+          .then(() => {
+            redirect(`/${R_RICH_ITEMS}/${record?.id}/show`)
+          })
+          .catch(console.log)
       } else if (id) {
         createRecord(id, selectedData as number[])
       }

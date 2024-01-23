@@ -71,6 +71,7 @@ import { type AxiosError, isAxiosError } from 'axios'
 import ChangePassword from './ChangePassword'
 import { emitter } from './components/Layout/index'
 import { CHANGE_PASSWORD_EVENT } from './constants'
+import { useIdleTimer } from 'react-idle-timer'
 
 const style = {
   backgroundColor: 'white',
@@ -114,6 +115,18 @@ function App(): React.ReactElement {
     retypePassword: resetPasswordValidationSchema
   })
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false)
+
+  const handleOnIdle = (): void => {
+    removeUserToken()
+  }
+  const handleOnAction = (): void => {
+    reset()
+  }
+  const { reset } = useIdleTimer({
+    timeout: 1000 * 60 * 60,
+    onIdle: handleOnIdle,
+    onActive: handleOnAction
+  })
 
   const {
     register,
@@ -192,9 +205,9 @@ function App(): React.ReactElement {
     })
 
     if (
-      lastUpdatedAt !== null &&
+      typeof lastUpdatedAt === 'string' &&
       lastUpdatedAt !== '' &&
-      !isDateNotInPastDays(lastUpdatedAt, 1)
+      !isDateNotInPastDays(lastUpdatedAt, 0)
     )
       throw new Error(
         'Password update not allowed. Please wait at least one day before updating your password again.'

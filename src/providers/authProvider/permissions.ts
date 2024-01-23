@@ -5,7 +5,7 @@ const basePermissions = {
   [constants.R_BATCHES]: { read: true, write: true, delete: false },
   [constants.R_ITEMS]: { read: true, write: true, delete: false },
   [constants.R_ALL_ITEMS]: { read: true, write: true, delete: false },
-  [constants.R_USERS]: { read: true, write: true, delete: false },
+  [constants.R_USERS]: { read: true, write: false, delete: false },
   [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
   [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
   [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
@@ -20,6 +20,7 @@ const permissions: Record<UserRole, ResourcePermissions> = {
   'rco-power-user': {
     ...basePermissions,
     [constants.R_PLATFORMS]: { read: true, write: true, delete: false },
+    [constants.R_USERS]: { read: true, write: true, delete: false },
     [constants.R_VAULT_LOCATION]: { read: true, write: true, delete: false },
     'reference-data': { read: true, write: true, delete: false }
   }

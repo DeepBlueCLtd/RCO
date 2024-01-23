@@ -90,6 +90,11 @@ export const getDataProvider = async (
 const operators = ['_neq', '_eq', '_lte', '_gte']
 const SEARCH_OPERATOR = 'q'
 const nullOperators = ['__null', '__notnull']
+const bridgingTables = [
+  constants.R_ITEMS_CODE,
+  constants.R_ITEMS_CAVE,
+  constants.R_ITEMS_HANDLE
+]
 
 export const dataProvider = (apiUrl: string): DataProvider => ({
   getList: async (resource: string, params: any) => {
@@ -325,25 +330,26 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       })
   },
 
-  // Note: Deletion is not supported
-  delete: async (_resource: string, _params: any) => {
-    throw new Error('Deletion is not supported!')
-    // const url = `${apiUrl}/${resource}/rows/${params.id}`
-
-    // return await axios.delete(url).then(() => {
-    //   return { data: params.id }
-    // })
+  // Note: Deletion is not supported (except for bridging tables)
+  delete: async (resource: string, params: any) => {
+    if (bridgingTables.includes(resource)) {
+      const url = `${apiUrl}/${resource}/rows/${params.id}`
+      return await axios.delete(url).then(() => ({ data: params.id }))
+    } else {
+      throw new Error('Deletion is not supported!')
+    }
   },
 
-  // Note: Deletion is not supported
-  deleteMany: async (_resource: string, _params: any) => {
-    throw new Error('Deletion is not supported!')
-
-    // const ids = params.ids.toString()
-    // const url = `${apiUrl}/${resource}/rows/${ids}`
-
-    // return await axios.delete(url).then(() => {
-    //   return { data: params.ids }
-    // })
+  // Note: Deletion is not supported (except for bridging tables)
+  deleteMany: async (resource: string, params: any) => {
+    if (bridgingTables.includes(resource)) {
+      const ids = params.ids.toString()
+      const url = `${apiUrl}/${resource}/rows/${ids}`
+      return await axios.delete(url).then(() => {
+        return { data: params.ids }
+      })
+    } else {
+      throw new Error('Deletion is not supported!')
+    }
   }
 })
