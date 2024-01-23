@@ -74,7 +74,8 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
   return (
     <Box sx={style}>
       <Typography variant='h6'>
-        Changing the Id of a row may cause an element does not exist error
+        Changing the Id of a row that is in use in VAL may silently fail. Please
+        check the displayed value.
       </Typography>
       <FlexBox marginTop='20px' justifyContent='center'>
         <Button
