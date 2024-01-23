@@ -24,7 +24,11 @@ export const ReferenceDataEdit = ({ name }: PropType): React.ReactElement => {
       mutationMode={constants.MUTATION_MODE}
       mutationOptions={{
         onSuccess: (data: { vaultNumber: string; id: number }): void => {
-          redirect(`/${cName}/${data?.id}/show`)
+          if (cName === constants.R_DEPARTMENT) {
+            redirect(`/${constants.R_DEPARTMENT}`)
+          } else {
+            redirect(`/${cName}/${data?.id}/show`)
+          }
         }
       }}
       resource={cName}>
