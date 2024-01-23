@@ -77,7 +77,7 @@ export default function DispatchForm(props: Props): React.ReactElement {
           inputProps={{
             helperText: (
               <>
-                View{' '}
+                Manage{' '}
                 <span style={{ textDecoration: 'underline' }}>
                   <Link to={{ pathname: '/address' }}>Addresses</Link>
                 </span>
