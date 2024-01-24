@@ -22,7 +22,7 @@ import FlexBox from '../../components/FlexBox'
 import { Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
-
+import { resourcesWithListPage } from '../../constants'
 const schema = yup.object({
   name: yup.string().required()
 })
@@ -42,6 +42,7 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
     boxShadow: 24,
     p: 4
   }
+
   const record = useRecordContext()
   const { getValues } = useFormContext()
   const notify = useNotify()
@@ -50,12 +51,6 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
   const redirect = useRedirect()
 
   const onSave = (): void => {
-    const resourcesWithListPage = [
-      constants.R_CAT_CAVE,
-      constants.R_CAT_CODE,
-      constants.R_CAT_HANDLE,
-      constants.R_DEPARTMENT
-    ]
     const data = { ...values }
     const validName = name ?? ''
     update(validName, {
@@ -66,6 +61,7 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
       .then(() => {
         const hasListPage = resourcesWithListPage.includes(validName)
         redirect(hasListPage ? `/${name}` : `/${name}/${data.id}/show`)
+        console.log(resourcesWithListPage)
       })
       .catch((error) => {
         console.error(error)
@@ -148,12 +144,7 @@ export default function ReferenceDataForm(
   }): React.ReactElement => {
     const createRecord = useCustomid()
     const validName = name ?? ''
-    const resourcesWithListPage = [
-      constants.R_DEPARTMENT,
-      constants.R_CAT_CODE,
-      constants.R_CAT_CAVE,
-      constants.R_CAT_HANDLE
-    ]
+
     return isEdit ? (
       <Toolbar>
         {resourcesWithListPage.includes(validName) && isIDChanged ? (
@@ -213,12 +204,6 @@ const FormContent = ({
     }
   }, [{ ...dirtyFields }])
   const validName = name ?? ''
-  const resourceForEditId = [
-    constants.R_CAT_CODE,
-    constants.R_CAT_CAVE,
-    constants.R_CAT_HANDLE,
-    constants.R_DEPARTMENT
-  ]
   const configData = useConfigData()
   const resourceName =
     name === constants.R_DEPARTMENT
@@ -234,7 +219,7 @@ const FormContent = ({
 
   return (
     <>
-      {resourceForEditId.includes(validName) && isEdit && (
+      {resourcesWithListPage.includes(validName) && isEdit && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
           <Typography
