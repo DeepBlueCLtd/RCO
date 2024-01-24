@@ -33,7 +33,6 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
   const style = {
     position: 'absolute',
     top: '50%',
-
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 800,
@@ -50,18 +49,22 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
   const redirect = useRedirect()
 
   const onSave = (): void => {
+    const resourcesWithListPage = [
+      constants.R_CAT_CAVE,
+      constants.R_CAT_CODE,
+      constants.R_CAT_HANDLE,
+      constants.R_DEPARTMENT
+    ]
     const data = { ...values }
-    update(constants.R_DEPARTMENT, {
+    const validName = name ?? ''
+    update(validName, {
       id: record.id,
       data,
       previousData: record
     })
       .then(() => {
-        if (name === constants.R_DEPARTMENT) {
-          redirect(`/${constants.R_DEPARTMENT}`)
-        } else {
-          redirect(`/${name}/${data?.id}/show`)
-        }
+        const hasListPage = resourcesWithListPage.includes(validName)
+        redirect(hasListPage ? `/${name}` : `/${name}/${data.id}/show`)
       })
       .catch((error) => {
         console.error(error)
@@ -143,9 +146,16 @@ export default function ReferenceDataForm(
     name?: string
   }): React.ReactElement => {
     const createRecord = useCustomid()
+    const validName = name ?? ''
+    const resourcesWithListPage = [
+      constants.R_DEPARTMENT,
+      constants.R_CAT_CODE,
+      constants.R_CAT_CAVE,
+      constants.R_CAT_HANDLE
+    ]
     return isEdit ? (
       <Toolbar>
-        {name === constants.R_DEPARTMENT && isIDChanged ? (
+        {resourcesWithListPage.includes(validName) && isIDChanged ? (
           <SaveButton onClick={openConfirmationBox} />
         ) : (
           <SaveButton />
@@ -201,13 +211,29 @@ const FormContent = ({
       setIsIDChanged(true)
     }
   }, [{ ...dirtyFields }])
+  const validName = name ?? ''
+  const resourceForEditId = [
+    constants.R_CAT_CODE,
+    constants.R_CAT_CAVE,
+    constants.R_CAT_HANDLE,
+    constants.R_DEPARTMENT
+  ]
 
-  const warningTextForId =
-    'Warning: Editing the id of a Department that is in use may lead to data corruption.  The id of a department must not be modified if data has been assigned to that department.'
+  const resourceName =
+    name === constants.R_DEPARTMENT
+      ? 'department'
+      : name === constants.R_CAT_CODE
+      ? 'code'
+      : name === constants.R_CAT_CAVE
+      ? 'cave'
+      : name === constants.R_CAT_HANDLE
+      ? 'handle'
+      : 'resource'
+  const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption.  The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
 
   return (
     <>
-      {name === constants.R_DEPARTMENT && isEdit && (
+      {resourceForEditId.includes(validName) && isEdit && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
           <Typography
