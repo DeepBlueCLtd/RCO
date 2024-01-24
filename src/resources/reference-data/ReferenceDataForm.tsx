@@ -21,6 +21,7 @@ import { useFormContext } from 'react-hook-form'
 import FlexBox from '../../components/FlexBox'
 import { Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -218,16 +219,16 @@ const FormContent = ({
     constants.R_CAT_HANDLE,
     constants.R_DEPARTMENT
   ]
-
+  const configData = useConfigData()
   const resourceName =
     name === constants.R_DEPARTMENT
       ? 'department'
       : name === constants.R_CAT_CODE
-      ? 'code'
+      ? configData?.catCode
       : name === constants.R_CAT_CAVE
-      ? 'cave'
+      ? configData?.catCave
       : name === constants.R_CAT_HANDLE
-      ? 'handle'
+      ? configData?.catHandle
       : 'resource'
   const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption.  The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
 
