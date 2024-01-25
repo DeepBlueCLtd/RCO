@@ -126,10 +126,3 @@ export const cosmeticLabels = {
   [R_DEPARTMENT]: 'Department',
   [R_PROTECTIVE_MARKING]: 'Protective Marking'
 }
-
-export const resourcesWithListPage = [
-  R_DEPARTMENT,
-  R_CAT_CODE,
-  R_CAT_CAVE,
-  R_CAT_HANDLE
-]

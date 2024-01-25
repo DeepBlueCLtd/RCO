@@ -22,7 +22,7 @@ import FlexBox from '../../components/FlexBox'
 import { Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
-import { resourcesWithListPage } from '../../constants'
+
 const schema = yup.object({
   name: yup.string().required()
 })
@@ -30,6 +30,14 @@ interface Props {
   handleClose: () => void
   name?: string
 }
+
+export const resourcesWithListPage = [
+  constants.R_DEPARTMENT,
+  constants.R_CAT_CODE,
+  constants.R_CAT_CAVE,
+  constants.R_CAT_HANDLE
+]
+
 const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
   const style = {
     position: 'absolute',
@@ -61,7 +69,6 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
       .then(() => {
         const hasListPage = resourcesWithListPage.includes(validName)
         redirect(hasListPage ? `/${name}` : `/${name}/${data.id}/show`)
-        console.log(resourcesWithListPage)
       })
       .catch((error) => {
         console.error(error)
