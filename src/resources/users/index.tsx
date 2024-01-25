@@ -63,10 +63,10 @@ const EditVal = ({ setPrev }: EditValType): React.ReactElement => {
 }
 
 const users = {
+  create: UserCreate,
   edit: UserEdit,
   list: UserList,
   show: UserShow
 }
 
 export default users
-export { UserCreate }
