@@ -12,7 +12,7 @@ import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 import { rolesOptions } from '../../utils/options'
 import FlexBox from '../../components/FlexBox'
-
+import { DateTime } from 'luxon'
 const schema = yup.object({
   name: yup.string().required(),
   role: yup
@@ -27,19 +27,23 @@ const schema = yup.object({
 })
 
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
+  const valueWithTenYears = DateTime.now()
+    .plus({ years: 10 })
+    .toJSDate()
+    .toISOString()
   const defaultValues: Omit<
     User,
     | 'id'
     | 'createdAt'
     | 'createdBy'
     | 'staffNumber'
-    | 'departedDate'
     | 'lastUpdatedAt'
     | 'lockoutAttempts'
   > = {
     name: '',
     password: '',
-    role: 'rco-user'
+    role: 'rco-user',
+    departedDate: valueWithTenYears
   }
   const { record } = useEditContext()
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
