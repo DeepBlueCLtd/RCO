@@ -197,7 +197,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         <Count
                           resource={constants.R_ITEMS}
                           sx={{ fontSize: '1.5rem' }}
-                          filter={{ vaultLocation: id }}
+                          filter={filter}
                         />
                         items
                       </Typography>
