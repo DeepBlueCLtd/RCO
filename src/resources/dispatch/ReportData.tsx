@@ -24,6 +24,16 @@ const DispatchDetail = (): React.ReactElement => {
           }}
         />
       </Box>
+      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+          Recipient Name:{' '}
+        </Typography>
+        <FunctionField<Dispatch>
+          render={(record) => {
+            return `${record.toName}`
+          }}
+        />
+      </Box>
 
       <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
         <Typography fontWeight='bold'>
