@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   DateInput,
+  DateTimeInput,
   EditButton,
   Form,
   FunctionField,
@@ -94,8 +95,8 @@ const Details = (): React.ReactElement => {
           sx={sx}
           disabled
         />
-        <DateInput source='startDate' label='Start' sx={sx} disabled />
-        <DateInput source='endDate' label='End' sx={sx} disabled />
+        <DateTimeInput source='startDate' label='Start' sx={sx} disabled />
+        <DateTimeInput source='endDate' label='End' sx={sx} disabled />
       </FlexBox>
     </Box>
   )

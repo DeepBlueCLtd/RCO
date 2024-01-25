@@ -24,15 +24,6 @@ const DispatchDetail = (): React.ReactElement => {
           }}
         />
       </Box>
-
-      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
-        <Typography fontWeight='bold'>
-          From:
-          <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-            &nbsp;{configData?.fromAddress}
-          </span>
-        </Typography>
-      </Box>
       <FieldWithLabel<Dispatch>
         label='Date'
         source='createdAt'
@@ -46,9 +37,27 @@ const DispatchDetail = (): React.ReactElement => {
         }}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
       />
+      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
+        <Typography fontWeight='bold'>
+          From:
+          <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
+            &nbsp;{configData?.fromAddress}
+          </span>
+        </Typography>
+      </Box>
+      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+          To:{' '}
+        </Typography>
+        <FunctionField<Dispatch>
+          render={(record) => {
+            return `${record.toName}`
+          }}
+        />
+      </Box>
       <FieldWithLabel<Dispatch>
         sourceField='fullAddress'
-        label='To'
+        label='Address'
         source='toAddress'
         reference={constants.R_ADDRESSES}
         textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}

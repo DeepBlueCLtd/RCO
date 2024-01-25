@@ -131,7 +131,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
               label={label}>
               {items.map((item) => (
                 <MenuItem key={item.id} value={String(item.id)}>
-                  {item.name}-{item.remarks}
+                  {item.name}-{item.toName}
                 </MenuItem>
               ))}
             </Select>

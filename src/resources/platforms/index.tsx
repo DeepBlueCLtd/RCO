@@ -54,6 +54,7 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
   return (
     <Edit
       resource={constants.R_PLATFORMS}
+      mutationMode={constants.MUTATION_MODE}
       mutationOptions={{
         onSuccess: (data: { platformNumber: string; id: number }): void => {
           redirect(`/${cName}/${data?.id}/show`)
