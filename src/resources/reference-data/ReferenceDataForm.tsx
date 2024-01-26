@@ -21,6 +21,7 @@ import { useFormContext } from 'react-hook-form'
 import FlexBox from '../../components/FlexBox'
 import { Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import { useConfigData } from '../../utils/useConfigData'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -29,11 +30,18 @@ interface Props {
   handleClose: () => void
   name?: string
 }
+
+export const resourcesWithListPage = [
+  constants.R_DEPARTMENT,
+  constants.R_CAT_CODE,
+  constants.R_CAT_CAVE,
+  constants.R_CAT_HANDLE
+]
+
 const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
   const style = {
     position: 'absolute',
     top: '50%',
-
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 800,
@@ -42,6 +50,7 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
     boxShadow: 24,
     p: 4
   }
+
   const record = useRecordContext()
   const { getValues } = useFormContext()
   const notify = useNotify()
@@ -51,17 +60,15 @@ const ChangeId = ({ handleClose, name }: Props): React.ReactElement => {
 
   const onSave = (): void => {
     const data = { ...values }
-    update(constants.R_DEPARTMENT, {
+    const validName = name ?? ''
+    update(validName, {
       id: record.id,
       data,
       previousData: record
     })
       .then(() => {
-        if (name === constants.R_DEPARTMENT) {
-          redirect(`/${constants.R_DEPARTMENT}`)
-        } else {
-          redirect(`/${name}/${data?.id}/show`)
-        }
+        const hasListPage = resourcesWithListPage.includes(validName)
+        redirect(hasListPage ? `/${name}` : `/${name}/${data.id}/show`)
       })
       .catch((error) => {
         console.error(error)
@@ -143,9 +150,11 @@ export default function ReferenceDataForm(
     name?: string
   }): React.ReactElement => {
     const createRecord = useCustomid()
+    const validName = name ?? ''
+
     return isEdit ? (
       <Toolbar>
-        {name === constants.R_DEPARTMENT && isIDChanged ? (
+        {resourcesWithListPage.includes(validName) && isIDChanged ? (
           <SaveButton onClick={openConfirmationBox} />
         ) : (
           <SaveButton />
@@ -201,13 +210,23 @@ const FormContent = ({
       setIsIDChanged(true)
     }
   }, [{ ...dirtyFields }])
-
-  const warningTextForId =
-    'Warning: Editing the id of a Department that is in use may lead to data corruption.  The id of a department must not be modified if data has been assigned to that department.'
+  const validName = name ?? ''
+  const configData = useConfigData()
+  const resourceName =
+    name === constants.R_DEPARTMENT
+      ? 'department'
+      : name === constants.R_CAT_CODE
+      ? configData?.catCode
+      : name === constants.R_CAT_CAVE
+      ? configData?.catCave
+      : name === constants.R_CAT_HANDLE
+      ? configData?.catHandle
+      : 'resource'
+  const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption.  The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
 
   return (
     <>
-      {name === constants.R_DEPARTMENT && isEdit && (
+      {resourcesWithListPage.includes(validName) && isEdit && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
           <Typography
