@@ -22,7 +22,7 @@ export const AddressEdit = (): React.ReactElement => {
           redirect(`/${constants.R_ADDRESSES}/${data?.id}/show`)
         }
       }}>
-      <AddressForm />
+      <AddressForm isEdit />
     </Edit>
   )
 }
