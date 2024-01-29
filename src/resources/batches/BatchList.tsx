@@ -134,6 +134,7 @@ export default function BatchList(): React.ReactElement {
       key='platform'
       sort={sort()}
       label='Platform'
+      inputProps={{ label: 'Platform' }}
       source='platform_eq'
     />,
     <PlatformFilter
