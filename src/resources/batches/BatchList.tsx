@@ -189,6 +189,7 @@ export default function BatchList(): React.ReactElement {
             source='project'
             reference={constants.R_PROJECTS}
             label={projectName}
+            link={false}
           />
         )}
 
