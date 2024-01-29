@@ -110,22 +110,10 @@ export default function BatchList(): React.ReactElement {
       dataPickerProps={{ views: ['year'] }}
     />,
     <SourceInput
-      reference={constants.R_PLATFORMS}
-      key='platform'
-      sort={sort()}
-      source='platform_eq'
-    />,
-    <SourceInput
       reference={constants.R_DEPARTMENT}
       key='department'
       sort={sort()}
       source='department'
-    />,
-    <PlatformFilter
-      reference={constants.R_PLATFORMS}
-      label='Active Platforms'
-      key='activePlatforms'
-      source='platform'
     />,
     <SourceInput
       variant='outlined'
@@ -138,7 +126,21 @@ export default function BatchList(): React.ReactElement {
       reference={constants.R_PROJECTS}
       source='project'
       key={configData?.projectsName}
+      label={configData?.projectName}
       inputProps={{ label: configData?.projectName }}
+    />,
+    <SourceInput
+      reference={constants.R_PLATFORMS}
+      key='platform'
+      sort={sort()}
+      label='Platform'
+      source='platform_eq'
+    />,
+    <PlatformFilter
+      reference={constants.R_PLATFORMS}
+      label='Active Platforms'
+      key='activePlatforms'
+      source='platform'
     />,
     <DateFilter
       key='createdAt'
