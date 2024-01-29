@@ -74,11 +74,8 @@ export default function VaultLocationList(): React.ReactElement {
         resource={constants.R_VAULT_LOCATION}
         bulkActionButtons={<BulkActions />}>
         <TextField<VaultLocation> source='id' label='ID' />
-        <FunctionField<VaultLocation>
-          style={{ cursor: 'pointer' }}
-          render={({ name }: any) => `${name as string}`}
-          label='Name'
-        />
+        <TextField<VaultLocation> source='name' label='Name' />
+
         <BooleanField<VaultLocation>
           source='active'
           label='Active Vault Location'
