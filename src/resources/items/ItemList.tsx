@@ -805,7 +805,7 @@ const ItemListData = ({
         />
         {projectName && (
           <SourceField<RichItem>
-            link='show'
+            link={false}
             source='project'
             label={projectName}
             reference={constants.R_PROJECTS}
