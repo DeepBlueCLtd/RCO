@@ -30,16 +30,18 @@ const removeOldPasswords = (db, userId) => {
 
 const checkAgainstLastFivePassowrds = (db, userId, password) => {
   const query = `SELECT password FROM ${tableName} WHERE userId = ? ORDER BY createdAt DESC LIMIT 5`
+  const saltedPassword = `${password}${userId}`
   const rows = db.prepare(query).all(userId)
   const recentPasswords = rows.map((row) => row.password)
-  if (recentPasswords.some((p) => bcrypt.compareSync(password, p)))
+  if (recentPasswords.some((p) => bcrypt.compareSync(saltedPassword, p)))
     throw new Error(
       'Password cannot be the same as any of the last five passwords.'
     )
 }
 
 const updateUserPassword = (db, userId, password) => {
-  const hashedPassword = bcrypt.hashSync(password)
+  const saltedPassword = `${password}${userId}`
+  const hashedPassword = bcrypt.hashSync(saltedPassword, 12)
   const query = `
     UPDATE user
     SET password = ?, lastUpdatedAt = ? 
@@ -72,7 +74,8 @@ const insertPasswordRecord = {
       checkAgainstLastFivePassowrds(securityDb, userId, password)
       removeOldPasswords(securityDb, userId)
 
-      queryFields.password = bcrypt.hashSync(password)
+      const saltedPassword = `${password}${userId}`
+      queryFields.password = bcrypt.hashSync(saltedPassword, 12)
 
       const fields = Object.fromEntries(
         Object.entries(queryFields).filter(([_, value]) => value !== null)

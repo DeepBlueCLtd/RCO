@@ -37,8 +37,10 @@ const validateUser = (staffNumber, password, db) => {
     updateLockoutAttempts(db, 0, staffNumber)
     return user
   }
-
-  const isPasswordCorrect = bcrypt.compareSync(password, user.password)
+  const isPasswordCorrect = bcrypt.compareSync(
+    `${password}${user.id}`,
+    user.password
+  )
 
   if (!isPasswordCorrect) {
     updateLockoutAttempts(db, user.lockoutAttempts + 1, staffNumber)
