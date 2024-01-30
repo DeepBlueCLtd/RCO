@@ -12,7 +12,7 @@ const filters = [<SearchInput source='q' key='q' alwaysOn />]
 
 export default function AddressList(): React.ReactElement {
   return (
-    <List resource={R_ADDRESSES} hasCreate filters={filters}>
+    <List resource={R_ADDRESSES} hasCreate filters={filters} exporter={false}>
       <Datagrid rowClick='show'>
         <TextField<Address> source='fullAddress' />
         <BooleanField<Address> source='active' looseValue />
