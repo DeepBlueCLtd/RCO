@@ -17,6 +17,7 @@ export default function ItemHistory(): React.ReactElement {
     <FieldSet title='History'>
       <List
         resource={constants.R_AUDIT}
+        exporter={false}
         filter={{
           resource: constants.R_ITEMS,
           dataId: id,

@@ -11,7 +11,6 @@ import {
   DatagridConfigurable,
   type DatagridConfigurableProps,
   FilterButton,
-  ExportButton,
   useGetList,
   Link,
   BooleanField,
@@ -99,7 +98,6 @@ export const ListActions = (props: ListActionsProps): React.ReactElement => {
     <StyledTopToolbar>
       {buttons}
       <FilterButton />
-      <ExportButton />
     </StyledTopToolbar>
   )
 }
