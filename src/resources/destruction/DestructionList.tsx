@@ -32,6 +32,7 @@ export default function DestructionList(): React.ReactElement {
   return (
     <List
       filters={filters}
+      exporter={false}
       filterDefaultValues={
         process.env.MOCK
           ? { finalisedAt_eq: false }

@@ -116,6 +116,7 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
       hasCreate
       storeKey={storeKey}
       filters={filters}
+      exporter={false}
       filterDefaultValues={
         process.env.MOCK
           ? { dispatchedAt_eq: false }
