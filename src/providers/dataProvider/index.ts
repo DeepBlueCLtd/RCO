@@ -58,6 +58,9 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
     }
   }
 }
+/** SQLite throws an error on a single quote. Swap for double-quotes.
+ * Note: we don't need to reverse this for received data, it is displayed correctly.
+ */
 const sanitizeCode = (data: any): string | any => {
   if (typeof data === 'string') {
     return data.replace(/'/g, '\'\'')
