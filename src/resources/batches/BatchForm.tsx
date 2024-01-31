@@ -176,6 +176,7 @@ const BatchForm = (
             reference={constants.R_PLATFORMS}
             isEdit={isEdit}
             show={isShow}
+            sort={{ field: 'name', order: 'ASC' }}
           />
 
           <ConditionalReferenceInput
