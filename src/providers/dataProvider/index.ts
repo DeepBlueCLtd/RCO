@@ -58,6 +58,15 @@ const getConfigData = (): { configData: () => Promise<ConfigData | null> } => {
     }
   }
 }
+/** SQLite throws an error on a single quote. Swap for double-quotes.
+ * Note: we don't need to reverse this for received data, it is displayed correctly.
+ */
+const sanitizeCode = (data: any): string | any => {
+  if (typeof data === 'string') {
+    return data.replace(/'/g, '\'\'')
+  }
+  return data
+}
 
 export const getDataProvider = async (
   loggingEnabled: boolean,
@@ -138,7 +147,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
           )
           acc[modifiedKey] = value
         } else if (key === SEARCH_OPERATOR) {
-          query._search = value
+          query._search = sanitizeCode(value)
         } else {
           acc[key] = value
         }
@@ -297,10 +306,14 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
   update: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
-
+    const editData = Object.keys(params.data).reduce<Record<string, string>>(
+      (acc, key) => {
+        acc[key] = sanitizeCode(params.data[key])
+        return acc
+      },
+      {}
+    )
     // remove the id property
-    const { ...editData } = params.data
-
     return await axios
       .put(url, { fields: editData })
       .then(() => {
@@ -317,8 +330,13 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
   updateMany: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
 
+    const { id, ...editData } = Object.keys(params.data).reduce<
+      Record<string, string>
+    >((acc, key) => {
+      acc[key] = sanitizeCode(params.data[key])
+      return acc
+    }, {})
     // remove the id property
-    const { id, ...editData } = params.data
     return await axios
       .put(url, { fields: editData })
       .then(async () => {
@@ -329,7 +347,6 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
         return await Promise.reject(new HttpError(message, status, data))
       })
   },
-
   // Note: Deletion is not supported (except for bridging tables)
   delete: async (resource: string, params: any) => {
     if (bridgingTables.includes(resource)) {

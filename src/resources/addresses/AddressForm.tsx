@@ -7,12 +7,13 @@ import EditToolBar from '../../components/EditToolBar'
 interface Props {
   show?: boolean
   isEdit?: boolean
+  create?: boolean
 }
 
 const sx = { width: '100%' }
 
 export default function AddressForm(props: Props): React.ReactElement {
-  const { show, isEdit } = props
+  const { show, isEdit, create } = props
 
   const defaultValues: Partial<Address> = {
     createdAt: DateTime.now().toISO() ?? undefined,
@@ -24,7 +25,7 @@ export default function AddressForm(props: Props): React.ReactElement {
     <SimpleForm
       defaultValues={defaultValues}
       resource={R_ADDRESSES}
-      toolbar={isEdit ? <EditToolBar /> : false}>
+      toolbar={isEdit ?? create ? <EditToolBar /> : false}>
       <TextInput sx={sx} disabled={show} multiline source='fullAddress' />
       <BooleanInput disabled={show} defaultValue={true} source='active' />
       {showForm && (
