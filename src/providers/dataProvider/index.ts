@@ -303,10 +303,13 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
 
   update: async (resource: string, params: any) => {
     const url = `${apiUrl}/${resource}/rows/${params.id}`
-    const editData = Object.keys(params.data).reduce((acc: any, key) => {
-      acc[key] = sanitizeCode(params.data[key])
-      return acc
-    }, {})
+    const editData = Object.keys(params.data).reduce(
+      (acc: Record<string, string>, key) => {
+        acc[key] = sanitizeCode(params.data[key])
+        return acc
+      },
+      {}
+    )
     // remove the id property
     return await axios
       .put(url, { fields: editData })
@@ -325,7 +328,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
     const url = `${apiUrl}/${resource}/rows/${params.ids.toString()}`
 
     const { id, ...editData } = Object.keys(params.data).reduce(
-      (acc: any, key) => {
+      (acc: Record<string, string>, key) => {
         acc[key] = sanitizeCode(params.data[key])
         return acc
       },
