@@ -7,7 +7,7 @@ const AddressForm = React.lazy(async () => await import('./AddressForm'))
 const AddressCreate = (): React.ReactElement => {
   return (
     <Create>
-      <AddressForm />
+      <AddressForm create />
     </Create>
   )
 }
