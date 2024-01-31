@@ -180,6 +180,7 @@ export default function BatchList(): React.ReactElement {
         <FunctionField<Batch>
           label='Reference'
           render={(record) => `${record.vault?.[0]}${record?.batchNumber}`}
+          sortBy='batchNumber'
         />
         <SourceField<Batch>
           source='department'
