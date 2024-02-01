@@ -68,7 +68,7 @@ const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
   const { data } = useGetMany(reference, { ids: platformIds })
   useEffect(() => {
     if (data != null) {
-      const filteredData = data.filter((d) => d.active === true)
+      const filteredData = data.filter((d) => !!d.active)
       setFilters(
         {
           ...displayedFilters,
