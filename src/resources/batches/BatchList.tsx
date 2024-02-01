@@ -61,7 +61,7 @@ interface PlatformFilterType {
 }
 
 const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
-  const { data: batches } = useGetList('batch')
+  const { data: batches } = useGetList(constants.R_BATCHES)
   const platformIds = batches?.map((batch) => batch.platform) ?? []
   const { label, reference } = props
   const { setFilters, displayedFilters } = useListContext()
