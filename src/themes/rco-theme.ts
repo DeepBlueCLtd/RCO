@@ -1,5 +1,5 @@
 import { defaultTheme } from 'react-admin'
-const isDevelopment = process.env.NODE_ENV === 'development'
+const isDevelopment = process.env.VAL_DEV === 'true'
 export const rcoTheme = {
   ...defaultTheme,
   palette: {
