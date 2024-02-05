@@ -61,14 +61,14 @@ interface PlatformFilterType {
 }
 
 const PlatformFilter = (props: PlatformFilterType): React.ReactElement => {
-  const { data: batches } = useGetList('batches')
+  const { data: batches } = useGetList(constants.R_BATCHES)
   const platformIds = batches?.map((batch) => batch.platform) ?? []
   const { label, reference } = props
   const { setFilters, displayedFilters } = useListContext()
   const { data } = useGetMany(reference, { ids: platformIds })
   useEffect(() => {
     if (data != null) {
-      const filteredData = data.filter((d) => d.active === true)
+      const filteredData = data.filter((d) => !!d.active)
       setFilters(
         {
           ...displayedFilters,
