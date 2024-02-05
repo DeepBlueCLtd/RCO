@@ -13,7 +13,8 @@ import {
   UserMenu,
   type UserMenuProps,
   useLogout,
-  useNotify
+  useNotify,
+  useResetStore
 } from 'react-admin'
 import { SideMenus } from './SideMenus'
 import Footer from './Footer'
@@ -22,7 +23,8 @@ import * as constants from '../../constants'
 import { getUser } from '../../providers/authProvider'
 import LockResetIcon from '@mui/icons-material/LockReset'
 import { CHANGE_PASSWORD_EVENT } from '../../constants'
-
+import FilterListIcon from '@mui/icons-material/FilterList'
+import ViewWeekIcon from '@mui/icons-material/ViewWeek'
 // eslint-disable-next-line
 type Events = {
   [CHANGE_PASSWORD_EVENT]: null
@@ -108,7 +110,12 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
     const user = getUser()
     setAuthenticated(user !== undefined)
   }, [])
-
+  const reset = useResetStore()
+  const redircet = useRedirect()
+  const resetFilter = (): void => {
+    reset()
+    redircet('/')
+  }
   return (
     <UserMenu {...props}>
       {!authenticated && (
@@ -137,9 +144,43 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
           '& .MuiSvgIcon-root': {
             marginRight: '11px'
           }
-        }}>
+        }}
+        classes={{ root: styles.root, startIcon: styles.startIcon }}>
         <LockResetIcon />
         Change Password
+      </Button>
+      <Button
+        onClick={() => { reset() }}
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        sx={{
+          color: '#383838',
+          fontSize: '14px',
+          paddingY: '6px',
+          paddingX: '16px',
+          textTransform: 'capitalize',
+          '& .MuiSvgIcon-root': {
+            marginRight: '15px'
+          }
+        }}>
+        <ViewWeekIcon fontSize='small' />
+        Restore default columns
+      </Button>
+
+      <Button
+        onClick={resetFilter}
+        classes={{ root: styles.root, startIcon: styles.startIcon }}
+        sx={{
+          color: '#383838',
+          fontSize: '14px',
+          paddingY: '6px',
+          paddingX: '16px',
+          textTransform: 'capitalize',
+          '& .MuiSvgIcon-root': {
+            marginRight: '11px'
+          }
+        }}>
+        <FilterListIcon />
+        Reset all filters
       </Button>
 
       {/* <Button
