@@ -219,7 +219,7 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 
 const MyAppBar = (props: AppBarProps): React.ReactElement => {
   const redirect = useRedirect()
-  const isDevelopment = process.env.VAL_DEV === 'true'
+  const isDevelopment = process.env.VAL_TEST === 'true'
 
   return (
     <AppBar {...props} userMenu={<MyUserMenu />}>
