@@ -22,8 +22,8 @@
     "test": "jest",
     "e2e": "yarn playwright test",
     "e2e-ui": "yarn playwright test --ui",
-    "serve:prod": "yarn build && yarn serve",
-    "serve:test": "cross-env VAL_TEST=true yarn build && yarn serve"
+    "build:prod": "yarn build",
+    "build:test": "cross-env VAL_TEST=true yarn build"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
