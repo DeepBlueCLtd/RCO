@@ -9,6 +9,28 @@ The cumulative height of the chart is the overall amount of work to be done for 
 As the data sample grows, the trend line will become more valuable.
 ![Burndown chart](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOhfaDcSORmcH_LCzAVAkRcUvEZbz_DqZVo63WaSAmqwIy_CpSq1g-EQ2hM7-O_pM02HRcr_4S48f2/pubchart?oid=1341797319&format=image)
 
+# Production Installs
+
+## Install dependencies
+
+- Download a zip snapshot from GitHub
+- run `yarn` command in root project folder to install/update dependencies
+
+## Build production application
+
+- run `yarn build:prod` to create production instance
+- zip up whole folder and transfer to host device
+- run `yarn serve` on host device
+
+## Build test application
+It is possible to produce a build of VAL that cosmetically changes the color scheme and application title to make it clear that this is a test instance, not a production instance.
+
+- run `yarn build:test` to create test instance
+- zip up whole folder and transfer to host device
+- run `yarn serve` on host device
+
+# New developers
+
 ## Setup project on local
 
 - Clone the project form github
