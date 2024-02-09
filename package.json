@@ -7,12 +7,14 @@
   },
   "homepage": ".",
   "scripts": {
+    "build:prod": "yarn build",
+    "build:test": "cross-env VAL_TEST=true yarn build",
+    "serve": "yarn run check-dist && port=$1 &&  soul -d ./db/RCO2.sqlite -e $(realpath ./_extensions) -p $port",
     "dev": "cross-env NODE_ENV=development vite --open",
     "dev:mock": "cross-env MOCK=true vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "check-dist": "if [ ! -d dist ]; then echo '\\e[31mError: The \"dist\" folder does not exist. Please run \"yarn build\" first.\\e[0m'; exit 1; else echo 'Dist folder exists'; fi",
-    "serve": "yarn run check-dist && port=$1 &&  soul -d ./db/RCO2.sqlite -e $(realpath ./_extensions) -p $port",
     "serve:dev": "soul -d ./db/RCO2.sqlite -e $(realpath ./_devExtensions)",
     "serve:large": "if [ ! -d dist ]; then echo '\\e[31mError: The \"dist\" folder does not exist. Please run \"yarn build\" first.\\e[0m'; else soul -d ./db/RCO2-large.sqlite -e $(realpath ./_extensions); fi",
     "serve:dev:large": "soul -d ./db/RCO2-large.sqlite -e $(realpath ./_devExtensions)",
@@ -21,9 +23,7 @@
     "deploy": "gh-pages -d build",
     "test": "jest",
     "e2e": "yarn playwright test",
-    "e2e-ui": "yarn playwright test --ui",
-    "build:prod": "yarn build",
-    "build:test": "cross-env VAL_TEST=true yarn build"
+    "e2e-ui": "yarn playwright test --ui"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
