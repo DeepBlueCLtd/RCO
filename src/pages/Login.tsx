@@ -12,7 +12,7 @@ import * as constants from '../constants'
 export default function Login(): React.ReactElement {
   const login = useLogin()
   const notify = useNotify()
-
+  const isDevelopment = process.env.VAL_TEST === 'true'
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
@@ -35,13 +35,22 @@ export default function Login(): React.ReactElement {
     <>
       <Container
         sx={{
-          backgroundImage:
-            'radial-gradient(circle at 50% 14em, #313264 0%, #00023b 60%, #00023b 100%)',
+          backgroundImage: isDevelopment
+            ? 'radial-gradient(circle at 50% 14em, #6e3737 0%, #940202 60%, #940202 100%)'
+            : 'radial-gradient(circle at 50% 14em, #313264 0%, #00023b 60%, #00023b 100%)',
+
           minHeight: '100vh',
           minWidth: '100vw',
           paddingTop: '10%'
         }}>
         <CssBaseline />
+        <Typography
+          variant='h4'
+          align='center'
+          sx={{ color: 'white', mb: '20px' }}>
+          {isDevelopment ? 'Welcome to VAL-TEST' : null}
+        </Typography>
+
         <Box
           sx={{
             display: 'flex',
