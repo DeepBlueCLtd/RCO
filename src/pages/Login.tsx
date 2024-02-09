@@ -44,13 +44,6 @@ export default function Login(): React.ReactElement {
           paddingTop: '10%'
         }}>
         <CssBaseline />
-        <Typography
-          variant='h4'
-          align='center'
-          sx={{ color: 'white', mb: '20px' }}>
-          {isDevelopment ? 'Welcome to VAL-TEST' : null}
-        </Typography>
-
         <Box
           sx={{
             display: 'flex',
@@ -71,7 +64,7 @@ export default function Login(): React.ReactElement {
               }}
             />
             <Typography component='h1' variant='h5'>
-              Welcome to VAL
+              Welcome to {isDevelopment ? 'VAL_DEV' : 'VAL'}
             </Typography>
           </div>
           <Box
