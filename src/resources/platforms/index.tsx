@@ -40,8 +40,15 @@ const PlatformForm = (): React.ReactElement => {
 
 const PlatformCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
+  const redirect = useRedirect()
   return (
-    <Create redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
+    <Create
+      mutationOptions={{
+        onSuccess: (data: { platformNumber: string; id: number }): void => {
+          redirect(`/${cName}/${data?.id}/show`)
+        }
+      }}
+      resource={constants.R_PLATFORMS}>
       <PlatformForm />
     </Create>
   )

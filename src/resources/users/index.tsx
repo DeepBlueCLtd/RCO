@@ -10,10 +10,15 @@ const UserList = React.lazy(async () => await import('./UserList'))
 const UserShow = React.lazy(async () => await import('./UserShow'))
 
 const UserCreate = (): React.ReactElement => {
-  const path: string = `/${constants.R_USERS}`
-
+  const redirect = useRedirect()
   return (
-    <Create resource={constants.R_USERS} redirect={path}>
+    <Create
+      resource={constants.R_USERS}
+      mutationOptions={{
+        onSuccess: (data: { user: string; id: number }): void => {
+          redirect(`/${constants.R_USERS}/${data?.id}/show`)
+        }
+      }}>
       <UserForm />
     </Create>
   )
