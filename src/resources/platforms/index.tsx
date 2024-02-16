@@ -18,10 +18,6 @@ const schema = yup.object({
   active: yup.boolean()
 })
 
-interface PropType {
-  name: string
-}
-
 const PlatformForm = (): React.ReactElement => {
   const defaultValues = {
     name: '',
@@ -38,14 +34,13 @@ const PlatformForm = (): React.ReactElement => {
   )
 }
 
-const PlatformCreate = ({ name }: PropType): React.ReactElement => {
-  const cName: string = name
+const PlatformCreate = (): React.ReactElement => {
   const redirect = useRedirect()
   return (
     <Create
       mutationOptions={{
         onSuccess: (data: { platformNumber: string; id: number }): void => {
-          redirect(`/${cName}/${data?.id}/show`)
+          redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
         }
       }}
       resource={constants.R_PLATFORMS}>
@@ -54,8 +49,7 @@ const PlatformCreate = ({ name }: PropType): React.ReactElement => {
   )
 }
 
-const PlatformEdit = ({ name }: PropType): React.ReactElement => {
-  const cName: string = name
+const PlatformEdit = (): React.ReactElement => {
   const redirect = useRedirect()
 
   return (
@@ -64,7 +58,7 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
       mutationMode={constants.MUTATION_MODE}
       mutationOptions={{
         onSuccess: (data: { platformNumber: string; id: number }): void => {
-          redirect(`/${cName}/${data?.id}/show`)
+          redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
         }
       }}>
       <PlatformForm />
