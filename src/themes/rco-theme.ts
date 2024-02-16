@@ -1,12 +1,13 @@
 import { defaultTheme } from 'react-admin'
+const isDevelopment = process.env.VAL_TEST === 'true'
 export const rcoTheme = {
   ...defaultTheme,
   palette: {
     primary: {
-      main: '#1F3860'
+      main: isDevelopment ? '#940202' : '#1F3860'
     },
     secondary: {
-      main: '#1F3860'
+      main: isDevelopment ? '#940202' : '#1F3860'
     }
   },
   components: {

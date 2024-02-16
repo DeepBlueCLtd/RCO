@@ -150,7 +150,9 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
         Change Password
       </Button>
       <Button
-        onClick={() => { reset() }}
+        onClick={() => {
+          reset()
+        }}
         classes={{ root: styles.root, startIcon: styles.startIcon }}
         sx={{
           color: '#383838',
@@ -217,6 +219,8 @@ const MyUserMenu = (props: UserMenuProps): React.ReactElement => {
 
 const MyAppBar = (props: AppBarProps): React.ReactElement => {
   const redirect = useRedirect()
+  const isDevelopment = process.env.VAL_TEST === 'true'
+
   return (
     <AppBar {...props} userMenu={<MyUserMenu />}>
       <span
@@ -243,7 +247,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => {
         />
       </span>
       <Box flex={1} />
-      [VAL]
+      {isDevelopment ? ' [VAL_DEV]' : '[VAL]'}
       <Box flex={1} />
     </AppBar>
   )
