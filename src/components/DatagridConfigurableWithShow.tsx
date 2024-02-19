@@ -21,9 +21,13 @@ const PreviewButton = ({
   const redirect = useRedirect()
   const createPath = useCreatePath()
 
-  const handleClick = (): void => {
-    const path = createPath({ resource, type: 'show', id })
-    redirect(path)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    if (event.ctrlKey || event.button === 1) {
+      window.open(`/#/${resource}/${id}/show`, '_blank')
+    } else {
+      const path = createPath({ resource, type: 'show', id })
+      redirect(path)
+    }
   }
 
   return (
