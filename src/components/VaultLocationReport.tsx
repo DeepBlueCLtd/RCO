@@ -15,8 +15,7 @@ import {
   useDataProvider,
   useListContext,
   Count,
-  useGetList,
-  FunctionField
+  useGetList
 } from 'react-admin'
 import ItemsReport from '../resources/items/ItemsReport'
 import Printable from './Printable'
@@ -26,7 +25,6 @@ import { DateTime } from 'luxon'
 import ReportSignature from './ReportSignature'
 import React from 'react'
 import { useConfigData } from '../utils/useConfigData'
-import { ItemName } from '../resources/audit/AuditList'
 
 type ReferenceItemById = Record<number, IntegerReferenceItem>
 interface Result {
@@ -77,6 +75,8 @@ function ProtectiveMarking({
       const { name } = protectiveMarkingById[key]
       result.push({ name, count: items[key] })
     })
+    console.log('Debugging prot marking count:')
+    console.table(result)
 
     setResult(result)
   }
@@ -203,9 +203,7 @@ export default function VaultLocationReport(props: Props): ReactElement {
                         items
                       </Typography>
                       <ItemsReport filter={filter} {...props}>
-                        <FunctionField<RichItem>
-                          render={(record) => <ItemName id={record.id} />}
-                        />
+                        <TextField<Item> source='itemNumber' />
                         <SourceField<Item>
                           link='show'
                           source='mediaType'
