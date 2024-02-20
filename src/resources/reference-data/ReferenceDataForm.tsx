@@ -21,7 +21,7 @@ import { useFormContext } from 'react-hook-form'
 import FlexBox from '../../components/FlexBox'
 import { Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { useConfigData } from '../../utils/useConfigData'
+import { getResourceName } from '.'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -211,22 +211,7 @@ const FormContent = ({
     }
   }, [{ ...dirtyFields }])
   const validName = name ?? ''
-  const configData = useConfigData()
-  const resourceNames = {
-    [constants.R_DEPARTMENT]: 'Department',
-    [constants.R_CAT_CODE]: configData?.catCode,
-    [constants.R_CAT_CAVE]: configData?.catCave,
-    [constants.R_CAT_HANDLE]: configData?.catHandle,
-    [constants.R_ORGANISATION]: 'Organisation',
-    [constants.R_PROTECTIVE_MARKING]: 'Protective Marking',
-    [constants.R_MEDIA_TYPE]: 'Media type',
-    [constants.R_VAULT]: 'Vault'
-  }
-
-  const resourceName =
-    name !== undefined && name in resourceNames
-      ? resourceNames[name as keyof typeof resourceNames] ?? 'resource'
-      : 'resource'
+  const resourceName = getResourceName(name ?? '')
   const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption. The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
   const pageTitle = isEdit ? `Edit ${resourceName}` : `Add new ${resourceName}`
   return (

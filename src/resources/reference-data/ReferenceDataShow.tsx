@@ -12,8 +12,8 @@ import { ValueField } from '../projects/ProjectShow'
 import { R_MEDIA_TYPE, type ResourceTypes } from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
 import HistoryButton from '../../components/HistoryButton'
-import * as constants from '../../constants'
-import { useConfigData } from '../../utils/useConfigData'
+import { getResourceName } from '.'
+
 interface ShowActionProps {
   resource: ResourceTypes
 }
@@ -45,22 +45,7 @@ export default function ReferenceDataShow({
   name
 }: PropType): React.ReactElement {
   const cName: ResourceTypes = name as ResourceTypes
-  const configData = useConfigData()
-  const resourceNames = {
-    [constants.R_DEPARTMENT]: 'Department',
-    [constants.R_CAT_CODE]: configData?.catCode,
-    [constants.R_CAT_CAVE]: configData?.catCave,
-    [constants.R_CAT_HANDLE]: configData?.catHandle,
-    [constants.R_ORGANISATION]: 'Organisation',
-    [constants.R_PROTECTIVE_MARKING]: 'Protective Marking',
-    [constants.R_MEDIA_TYPE]: 'Media type',
-    [constants.R_VAULT]: 'Vault',
-    [constants.R_PLATFORMS]: 'Platform'
-  }
-  const resourceName =
-    name !== undefined && name in resourceNames
-      ? resourceNames[name as keyof typeof resourceNames] ?? 'resource'
-      : 'resource'
+  const resourceName = getResourceName(name)
   return (
     <Show resource={name} actions={<Actions resource={cName} />}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
