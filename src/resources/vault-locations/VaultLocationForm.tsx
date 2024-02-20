@@ -18,14 +18,14 @@ export default function VaultLocationForm({
   const defaultValues = {
     name: ''
   }
-
+  const pageTitle = isEdit ? 'Edit Vault Location' : 'Add new Vault Location'
   return (
     <SimpleForm
       toolbar={<EditToolBar />}
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}>
       <Typography variant='h6' fontWeight='bold'>
-        {isEdit ? 'Edit Vault Location' : 'Add new Vault Location'}
+        {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <BooleanInput defaultValue={true} source='active' />

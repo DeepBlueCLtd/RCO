@@ -29,13 +29,14 @@ const PlatformForm = ({ isEdit }: PropType): React.ReactElement => {
     name: '',
     active: true
   }
+  const pageTitle = isEdit ? 'Edit Platform' : 'Add new Platform'
   return (
     <SimpleForm
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}
       toolbar={<EditToolBar />}>
       <Typography variant='h6' fontWeight='bold'>
-        {isEdit ? 'Edit Platform' : 'Add new Platform'}
+        {pageTitle}
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <BooleanInput defaultValue={true} source='active' />
@@ -65,7 +66,7 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
           redirect(`/${cName}/${data?.id}/show`)
         }
       }}>
-      <PlatformForm name={name} isEdit />
+      <PlatformForm name={name} isEdit={true} />
     </Edit>
   )
 }

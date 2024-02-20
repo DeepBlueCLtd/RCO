@@ -61,13 +61,17 @@ export default function DispatchForm(props: Props): React.ReactElement {
   }, [id])
 
   const showForm = typeof show !== 'undefined' && show
-
+  const pageTitle = edit
+    ? 'Edit Distpatch'
+    : show
+    ? 'View Dispatch'
+    : 'Add new Dispatch'
   return (
     <SimpleForm
       toolbar={showForm ? false : <EditToolbar />}
       resolver={yupResolver(schema)}>
       <Typography variant='h6' fontWeight='bold'>
-        {edit ? 'Edit Distpatch' : show ? 'View Dispatch' : 'Add new Dispatch'}
+        {pageTitle}
       </Typography>
 
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>

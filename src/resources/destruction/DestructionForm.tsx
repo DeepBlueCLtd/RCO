@@ -149,14 +149,14 @@ export default function DestructionForm(props: Props): React.ReactElement {
     )
   }
   const handleSubmit = isEdit ? updateJob : onSubmit
-
+  const pageTitle = isEdit ? 'Edit Destruction' : 'Add new Destruction'
   return (
     <SimpleForm
       toolbar={<DestructionFormToolbar isEdit={isEdit} />}
       resolver={yupResolver(schema)}
       onSubmit={handleSubmit as any}>
       <Typography variant='h6' fontWeight='bold'>
-        {isEdit ? 'Edit Destruction' : 'Add new Destruction'}
+        {pageTitle}
       </Typography>
       {isEdit && (
         <TextInput

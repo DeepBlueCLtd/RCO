@@ -212,30 +212,27 @@ const FormContent = ({
   }, [{ ...dirtyFields }])
   const validName = name ?? ''
   const configData = useConfigData()
+  const resourceNames = {
+    [constants.R_DEPARTMENT]: 'Department',
+    [constants.R_CAT_CODE]: configData?.catCode,
+    [constants.R_CAT_CAVE]: configData?.catCave,
+    [constants.R_CAT_HANDLE]: configData?.catHandle,
+    [constants.R_ORGANISATION]: 'Organisation',
+    [constants.R_PROTECTIVE_MARKING]: 'Protective Marking',
+    [constants.R_MEDIA_TYPE]: 'Media type',
+    [constants.R_VAULT]: 'Vault'
+  }
+
   const resourceName =
-    name === constants.R_DEPARTMENT
-      ? 'Department'
-      : name === constants.R_CAT_CODE
-      ? configData?.catCode
-      : name === constants.R_CAT_CAVE
-      ? configData?.catCave
-      : name === constants.R_CAT_HANDLE
-      ? configData?.catHandle
-      : name === constants.R_ORGANISATION
-      ? 'Organisation'
-      : name === constants.R_PROTECTIVE_MARKING
-      ? 'Protective Marking'
-      : name === constants.R_MEDIA_TYPE
-      ? 'Media type'
-      : name === constants.R_VAULT
-      ? 'Vault'
+    name !== undefined && name in resourceNames
+      ? resourceNames[name as keyof typeof resourceNames] ?? 'resource'
       : 'resource'
-  const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption.  The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
-  const nameOfRescource = resourceName
+  const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption. The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
+  const pageTitle = isEdit ? `Edit ${resourceName}` : `Add new ${resourceName}`
   return (
     <>
       <Typography variant='h6' fontWeight='bold'>
-        {isEdit ? `Edit ${nameOfRescource}` : `Add new ${nameOfRescource}`}
+        {pageTitle}
       </Typography>
       {resourcesWithListPage.includes(validName) && isEdit && (
         <FlexBox justifyContent='end'>
