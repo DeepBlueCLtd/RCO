@@ -16,6 +16,7 @@ import * as yup from 'yup'
 import FlexBox from '../../components/FlexBox'
 import { ConditionalReferenceInput } from '../batches/BatchForm'
 import { useParams } from 'react-router-dom'
+import { Typography } from '@mui/material'
 
 interface Props {
   show?: boolean
@@ -65,6 +66,10 @@ export default function DispatchForm(props: Props): React.ReactElement {
     <SimpleForm
       toolbar={showForm ? false : <EditToolbar />}
       resolver={yupResolver(schema)}>
+      <Typography variant='h6' fontWeight='bold'>
+        {edit ? 'Edit Distpatch' : show ? 'View Dispatch' : 'Add new Dispatch'}
+      </Typography>
+
       <FlexBox flexDirection={showForm ? 'row' : 'column'}>
         <TextInput sx={sx} disabled={show} source='toName' />
       </FlexBox>

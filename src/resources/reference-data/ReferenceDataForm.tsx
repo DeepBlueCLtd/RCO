@@ -214,18 +214,29 @@ const FormContent = ({
   const configData = useConfigData()
   const resourceName =
     name === constants.R_DEPARTMENT
-      ? 'department'
+      ? 'Department'
       : name === constants.R_CAT_CODE
       ? configData?.catCode
       : name === constants.R_CAT_CAVE
       ? configData?.catCave
       : name === constants.R_CAT_HANDLE
       ? configData?.catHandle
+      : name === constants.R_ORGANISATION
+      ? 'Organisation'
+      : name === constants.R_PROTECTIVE_MARKING
+      ? 'Protective Marking'
+      : name === constants.R_MEDIA_TYPE
+      ? 'Media type'
+      : name === constants.R_VAULT
+      ? 'Vault'
       : 'resource'
   const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption.  The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
-
+  const nameOfRescource = resourceName
   return (
     <>
+      <Typography variant='h6' fontWeight='bold'>
+        {isEdit ? `Edit ${nameOfRescource}` : `Add new ${nameOfRescource}`}
+      </Typography>
       {resourcesWithListPage.includes(validName) && isEdit && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
