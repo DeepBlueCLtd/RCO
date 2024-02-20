@@ -16,6 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { ConditionalReferenceInput } from '../batches/BatchForm'
 import { generateReference } from '../../providers/dataProvider/dataprovider-utils'
+import { Typography } from '@mui/material'
 
 interface Props {
   isEdit?: boolean
@@ -148,12 +149,15 @@ export default function DestructionForm(props: Props): React.ReactElement {
     )
   }
   const handleSubmit = isEdit ? updateJob : onSubmit
-
+  const pageTitle = isEdit ? 'Edit Destruction' : 'Add new Destruction'
   return (
     <SimpleForm
       toolbar={<DestructionFormToolbar isEdit={isEdit} />}
       resolver={yupResolver(schema)}
       onSubmit={handleSubmit as any}>
+      <Typography variant='h6' fontWeight='bold'>
+        {pageTitle}
+      </Typography>
       {isEdit && (
         <TextInput
           fullWidth
