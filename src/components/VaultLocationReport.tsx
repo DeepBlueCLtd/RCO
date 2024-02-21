@@ -39,7 +39,10 @@ function ProtectiveMarking({
 }: {
   filter: filterType
 }): React.ReactElement {
-  const { data = [], isLoading } = useGetList(constants.R_ITEMS, { filter })
+  const { data = [], isLoading } = useGetList(constants.R_ITEMS, {
+    filter,
+    pagination: { page: 1, perPage: 1000 }
+  })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
   const sx = { padding: '3px' }
@@ -61,7 +64,6 @@ function ProtectiveMarking({
           ids: Object.keys(items)
         }
       )
-
     const protectiveMarkingById: ReferenceItemById = {}
 
     protectiveMarkings.forEach((protectiveMarking) => {
@@ -75,8 +77,6 @@ function ProtectiveMarking({
       const { name } = protectiveMarkingById[key]
       result.push({ name, count: items[key] })
     })
-    console.log('Debugging prot marking count:')
-    console.table(result)
 
     setResult(result)
   }
