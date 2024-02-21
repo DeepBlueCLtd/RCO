@@ -22,6 +22,7 @@ import FlexBox from '../../components/FlexBox'
 import { Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useConfigData } from '../../utils/useConfigData'
+import { getResourceName } from './utils'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -212,20 +213,14 @@ const FormContent = ({
   }, [{ ...dirtyFields }])
   const validName = name ?? ''
   const configData = useConfigData()
-  const resourceName =
-    name === constants.R_DEPARTMENT
-      ? 'department'
-      : name === constants.R_CAT_CODE
-      ? configData?.catCode
-      : name === constants.R_CAT_CAVE
-      ? configData?.catCave
-      : name === constants.R_CAT_HANDLE
-      ? configData?.catHandle
-      : 'resource'
-  const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption.  The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
-
+  const resourceName = getResourceName(name ?? '', configData)
+  const warningTextForId = `Warning: Editing the id of a ${resourceName} that is in use may lead to data corruption. The id of a ${resourceName} must not be modified if data has been assigned to that ${resourceName}.`
+  const pageTitle = isEdit ? `Edit ${resourceName}` : `Add new ${resourceName}`
   return (
     <>
+      <Typography variant='h6' fontWeight='bold'>
+        {pageTitle}
+      </Typography>
       {resourcesWithListPage.includes(validName) && isEdit && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />

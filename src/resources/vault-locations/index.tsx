@@ -8,7 +8,7 @@ import * as constants from '../../constants'
 const VaultLocationCreate = (): React.ReactElement => {
   return (
     <Create>
-      <VaultLocationForm />
+      <VaultLocationForm isEdit={false} />
     </Create>
   )
 }
@@ -23,7 +23,7 @@ export const VaultLocationEdit = (): React.ReactElement => {
           redirect(`/${constants.R_VAULT_LOCATION}/${data?.id}/show`)
         }
       }}>
-      <VaultLocationForm />
+      <VaultLocationForm isEdit />
     </Edit>
   )
 }

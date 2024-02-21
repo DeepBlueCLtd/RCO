@@ -12,6 +12,8 @@ import { ValueField } from '../projects/ProjectShow'
 import { R_MEDIA_TYPE, type ResourceTypes } from '../../constants'
 import useCanAccess from '../../hooks/useCanAccess'
 import HistoryButton from '../../components/HistoryButton'
+import { getResourceName } from './utils'
+import { useConfigData } from '../../utils/useConfigData'
 
 interface ShowActionProps {
   resource: ResourceTypes
@@ -44,11 +46,12 @@ export default function ReferenceDataShow({
   name
 }: PropType): React.ReactElement {
   const cName: ResourceTypes = name as ResourceTypes
-
+  const configData = useConfigData()
+  const resourceName = getResourceName(name, configData)
   return (
     <Show resource={name} actions={<Actions resource={cName} />}>
       <Typography variant='h5' fontWeight='bold' sx={{ padding: '15px' }}>
-        {`View ${name}`}
+        {`View ${resourceName}`}
       </Typography>
       <Card>
         <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>

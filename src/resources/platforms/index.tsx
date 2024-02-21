@@ -12,6 +12,7 @@ import * as yup from 'yup'
 import PlatformList from './PlatformList'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -20,18 +21,23 @@ const schema = yup.object({
 
 interface PropType {
   name: string
+  isEdit: boolean
 }
 
-const PlatformForm = (): React.ReactElement => {
+const PlatformForm = ({ isEdit }: PropType): React.ReactElement => {
   const defaultValues = {
     name: '',
     active: true
   }
+  const pageTitle = isEdit ? 'Edit Platform' : 'Add new Platform'
   return (
     <SimpleForm
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}
       toolbar={<EditToolBar />}>
+      <Typography variant='h6' fontWeight='bold'>
+        {pageTitle}
+      </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <BooleanInput defaultValue={true} source='active' />
     </SimpleForm>
@@ -42,7 +48,7 @@ const PlatformCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
   return (
     <Create redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
-      <PlatformForm />
+      <PlatformForm name={name} isEdit={false} />
     </Create>
   )
 }
@@ -60,7 +66,7 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
           redirect(`/${cName}/${data?.id}/show`)
         }
       }}>
-      <PlatformForm />
+      <PlatformForm name={name} isEdit={true} />
     </Edit>
   )
 }
