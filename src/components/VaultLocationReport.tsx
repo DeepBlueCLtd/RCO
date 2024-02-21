@@ -54,7 +54,7 @@ function ProtectiveMarking({
       } else {
         items[item.protectiveMarking] = count + 1
       }
-      console.log('d2:', item.protective Marking, items)
+      console.log('d2:', item.protectiveMarking, items)
     })
     const { data: protectiveMarkings } =
       await dataProvider.getMany<IntegerReferenceItem>(
