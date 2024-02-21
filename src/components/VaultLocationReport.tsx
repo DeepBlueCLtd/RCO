@@ -39,7 +39,7 @@ function ProtectiveMarking({
 }: {
   filter: filterType
 }): React.ReactElement {
-  const { data = [], isLoading } = useGetList(constants.R_ITEMS, { filter })
+  const { data = [], isLoading } = useGetList(constants.R_ITEMS, { filter, pagination: { page: 1, perPage: 2000 } })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
   const sx = { padding: '3px' }
@@ -54,7 +54,6 @@ function ProtectiveMarking({
       } else {
         items[item.protectiveMarking] = count + 1
       }
-      console.log('d2:', item.protectiveMarking, items)
     })
     const { data: protectiveMarkings } =
       await dataProvider.getMany<IntegerReferenceItem>(
@@ -63,15 +62,12 @@ function ProtectiveMarking({
           ids: Object.keys(items)
         }
       )
-    console.log('d3', protectiveMarkings)
     const protectiveMarkingById: ReferenceItemById = {}
 
     protectiveMarkings.forEach((protectiveMarking) => {
       protectiveMarkingById[protectiveMarking.id] = protectiveMarking
     })
     
-    console.log('d4', protectiveMarkingById)
-
     const result: Result[] = []
 
     Object.keys(items).forEach((itemKey: string) => {
