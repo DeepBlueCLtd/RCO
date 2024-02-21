@@ -221,7 +221,7 @@ const FormContent = ({
       <Typography variant='h6' fontWeight='bold'>
         {pageTitle}
       </Typography>
-      {resourcesWithListPage.includes(validName) && isEdit && (
+      {resourcesWithListPage.includes(validName) && (
         <FlexBox justifyContent='end'>
           <TextInput source='id' variant='outlined' sx={{ width: '100%' }} />
           <Typography
