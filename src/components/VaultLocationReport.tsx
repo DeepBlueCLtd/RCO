@@ -45,6 +45,7 @@ function ProtectiveMarking({
   const sx = { padding: '3px' }
 
   const getTableData = async (): Promise<void> => {
+    console.log('D1:', data.length, ' items')
     const items: Record<number, number> = {}
     data.forEach((item) => {
       const count = items[item.protectiveMarking]
@@ -53,6 +54,7 @@ function ProtectiveMarking({
       } else {
         items[item.protectiveMarking] = count + 1
       }
+      console.log('d2:', item.protectiveMarking, items)
     })
     const { data: protectiveMarkings } =
       await dataProvider.getMany<IntegerReferenceItem>(
@@ -61,12 +63,14 @@ function ProtectiveMarking({
           ids: Object.keys(items)
         }
       )
-
+    console.log('d3', protectiveMarkings)
     const protectiveMarkingById: ReferenceItemById = {}
 
     protectiveMarkings.forEach((protectiveMarking) => {
       protectiveMarkingById[protectiveMarking.id] = protectiveMarking
     })
+    
+    console.log('d4', protectiveMarkingById)
 
     const result: Result[] = []
 
