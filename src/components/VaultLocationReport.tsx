@@ -45,7 +45,7 @@ function ProtectiveMarking({
   const sx = { padding: '3px' }
 
   const getTableData = async (): Promise<void> => {
-    console.log('D1:', data.length(), ' items')
+    console.log('D1:', data.length, ' items')
     const items: Record<number, number> = {}
     data.forEach((item) => {
       const count = items[item.protectiveMarking]
