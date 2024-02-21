@@ -39,13 +39,15 @@ function ProtectiveMarking({
 }: {
   filter: filterType
 }): React.ReactElement {
-  const { data = [], isLoading } = useGetList(constants.R_ITEMS, { filter, pagination: { page: 1, perPage: 2000 } })
+  const { data = [], isLoading } = useGetList(constants.R_ITEMS, {
+    filter,
+    pagination: { page: 1, perPage: 1000 }
+  })
   const dataProvider = useDataProvider()
   const [result, setResult] = useState<Result[]>([])
   const sx = { padding: '3px' }
 
   const getTableData = async (): Promise<void> => {
-    console.log('D1:', data.length, ' items')
     const items: Record<number, number> = {}
     data.forEach((item) => {
       const count = items[item.protectiveMarking]
@@ -67,7 +69,7 @@ function ProtectiveMarking({
     protectiveMarkings.forEach((protectiveMarking) => {
       protectiveMarkingById[protectiveMarking.id] = protectiveMarking
     })
-    
+
     const result: Result[] = []
 
     Object.keys(items).forEach((itemKey: string) => {
@@ -75,8 +77,6 @@ function ProtectiveMarking({
       const { name } = protectiveMarkingById[key]
       result.push({ name, count: items[key] })
     })
-    console.log('Debugging prot marking count:')
-    console.table(result)
 
     setResult(result)
   }
