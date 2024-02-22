@@ -16,6 +16,9 @@ import useCanAccess from '../hooks/useCanAccess'
 import * as constants from '../constants'
 import HistoryButton from './HistoryButton'
 import { ActiveFilter } from '../resources/platforms/PlatformList'
+import { useConfigData } from '../utils/useConfigData'
+import { Typography } from '@mui/material'
+import { getResourceName } from '../resources/reference-data/utils'
 
 interface PropType {
   name: string
@@ -47,12 +50,18 @@ export default function ReferenceDataList({
   )
 
   const notShowActive = (name: string): boolean => name === constants.R_AUDIT
-
+  const configData = useConfigData()
+  const listTitle = getResourceName(name, configData)
   return (
     <List
       actions={<ListActions />}
       resource={cName}
       filters={getFilters(cName)}>
+      <Typography
+        variant='h5'
+        fontWeight={'bold'}
+        style={{ padding: ' 0 15px' }}>{`${listTitle}s`}</Typography>
+
       <Datagrid
         bulkActionButtons={false}
         rowClick={(id: Identifier) => {

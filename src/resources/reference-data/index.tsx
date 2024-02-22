@@ -2,12 +2,14 @@ import React from 'react'
 import { Create, Edit, useRedirect } from 'react-admin'
 import ReferenceDataForm from './ReferenceDataForm'
 import * as constants from '../../constants'
+
 interface PropType {
   name: string
 }
 
 const RerferenceDataCreate = ({ name }: PropType): React.ReactElement => {
   const cName: string = name
+
   return (
     <Create redirect={`/${cName}`} resource={cName}>
       <ReferenceDataForm name={cName} />

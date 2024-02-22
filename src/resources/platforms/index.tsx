@@ -12,22 +12,27 @@ import * as yup from 'yup'
 import PlatformList from './PlatformList'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   name: yup.string().required(),
   active: yup.boolean()
 })
 
-const PlatformForm = (): React.ReactElement => {
+const PlatformForm = ({ isEdit }: { isEdit?: boolean }): React.ReactElement => {
   const defaultValues = {
     name: '',
     active: true
   }
+  const pageTitle = isEdit ? 'Edit Platform' : 'Add new Platform'
   return (
     <SimpleForm
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}
       toolbar={<EditToolBar />}>
+      <Typography variant='h6' fontWeight='bold'>
+        {pageTitle}
+      </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <BooleanInput defaultValue={true} source='active' />
     </SimpleForm>
@@ -61,7 +66,7 @@ const PlatformEdit = (): React.ReactElement => {
           redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
         }
       }}>
-      <PlatformForm />
+      <PlatformForm isEdit />
     </Edit>
   )
 }

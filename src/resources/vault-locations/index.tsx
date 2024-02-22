@@ -14,7 +14,7 @@ const VaultLocationCreate = (): React.ReactElement => {
           redirect(`/${constants.R_VAULT_LOCATION}/${data?.id}/show`)
         }
       }}>
-      <VaultLocationForm />
+      <VaultLocationForm isEdit={false} />
     </Create>
   )
 }
@@ -29,7 +29,7 @@ export const VaultLocationEdit = (): React.ReactElement => {
           redirect(`/${constants.R_VAULT_LOCATION}/${data?.id}/show`)
         }
       }}>
-      <VaultLocationForm />
+      <VaultLocationForm isEdit />
     </Edit>
   )
 }
