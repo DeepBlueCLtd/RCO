@@ -19,12 +19,7 @@ const schema = yup.object({
   active: yup.boolean()
 })
 
-interface PropType {
-  name: string
-  isEdit: boolean
-}
-
-const PlatformForm = ({ isEdit }: PropType): React.ReactElement => {
+const PlatformForm = ({ isEdit }: { isEdit?: boolean }): React.ReactElement => {
   const defaultValues = {
     name: '',
     active: true
@@ -44,17 +39,22 @@ const PlatformForm = ({ isEdit }: PropType): React.ReactElement => {
   )
 }
 
-const PlatformCreate = ({ name }: PropType): React.ReactElement => {
-  const cName: string = name
+const PlatformCreate = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Create redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
-      <PlatformForm name={name} isEdit={false} />
+    <Create
+      mutationOptions={{
+        onSuccess: (data: { platformNumber: string; id: number }): void => {
+          redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
+        }
+      }}
+      resource={constants.R_PLATFORMS}>
+      <PlatformForm />
     </Create>
   )
 }
 
-const PlatformEdit = ({ name }: PropType): React.ReactElement => {
-  const cName: string = name
+const PlatformEdit = (): React.ReactElement => {
   const redirect = useRedirect()
 
   return (
@@ -63,10 +63,10 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
       mutationMode={constants.MUTATION_MODE}
       mutationOptions={{
         onSuccess: (data: { platformNumber: string; id: number }): void => {
-          redirect(`/${cName}/${data?.id}/show`)
+          redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
         }
       }}>
-      <PlatformForm name={name} isEdit={true} />
+      <PlatformForm isEdit />
     </Edit>
   )
 }

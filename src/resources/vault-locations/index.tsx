@@ -6,8 +6,14 @@ import ReferenceDataShow from '../reference-data/ReferenceDataShow'
 import { R_VAULT_LOCATION } from '../../constants'
 import * as constants from '../../constants'
 const VaultLocationCreate = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Create>
+    <Create
+      mutationOptions={{
+        onSuccess: (data: { vaultNumber: string; id: number }): void => {
+          redirect(`/${constants.R_VAULT_LOCATION}/${data?.id}/show`)
+        }
+      }}>
       <VaultLocationForm isEdit={false} />
     </Create>
   )

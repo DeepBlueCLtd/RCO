@@ -7,8 +7,14 @@ const ProjectList = React.lazy(async () => await import('./ProjectList'))
 const ProjectShow = React.lazy(async () => await import('./ProjectShow'))
 
 const ProjectCreate = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Create>
+    <Create
+      mutationOptions={{
+        onSuccess: (data: { projectNumber: string; id: number }): void => {
+          redirect(`/${constants.R_PROJECTS}/${data?.id}/show`)
+        }
+      }}>
       <ProjectForm />
     </Create>
   )
