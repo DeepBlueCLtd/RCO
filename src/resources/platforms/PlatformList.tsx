@@ -1,4 +1,4 @@
-import { Chip } from '@mui/material'
+import { Chip, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import {
   BooleanField,
@@ -66,6 +66,9 @@ export default function PlatformList(props: Props): React.ReactElement {
       perPage={25}
       filters={filters}
       resource='platform'>
+      <Typography variant='h5' fontWeight={'bold'} style={{ padding: ' 15px' }}>
+        Platforms
+      </Typography>
       <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField<Platform> source='id' label='ID' />
         <TextField<Platform> source='name' />

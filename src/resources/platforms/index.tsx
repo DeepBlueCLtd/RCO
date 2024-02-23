@@ -12,43 +12,49 @@ import * as yup from 'yup'
 import PlatformList from './PlatformList'
 import EditToolBar from '../../components/EditToolBar'
 import * as constants from '../../constants'
+import { Typography } from '@mui/material'
 
 const schema = yup.object({
   name: yup.string().required(),
   active: yup.boolean()
 })
 
-interface PropType {
-  name: string
-}
-
-const PlatformForm = (): React.ReactElement => {
+const PlatformForm = ({ isEdit }: { isEdit?: boolean }): React.ReactElement => {
   const defaultValues = {
     name: '',
     active: true
   }
+  const pageTitle = isEdit ? 'Edit Platform' : 'Add new Platform'
   return (
     <SimpleForm
       defaultValues={defaultValues}
       resolver={yupResolver(schema)}
       toolbar={<EditToolBar />}>
+      <Typography variant='h6' fontWeight='bold'>
+        {pageTitle}
+      </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <BooleanInput defaultValue={true} source='active' />
     </SimpleForm>
   )
 }
 
-const PlatformCreate = ({ name }: PropType): React.ReactElement => {
-  const cName: string = name
+const PlatformCreate = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Create redirect={`/${cName}`} resource={constants.R_PLATFORMS}>
+    <Create
+      mutationOptions={{
+        onSuccess: (data: { platformNumber: string; id: number }): void => {
+          redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
+        }
+      }}
+      resource={constants.R_PLATFORMS}>
       <PlatformForm />
     </Create>
   )
 }
 
-const PlatformEdit = ({ name }: PropType): React.ReactElement => {
-  const cName: string = name
+const PlatformEdit = (): React.ReactElement => {
   const redirect = useRedirect()
 
   return (
@@ -57,10 +63,10 @@ const PlatformEdit = ({ name }: PropType): React.ReactElement => {
       mutationMode={constants.MUTATION_MODE}
       mutationOptions={{
         onSuccess: (data: { platformNumber: string; id: number }): void => {
-          redirect(`/${cName}/${data?.id}/show`)
+          redirect(`/${constants.R_PLATFORMS}/${data?.id}/show`)
         }
       }}>
-      <PlatformForm />
+      <PlatformForm isEdit />
     </Edit>
   )
 }

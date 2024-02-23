@@ -5,8 +5,14 @@ const AddressList = React.lazy(async () => await import('./AddressList'))
 const AddressForm = React.lazy(async () => await import('./AddressForm'))
 
 const AddressCreate = (): React.ReactElement => {
+  const redirect = useRedirect()
   return (
-    <Create>
+    <Create
+      mutationOptions={{
+        onSuccess: (data: { addressNumber: string; id: number }): void => {
+          redirect(`/${constants.R_ADDRESSES}/${data?.id}/show`)
+        }
+      }}>
       <AddressForm create />
     </Create>
   )
