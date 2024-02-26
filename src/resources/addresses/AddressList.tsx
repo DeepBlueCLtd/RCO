@@ -17,7 +17,7 @@ export default function AddressList(): React.ReactElement {
       <Typography variant='h5' fontWeight={'bold'} style={{ padding: ' 15px' }}>
         Addresses
       </Typography>
-      <Datagrid rowClick='show'>
+      <Datagrid rowClick='show' bulkActionButtons={false}>
         <TextField<Address> source='fullAddress' />
         <BooleanField<Address> source='active' looseValue />
         <DateField<Address> source='createdAt' />
