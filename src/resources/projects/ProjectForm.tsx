@@ -85,7 +85,12 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
           2020-2040).
         </p>
       </FlexBox>
-      <BooleanInput source='active' defaultValue={true} />
+      <FlexBox sx={{ alignItems: 'center]' }}>
+        <BooleanInput source='active' defaultValue={true} />
+        <p style={helperTextStyles}>
+          Only Active items are listed when adding a new batch.
+        </p>
+      </FlexBox>
     </SimpleForm>
   )
 }
