@@ -24,7 +24,7 @@ interface Props {
 }
 
 const schema = yup.object({
-  remarks: yup.string()
+  remarks: yup.string().nullable()
 })
 
 interface DestructionFormToolbarProps {
