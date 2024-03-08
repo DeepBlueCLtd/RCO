@@ -38,7 +38,7 @@ const DestructionFormToolbar = (
 
   return (
     <Toolbar>
-      <SaveButton label={isEdit ? 'Save' : 'Create'} />
+      <SaveButton label={isEdit ? 'Save' : 'Create'} alwaysEnable />
     </Toolbar>
   )
 }
