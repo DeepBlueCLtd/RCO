@@ -26,18 +26,6 @@ const schema = yup.object({
     )
 })
 
-const styles = {
-  '& .MuiSwitch-root': {
-    display: 'none'
-  },
-  '& .MuiSwitch-input': {
-    display: 'none'
-  },
-  '.MuiFormHelperText-root': {
-    maxWidth: '20px'
-  }
-}
-
 const helperTextStyles = {
   color: 'rgba(0, 0, 0, 0.6)',
   fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
@@ -97,13 +85,12 @@ export default function ProjectForm({ isEdit }: FormProps): React.ReactElement {
           2020-2040).
         </p>
       </FlexBox>
-      <BooleanInput
-        hidden
-        source='active'
-        defaultValue={true}
-        sx={styles}
-        label={false}
-      />
+      <FlexBox sx={{ alignItems: 'center]' }}>
+        <BooleanInput source='active' defaultValue={true} />
+        <p style={helperTextStyles}>
+          Only Active items are listed when adding a new batch.
+        </p>
+      </FlexBox>
     </SimpleForm>
   )
 }

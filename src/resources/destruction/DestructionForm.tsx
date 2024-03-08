@@ -24,7 +24,7 @@ interface Props {
 }
 
 const schema = yup.object({
-  remarks: yup.string()
+  remarks: yup.string().nullable()
 })
 
 interface DestructionFormToolbarProps {
@@ -38,7 +38,7 @@ const DestructionFormToolbar = (
 
   return (
     <Toolbar>
-      <SaveButton label={isEdit ? 'Save' : 'Create'} />
+      <SaveButton label={isEdit ? 'Save' : 'Create'} alwaysEnable />
     </Toolbar>
   )
 }
