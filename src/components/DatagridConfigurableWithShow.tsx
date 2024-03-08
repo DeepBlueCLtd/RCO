@@ -23,7 +23,6 @@ const PreviewButton = ({
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     if (event.ctrlKey || event.button === 1) {
-      console.log('open new tab')
       window.open(`/#/${resource}/${id}/show`, '_blank')
     } else {
       const path = createPath({ resource, type: 'show', id })
