@@ -39,7 +39,7 @@ const removeOldPasswords = (db, userId) => {
 }
 
 const checkCurrentPassword = (securityDb, userId, currentPassword) => {
-  const query = `SELECT password FROM user WHERE id = ?`
+  const query = `SELECT password FROM _users WHERE id = ?`
   const user = securityDb.prepare(query).get(userId)
   return bcrypt.compareSync(currentPassword, user.password)
 }

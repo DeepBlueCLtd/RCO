@@ -11,12 +11,12 @@ const checkIfDateHasPassed = (dateString) => {
 }
 
 const updateLockoutAttempts = (db, val, staffNumber) => {
-  const updateLockoutAttemptsQuery = `UPDATE user SET lockoutAttempts = ? where staffNumber = ?`
+  const updateLockoutAttemptsQuery = `UPDATE _users SET lockoutAttempts = ? where staffNumber = ?`
   db.prepare(updateLockoutAttemptsQuery).run(val, staffNumber)
 }
 
 const validateUser = (staffNumber, password, db) => {
-  const query = `SELECT * FROM user WHERE staffNumber=?`
+  const query = `SELECT * FROM _users WHERE staffNumber=?`
   const user = db.prepare(query).get(staffNumber)
 
   if (!user) {
@@ -24,7 +24,11 @@ const validateUser = (staffNumber, password, db) => {
   }
 
   if (user.lockoutAttempts >= 5)
-    throw new Error('Your account is locked. Please contact your administrator [' + user.lockoutAttempts + ']')
+    throw new Error(
+      'Your account is locked. Please contact your administrator [' +
+        user.lockoutAttempts +
+        ']'
+    )
 
   const hasUserDeparted =
     user.departedDate !== undefined &&
