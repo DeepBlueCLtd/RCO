@@ -108,7 +108,7 @@ export default function Welcome(): React.ReactElement {
           label='Items on Loan'
           resource={constants.R_LOAN_USERS}
           fields={[
-            { source: 'staffNumber', label: 'Username' },
+            { source: 'username', label: 'Username' },
             { source: 'numItems' }
           ]}
           rowClick={(id) => {

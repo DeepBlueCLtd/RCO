@@ -126,7 +126,7 @@ function LoanItemsToUser(props: LoanItemsModalProps): React.ReactElement {
             filter={{
               departedDate_gte: nowDate
             }}
-            sort={{ field: 'staffNumber', order: 'ASC' }}
+            sort={{ field: 'username', order: 'ASC' }}
           />
         </SimpleForm>
       </Create>

@@ -75,7 +75,7 @@ export default function UserList(props: Props): React.ReactElement {
       <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
-        <TextField<User> source='staffNumber' label='Username' />
+        <TextField<User> source='username' label='Username' />
         <TextField<User> source='name' />
         <TextField label='Departure' source='departedDate' />
         <ChipField />
