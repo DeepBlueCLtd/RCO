@@ -81,9 +81,11 @@ type ResourceWithCreation = RCOResource & {
 
 type User = ResourceWithCreation & {
   name: string
-  password?: string
+  hashed_password?: string
+  salt?: string
+  is_superuser?: boolean
   role: UserRole
-  staffNumber: string
+  username: string
   departedDate: string | null
   lastUpdatedAt: string | null
   lockoutAttempts: number
@@ -283,7 +285,7 @@ interface Dispatch {
 interface LoanUser {
   id: User['id']
   numItems: number // count of items this user has on loan
-  staffNumber: User['staffNumber']
+  staffNumber: User['username']
 }
 
 /** per instance config data. It is just intended to be one row deep */

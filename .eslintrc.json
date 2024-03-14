@@ -16,7 +16,6 @@
   },
   "plugins": ["react"],
   "rules": {
-    "typescript-eslint/naming-convention": "camelCase, PascalCase, UPPER_CASE, snake_case",
     "@typescript-eslint/explicit-function-return-type": "error",
     "@typescript-eslint/restrict-template-expressions": "off",
     "react/react-in-jsx-scope": "off",

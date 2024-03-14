@@ -61,7 +61,7 @@ const createUserToken = async (
   const clonedUser: User = {
     ...user
   }
-  delete clonedUser.password
+  delete clonedUser.hashed_password
   const token = encryptData(`${JSON.stringify(clonedUser)}`)
   setToken(token)
   await audit({
@@ -113,16 +113,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           }
 
           if (
-            user.password &&
-            bcrypt.compareSync(password, user.password) &&
+            user.hashed_password &&
+            bcrypt.compareSync(password, user.hashed_password) &&
             !hasUserDeparted
           ) {
             await updateLockouAttempts(0, dataProvider, user)
             await createUserToken(user, audit)
             return await Promise.resolve(data)
           } else if (
-            !user.password &&
-            password === user.staffNumber &&
+            !user.hashed_password &&
+            password === user.username &&
             !hasUserDeparted
           ) {
             await updateLockouAttempts(0, dataProvider, user)

@@ -133,10 +133,10 @@ export const generateUserForTesting = ({
 > => ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
-  password: password ?? undefined,
+  hashed_password: password ?? undefined,
   ...(departedDate ? { departedDate } : null),
   role: 'rco-user',
-  staffNumber: 'd-1',
+  username: 'd-1',
   lastUpdatedAt: null,
   lockoutAttempts: 0
 })

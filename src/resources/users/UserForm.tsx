@@ -36,12 +36,12 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     | 'id'
     | 'createdAt'
     | 'createdBy'
-    | 'staffNumber'
+    | 'username'
     | 'lastUpdatedAt'
     | 'lockoutAttempts'
   > = {
     name: '',
-    password: '',
+    hashed_password: '',
     role: 'rco-user',
     departedDate: valueWithTenYears
   }

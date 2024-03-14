@@ -24,7 +24,7 @@ export const customMethods = (
       })
 
       const {
-        data: { id, staffNumber }
+        data: { id, username }
       } = await this.getOne<User>(R_USERS, {
         id: holder
       })
@@ -41,7 +41,7 @@ export const customMethods = (
           })
         } else {
           await this.create<LoanUser>(R_LOAN_USERS, {
-            data: { id: holder, numItems: items.length, staffNumber }
+            data: { id: holder, numItems: items.length, username }
           })
         }
       }

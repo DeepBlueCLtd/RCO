@@ -27,10 +27,10 @@ const lifeCycles = (
     },
     beforeUpdate: async (record: UpdateParams<User>) => {
       passwordAssigned =
-        (record.previousData.password === null ||
-          record.previousData.password === undefined) &&
-        record.data.password !== null &&
-        record.data.password !== undefined
+        (record.previousData.hashed_password === null ||
+          record.previousData.hashed_password === undefined) &&
+        record.data.hashed_password !== null &&
+        record.data.hashed_password !== undefined
 
       return record
     },
