@@ -1,14 +1,14 @@
 import { DateTime } from 'luxon'
 
-const users: User[] = [
+const users: _Users[] = [
   {
     id: 1,
     name: 'ian',
-    password: 'admin',
+    hashed_password: 'admin',
     role: 'rco-power-user',
     createdAt: '',
     createdBy: 2,
-    staffNumber: 'd-1',
+    username: 'd-1',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
     lockoutAttempts: 0
@@ -16,11 +16,11 @@ const users: User[] = [
   {
     id: 2,
     name: 'jason',
-    // password: 'user',
+    hashed_password: 'user',
     role: 'rco-user',
     createdAt: '',
     createdBy: 2,
-    staffNumber: 'd-2',
+    username: 'd-2',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
     lockoutAttempts: 0
@@ -28,11 +28,11 @@ const users: User[] = [
   {
     id: 3,
     name: 'bob',
-    password: 'bobWord',
+    hashed_password: 'bobWord',
     role: 'rco-user',
     createdAt: '',
     createdBy: 2,
-    staffNumber: 'd-3',
+    username: 'd-3',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
     lockoutAttempts: 0
@@ -40,11 +40,11 @@ const users: User[] = [
   {
     id: 4,
     name: 'arthur',
-    password: 'arthurWord',
+    hashed_password: 'arthurWord',
     role: 'rco-user',
     createdAt: '',
     createdBy: 2,
-    staffNumber: 'd-4',
+    username: 'd-4',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
     lockoutAttempts: 0

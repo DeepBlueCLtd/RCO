@@ -17,7 +17,7 @@ import {
 import { isAxiosError } from 'axios'
 import bcrypt from 'bcryptjs'
 
-export const getUser = (): User | undefined => {
+export const getUser = (): _Users | undefined => {
   const encryptedUser = getCookie(constants.TOKEN_KEY)
   if (encryptedUser) {
     const decryptedData = decryptData(encryptedUser)
@@ -55,13 +55,13 @@ const removeCookie = (name: string): void => {
 }
 
 const createUserToken = async (
-  user: User,
+  user: _Users,
   audit: AuditFunctionType
 ): Promise<void> => {
-  const clonedUser: User = {
+  const clonedUser: _Users = {
     ...user
   }
-  delete clonedUser.password
+  delete clonedUser.hashed_password
   const token = encryptData(`${JSON.stringify(clonedUser)}`)
   setToken(token)
   await audit({
@@ -78,9 +78,9 @@ const createUserToken = async (
 const updateLockouAttempts = async (
   val: number,
   dataProvider: DataProvider,
-  previousData: User
+  previousData: _Users
 ): Promise<void> => {
-  await dataProvider.update<User>(constants.R_USERS, {
+  await dataProvider.update<_Users>(constants.R_USERS, {
     id: previousData.id,
     data: { lockoutAttempts: val },
     previousData
@@ -92,13 +92,13 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
   return {
     login: async ({ staffNumber, password }) => {
       if (process.env.MOCK) {
-        const data = await dataProvider.getList<User>(constants.R_USERS, {
+        const data = await dataProvider.getList<_Users>(constants.R_USERS, {
           sort: { field: 'id', order: 'ASC' },
           pagination: { page: 1, perPage: 1 },
-          filter: { staffNumber }
+          filter: { username: staffNumber }
         })
         const user = data.data.find(
-          (item: any) => item.staffNumber === staffNumber
+          (item: any) => item.username === staffNumber
         )
         if (user !== undefined) {
           const hasUserDeparted =
@@ -113,16 +113,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           }
 
           if (
-            user.password &&
-            bcrypt.compareSync(password, user.password) &&
+            user.hashed_password &&
+            bcrypt.compareSync(password, user.hashed_password) &&
             !hasUserDeparted
           ) {
             await updateLockouAttempts(0, dataProvider, user)
             await createUserToken(user, audit)
             return await Promise.resolve(data)
           } else if (
-            !user.password &&
-            password === user.staffNumber &&
+            !user.hashed_password &&
+            password === user.username &&
             !hasUserDeparted
           ) {
             await updateLockouAttempts(0, dataProvider, user)

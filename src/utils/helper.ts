@@ -12,7 +12,7 @@ export const transformProtectionValues = (
   return item
 }
 
-export const checkIfUserIsActive = (user: User): boolean => {
+export const checkIfUserIsActive = (user: _Users): boolean => {
   if (user.departedDate) {
     return DateTime.fromJSDate(new Date(user.departedDate)) > DateTime.now()
   }
@@ -71,7 +71,7 @@ export const insertAndUpdatePassword = async ({
 
 interface ChangePassword {
   password: string
-  currentPassword:string
+  currentPassword: string
   userId: number
 }
 
@@ -135,7 +135,7 @@ export const login = async ({
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/login'
       : '/api/login',
-    { password, staffNumber }
+    { hashed_password: password, username: staffNumber }
   )
   return res
 }

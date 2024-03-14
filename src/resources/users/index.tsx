@@ -26,12 +26,12 @@ const UserCreate = (): React.ReactElement => {
 
 const UserEdit = (): React.ReactElement => {
   const audit = useAudit()
-  const [prev, setPrev] = useState<User>()
+  const [prev, setPrev] = useState<_Users>()
   const redirect = useRedirect()
   return (
     <Edit
       mutationOptions={{
-        onSuccess: async (data: User) => {
+        onSuccess: async (data: _Users) => {
           await audit({
             resource: constants.R_USERS,
             activityType: AuditType.EDIT,
@@ -54,14 +54,14 @@ const UserEdit = (): React.ReactElement => {
 }
 
 interface EditValType {
-  setPrev: React.Dispatch<React.SetStateAction<User | undefined>>
+  setPrev: React.Dispatch<React.SetStateAction<_Users | undefined>>
 }
 
 const EditVal = ({ setPrev }: EditValType): React.ReactElement => {
   const { record } = useEditContext()
 
   useEffect(() => {
-    setPrev(record as User)
+    setPrev(record as _Users)
   }, [record, setPrev])
 
   return <UserForm isEdit />

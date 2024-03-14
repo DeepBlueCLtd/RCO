@@ -200,7 +200,7 @@ function App(): React.ReactElement {
   ): Promise<void> => {
     const {
       data: { lastUpdatedAt }
-    } = await dataProvider.getOne<User>(constants.R_USERS, {
+    } = await dataProvider.getOne<_Users>(constants.R_USERS, {
       id
     })
 
@@ -327,13 +327,13 @@ function App(): React.ReactElement {
 
         if (user) {
           const {
-            data: { password, lastUpdatedAt }
-          } = await dataProvider.getOne<User>(constants.R_USERS, {
+            data: { hashed_password, lastUpdatedAt }
+          } = await dataProvider.getOne<_Users>(constants.R_USERS, {
             id: Number(user.id)
           })
 
           if (
-            !password ||
+            !hashed_password ||
             (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
           ) {
             setResetPasswordOpen(true)
@@ -542,7 +542,7 @@ function App(): React.ReactElement {
                 referenceDataPermission
               )}
             </Route>
-            <Route path='/user'>
+            <Route path='/_users'>
               {...createRoutes(constants.R_USERS, users, userPermission)}
             </Route>
             <Route path='/audit'>

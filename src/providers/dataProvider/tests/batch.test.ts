@@ -29,7 +29,7 @@ describe('CRUD operations on Batch Resource', () => {
       prefixLocalForageKey: TEST_STORAGE_KEY
     })
     for (const user of encryptedUsers()) {
-      await provider.create<User>(R_USERS, { data: { ...user } })
+      await provider.create<_Users>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
     await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })

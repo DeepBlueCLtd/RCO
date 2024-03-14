@@ -48,7 +48,7 @@ const style = {
 
 interface Props {
   handleClose: () => void
-  record?: User
+  record?: _Users
   setShowReturn?: React.Dispatch<React.SetStateAction<boolean>>
   audit: AuditFunction
 }
@@ -149,7 +149,7 @@ const ResetPassword = ({
 }
 
 interface UserShowCompType {
-  setRecord: React.Dispatch<React.SetStateAction<User | undefined>>
+  setRecord: React.Dispatch<React.SetStateAction<_Users | undefined>>
   audit: AuditFunction
 }
 
@@ -157,7 +157,7 @@ const UserShowComp = ({
   setRecord,
   audit
 }: UserShowCompType): React.ReactElement => {
-  const { record, isLoading } = useShowContext<User>()
+  const { record, isLoading } = useShowContext<_Users>()
   const [departOpen, setDepartOpen] = useState(false)
   const [resetOpen, setResetopen] = useState(false)
   const [showReturn, setShowReturn] = useState<boolean>(false)
@@ -171,7 +171,7 @@ const UserShowComp = ({
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { id } = useParams()
-  const [update] = useUpdate<User>()
+  const [update] = useUpdate<_Users>()
   const notify = useNotify()
 
   useEffect(() => {
@@ -362,7 +362,7 @@ const UserShowComp = ({
 }
 
 export default function UserShow(): React.ReactElement {
-  const [record, setRecord] = useState<User>()
+  const [record, setRecord] = useState<_Users>()
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading } = useGetList<Audit>(R_AUDIT, {})

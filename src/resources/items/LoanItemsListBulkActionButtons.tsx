@@ -22,7 +22,7 @@ import { DateTime } from 'luxon'
 type ButtonType = '' | 'loan' | 'loanReturn'
 
 interface FormState {
-  holder: User['id']
+  holder: _Users['id']
   remarks: string
 }
 
@@ -44,14 +44,14 @@ interface LoanItemsModalProps {
 }
 
 const useUser = (): {
-  users: User[]
-  usersById: Record<number, User>
+  users: _Users[]
+  usersById: Record<number, _Users>
 } => {
   const dataProvider = useDataProvider()
-  const [users, setUser] = useState<User[]>([])
+  const [users, setUser] = useState<_Users[]>([])
 
   const usersById = useMemo(() => {
-    const result: Record<number, User> = {}
+    const result: Record<number, _Users> = {}
     users.forEach((user) => {
       result[user.id] = user
     })
@@ -60,7 +60,7 @@ const useUser = (): {
 
   const getUser = async (): Promise<void> => {
     try {
-      const { data } = await dataProvider.getList<User>(constants.R_USERS, {
+      const { data } = await dataProvider.getList<_Users>(constants.R_USERS, {
         sort: { field: 'id', order: 'ASC' },
         pagination: { perPage: 1000, page: 1 },
         filter: {}

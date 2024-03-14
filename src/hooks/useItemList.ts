@@ -3,14 +3,14 @@ import { type Identifier, useListContext, useDataProvider } from 'react-admin'
 import { useEffect, useState } from 'react'
 
 interface UseItemList {
-  users: Record<Identifier, User> | null
+  users: Record<Identifier, _Users> | null
   vaultLocations: Record<Identifier, VaultLocation> | null
 }
 
 export default function useItemList(): UseItemList {
   const [userIds, setUserIds] = useState<number[]>([])
   const [vLocationsIds, setVLocationsIds] = useState<number[]>([])
-  const [users, setUsers] = useState<Record<Identifier, User> | null>(null)
+  const [users, setUsers] = useState<Record<Identifier, _Users> | null>(null)
   const [vaultLocations, setVaultLocations] = useState<Record<
     Identifier,
     VaultLocation
@@ -46,7 +46,7 @@ export default function useItemList(): UseItemList {
 
   useEffect(() => {
     const getUserData = async (): Promise<void> => {
-      const { data = [] } = await dataProvider.getMany<User>(
+      const { data = [] } = await dataProvider.getMany<_Users>(
         constants.R_USERS,
         {
           ids: userIds
@@ -54,7 +54,7 @@ export default function useItemList(): UseItemList {
       )
 
       setUsers(() => {
-        const result: Record<Identifier, User> = {}
+        const result: Record<Identifier, _Users> = {}
         data.forEach((record) => {
           result[record.id] = record
         })
