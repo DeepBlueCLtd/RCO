@@ -476,7 +476,7 @@ CREATE VIEW loanUsers AS
 SELECT
   i.loanedTo as id,
   COUNT(i.id) as numItems,
-  u.staffNumber
+  u.username
 from 
   item i
 INNER JOIN "_users" u ON
