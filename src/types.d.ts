@@ -285,7 +285,7 @@ interface Dispatch {
 interface LoanUser {
   id: User['id']
   numItems: number // count of items this user has on loan
-  staffNumber: User['username']
+  username: User['username']
 }
 
 /** per instance config data. It is just intended to be one row deep */
