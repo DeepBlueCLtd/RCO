@@ -313,11 +313,11 @@ export const generateUsers = (length: number): User[] => {
       // to compensate default users the id has to start from 5
       id: i + 5,
       name: `user-${i + 1}`,
-      password: 'user',
+      hashed_password: 'user',
       ...(active
         ? { departedDate: null }
         : { departedDate: generateRandomDate()[0].toString() }),
-      staffNumber: `d:${i + 1}`,
+      username: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
       createdAt: nowDate(),

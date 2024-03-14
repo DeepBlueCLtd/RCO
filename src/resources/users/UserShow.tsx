@@ -262,7 +262,7 @@ const UserShowComp = ({
               <Chip label={record?.role} />
               <TextInput
                 disabled
-                source='staffNumber'
+                source='username'
                 label='Username'
                 sx={{ flex: 1 }}
               />

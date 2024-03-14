@@ -36,12 +36,12 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     | 'id'
     | 'createdAt'
     | 'createdBy'
-    | 'staffNumber'
+    | 'username'
     | 'lastUpdatedAt'
     | 'lockoutAttempts'
   > = {
     name: '',
-    password: '',
+    hashed_password: '',
     role: 'rco-user',
     departedDate: valueWithTenYears
   }
@@ -67,7 +67,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           sx={{ width: '100%', flex: 1 }}
           choices={rolesOptions}
         />
-        <TextInput source='staffNumber' label='Username' sx={{ flex: 1 }} />
+        <TextInput source='username' label='Username' sx={{ flex: 1 }} />
       </FlexBox>
       <DateTimeInput
         source='departedDate'

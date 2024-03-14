@@ -327,13 +327,13 @@ function App(): React.ReactElement {
 
         if (user) {
           const {
-            data: { password, lastUpdatedAt }
+            data: { hashed_password, lastUpdatedAt } // eslint-disable-line @typescript-eslint/naming-convention
           } = await dataProvider.getOne<User>(constants.R_USERS, {
             id: Number(user.id)
           })
 
           if (
-            !password ||
+            !hashed_password ||
             (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
           ) {
             setResetPasswordOpen(true)

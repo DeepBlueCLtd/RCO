@@ -24,10 +24,10 @@ const generatedUsers = [...generateUsers(200), ...users]
 export const encryptedUsers = (isHigh?: boolean): User[] => {
   const userList = isHigh === true ? generatedUsers : users
   const mappedUsers = userList.map((user) => {
-    return user.password
+    return user.hashed_password
       ? {
           ...user,
-          password: bcrypt.hashSync(user.password)
+          hashed_password: bcrypt.hashSync(user.hashed_password)
         }
       : user
   })

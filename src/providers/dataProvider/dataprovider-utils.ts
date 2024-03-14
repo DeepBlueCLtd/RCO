@@ -30,7 +30,7 @@ export const getDifference = (
       isDateModified ||
       (typeof data[item] !== 'object' &&
         data[item] !== previousData[item] &&
-        item !== 'password')
+        item !== 'hashed-password')
     ) {
       valuesChanged[item] = previousData[item]
     }

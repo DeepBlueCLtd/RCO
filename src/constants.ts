@@ -19,7 +19,7 @@ export const MUTATION_MODE = 'optimistic'
 export const SESSION_LOGIN = 'login'
 
 // major table/resource names
-export const R_USERS = 'user'
+export const R_USERS = '_users'
 export const R_BATCHES = 'batch'
 export const R_PROJECTS = 'project'
 export const R_PLATFORMS = 'platform'

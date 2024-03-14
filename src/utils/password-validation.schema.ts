@@ -132,7 +132,7 @@ const userFormSchemaWithoutCommon = yup
     'Password cannot include name or staff number',
     function (value) {
       const name = this.parent.name
-      const staffId = this.parent.staffNumber
+      const staffId = this.parent.username
       if (
         value.toLowerCase().includes(name.toLowerCase()) ||
         value.toLowerCase().includes(staffId.toLowerCase())
