@@ -90,16 +90,15 @@ const updateLockouAttempts = async (
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
-    login: async ({ staffNumber, password }) => {
+    login: async ({ username, password }) => {
       if (process.env.MOCK) {
         const data = await dataProvider.getList<_Users>(constants.R_USERS, {
           sort: { field: 'id', order: 'ASC' },
           pagination: { page: 1, perPage: 1 },
-          filter: { username: staffNumber }
+          filter: { username }
         })
-        const user = data.data.find(
-          (item: any) => item.username === staffNumber
-        )
+        const user = data.data.find((item: any) => item.username === username)
+        console.log(user)
         if (user !== undefined) {
           const hasUserDeparted =
             user.departedDate !== undefined &&
@@ -142,7 +141,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         }
       } else {
         try {
-          const res = await login({ password, staffNumber })
+          const res = await login({ password, username })
           await createUserToken(res.data.data, audit)
           sessionStorage.setItem('login', 'true')
           return await Promise.resolve(res.data.data)

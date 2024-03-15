@@ -16,7 +16,7 @@ const users: _Users[] = [
   {
     id: 2,
     name: 'jason',
-    hashed_password: 'user',
+    // hashed_password: 'user',
     role: 'rco-user',
     createdAt: '',
     createdBy: 2,

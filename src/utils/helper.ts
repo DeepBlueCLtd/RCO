@@ -124,18 +124,18 @@ export const isDateNotInPastDays = (
 
 interface Login {
   password: string
-  staffNumber: string
+  username: string
 }
 
 export const login = async ({
   password,
-  staffNumber
+  username
 }: Login): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/login'
       : '/api/login',
-    { hashed_password: password, username: staffNumber }
+    { hashed_password: password, username }
   )
   return res
 }

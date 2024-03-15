@@ -483,6 +483,7 @@ function App(): React.ReactElement {
             key={constants.R_USERS}
             name={constants.R_USERS}
             icon={Groups}
+            options={{ label: 'Users' }}
             {...protectedRoutes(permissions, constants.R_USERS, users)}
           />
           <CustomRoutes key='routes'>
