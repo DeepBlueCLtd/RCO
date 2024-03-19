@@ -1,6 +1,8 @@
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { DateTime } from 'luxon'
 
+axios.defaults.withCredentials = true
+
 export const transformProtectionValues = (
   data: Record<string, any>
 ): Record<string, any> => {
@@ -127,15 +129,47 @@ interface Login {
   username: string
 }
 
+// export const login = async ({
+//   password,
+//   username
+// }: Login): Promise<AxiosResponse> => {
+//   const res = await axios.post(
+//     process.env.NODE_ENV === 'development'
+//       ? 'http://localhost:8000/api/login'
+//       : '/api/login',
+//     { password, username }
+//   )
+//   debugger
+//   if (res.status === 200) {
+//     getAccessToken({ password, username })
+//     return res
+//   } else {
+//     throw new Error('Login failed')
+//   }
+// }
+
+// export const getAccessToken = async ({
+//   password,
+//   username
+// }: Login): Promise<AxiosResponse> => {
+//   const res = await axios.post(
+//     process.env.NODE_ENV === 'development'
+//       ? 'http://localhost:8000/api/auth/token/obtain'
+//       : '/api/auth/token/obtain',
+//     { fields: { password, username: username } }
+//   )
+//   return res
+// }
+
 export const login = async ({
   password,
   username
 }: Login): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000/api/login'
-      : '/api/login',
-    { hashed_password: password, username }
+      ? 'http://localhost:8000/api/auth/token/obtain'
+      : '/api/auth/token/obtain',
+    { fields: { password, username: username } }
   )
   return res
 }

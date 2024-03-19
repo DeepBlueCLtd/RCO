@@ -49,8 +49,11 @@ export const protectedRoutes = (
 
   const hastReadPermission = !!(typeof read !== 'undefined' && read)
 
-  const hastWritePermission =
-    !!(hastReadPermission && typeof write !== 'undefined' && write)
+  const hastWritePermission = !!(
+    hastReadPermission &&
+    typeof write !== 'undefined' &&
+    write
+  )
 
   return {
     create: hastWritePermission ? routes.create : undefined,

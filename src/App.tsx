@@ -182,7 +182,8 @@ function App(): React.ReactElement {
     if (provider !== undefined && dataProvider === undefined) {
       const queryParams = new URLSearchParams(window.location.search)
       const username = queryParams.get('username')
-      const password = queryParams.get('password')
+      const password = queryParams.get('hashed_password')
+      console.log(password)
       if (username !== null && password !== null) {
         authenticationProvider
           .login({ username, password })
@@ -324,7 +325,7 @@ function App(): React.ReactElement {
     const fetchUserId = async (): Promise<void> => {
       if (dataProvider && authProvider && authProvider.getIdentity) {
         const user = await authProvider.getIdentity()
-
+        console.log(user?.lastUpdatedAt)
         if (user) {
           const {
             data: { hashed_password, lastUpdatedAt }
@@ -332,10 +333,7 @@ function App(): React.ReactElement {
             id: Number(user.id)
           })
 
-          if (
-            !hashed_password ||
-            (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
-          ) {
+          if (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120)) {
             setResetPasswordOpen(true)
           } else {
             setResetPasswordOpen(false)

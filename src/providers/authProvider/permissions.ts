@@ -1,3 +1,4 @@
+import axios from 'axios'
 import * as constants from '../../constants'
 
 const basePermissions = {
@@ -28,9 +29,38 @@ const permissions: Record<UserRole, ResourcePermissions> = {
 
 export default permissions
 
-export const getPermissionsByRoles = (role: UserRole): ResourcePermissions => {
-  const userPermissions = permissions[role]
-  return userPermissions
+const getRoleId = (role: UserRole) => {
+  return axios
+    .get(`http://localhost:8000/api/tables/_roles/rows?_filters=name:${role}`)
+    .then((res) => res.data.data?.[0]?.id)
+}
+
+const getPermissionsByRoleId = (roleId: number) => {
+  return axios.get(
+    `http://localhost:8000/api/tables/_roles_permissions/rows?_filters=role_id:${roleId}`
+  )
+}
+
+const mapPermissions = (permissions: any) => {
+  const mappedPermissions = permissions.reduce((acc: any, permission: any) => {
+    acc[permission.table_name] = {
+      read: permission.read,
+      write: permission.create,
+      delete: permission.delete
+    }
+    return acc
+  }, {})
+
+  mappedPermissions['welcome-page'] = { read: true }
+  return mappedPermissions
+}
+
+export const getPermissionsByRoles = async (
+  role: UserRole
+): Promise<ResourcePermissions> => {
+  const roleId = await getRoleId(role)
+  const fetchedPermissions = (await getPermissionsByRoleId(roleId)).data.data
+  return mapPermissions(fetchedPermissions)
 }
 
 export const canAccess = (
