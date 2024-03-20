@@ -18,7 +18,7 @@ import axios, { isAxiosError } from 'axios'
 import bcrypt from 'bcryptjs'
 
 export const getUser = (): _Users | undefined => {
-  const encryptedUser = getCookie(constants.TOKEN_KEY)
+  const encryptedUser = getCookie('accessToken')
   if (encryptedUser) {
     const decryptedData = decryptData(encryptedUser)
     return JSON.parse(decryptedData)
@@ -27,8 +27,6 @@ export const getUser = (): _Users | undefined => {
 }
 
 const getCookie = (name: string): string | null => {
-  console.log(name)
-  console.log(localStorage.getItem(name))
   return localStorage.getItem(name)
 }
 
@@ -37,18 +35,24 @@ const setToken = (token: string): void => {
   // date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
   // const expires = date.toUTCString()
   // document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
-  localStorage.setItem('AccessToken', token)
+  localStorage.setItem('accessToken', token)
 }
 
 export const removeUserToken = (): void => {
-  removeCookie(constants.TOKEN_KEY)
+  removeCookie()
+  removeLocalStorageItem('accessToken')
 }
 
-const removeCookie = (name: string): void => {
-  // note: setting the expiry date of a cookie to a past data effectively
-  // removes it
-  console.log(name)
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
+const removeCookie = (): void => {
+  document.cookie =
+    'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+
+  document.cookie =
+    'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+}
+
+const removeLocalStorageItem = (key: string): void => {
+  localStorage.removeItem(key)
 }
 
 const createUserToken = async (
@@ -84,11 +88,11 @@ const updateLockouAttempts = async (
   })
 }
 
-const fetchUser = async (username: string) => {
+const fetchUser = async (username: string): Promise<any> => {
   const user = await axios.get(
     `http://localhost:8000/api/tables/_users/rows?_filters=username:${username}`
   )
-  console.log(user.data.data)
+
   return user.data.data?.[0]
 }
 
@@ -103,7 +107,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           filter: { username }
         })
         const user = data.data.find((item: any) => item.username === username)
-        console.log(user)
+
         if (user !== undefined) {
           const hasUserDeparted =
             user.departedDate !== undefined &&
@@ -192,7 +196,6 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     },
     getIdentity: async () => {
       const user = getUser()
-      console.log(user)
       if (user !== undefined) {
         const userIdentity: UserIdentity = { ...user, fullName: user.name }
         return userIdentity
@@ -204,7 +207,6 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         const user = getUser()
         if (user !== undefined) {
           const permissions = await getPermissionsByRoles(user.role)
-
           return await Promise.resolve(permissions)
         } else {
           throw new Error('You are not a registered user.')

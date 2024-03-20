@@ -7399,10 +7399,10 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-soul-cli@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/soul-cli/-/soul-cli-0.7.0.tgz#d8f43148d516d25e3c45af41ad9d5ada527b9c88"
-  integrity sha512-XE4R5TMVisZi+YX4SKAhh+jAxG15cj5KQcg1us6IkvUqFVAutdhAJQJkOMoEdAAwy/qvgVQI5heAjoMVjmUXTg==
+soul-cli@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/soul-cli/-/soul-cli-0.7.1.tgz#65f424d69c42cbca694a3d00663058bc09e9b80d"
+  integrity sha512-ZZL/5LRd7YaL3ObLfi8K5TpNDDagO0F9Cgkv/kmY/0dV3BrlUn1oAahkQilJOxpSZP4hK+BPX8uwoftSCzWaOA==
   dependencies:
     bcrypt "^5.1.1"
     better-sqlite3 "^8.1.0"

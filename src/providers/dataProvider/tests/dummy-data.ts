@@ -136,6 +136,7 @@ export const generateUserForTesting = ({
   hashed_password: password ?? undefined,
   ...(departedDate ? { departedDate } : null),
   role: 'rco-user',
+  is_superuser: false,
   username: 'd-1',
   lastUpdatedAt: null,
   lockoutAttempts: 0

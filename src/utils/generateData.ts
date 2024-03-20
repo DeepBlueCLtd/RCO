@@ -320,6 +320,7 @@ export const generateUsers = (length: number): _Users[] => {
       username: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
+      is_superuser: false,
       createdAt: nowDate(),
       departedDate: null,
       lastUpdatedAt: null,

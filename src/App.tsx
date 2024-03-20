@@ -182,8 +182,7 @@ function App(): React.ReactElement {
     if (provider !== undefined && dataProvider === undefined) {
       const queryParams = new URLSearchParams(window.location.search)
       const username = queryParams.get('username')
-      const password = queryParams.get('hashed_password')
-      console.log(password)
+      const password = queryParams.get('password')
       if (username !== null && password !== null) {
         authenticationProvider
           .login({ username, password })
@@ -325,10 +324,9 @@ function App(): React.ReactElement {
     const fetchUserId = async (): Promise<void> => {
       if (dataProvider && authProvider && authProvider.getIdentity) {
         const user = await authProvider.getIdentity()
-        console.log(user?.lastUpdatedAt)
         if (user) {
           const {
-            data: { hashed_password, lastUpdatedAt }
+            data: { lastUpdatedAt }
           } = await dataProvider.getOne<_Users>(constants.R_USERS, {
             id: Number(user.id)
           })

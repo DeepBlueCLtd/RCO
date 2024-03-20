@@ -129,39 +129,25 @@ interface Login {
   username: string
 }
 
-// export const login = async ({
-//   password,
-//   username
-// }: Login): Promise<AxiosResponse> => {
-//   const res = await axios.post(
-//     process.env.NODE_ENV === 'development'
-//       ? 'http://localhost:8000/api/login'
-//       : '/api/login',
-//     { password, username }
-//   )
-//   debugger
-//   if (res.status === 200) {
-//     getAccessToken({ password, username })
-//     return res
-//   } else {
-//     throw new Error('Login failed')
-//   }
-// }
-
-// export const getAccessToken = async ({
-//   password,
-//   username
-// }: Login): Promise<AxiosResponse> => {
-//   const res = await axios.post(
-//     process.env.NODE_ENV === 'development'
-//       ? 'http://localhost:8000/api/auth/token/obtain'
-//       : '/api/auth/token/obtain',
-//     { fields: { password, username: username } }
-//   )
-//   return res
-// }
-
 export const login = async ({
+  password,
+  username
+}: Login): Promise<AxiosResponse> => {
+  const res = await axios.post(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/login'
+      : '/api/login',
+    { hashed_password: password, username }
+  )
+  if (res.status === 200) {
+    await getAccessToken({ password, username })
+    return res
+  } else {
+    throw new Error('Login failed')
+  }
+}
+
+export const getAccessToken = async ({
   password,
   username
 }: Login): Promise<AxiosResponse> => {
@@ -169,7 +155,7 @@ export const login = async ({
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/auth/token/obtain'
       : '/api/auth/token/obtain',
-    { fields: { password, username: username } }
+    { fields: { password, username } }
   )
   return res
 }
