@@ -25,7 +25,6 @@ const Actions = ({ resource }: ShowActionProps): React.ReactElement => {
   const redirect = useRedirect()
   return (
     <TopToolbar sx={{ alignItems: 'center' }}>
-      <EditButton />
       <HistoryButton
         onClick={() => {
           redirect(
