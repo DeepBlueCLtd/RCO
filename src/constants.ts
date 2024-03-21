@@ -14,6 +14,8 @@ export const LOCAL_STORAGE_DB_KEY = 'rco-'
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'dd/MMM/yyyy HH:mm'
 export const TOKEN_KEY = 'rco-user'
+export const ACCESS_TOKEN_KEY = 'accessToken'
+export const REFRESH_TOKEN_KEY = 'refreshToken'
 export const MUTATION_MODE = 'optimistic'
 // session storage value.
 export const SESSION_LOGIN = 'login'

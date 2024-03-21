@@ -26,12 +26,12 @@ const permissions: Record<UserRole, ResourcePermissions> = {
     'reference-data': { read: true, write: true, delete: false }
   }
 }
-
+const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
 export default permissions
 
 const getRoleId = async (role: UserRole): Promise<number | undefined> => {
   return await axios
-    .get(`http://localhost:8000/api/tables/_roles/rows?_filters=name:${role}`)
+    .get(`${BASE_URL}/api/tables/_roles/rows?_filters=name:${role}`)
     .then((res) => res.data.data?.[0]?.id)
 }
 
@@ -39,7 +39,7 @@ const getPermissionsByRoleId = async (
   roleId: number
 ): Promise<AxiosResponse<any, any>> => {
   return await axios.get(
-    `http://localhost:8000/api/tables/_roles_permissions/rows?_filters=role_id:${roleId}`
+    `${BASE_URL}/api/tables/_roles_permissions/rows?_filters=role_id:${roleId}`
   )
 }
 

@@ -18,7 +18,7 @@ import axios, { isAxiosError } from 'axios'
 import bcrypt from 'bcryptjs'
 
 export const getUser = (): _Users | undefined => {
-  const encryptedUser = getCookie('accessToken')
+  const encryptedUser = getCookie(constants.ACCESS_TOKEN_KEY)
   if (encryptedUser) {
     const decryptedData = decryptData(encryptedUser)
     return JSON.parse(decryptedData)
@@ -35,20 +35,18 @@ const setToken = (token: string): void => {
   // date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
   // const expires = date.toUTCString()
   // document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
-  localStorage.setItem('accessToken', token)
+  localStorage.setItem(constants.ACCESS_TOKEN_KEY, token)
 }
 
 export const removeUserToken = (): void => {
   removeCookie()
-  removeLocalStorageItem('accessToken')
+  removeLocalStorageItem(constants.ACCESS_TOKEN_KEY)
 }
 
 const removeCookie = (): void => {
-  document.cookie =
-    'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+  document.cookie = `${constants.ACCESS_TOKEN_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
 
-  document.cookie =
-    'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+  document.cookie = `${constants.REFRESH_TOKEN_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
 }
 
 const removeLocalStorageItem = (key: string): void => {
@@ -87,10 +85,10 @@ const updateLockouAttempts = async (
     previousData
   })
 }
-
+const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
 const fetchUser = async (username: string): Promise<any> => {
   const user = await axios.get(
-    `http://localhost:8000/api/tables/_users/rows?_filters=username:${username}`
+    `${BASE_URL}/api/tables/_users/rows?_filters=username:${username}`
   )
 
   return user.data.data?.[0]
@@ -202,12 +200,64 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       } else return await Promise.reject(new Error('user not found'))
     },
 
+    // getPermissions: async () => {
+    //   try {
+    //     const user = getUser()
+    //     if (user !== undefined) {
+    //       const permissions = await getPermissionsByRoles(user.role)
+    //       return await Promise.resolve(permissions)
+    //     } else {
+    //       throw new Error('You are not a registered user.')
+    //     }
+    //   } catch (error) {
+    //     throw new Error('You are not a registered user.')
+    //   }
+    // }
+
     getPermissions: async () => {
       try {
         const user = getUser()
         if (user !== undefined) {
-          const permissions = await getPermissionsByRoles(user.role)
-          return await Promise.resolve(permissions)
+          let permissions
+          if (user.is_superuser) {
+            permissions = {
+              [constants.R_PROJECTS]: { read: true, write: true, delete: true },
+              [constants.R_BATCHES]: { read: true, write: true, delete: true },
+              [constants.R_ITEMS]: { read: true, write: true, delete: true },
+              [constants.R_ALL_ITEMS]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_USERS]: { read: true, write: true, delete: true },
+              [constants.R_PLATFORMS]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_VAULT_LOCATION]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_ADDRESSES]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_DESTRUCTION]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_DISPATCH]: { read: true, write: true, delete: true },
+              'reference-data': { read: true, write: true, delete: true },
+              'welcome-page': { read: true }
+            }
+          } else {
+            permissions = await getPermissionsByRoles(user.role)
+          }
+          return permissions
         } else {
           throw new Error('You are not a registered user.')
         }
