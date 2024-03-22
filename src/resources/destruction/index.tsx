@@ -1,5 +1,5 @@
 import React from 'react'
-import { Create, Edit, useRedirect } from 'react-admin'
+import { Create, Edit } from 'react-admin'
 import DestructionForm from './DestructionForm'
 import * as constants from '../../constants'
 
@@ -19,15 +19,8 @@ const DestructionCreate = (): React.ReactElement => {
 }
 
 const DestructionEdit = (): React.ReactElement => {
-  const redirect = useRedirect()
   return (
-    <Edit
-      mutationMode={constants.MUTATION_MODE}
-      mutationOptions={{
-        onSuccess: (data: { destructionNumber: string; id: number }): void => {
-          redirect(`/${constants.R_DESTRUCTION}/${data?.id}/show`)
-        }
-      }}>
+    <Edit mutationMode={constants.MUTATION_MODE}>
       <DestructionForm disabledFields={['year', 'name']} isEdit />
     </Edit>
   )

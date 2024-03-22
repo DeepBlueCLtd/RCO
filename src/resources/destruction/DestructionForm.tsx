@@ -8,6 +8,7 @@ import {
   useCreatePath,
   useDataProvider,
   useNotify,
+  useRecordContext,
   useRedirect,
   useUpdate
 } from 'react-admin'
@@ -17,6 +18,8 @@ import * as yup from 'yup'
 import { ConditionalReferenceInput } from '../batches/BatchForm'
 import { generateReference } from '../../providers/dataProvider/dataprovider-utils'
 import { Typography } from '@mui/material'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 interface Props {
   isEdit?: boolean
@@ -54,7 +57,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const redirect = useRedirect()
   const notify = useNotify()
   const [update] = useUpdate()
-
+  const record = useRecordContext()
   const getName = async (): Promise<string> => {
     const name = await generateReference<Destruction>(
       dataProvider,
@@ -133,7 +136,20 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   if (typeof loading !== 'undefined' && loading) return <></>
 
+  const audit = useAudit()
   const updateJob = async (data: Destruction): Promise<void> => {
+    const changedFields: string[] = []
+
+    if (data.remarks !== record.remarks) {
+      changedFields.push(
+        `Old Remarks: (${record.remarks}), New Remarks: (${data.remarks})`
+      )
+    }
+    if (data.vault !== record.vault) {
+      changedFields.push(
+        `Old Vault: (${record.vault}), New Vault: (${data.vault})`
+      )
+    }
     await update(
       constants.R_DESTRUCTION,
       {
@@ -141,9 +157,18 @@ export default function DestructionForm(props: Props): React.ReactElement {
         data
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           notify('Element updated')
           onSuccess(data.id)
+          await audit({
+            resource: constants.R_DESTRUCTION,
+            activityType: AuditType.EDIT,
+            dataId: data.id,
+            activityDetail: changedFields.join(','),
+            securityRelated: true,
+            subjectResource: null,
+            subjectId: null
+          })
         }
       }
     )
