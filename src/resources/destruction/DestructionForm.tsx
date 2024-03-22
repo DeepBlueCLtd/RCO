@@ -58,6 +58,7 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const notify = useNotify()
   const [update] = useUpdate()
   const record = useRecordContext()
+  const audit = useAudit()
   const getName = async (): Promise<string> => {
     const name = await generateReference<Destruction>(
       dataProvider,
@@ -70,7 +71,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
     )
     return name
   }
-
   useEffect(() => {
     getName().then(setName).catch(console.log)
   }, [])
@@ -136,7 +136,6 @@ export default function DestructionForm(props: Props): React.ReactElement {
 
   if (typeof loading !== 'undefined' && loading) return <></>
 
-  const audit = useAudit()
   const updateJob = async (data: Destruction): Promise<void> => {
     const changedFields: string[] = []
 
