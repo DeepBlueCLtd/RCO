@@ -7,10 +7,7 @@ interface Props extends ToolbarProps {
 
 export default function StyledTopToolbar(props: Props): React.ReactElement {
   const sx = {
-    flex: 4.5,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'start'
+    display: 'flex'
   }
 
   return <TopToolbar sx={sx} {...props} />
