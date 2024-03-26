@@ -69,7 +69,7 @@ const ChangePassword = ({
   ): Promise<void> => {
     const {
       data: { lastUpdatedAt }
-    } = await dataProvider.getOne<User>(constants.R_USERS, {
+    } = await dataProvider.getOne<_Users>(constants.R_USERS, {
       id
     })
 

@@ -28,8 +28,8 @@ const resources = [
   'reference-data'
 ]
 
-const checkDeletePermission = (role: UserRole): void => {
-  const userPermissions = getPermissionsByRoles(role)
+const checkDeletePermission = async (role: UserRole): Promise<void> => {
+  const userPermissions = await getPermissionsByRoles(role)
 
   resources.forEach((permission) => {
     const hasDeletePermission = canAccess(userPermissions, permission, {
@@ -55,8 +55,8 @@ describe('protected routes ', () => {
   //   expect(edit).toBeUndefined()
   // })
 
-  it('routes for authorized user', () => {
-    const permissions = getPermissionsByRoles('rco-user')
+  it('routes for authorized user', async () => {
+    const permissions = await getPermissionsByRoles('rco-user')
     const { create, list, show, edit } = protectedRoutes(
       permissions,
       constants.R_ITEMS,
@@ -68,8 +68,8 @@ describe('protected routes ', () => {
     expect(edit).toBeDefined()
   })
 
-  it('can access resource', () => {
-    const permissions = getPermissionsByRoles('rco-user')
+  it('can access resource', async () => {
+    const permissions = await getPermissionsByRoles('rco-user')
     const hasReadPermission = canAccess(permissions, constants.R_ITEMS, {
       read: true
     })
@@ -82,8 +82,8 @@ describe('protected routes ', () => {
     expect(hasDeletePermission).toBeFalsy()
   })
 
-  it('power user can access all resource', () => {
-    const permissions = getPermissionsByRoles('rco-power-user')
+  it('power user can access all resource', async () => {
+    const permissions = await getPermissionsByRoles('rco-power-user')
     resources.forEach((permission) => {
       const hasAllPermissions = canAccess(permissions, permission, {
         read: true,
@@ -95,6 +95,8 @@ describe('protected routes ', () => {
 
   it('no user is allowed to delete any resource', () => {
     const roles = ['rco-power-user', 'rco-user'] as UserRole[]
-    roles.forEach((role) => { checkDeletePermission(role) })
+    roles.forEach((role) => {
+      void checkDeletePermission(role)
+    })
   })
 })

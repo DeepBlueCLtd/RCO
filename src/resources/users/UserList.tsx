@@ -75,12 +75,12 @@ export default function UserList(props: Props): React.ReactElement {
       <DatagridConfigurableWithShow
         resource={constants.R_USERS}
         bulkActionButtons={<UserActions />}>
-        <TextField<User> source='staffNumber' label='Username' />
-        <TextField<User> source='name' />
+        <TextField<_Users> source='username' label='Username' />
+        <TextField<_Users> source='name' />
         <TextField label='Departure' source='departedDate' />
         <ChipField />
       </DatagridConfigurableWithShow>
-      <UserMusterList<User> open={open} onClose={handleOpen(false)} />
+      <UserMusterList<_Users> open={open} onClose={handleOpen(false)} />
     </List>
   )
 }

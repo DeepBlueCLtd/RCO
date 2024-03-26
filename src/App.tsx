@@ -200,7 +200,7 @@ function App(): React.ReactElement {
   ): Promise<void> => {
     const {
       data: { lastUpdatedAt }
-    } = await dataProvider.getOne<User>(constants.R_USERS, {
+    } = await dataProvider.getOne<_Users>(constants.R_USERS, {
       id
     })
 
@@ -324,18 +324,14 @@ function App(): React.ReactElement {
     const fetchUserId = async (): Promise<void> => {
       if (dataProvider && authProvider && authProvider.getIdentity) {
         const user = await authProvider.getIdentity()
-
         if (user) {
           const {
-            data: { password, lastUpdatedAt }
-          } = await dataProvider.getOne<User>(constants.R_USERS, {
+            data: { lastUpdatedAt }
+          } = await dataProvider.getOne<_Users>(constants.R_USERS, {
             id: Number(user.id)
           })
 
-          if (
-            !password ||
-            (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
-          ) {
+          if (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120)) {
             setResetPasswordOpen(true)
           } else {
             setResetPasswordOpen(false)
@@ -483,6 +479,7 @@ function App(): React.ReactElement {
             key={constants.R_USERS}
             name={constants.R_USERS}
             icon={Groups}
+            options={{ label: 'Users' }}
             {...protectedRoutes(permissions, constants.R_USERS, users)}
           />
           <CustomRoutes key='routes'>
@@ -542,7 +539,7 @@ function App(): React.ReactElement {
                 referenceDataPermission
               )}
             </Route>
-            <Route path='/user'>
+            <Route path='/_users'>
               {...createRoutes(constants.R_USERS, users, userPermission)}
             </Route>
             <Route path='/audit'>

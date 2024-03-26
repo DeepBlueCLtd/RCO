@@ -24,10 +24,10 @@ describe('CRUD operations on User', () => {
       prefixLocalForageKey: TEST_STORAGE_KEY
     })
     for (const user of encryptedUsers()) {
-      await provider.create<User>(R_USERS, { data: { ...user } })
+      await provider.create<_Users>(R_USERS, { data: { ...user } })
     }
     auth = authProvider(provider)
-    await auth.login({ staffNumber: 'd-1', password: process.env.PASSWORD })
+    await auth.login({ username: 'd-1', password: process.env.PASSWORD })
   })
 
   beforeEach(async () => {
@@ -48,7 +48,7 @@ describe('CRUD operations on User', () => {
   })
 
   it('should create user', async () => {
-    const userListBeforeCreate = await provider.getList<User>(R_USERS, {
+    const userListBeforeCreate = await provider.getList<_Users>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
       filter: {}
@@ -57,7 +57,7 @@ describe('CRUD operations on User', () => {
     expect(userListBeforeCreate.total).toBe(0)
 
     const createdUser = (
-      await provider.create<User>(R_USERS, {
+      await provider.create<_Users>(R_USERS, {
         data: generateUserForTesting()
       })
     ).data
@@ -66,7 +66,7 @@ describe('CRUD operations on User', () => {
 
     expect(createdUser).toBeDefined()
 
-    const userListAfterCreate = await provider.getList<User>(R_USERS, {
+    const userListAfterCreate = await provider.getList<_Users>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
       filter: {}
@@ -75,7 +75,7 @@ describe('CRUD operations on User', () => {
     expect(userListAfterCreate.total).toBe(1)
 
     const fetchedUser = (
-      await provider.getOne<User>(R_USERS, {
+      await provider.getOne<_Users>(R_USERS, {
         id: createdUser.id
       })
     ).data
@@ -94,14 +94,14 @@ describe('CRUD operations on User', () => {
     const randomDepartDate = generateRandomDate()[0].toString()
 
     const createdUser = (
-      await provider.create<User>(R_USERS, {
+      await provider.create<_Users>(R_USERS, {
         data: generateUserForTesting()
       })
     ).data
 
     expect(createdUser).toBeDefined()
 
-    await provider.update<User>(R_USERS, {
+    await provider.update<_Users>(R_USERS, {
       id: createdUser.id,
       previousData: createdUser,
       data: generateUserForTesting({
@@ -111,7 +111,7 @@ describe('CRUD operations on User', () => {
       })
     })
     const fetchedUser = (
-      await provider.getOne<User>(R_USERS, {
+      await provider.getOne<_Users>(R_USERS, {
         id: createdUser.id
       })
     ).data
@@ -127,12 +127,12 @@ describe('CRUD operations on User', () => {
 
   it('should delete user', async () => {
     const createdUser = (
-      await provider.create<User>(R_USERS, {
+      await provider.create<_Users>(R_USERS, {
         data: generateUserForTesting()
       })
     ).data
 
-    const listAfterCreate = await provider.getList<User>(R_USERS, {
+    const listAfterCreate = await provider.getList<_Users>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
       filter: {}
@@ -140,9 +140,9 @@ describe('CRUD operations on User', () => {
 
     expect(listAfterCreate.total).toBe(1)
 
-    await provider.delete<User>(R_USERS, { id: createdUser.id })
+    await provider.delete<_Users>(R_USERS, { id: createdUser.id })
 
-    const listAfterDelete = await provider.getList<User>(R_USERS, {
+    const listAfterDelete = await provider.getList<_Users>(R_USERS, {
       sort: { field: 'id', order: 'ASC' },
       pagination: { page: 1, perPage: 1000 },
       filter: {}
@@ -153,11 +153,11 @@ describe('CRUD operations on User', () => {
 
   it('should test before create', async () => {
     const createdUser = (
-      await provider.create<User>(R_USERS, { data: generateUserForTesting() })
+      await provider.create<_Users>(R_USERS, { data: generateUserForTesting() })
     ).data
 
     const fetchedUser = (
-      await provider.getOne<User>(R_USERS, {
+      await provider.getOne<_Users>(R_USERS, {
         id: createdUser.id
       })
     ).data
@@ -178,7 +178,7 @@ describe('CRUD operations on User', () => {
     expect(auditListBeforeCreate.total).toBe(0)
 
     const createdUser = (
-      await provider.create<User>(R_USERS, {
+      await provider.create<_Users>(R_USERS, {
         data: generateUserForTesting()
       })
     ).data
@@ -210,7 +210,7 @@ describe('CRUD operations on User', () => {
     expect(auditListBeforeCreate.total).toBe(0)
 
     const createdUser = (
-      await provider.create<User>(R_USERS, { data: generateUserForTesting() })
+      await provider.create<_Users>(R_USERS, { data: generateUserForTesting() })
     ).data
 
     expect(createdUser.id).toBeDefined()
@@ -228,7 +228,7 @@ describe('CRUD operations on User', () => {
     expect(firstAuditEntry.resource).toBe(R_USERS)
     expect(firstAuditEntry.activityType).toBe(AuditType.CREATE)
 
-    await provider.update<User>(R_USERS, {
+    await provider.update<_Users>(R_USERS, {
       id: createdUser.id,
       previousData: createdUser,
       data: generateUserForTesting({
@@ -263,7 +263,7 @@ describe('CRUD operations on User', () => {
     expect(auditListBeforeCreate.total).toBe(0)
 
     const createdUser = (
-      await provider.create<User>(R_USERS, { data: generateUserForTesting() })
+      await provider.create<_Users>(R_USERS, { data: generateUserForTesting() })
     ).data
 
     expect(createdUser.id).toBeDefined()
@@ -277,7 +277,7 @@ describe('CRUD operations on User', () => {
 
     expect(auditListAfterCreate.total).toBe(1)
 
-    await provider.update<User>(R_USERS, {
+    await provider.update<_Users>(R_USERS, {
       id: createdUser.id,
       previousData: createdUser,
       data: generateUserForTesting({

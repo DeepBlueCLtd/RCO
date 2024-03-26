@@ -21,13 +21,13 @@ import { checkIfUserIsActive } from './helper'
 
 const generatedUsers = [...generateUsers(200), ...users]
 
-export const encryptedUsers = (isHigh?: boolean): User[] => {
+export const encryptedUsers = (isHigh?: boolean): _Users[] => {
   const userList = isHigh === true ? generatedUsers : users
   const mappedUsers = userList.map((user) => {
-    return user.password
+    return user.hashed_password
       ? {
           ...user,
-          password: bcrypt.hashSync(user.password)
+          hashed_password: bcrypt.hashSync(user.hashed_password)
         }
       : user
   })
@@ -103,7 +103,7 @@ export const getAddresses = (
 }
 
 const assignItemsToRandomActiveUser = (
-  users: User[],
+  users: _Users[],
   items: Item[]
 ): Record<string, number[]> => {
   const activeUsers = users.filter((user) => checkIfUserIsActive(user))
@@ -267,7 +267,7 @@ const loadDefaultData = async (
   }
   const configData: ConfigData[] = [configDataItem]
   const defaultData: Omit<RCOStore, 'richItem'> = {
-    user: encryptedUsers(isHigh),
+    _users: encryptedUsers(isHigh),
     batch,
     item,
     platform,
@@ -294,7 +294,7 @@ const loadDefaultData = async (
     batchHandle: []
   }
   const map: Record<string, constants.ResourceTypes> = {
-    user: constants.R_USERS,
+    _users: constants.R_USERS,
     batch: constants.R_BATCHES,
     item: constants.R_ITEMS,
     platform: constants.R_PLATFORMS,
