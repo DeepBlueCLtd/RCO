@@ -1,34 +1,6 @@
 import axios, { type AxiosResponse } from 'axios'
 import * as constants from '../../constants'
-
-const basePermissions = {
-  [constants.R_PROJECTS]: { read: true, write: true, delete: false },
-  [constants.R_BATCHES]: { read: true, write: true, delete: false },
-  [constants.R_ITEMS]: { read: true, write: true, delete: false },
-  [constants.R_ALL_ITEMS]: { read: true, write: true, delete: false },
-  [constants.R_USERS]: { read: true, write: false, delete: false },
-  [constants.R_PLATFORMS]: { read: true, write: false, delete: false },
-  [constants.R_VAULT_LOCATION]: { read: true, write: false, delete: false },
-  [constants.R_ADDRESSES]: { read: true, write: true, delete: false },
-  [constants.R_DESTRUCTION]: { read: true, write: true, delete: false },
-  [constants.R_DISPATCH]: { read: true, write: true, delete: false },
-  'reference-data': { read: true, write: false, delete: false },
-  'welcome-page': { read: true }
-}
-
-const permissions: Record<UserRole, ResourcePermissions> = {
-  'rco-user': { ...basePermissions },
-  'rco-power-user': {
-    ...basePermissions,
-    [constants.R_PLATFORMS]: { read: true, write: true, delete: false },
-    [constants.R_USERS]: { read: true, write: true, delete: false },
-    [constants.R_VAULT_LOCATION]: { read: true, write: true, delete: false },
-    'reference-data': { read: true, write: true, delete: false }
-  }
-}
 const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
-export default permissions
-
 const getRoleId = async (role: UserRole): Promise<number | undefined> => {
   return await axios
     .get(`${BASE_URL}/api/tables/_roles/rows?_filters=name:${role}`)
@@ -38,12 +10,31 @@ const getRoleId = async (role: UserRole): Promise<number | undefined> => {
 const getPermissionsByRoleId = async (
   roleId: number
 ): Promise<AxiosResponse<any, any>> => {
-  return await axios.get(
-    `${BASE_URL}/api/tables/_roles_permissions/rows?_filters=role_id:${roleId}`
-  )
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/tables/_roles_permissions/rows?_filters=role_id:${roleId}&_limit=100`
+    )
+    return response
+  } catch (error) {
+    return await Promise.reject(error)
+  }
 }
 
-const mapPermissions = (permissions: any): ResourcePermissions => {
+type DBPermissionType = {
+  id: number
+  role_id: number
+  table_name: string
+  create: string
+  update: string
+  read: string
+  delete: string
+  createdAt: string
+  updatedAt: string
+}
+
+const mapPermissions = (
+  permissions: DBPermissionType[]
+): ResourcePermissions => {
   const mappedPermissions = permissions.reduce((acc: any, permission: any) => {
     acc[permission.table_name] = {
       read: permission.read === 'true',
@@ -52,8 +43,34 @@ const mapPermissions = (permissions: any): ResourcePermissions => {
     }
     return acc
   }, {})
-  console.log(mappedPermissions)
+  const foundItemPermissions = permissions.find(
+    (item: { table_name: string }) => item.table_name === 'item'
+  )
+  if (foundItemPermissions) {
+    const { create, read, update, delete: del } = foundItemPermissions
+    mappedPermissions[constants.R_ALL_ITEMS] = {
+      read,
+      create,
+      update,
+      delete: del
+    }
+  }
+
   mappedPermissions['welcome-page'] = { read: true }
+  if (permissions[0]?.role_id === 3) {
+    mappedPermissions['reference-data'] = {
+      read: true,
+      write: true,
+      delete: false
+    }
+  } else {
+    mappedPermissions['reference-data'] = {
+      read: true,
+      write: false,
+      delete: false
+    }
+  }
+
   return mappedPermissions
 }
 

@@ -113,7 +113,6 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
 
   return (
     <List
-      hasCreate
       storeKey={storeKey}
       filters={filters}
       exporter={false}

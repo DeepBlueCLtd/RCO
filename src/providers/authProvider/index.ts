@@ -97,7 +97,13 @@ const fetchUser = async (username: string): Promise<any> => {
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
-    login: async ({ username, password }) => {
+    login: async ({
+      username,
+      password
+    }: {
+      username: string
+      password: string
+    }) => {
       if (process.env.MOCK) {
         const data = await dataProvider.getList<_Users>(constants.R_USERS, {
           sort: { field: 'id', order: 'ASC' },
@@ -184,7 +190,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     },
     checkError: async (error): Promise<any> => {
       const status = error.status
-      if (status === 401 || status === 403) {
+      if (status === 403) {
         removeUserToken()
         await Promise.reject(
           new Error('Server returned code ' + String(status))

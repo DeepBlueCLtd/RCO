@@ -159,3 +159,22 @@ export const getAccessToken = async ({
   )
   return res
 }
+
+export const handleRefreshToken = async (): Promise<AxiosResponse> => {
+  const res = await axios.get(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/token/refresh'
+      : '/api/auth/token/refresh'
+  )
+  return res
+}
+
+axios.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    if (error.response && error.response.status === 401) {
+      await handleRefreshToken()
+    }
+    return await Promise.reject(error)
+  }
+)

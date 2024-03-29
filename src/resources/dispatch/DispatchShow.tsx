@@ -62,7 +62,9 @@ const ShowActions = (props: ShowActionsProps): React.ReactElement => {
               )
             }}
           />
-          {showEdit && <EditButton />}
+          {hasAccess(constants.R_DISPATCH, { write: true })
+            ? showEdit && <EditButton />
+            : null}
         </FlexBox>
       </TopToolbar>
     </>
