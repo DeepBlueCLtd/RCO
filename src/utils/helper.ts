@@ -91,6 +91,28 @@ export const changeAndUpdatePassword = async ({
   return res
 }
 
+interface EditPassword {
+  newPassword: string
+  userId: number
+}
+
+export const editUserPassowrd = async ({
+  newPassword,
+  userId
+}: EditPassword): Promise<AxiosResponse> => {
+  const url =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/editpassword'
+      : '/api/editpassword'
+  const res = await axios.post(url, {
+    fields: {
+      newPassword,
+      userId
+    }
+  })
+  return res
+}
+
 interface ErrorDetails {
   message: string
   status: number

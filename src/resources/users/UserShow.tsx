@@ -20,20 +20,39 @@ import {
   useDataProvider,
   FunctionField
 } from 'react-admin'
-import { Chip, Typography, Button, Modal } from '@mui/material'
+import {
+  Chip,
+  Typography,
+  Button,
+  Modal,
+  InputAdornment,
+  IconButton
+} from '@mui/material'
 import { R_AUDIT, R_ITEMS, R_USERS } from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import useCanAccess from '../../hooks/useCanAccess'
-import { KeyboardReturn, Warning } from '@mui/icons-material'
+import {
+  KeyboardReturn,
+  Visibility,
+  VisibilityOff,
+  Warning
+} from '@mui/icons-material'
 import * as constants from '../../constants'
 import { useNavigate, useParams } from 'react-router-dom'
 import SourceField from '../../components/SourceField'
 import HistoryButton from '../../components/HistoryButton'
-import { checkIfDateHasPassed, checkIfUserIsActive } from '../../utils/helper'
+import {
+  checkIfDateHasPassed,
+  checkIfUserIsActive,
+  editUserPassowrd,
+  getErrorDetails
+} from '../../utils/helper'
 import { DateTime } from 'luxon'
 import useAudit, { type AuditFunction } from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
-
+import LockResetIcon from '@mui/icons-material/LockReset'
+import { type AxiosError, isAxiosError } from 'axios'
+import { getUser } from '../../providers/authProvider'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -148,14 +167,144 @@ const ResetPassword = ({
   )
 }
 
+const EditPassword = ({ handleClose }: Props): React.ReactElement => {
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [password, setPassword] = React.useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const { id } = useParams()
+  const notify = useNotify()
+  const user = getUser()
+
+  const handleEditPassword = async (): Promise<void> => {
+    if (!id || user?.id.toString() === id) {
+      notify('User cannot edit own password.', { type: 'error' })
+      return
+    }
+
+    try {
+      const res = await editUserPassowrd({
+        newPassword: password,
+        userId: parseInt(id)
+      })
+      if (res.status === 201) {
+        notify(res.data.message, { type: 'success' })
+        handleClose()
+      }
+    } catch (err) {
+      if (isAxiosError(err))
+        notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
+      else notify((err as Error).message, { type: 'error' })
+    }
+  }
+
+  const handleClickShowPassword = (): void => {
+    setShowPassword((show) => !show)
+  }
+
+  const validatePassword = (value: string | any[]): void => {
+    if (typeof value !== 'string') {
+      setPasswordError('')
+      return
+    }
+    if (value.length < 10) {
+      setPasswordError('Password must be at least 10 characters long.')
+      return
+    }
+    if (!/[A-Z]/.test(value) || !/[a-z]/.test(value)) {
+      setPasswordError(
+        'Password must contain both uppercase and lowercase letters.'
+      )
+      return
+    }
+    if (!/\d/.test(value)) {
+      setPasswordError('Password must contain at least one digit.')
+      return
+    }
+    if (!/[^a-zA-Z0-9]/.test(value)) {
+      setPasswordError('Password must contain at least one special character.')
+      return
+    }
+    setPasswordError('')
+  }
+
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4
+      }}>
+      <Typography>
+        <b>Edit User Password</b>
+      </Typography>
+      <Typography>
+        The password should include these items:
+        <ul>
+          <li>At least 10 characters in length</li>
+          <li>Upper and lower case letters</li>
+          <li>At least one digit</li>
+          <li>At least one special character</li>
+        </ul>
+      </Typography>
+      <SimpleForm toolbar={false}>
+        <TextInput
+          type={showPassword ? 'text' : 'password'}
+          source='hashed_password'
+          label='New Password'
+          variant='outlined'
+          sx={{ width: '100%' }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton onClick={handleClickShowPassword} edge='end'>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+          onChange={(e) => {
+            const value = e.target.value
+            setPassword(value)
+            validatePassword(value)
+          }}
+          error={Boolean(passwordError)}
+          helperText={
+            <Typography sx={{ color: 'red', fontSize: '12px' }}>
+              {passwordError}
+            </Typography>
+          }
+        />
+      </SimpleForm>
+      <FlexBox marginTop='20px'>
+        <Button variant='contained' onClick={handleEditPassword}>
+          Confirm
+        </Button>
+        <Button variant='outlined' color='secondary' onClick={handleClose}>
+          Cancel
+        </Button>
+      </FlexBox>
+    </Box>
+  )
+}
+
 interface UserShowCompType {
   setRecord: React.Dispatch<React.SetStateAction<_Users | undefined>>
   audit: AuditFunction
+  handleEditPasswordClose: () => void
+  editPasswordOpen: boolean
 }
 
 const UserShowComp = ({
   setRecord,
-  audit
+  audit,
+  handleEditPasswordClose,
+  editPasswordOpen
 }: UserShowCompType): React.ReactElement => {
   const { record, isLoading } = useShowContext<_Users>()
   const [departOpen, setDepartOpen] = useState(false)
@@ -357,12 +506,23 @@ const UserShowComp = ({
           />
         </div>
       </Modal>
+
+      <Modal open={editPasswordOpen} onClose={handleEditPasswordClose}>
+        <div>
+          <EditPassword
+            handleClose={handleEditPasswordClose}
+            record={record}
+            audit={audit}
+          />
+        </div>
+      </Modal>
     </>
   )
 }
 
 export default function UserShow(): React.ReactElement {
   const [record, setRecord] = useState<_Users>()
+  const [editPasswordOpen, setEditPasswordOpen] = useState(false)
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading } = useGetList<Audit>(R_AUDIT, {})
@@ -370,6 +530,14 @@ export default function UserShow(): React.ReactElement {
   const navigate = useNavigate()
 
   if (isLoading) return <Loading />
+
+  const handleEditPasswordOpen = (): void => {
+    setEditPasswordOpen(true)
+  }
+
+  const handleEditPasswordClose = (): void => {
+    setEditPasswordOpen(false)
+  }
 
   return (
     <Show
@@ -389,9 +557,20 @@ export default function UserShow(): React.ReactElement {
               }
             }}
           />
+          {hasWriteAccess && (
+            <Button onClick={handleEditPasswordOpen} sx={{ fontSize: '12px' }}>
+              <LockResetIcon fontSize='medium' sx={{ paddingRight: '5px' }} />
+              Edit Password
+            </Button>
+          )}
         </TopToolbar>
       }>
-      <UserShowComp setRecord={setRecord} audit={audit} />
+      <UserShowComp
+        setRecord={setRecord}
+        audit={audit}
+        editPasswordOpen={editPasswordOpen}
+        handleEditPasswordClose={handleEditPasswordClose}
+      />
     </Show>
   )
 }

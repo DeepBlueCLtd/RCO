@@ -20,7 +20,7 @@ const getPermissionsByRoleId = async (
   }
 }
 
-type DBPermissionType = {
+interface DBPermissionType {
   id: number
   role_id: number
   table_name: string
