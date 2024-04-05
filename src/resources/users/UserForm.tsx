@@ -44,7 +44,8 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     hashed_password: '',
     role: 'rco-user',
     departedDate: valueWithTenYears,
-    is_superuser: false
+    is_superuser: false,
+    updateBefore: ''
   }
   const { record } = useEditContext()
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'

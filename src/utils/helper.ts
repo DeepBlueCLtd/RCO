@@ -79,14 +79,30 @@ interface ChangePassword {
 
 export const changeAndUpdatePassword = async ({
   password,
-  currentPassword,
+  currentPassword
+}: // userId
+ChangePassword): Promise<AxiosResponse> => {
+  const res = await axios.put(
+    process.env.NODE_ENV === 'development'
+      ? `http://localhost:8000/api/auth/change-password`
+      : `/api/auth/change-password`,
+    { fields: { currentPassword, newPassword: password } }
+  )
+  return res
+}
+
+interface DeleteUpdateBefore {
+  userId: number
+}
+
+export const deleteUpdateBefore = async ({
   userId
-}: ChangePassword): Promise<AxiosResponse> => {
+}: DeleteUpdateBefore): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000/api/changepassword'
-      : '/api/changepassword',
-    { fields: { userId, password, currentPassword } }
+      ? `http://localhost:8000/api/updateBefore`
+      : `/api/updateBefore`,
+    { userId }
   )
   return res
 }

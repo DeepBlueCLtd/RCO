@@ -5,6 +5,7 @@ const passwordValidationSchema = require('./password-validation.schema')
 const loginController = require('./login-controller')
 const changePasswordController = require('./changePassword-controller')
 const editPasswordController = require('./editPassword-controller')
+const updateBeforeController = require('./updateBefore-controller')
 const tableName = 'passwords'
 
 const getIp = {
@@ -41,12 +42,20 @@ const checkAgainstLastFivePassowrds = (db, userId, password) => {
 
 const updateUserPassword = (db, userId, password) => {
   const hashedPassword = bcrypt.hashSync(password)
+  const now = new Date()
+  const futureTime = new Date(now.getTime() + 60 * 6000)
+  const futureStringTime = futureTime.toISOString()
   const query = `
     UPDATE user
-    SET password = ?, lastUpdatedAt = ? 
+    SET password = ?, lastUpdatedAt = ?, updateBefore = ? 
     WHERE id = ?;
   `
-  db.prepare(query).run(hashedPassword, new Date().toISOString(), userId)
+  db.prepare(query).run(
+    hashedPassword,
+    new Date().toISOString(),
+    futureStringTime,
+    userId
+  )
 }
 
 const insertPasswordRecord = {
@@ -134,10 +143,17 @@ const editPassword = {
   path: '/api/editpassword',
   handler: editPasswordController
 }
+const updateBefore = {
+  method: 'POST',
+  path: '/api/updateBefore',
+  handler: updateBeforeController
+}
+
 module.exports = {
   getIp,
   insertPasswordRecord,
   login,
   changepassword,
-  editPassword
+  editPassword,
+  updateBefore
 }
