@@ -136,7 +136,9 @@ function App(): React.ReactElement {
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
-  const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
+  const [resetPasswordTitle, setResetPasswordTitle] = useState<string | null>(
+    null
+  )
 
   const [showPassword, setShowPassword] = React.useState(false)
   const { notify } = useContext(NotificationContext)
@@ -232,7 +234,7 @@ function App(): React.ReactElement {
             userId: user.id as number
           })
           if (res.status === 201) {
-            setResetPasswordOpen(false)
+            setResetPasswordTitle(null)
             notify(res.data.message)
           }
         }
@@ -332,13 +334,14 @@ function App(): React.ReactElement {
             id: Number(user.id)
           })
 
-          if (
-            !password ||
-            (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120))
-          ) {
-            setResetPasswordOpen(true)
+          if (!password) {
+            setResetPasswordTitle('Please provide an initial password')
+          } else if (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120)) {
+            setResetPasswordTitle(
+              'Your password has expired, please update it.'
+            )
           } else {
-            setResetPasswordOpen(false)
+            setResetPasswordTitle(null)
           }
         }
       }
@@ -396,13 +399,13 @@ function App(): React.ReactElement {
 
   return (
     <div>
-      <Modal open={resetPasswordOpen}>
+      <Modal open={!!resetPasswordTitle}>
         <Box sx={style}>
           {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <Typography>
               <p>
-                <b>Please provide an initial password</b>
+                <b>{resetPasswordTitle}</b>
               </p>
               <p>The password should include these items:</p>
             </Typography>
