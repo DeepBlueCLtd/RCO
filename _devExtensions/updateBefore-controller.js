@@ -11,7 +11,7 @@ const getUserById = (db, userId) => {
   return db.prepare(query).get(userId)
 }
 
-const updateUserUpdateBefore = (db, userId) => {
+const clearUserUpdateBefore = (db, userId) => {
   const futureTimeString = ''
   const query = `
         UPDATE _users
@@ -28,7 +28,7 @@ const updateBeforeController = async (req, res) => {
     mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
     const { userId } = req.body.data
 
-    updateUserUpdateBefore(mainDb, userId)
+    clearUserUpdateBefore(mainDb, userId)
     const user = getUserById(mainDb, userId)
     res.status(201).json({
       userDetails: user

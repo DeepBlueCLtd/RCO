@@ -169,39 +169,40 @@ const ResetPassword = ({
 
 const EditPassword = ({ handleClose }: Props): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false)
-  const [password, setPassword] = React.useState('')
+  const [password, setPassword] = useState<string>('')
   const [passwordError, setPasswordError] = useState('')
   const { id } = useParams()
   const notify = useNotify()
   const user = getUser()
 
-  const handleEditPassword = async (): Promise<void> => {
+  const handleEditPassword = (): void => {
     if (!id || user?.id.toString() === id) {
       notify('User cannot edit own password.', { type: 'error' })
       return
     }
 
-    try {
-      const res = await editUserPassowrd({
-        newPassword: password,
-        userId: parseInt(id)
+    editUserPassowrd({
+      newPassword: password,
+      userId: parseInt(id)
+    })
+      .then((res) => {
+        if (res.status === 201) {
+          notify(res.data.message, { type: 'success' })
+          handleClose()
+        }
       })
-      if (res.status === 201) {
-        notify(res.data.message, { type: 'success' })
-        handleClose()
-      }
-    } catch (err) {
-      if (isAxiosError(err))
-        notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
-      else notify((err as Error).message, { type: 'error' })
-    }
+      .catch((err) => {
+        if (isAxiosError(err))
+          notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
+        else notify((err as Error).message, { type: 'error' })
+      })
   }
 
   const handleClickShowPassword = (): void => {
     setShowPassword((show) => !show)
   }
 
-  const validatePassword = (value: string | any[]): void => {
+  const validatePassword = (value: string | string[]): void => {
     if (typeof value !== 'string') {
       setPasswordError('')
       return
