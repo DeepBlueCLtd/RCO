@@ -3792,11 +3792,6 @@ dotenv@^16.0.3, dotenv@^16.3.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
 
-dotenv@^16.4.5:
-  version "16.4.5"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
-  integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
-
 eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
@@ -7399,10 +7394,10 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-soul-cli@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/soul-cli/-/soul-cli-0.7.1.tgz#65f424d69c42cbca694a3d00663058bc09e9b80d"
-  integrity sha512-ZZL/5LRd7YaL3ObLfi8K5TpNDDagO0F9Cgkv/kmY/0dV3BrlUn1oAahkQilJOxpSZP4hK+BPX8uwoftSCzWaOA==
+soul-cli@0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/soul-cli/-/soul-cli-0.7.3.tgz#4e82c368f65e1f51bad7e08b426daf73e4f726ed"
+  integrity sha512-zUv4zCEKmh8upDqQYhouEwXoXMBurnU0RH8pEPPkxhK3RL3q42XS41GazcTHfFb45wGLs9vDwJG0/oD1jYVH1w==
   dependencies:
     bcrypt "^5.1.1"
     better-sqlite3 "^8.1.0"

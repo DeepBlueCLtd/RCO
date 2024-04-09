@@ -33,7 +33,7 @@ type DBPermissionType = {
 }
 
 const mapPermissions = (
-  permissions: DBPermissionType[]
+  permissions: DBPermissionType[] | any[]
 ): ResourcePermissions => {
   const mappedPermissions = permissions.reduce((acc: any, permission: any) => {
     acc[permission.table_name] = {
