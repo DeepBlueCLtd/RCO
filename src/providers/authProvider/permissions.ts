@@ -20,7 +20,7 @@ const getPermissionsByRoleId = async (
   }
 }
 
-type DBPermissionType = {
+interface DBPermissionType {
   id: number
   role_id: number
   table_name: string
@@ -33,7 +33,7 @@ type DBPermissionType = {
 }
 
 const mapPermissions = (
-  permissions: DBPermissionType[] | any[]
+  permissions: DBPermissionType[]
 ): ResourcePermissions => {
   const mappedPermissions = permissions.reduce((acc: any, permission: any) => {
     acc[permission.table_name] = {
@@ -82,7 +82,7 @@ export const getPermissionsByRoles = async (
     throw new Error('Role ID is undefined')
   }
   const fetchedPermissions = (await getPermissionsByRoleId(roleId)).data.data
-  return mapPermissions(fetchedPermissions as DBPermissionType[] | any[])
+  return mapPermissions(fetchedPermissions as DBPermissionType[])
 }
 export const canAccess = (
   permissions: ResourcePermissions,
