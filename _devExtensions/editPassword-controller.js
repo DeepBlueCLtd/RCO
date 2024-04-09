@@ -34,24 +34,6 @@ const editPasswordController = async (req, res) => {
 
     queryFields.newPassword = bcrypt.hashSync(newPassword)
 
-    const fields = Object.fromEntries(
-      Object.entries(queryFields).filter(([_, value]) => value !== null)
-    )
-    const fieldsString = Object.keys(fields).join(', ')
-    const valuesString = Object.values(fields)
-      .map((value) => {
-        if (typeof value === 'string') {
-          return `'${value}'`
-        }
-        return value
-      })
-      .join(', ')
-
-    let values = `(${fieldsString}) VALUES (${valuesString})`
-    if (valuesString === '') {
-      values = 'DEFAULT VALUES'
-    }
-
     updateUserPassword(mainDb, userId, newPassword)
     res.status(201).json({
       message: 'User Password updated Successfully.'

@@ -271,8 +271,8 @@ const EditPassword = ({ handleClose }: Props): React.ReactElement => {
           }}
           onChange={(e) => {
             const value = e.target.value
-            setPassword(value)
-            validatePassword(value)
+            setPassword(value as string)
+            validatePassword(value as string)
           }}
           error={Boolean(passwordError)}
           helperText={
