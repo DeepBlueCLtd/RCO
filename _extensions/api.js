@@ -3,7 +3,6 @@ const express = require('express')
 const {
   insertPasswordRecord,
   login,
-  changepassword,
   editPassword
 } = require('../_devExtensions/api')
 
@@ -30,6 +29,5 @@ module.exports = {
   rcoClient,
   insertPasswordRecord,
   login,
-  changepassword,
   editPassword
 }

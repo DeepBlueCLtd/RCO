@@ -12,7 +12,8 @@ const users: _Users[] = [
     username: 'd-1',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
-    lockoutAttempts: 0
+    lockoutAttempts: 0,
+    updateBefore: ''
   },
   {
     id: 2,
@@ -25,7 +26,8 @@ const users: _Users[] = [
     username: 'd-2',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
-    lockoutAttempts: 0
+    lockoutAttempts: 0,
+    updateBefore: ''
   },
   {
     id: 3,
@@ -38,7 +40,8 @@ const users: _Users[] = [
     username: 'd-3',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
-    lockoutAttempts: 0
+    lockoutAttempts: 0,
+    updateBefore: ''
   },
   {
     id: 4,
@@ -51,7 +54,8 @@ const users: _Users[] = [
     username: 'd-4',
     departedDate: DateTime.local().plus({ years: 5 }).toISO(),
     lastUpdatedAt: null,
-    lockoutAttempts: 0
+    lockoutAttempts: 0,
+    updateBefore: ''
   }
 ]
 

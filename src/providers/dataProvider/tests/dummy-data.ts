@@ -139,7 +139,8 @@ export const generateUserForTesting = ({
   is_superuser: false,
   username: 'd-1',
   lastUpdatedAt: null,
-  lockoutAttempts: 0
+  lockoutAttempts: 0,
+  updateBefore: ''
 })
 
 interface VaultLocationProps {

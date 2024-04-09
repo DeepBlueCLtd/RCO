@@ -80,12 +80,11 @@ interface ChangePassword {
 export const changeAndUpdatePassword = async ({
   password,
   currentPassword
-}: // userId
-ChangePassword): Promise<AxiosResponse> => {
+}: ChangePassword): Promise<AxiosResponse> => {
   const res = await axios.put(
     process.env.NODE_ENV === 'development'
-      ? `http://localhost:8000/api/auth/change-password`
-      : `/api/auth/change-password`,
+      ? 'http://localhost:8000/api/auth/change-password'
+      : '/api/auth/change-password',
     { fields: { currentPassword, newPassword: password } }
   )
   return res
@@ -94,15 +93,14 @@ ChangePassword): Promise<AxiosResponse> => {
 interface DeleteUpdateBefore {
   userId: number
 }
-
 export const deleteUpdateBefore = async ({
   userId
 }: DeleteUpdateBefore): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
-      ? `http://localhost:8000/api/updateBefore`
-      : `/api/updateBefore`,
-    { userId }
+      ? 'http://localhost:8000/api/updateBefore'
+      : '/api/updateBefore',
+    { data: { userId } }
   )
   return res
 }
@@ -111,7 +109,6 @@ interface EditPassword {
   newPassword: string
   userId: number
 }
-
 export const editUserPassowrd = async ({
   newPassword,
   userId
@@ -134,7 +131,6 @@ interface ErrorDetails {
   status: number
   data: any
 }
-
 export const getErrorDetails = (error: AxiosError): ErrorDetails => {
   if (error.response) {
     const { data, status, statusText } = error.response
@@ -160,6 +156,15 @@ export const isDateNotInPastDays = (
   const dateToCheck = DateTime.fromISO(isoDateString)
   const currentDate = DateTime.now()
   return currentDate.diff(dateToCheck, 'days').days > diffDays
+}
+
+export const logout = async (): Promise<AxiosResponse> => {
+  const res = await axios.get(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/logout'
+      : '/api/auth/logout'
+  )
+  return res
 }
 
 interface Login {

@@ -37,6 +37,14 @@ const validateUser = (username, hashed_password, db) => {
 
   if (hasUserDeparted) throw new Error('User has departed organisation')
 
+  const currentTime = new Date().toISOString()
+  const hasUserNotUpdated = user.updateBefore
+  if (currentTime > hasUserNotUpdated && hasUserNotUpdated) {
+    throw new Error(
+      'You have not updated the password. Please contact your administrator'
+    )
+  }
+
   if (user.hashed_password === '' && hashed_password === username) {
     updateLockoutAttempts(db, 0, username)
     return user

@@ -5,13 +5,20 @@ const passwordValidationSchema = require('./password-validation.schema')
 
 const updateUserPassword = (db, userId, newPassword) => {
   const hashedPassword = bcrypt.hashSync(newPassword)
-  console.log(hashedPassword)
+  const now = new Date()
+  const futureTime = new Date(now.getTime() + 60 * 60000)
+  const futureTimeString = futureTime.toISOString()
   const query = `
         UPDATE _users
-        SET hashed_password = ?, lastUpdatedAt = ? 
+        SET hashed_password = ?, lastUpdatedAt = ?, updateBefore = ?
         WHERE id = ?;
       `
-  db.prepare(query).run(hashedPassword, new Date().toISOString(), userId)
+  db.prepare(query).run(
+    hashedPassword,
+    new Date().toISOString(),
+    futureTimeString,
+    userId
+  )
 }
 
 const editPasswordController = async (req, res) => {
@@ -47,7 +54,7 @@ const editPasswordController = async (req, res) => {
 
     updateUserPassword(mainDb, userId, newPassword)
     res.status(201).json({
-      message: 'User Password updated Successfully.!'
+      message: 'User Password updated Successfully.'
     })
   } catch (error) {
     return res.status(400).json({

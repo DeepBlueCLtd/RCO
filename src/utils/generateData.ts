@@ -324,7 +324,8 @@ export const generateUsers = (length: number): _Users[] => {
       createdAt: nowDate(),
       departedDate: null,
       lastUpdatedAt: null,
-      lockoutAttempts: 0
+      lockoutAttempts: 0,
+      updateBefore: ''
     }
     users.push(obj)
   }

@@ -25,6 +25,7 @@ import {
 import { type AxiosError, isAxiosError } from 'axios'
 import { AuditType } from './utils/activity-types'
 import { trackEvent } from './utils/audit'
+import { encryptData } from './utils/encryption'
 
 interface ChangePasswordForm {
   currentPassword: string
@@ -102,9 +103,13 @@ const ChangePassword = ({
           })
           if (res.status === 200) {
             setOpenChangePasswordModal(false)
-            await deleteUpdateBefore({
+            const res = await deleteUpdateBefore({
               userId: user.id as number
             })
+            const userData = res.data.userDetails
+            const updatedUser = { ...userData }
+            const token = encryptData(`${JSON.stringify(updatedUser)}`)
+            localStorage.setItem(constants.ACCESS_TOKEN_KEY, token)
             await audit({
               resource: constants.R_USERS,
               activityType: AuditType.CHANGE_PASSWORD,
