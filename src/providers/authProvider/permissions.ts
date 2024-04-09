@@ -82,7 +82,7 @@ export const getPermissionsByRoles = async (
     throw new Error('Role ID is undefined')
   }
   const fetchedPermissions = (await getPermissionsByRoleId(roleId)).data.data
-  return mapPermissions(fetchedPermissions)
+  return mapPermissions(fetchedPermissions as DBPermissionType[] | any[])
 }
 export const canAccess = (
   permissions: ResourcePermissions,
