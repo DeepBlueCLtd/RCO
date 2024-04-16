@@ -65,26 +65,6 @@ const ChangePassword = ({
 
   const { notify } = useContext(NotificationContext)
 
-  // const checkPasswordAge = async (
-  //   id: number,
-  //   dataProvider: DataProvider
-  // ): Promise<void> => {
-  //   const {
-  //     data: { lastUpdatedAt }
-  //   } = await dataProvider.getOne<_Users>(constants.R_USERS, {
-  //     id
-  //   })
-
-  //   if (
-  //     lastUpdatedAt !== null &&
-  //     lastUpdatedAt !== '' &&
-  //     !isDateNotInPastDays(lastUpdatedAt, 1)
-  //   )
-  //     throw new Error(
-  //       'Password update not allowed. Please wait at least one day before updating your password again.'
-  //     )
-  // }
-
   const onSubmit = async (data: ChangePasswordForm): Promise<void> => {
     const { newPassword, currentPassword } = data
     if (
