@@ -336,7 +336,10 @@ function App(): React.ReactElement {
 
           if (!password) {
             setResetPasswordTitle('Please provide an initial password')
-          } else if (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120)) {
+          } else if (
+            typeof lastUpdatedAt === 'string' &&
+            isDateNotInPastDays(lastUpdatedAt, 120)
+          ) {
             setResetPasswordTitle(
               'Your password has expired, please update it.'
             )
