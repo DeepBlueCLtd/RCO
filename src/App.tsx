@@ -100,9 +100,9 @@ const buttonPrimaryStyle = {
 }
 
 function App(): React.ReactElement {
-  const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
-    undefined
-  )
+  const [dataProvider, setDataProvider] = useState<
+    (CustomDataProvider & DataProvider) | DataProvider | undefined
+  >(undefined)
   const [permissions, setPermissions] = useState<ResourcePermissions>({})
   const [authProvider, setAuthProvider] = useState<AuthProvider | undefined>(
     undefined
@@ -235,7 +235,7 @@ function App(): React.ReactElement {
           })
           if (res.status === 201) {
             setResetPasswordTitle(null)
-            notify(res.data.message)
+            notify(res.data.message as string)
           }
         }
       } catch (err) {
@@ -357,7 +357,7 @@ function App(): React.ReactElement {
   useEffect(() => {
     async function getConfigData(): Promise<void> {
       if (dataProvider !== undefined) {
-        setConfigData(await dataProvider.configData())
+        setConfigData((await dataProvider.configData()) as ConfigData)
       }
     }
     getConfigData().catch(console.log)
