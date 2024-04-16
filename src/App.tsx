@@ -326,11 +326,13 @@ function App(): React.ReactElement {
       if (dataProvider && authProvider && authProvider.getIdentity) {
         const user = await authProvider.getIdentity()
         if (user) {
-          const {
-            data: { lastUpdatedAt }
-          } = await dataProvider.getOne<_Users>(constants.R_USERS, {
-            id: Number(user.id)
-          })
+          const { data } = await dataProvider.getOne<_Users>(
+            constants.R_USERS,
+            {
+              id: Number(user.id)
+            }
+          )
+          const { lastUpdatedAt }: { lastUpdatedAt: string | null } = data
 
           if (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120)) {
             setResetPasswordOpen(true)
