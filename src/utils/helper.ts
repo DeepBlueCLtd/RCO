@@ -180,7 +180,7 @@ export const login = async ({
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/login'
       : '/api/login',
-    { hashed_password: password, username }
+    { password, username }
   )
   if (res.status === 200) {
     await getAccessToken({ password, username })

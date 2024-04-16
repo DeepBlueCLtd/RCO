@@ -61,7 +61,7 @@ const validateUser = (username, hashed_password, db) => {
   }
 
   updateLockoutAttempts(db, 0, username)
-
+  delete user.hashed_password
   return user
 }
 
@@ -69,13 +69,13 @@ const loginController = (req, res) => {
   let db
 
   try {
-    const { hashed_password, username } = req.body
+    const { password, username } = req.body
 
-    if (!hashed_password || !username)
-      throw new Error('hashed_password and username is required')
+    if (!password || !username)
+      throw new Error('password and username is required')
 
     db = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
-    const user = validateUser(username, hashed_password, db)
+    const user = validateUser(username, password, db)
 
     res.status(200).json({ data: user })
   } catch (error) {
