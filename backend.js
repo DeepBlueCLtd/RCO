@@ -5,6 +5,7 @@ const path = require('path')
 const packagePath = path.resolve(__dirname, 'node_modules/.bin/soul')
 
 const child = exec(`${packagePath} -d ./db/RCO2.sqlite -e %cd%\\_devExtensions`)
+// const child = exec(`${packagePath} -d ./db/RCO2.sqlite -e $(realpath ./_devExtensions)`)
 
 child.stdout.on('data', (data) => console.log(data))
 
