@@ -57,7 +57,7 @@ const validateUser = (username, hashed_password, db) => {
 
   if (!ishashed_passwordCorrect) {
     updateLockoutAttempts(db, user.lockoutAttempts + 1, username)
-    throw new Error('Invalid hashed_password')
+    throw new Error('Invalid password')
   }
 
   updateLockoutAttempts(db, 0, username)

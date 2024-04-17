@@ -8,15 +8,17 @@ const updateUserPassword = (db, userId, newPassword) => {
   const now = new Date()
   const futureTime = new Date(now.getTime() + 60 * 60000)
   const futureTimeString = futureTime.toISOString()
+  const lockoutAttempts = 0
   const query = `
         UPDATE _users
-        SET hashed_password = ?, lastUpdatedAt = ?, updateBefore = ?
+        SET hashed_password = ?, lastUpdatedAt = ?, updateBefore = ?, lockoutAttempts = ?
         WHERE id = ?;
       `
   db.prepare(query).run(
     hashedPassword,
     new Date().toISOString(),
     futureTimeString,
+    lockoutAttempts,
     userId
   )
 }

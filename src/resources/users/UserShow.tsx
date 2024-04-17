@@ -120,53 +120,6 @@ const DepartOrganisation = ({
   )
 }
 
-const ResetPassword = ({
-  handleClose,
-  record,
-  audit
-}: Props): React.ReactElement => {
-  const [update] = useUpdate()
-
-  const handlePasswordReset = (): void => {
-    audit({
-      activityType: AuditType.PASSWORD_RESET,
-      securityRelated: true,
-      resource: R_USERS,
-      subjectId: record?.id !== undefined ? record.id : null,
-      dataId: record?.id !== undefined ? record.id : null,
-      subjectResource: null,
-      activityDetail: 'Password reset'
-    }).catch(console.log)
-
-    update(
-      R_USERS,
-      {
-        id: record?.id,
-        previousData: record,
-        data: { password: '', lockoutAttempts: 0 }
-      },
-      { mutationMode: 'optimistic' }
-    ).catch(console.log)
-    handleClose()
-  }
-
-  return (
-    <Box sx={style}>
-      <Typography variant='h6'>
-        Are you sure you want to reset the password for this user?
-      </Typography>
-      <FlexBox marginTop='20px' justifyContent='center'>
-        <Button variant='contained' onClick={handlePasswordReset}>
-          Confirm
-        </Button>
-        <Button variant='outlined' color='secondary' onClick={handleClose}>
-          Cancel
-        </Button>
-      </FlexBox>
-    </Box>
-  )
-}
-
 const EditPassword = ({ handleClose }: Props): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false)
   const [password, setPassword] = useState<string>('')
@@ -309,7 +262,6 @@ const UserShowComp = ({
 }: UserShowCompType): React.ReactElement => {
   const { record, isLoading } = useShowContext<_Users>()
   const [departOpen, setDepartOpen] = useState(false)
-  const [resetOpen, setResetopen] = useState(false)
   const [showReturn, setShowReturn] = useState<boolean>(false)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
@@ -338,14 +290,6 @@ const UserShowComp = ({
 
   const handleDepartClose = (): void => {
     setDepartOpen(false)
-  }
-
-  const handleResetPassowrd = (): void => {
-    setResetopen(true)
-  }
-
-  const handleResetClose = (): void => {
-    setResetopen(false)
   }
 
   const cannotDepart = (): boolean => {
@@ -444,20 +388,7 @@ const UserShowComp = ({
                   </>
                 )}
             </FlexBox>
-            <FlexBox justifyContent='left'>
-              <Button
-                disabled={
-                  record?.departedDate !== undefined &&
-                  record.departedDate !== null &&
-                  checkIfDateHasPassed(record.departedDate)
-                }
-                variant='outlined'
-                sx={{ marginBottom: 1 }}
-                title='Clear user password. After logging in with username in both boxes they will be invited to enter a new one'
-                onClick={handleResetPassowrd}>
-                Reset Password
-              </Button>
-            </FlexBox>
+
             <FlexBox justifyContent='left'>
               <Button
                 disabled={!showReturn}
@@ -492,17 +423,6 @@ const UserShowComp = ({
             handleClose={handleDepartClose}
             record={record}
             setShowReturn={setShowReturn}
-            audit={audit}
-          />
-        </div>
-      </Modal>
-
-      <Modal open={resetOpen} onClose={handleResetClose}>
-        <div>
-          {' '}
-          <ResetPassword
-            handleClose={handleResetClose}
-            record={record}
             audit={audit}
           />
         </div>
