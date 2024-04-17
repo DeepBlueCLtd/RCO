@@ -200,9 +200,10 @@ function App(): React.ReactElement {
   ): Promise<void> => {
     const {
       data: { lastUpdatedAt }
-    } = await dataProvider.getOne<_Users>(constants.R_USERS, {
-      id
-    })
+    }: { data: { lastUpdatedAt: string | null } } =
+      await dataProvider.getOne<_Users>(constants.R_USERS, {
+        id
+      })
 
     if (
       typeof lastUpdatedAt === 'string' &&
@@ -331,7 +332,10 @@ function App(): React.ReactElement {
             id: Number(user.id)
           })
 
-          if (lastUpdatedAt && isDateNotInPastDays(lastUpdatedAt, 120)) {
+          if (
+            typeof lastUpdatedAt === 'string' &&
+            isDateNotInPastDays(lastUpdatedAt, 120)
+          ) {
             setResetPasswordOpen(true)
           } else {
             setResetPasswordOpen(false)
