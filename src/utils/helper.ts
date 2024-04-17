@@ -79,15 +79,50 @@ interface ChangePassword {
 
 export const changeAndUpdatePassword = async ({
   password,
-  currentPassword,
-  userId
+  currentPassword
 }: ChangePassword): Promise<AxiosResponse> => {
+  const res = await axios.put(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/change-password'
+      : '/api/auth/change-password',
+    { fields: { currentPassword, newPassword: password } }
+  )
+  return res
+}
+
+interface DeleteUpdateBefore {
+  userId: number
+}
+export const deleteUpdateBefore = async ({
+  userId
+}: DeleteUpdateBefore): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000/api/changepassword'
-      : '/api/changepassword',
-    { fields: { userId, password, currentPassword } }
+      ? 'http://localhost:8000/api/updateBefore'
+      : '/api/updateBefore',
+    { data: { userId } }
   )
+  return res
+}
+
+interface EditPassword {
+  newPassword: string
+  userId: number
+}
+export const editUserPassowrd = async ({
+  newPassword,
+  userId
+}: EditPassword): Promise<AxiosResponse> => {
+  const url =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/editpassword'
+      : '/api/editpassword'
+  const res = await axios.post(url, {
+    fields: {
+      newPassword,
+      userId
+    }
+  })
   return res
 }
 
@@ -96,7 +131,6 @@ interface ErrorDetails {
   status: number
   data: any
 }
-
 export const getErrorDetails = (error: AxiosError): ErrorDetails => {
   if (error.response) {
     const { data, status, statusText } = error.response
@@ -124,6 +158,15 @@ export const isDateNotInPastDays = (
   return currentDate.diff(dateToCheck, 'days').days > diffDays
 }
 
+export const logout = async (): Promise<AxiosResponse> => {
+  const res = await axios.get(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/logout'
+      : '/api/auth/logout'
+  )
+  return res
+}
+
 interface Login {
   password: string
   username: string
@@ -137,7 +180,7 @@ export const login = async ({
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/login'
       : '/api/login',
-    { hashed_password: password, username }
+    { password, username }
   )
   if (res.status === 200) {
     await getAccessToken({ password, username })

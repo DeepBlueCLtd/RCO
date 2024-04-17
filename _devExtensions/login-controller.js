@@ -37,6 +37,14 @@ const validateUser = (username, hashed_password, db) => {
 
   if (hasUserDeparted) throw new Error('User has departed organisation')
 
+  const currentTime = new Date().toISOString()
+  const hasUserNotUpdated = user.updateBefore
+  if (currentTime > hasUserNotUpdated && hasUserNotUpdated) {
+    throw new Error(
+      'You have not updated the password. Please contact your administrator'
+    )
+  }
+
   if (user.hashed_password === '' && hashed_password === username) {
     updateLockoutAttempts(db, 0, username)
     return user
@@ -49,11 +57,11 @@ const validateUser = (username, hashed_password, db) => {
 
   if (!ishashed_passwordCorrect) {
     updateLockoutAttempts(db, user.lockoutAttempts + 1, username)
-    throw new Error('Invalid hashed_password')
+    throw new Error('Invalid password')
   }
 
   updateLockoutAttempts(db, 0, username)
-
+  delete user.hashed_password
   return user
 }
 
@@ -61,13 +69,13 @@ const loginController = (req, res) => {
   let db
 
   try {
-    const { hashed_password, username } = req.body
+    const { password, username } = req.body
 
-    if (!hashed_password || !username)
-      throw new Error('hashed_password and username is required')
+    if (!password || !username)
+      throw new Error('password and username is required')
 
     db = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
-    const user = validateUser(username, hashed_password, db)
+    const user = validateUser(username, password, db)
 
     res.status(200).json({ data: user })
   } catch (error) {

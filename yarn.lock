@@ -7394,7 +7394,7 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-soul-cli@0.7.3:
+soul-cli@^0.7.3:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/soul-cli/-/soul-cli-0.7.3.tgz#4e82c368f65e1f51bad7e08b426daf73e4f726ed"
   integrity sha512-zUv4zCEKmh8upDqQYhouEwXoXMBurnU0RH8pEPPkxhK3RL3q42XS41GazcTHfFb45wGLs9vDwJG0/oD1jYVH1w==

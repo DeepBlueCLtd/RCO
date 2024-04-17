@@ -12,7 +12,8 @@ import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
 import {
   getErrorDetails,
   login,
-  checkIfDateHasPassed
+  checkIfDateHasPassed,
+  logout
 } from '../../utils/helper'
 import axios, { isAxiosError } from 'axios'
 import bcrypt from 'bcryptjs'
@@ -39,14 +40,8 @@ const setToken = (token: string): void => {
 }
 
 export const removeUserToken = (): void => {
-  removeCookie()
+  void logout()
   removeLocalStorageItem(constants.ACCESS_TOKEN_KEY)
-}
-
-const removeCookie = (): void => {
-  document.cookie = `${constants.ACCESS_TOKEN_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
-
-  document.cookie = `${constants.REFRESH_TOKEN_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
 }
 
 const removeLocalStorageItem = (key: string): void => {

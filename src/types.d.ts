@@ -88,6 +88,7 @@ type _Users = ResourceWithCreation & {
   departedDate: string | null
   lastUpdatedAt: string | null
   lockoutAttempts: number
+  updateBefore: string
 }
 
 type Audit = RCOResource & {
