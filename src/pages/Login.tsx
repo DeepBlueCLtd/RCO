@@ -78,7 +78,7 @@ export default function Login(): React.ReactElement {
               id='username'
               label='Username'
               name='username'
-              autoComplete='staffNumber'
+              autoComplete='username'
               autoFocus
             />
             <TextField
