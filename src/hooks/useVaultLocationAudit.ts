@@ -2,7 +2,6 @@ import { AuditType } from '../utils/activity-types'
 import useAudit from './useAudit'
 import * as constants from '../constants'
 import { useDataProvider, useListContext, useRecordContext } from 'react-admin'
-import { useParams } from 'react-router-dom'
 import { type AuditData } from '../utils/audit'
 
 type UseVaultLocationAudit = (
@@ -16,9 +15,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
   const dataProvider = useDataProvider()
   const { selectedIds, data = [] } = useListContext<Item>()
   const record = useRecordContext<Item>()
-  const { id } = useParams()
-  const ids = id ? [parseInt(id)] : selectedIds
-
+  const ids = selectedIds
   const getItemsByIds = async (
     vaultLocationId: number,
     newId?: number
@@ -77,7 +74,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
     if (Object.keys(selectedItems).length === 0) return
 
     const selectedVIds = newIds
-      .map((id: number) => selectedItems?.[id].vaultLocation)
+      .map((id: number) => selectedItems?.[id]?.vaultLocation)
       .filter((id: number | null) => id !== null) as number[]
 
     const vaultLocations = await getVLocationByIds(selectedVIds)
