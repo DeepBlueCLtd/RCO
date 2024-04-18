@@ -17,8 +17,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
   const { selectedIds, data = [] } = useListContext<Item>()
   const record = useRecordContext<Item>()
   const { id } = useParams()
-  const ids = id ? [parseInt(id)] : selectedIds
-
+  const ids = id ? selectedIds : selectedIds
   const getItemsByIds = async (
     vaultLocationId: number,
     newId?: number
@@ -77,7 +76,7 @@ export default function useVaultLocationAudit(): UseVaultLocationAudit {
     if (Object.keys(selectedItems).length === 0) return
 
     const selectedVIds = newIds
-      .map((id: number) => selectedItems?.[id].vaultLocation)
+      .map((id: number) => selectedItems?.[id]?.vaultLocation)
       .filter((id: number | null) => id !== null) as number[]
 
     const vaultLocations = await getVLocationByIds(selectedVIds)
