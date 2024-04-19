@@ -66,7 +66,7 @@ const Title = (): React.ReactElement => {
   )
 }
 
-export default function UserMusterList<T extends User>(
+export default function UserMusterList<T extends _Users>(
   props: Props
 ): React.ReactElement {
   const { open, onClose } = props

@@ -18,12 +18,14 @@ import { Context as NotificationContext } from './context/NotificationContext'
 import * as constants from './constants'
 import {
   getErrorDetails,
-  isDateNotInPastDays,
-  changeAndUpdatePassword
+  // isDateNotInPastDays,
+  changeAndUpdatePassword,
+  deleteUpdateBefore
 } from './utils/helper'
 import { type AxiosError, isAxiosError } from 'axios'
 import { AuditType } from './utils/activity-types'
 import { trackEvent } from './utils/audit'
+import { encryptData } from './utils/encryption'
 
 interface ChangePasswordForm {
   currentPassword: string
@@ -63,26 +65,6 @@ const ChangePassword = ({
 
   const { notify } = useContext(NotificationContext)
 
-  const checkPasswordAge = async (
-    id: number,
-    dataProvider: DataProvider
-  ): Promise<void> => {
-    const {
-      data: { lastUpdatedAt }
-    } = await dataProvider.getOne<User>(constants.R_USERS, {
-      id
-    })
-
-    if (
-      lastUpdatedAt !== null &&
-      lastUpdatedAt !== '' &&
-      !isDateNotInPastDays(lastUpdatedAt, 1)
-    )
-      throw new Error(
-        'Password update not allowed. Please wait at least one day before updating your password again.'
-      )
-  }
-
   const onSubmit = async (data: ChangePasswordForm): Promise<void> => {
     const { newPassword, currentPassword } = data
     if (
@@ -93,15 +75,39 @@ const ChangePassword = ({
       const user = await authProvider.getIdentity()
 
       try {
-        if (user) {
-          await checkPasswordAge(user.id as number, dataProvider)
-
+        if (user && user.updateBefore !== '') {
           const res = await changeAndUpdatePassword({
             password: newPassword,
             currentPassword,
             userId: user.id as number
           })
-          if (res.status === 201) {
+          if (res.status === 200) {
+            setOpenChangePasswordModal(false)
+            const res = await deleteUpdateBefore({
+              userId: user.id as number
+            })
+            const userData = res.data.userDetails
+            const updatedUser = { ...userData }
+            const token = encryptData(`${JSON.stringify(updatedUser)}`)
+            localStorage.setItem(constants.ACCESS_TOKEN_KEY, token)
+            await audit({
+              resource: constants.R_USERS,
+              activityType: AuditType.CHANGE_PASSWORD,
+              dataId: user.id as number,
+              activityDetail: 'User Password Changed',
+              securityRelated: true,
+              subjectResource: null,
+              subjectId: null
+            })
+            notify(res.data.message)
+          }
+        } else if (user) {
+          const res = await changeAndUpdatePassword({
+            password: newPassword,
+            currentPassword,
+            userId: user.id as number
+          })
+          if (res.status === 200) {
             setOpenChangePasswordModal(false)
             await audit({
               resource: constants.R_USERS,
@@ -116,9 +122,11 @@ const ChangePassword = ({
           }
         }
       } catch (err) {
-        if (isAxiosError(err))
+        if (isAxiosError(err)) {
           notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
-        else notify((err as Error).message, { type: 'error' })
+        } else {
+          notify((err as Error).message, { type: 'error' })
+        }
       }
     }
   }

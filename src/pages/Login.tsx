@@ -16,9 +16,9 @@ export default function Login(): React.ReactElement {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const staffNumber = formData.get('staffNumber') as string
+    const username = formData.get('username') as string
     const password = formData.get('password') as string
-    login({ staffNumber, password })
+    login({ username, password })
       .catch((err) => {
         notify(err.message ?? 'Invalid staff-ID or password', { type: 'error' })
       })
@@ -77,8 +77,8 @@ export default function Login(): React.ReactElement {
               fullWidth
               id='username'
               label='Username'
-              name='staffNumber'
-              autoComplete='staffNumber'
+              name='username'
+              autoComplete='username'
               autoFocus
             />
             <TextField

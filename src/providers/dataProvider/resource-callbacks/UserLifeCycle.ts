@@ -18,23 +18,23 @@ const lifeCycles = (
 ): Omit<ResourceCallbacks<any>, 'resource'> => {
   let passwordAssigned = false
   return {
-    beforeCreate: async (record: CreateParams<User>) => {
+    beforeCreate: async (record: CreateParams<_Users>) => {
       record.data.departedDate = DateTime.now()
         .plus({ years: 10 })
         .toJSDate()
         .toISOString()
       return withCreatedByAt(record)
     },
-    beforeUpdate: async (record: UpdateParams<User>) => {
+    beforeUpdate: async (record: UpdateParams<_Users>) => {
       passwordAssigned =
-        (record.previousData.password === null ||
-          record.previousData.password === undefined) &&
-        record.data.password !== null &&
-        record.data.password !== undefined
+        (record.previousData.hashed_password === null ||
+          record.previousData.hashed_password === undefined) &&
+        record.data.hashed_password !== null &&
+        record.data.hashed_password !== undefined
 
       return record
     },
-    afterUpdate: async (result: UpdateResult<User>) => {
+    afterUpdate: async (result: UpdateResult<_Users>) => {
       if (passwordAssigned) {
         const { id } = result.data
         const auditObj = {

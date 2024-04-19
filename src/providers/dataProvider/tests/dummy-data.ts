@@ -128,17 +128,19 @@ export const generateUserForTesting = ({
   departedDate,
   password = undefined
 }: UserProps = {}): Omit<
-  User,
+  _Users,
   'id' | 'createdAt' | 'createdBy' | 'departedDate'
 > => ({
   ...(id !== undefined ? { id } : null),
   name: name ?? 'Dummy-User',
-  password: password ?? undefined,
+  hashed_password: password ?? undefined,
   ...(departedDate ? { departedDate } : null),
   role: 'rco-user',
-  staffNumber: 'd-1',
+  is_superuser: false,
+  username: 'd-1',
   lastUpdatedAt: null,
-  lockoutAttempts: 0
+  lockoutAttempts: 0,
+  updateBefore: ''
 })
 
 interface VaultLocationProps {

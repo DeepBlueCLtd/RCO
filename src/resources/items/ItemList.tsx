@@ -49,6 +49,7 @@ import SourceField from '../../components/SourceField'
 import { useLocation } from 'react-router-dom'
 import useItemList from '../../hooks/useItemList'
 import { useConfigData } from '../../utils/useConfigData'
+import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 
 const sort = (field = 'name'): SortPayload => ({ field, order: 'ASC' })
 
@@ -181,19 +182,19 @@ const getFilters = (
   ]
   if (resource === constants.R_ALL_ITEMS) {
     filters.push(
-      <BooleanFilter<Item>
-        source='destructionDate'
+      <NullUndefinedFilter
+        source={
+          process.env.MOCK ? 'destructionDate_neq' : 'destructionDate__notnull'
+        }
         label='Destroyed'
-        fieldName='destructionDate'
-        key='destruction'
-        resource={constants.R_ITEMS}
+        key='Destruction'
       />,
-      <BooleanFilter<Item>
-        source='dispatchedDate'
+      <NullUndefinedFilter
+        source={
+          process.env.MOCK ? 'dispatchedDate_neq' : 'dispatchedDate__notnull'
+        }
         label='Dispatched'
-        fieldName='dispatchedDate'
-        key='dispatch'
-        resource={constants.R_ITEMS}
+        key='Dispatch'
       />
     )
   } else if (resource === constants.R_ITEMS) {

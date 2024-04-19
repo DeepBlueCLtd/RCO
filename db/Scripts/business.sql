@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS user (
        name TEXT NOT NULL,
        password TEXT NOT NULL,
        role TEXT, /* Should be string Ex.: 'rco-user, 'rco-power-user' */
-       staffNumber TEXT NOT NULL,
+       username TEXT NOT NULL,
        departedDate TEXT,
 
        createdAt TEXT NOT NULL,

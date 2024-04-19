@@ -304,26 +304,28 @@ function getRandomRole(): UserRole {
   return selectedRole
 }
 
-export const generateUsers = (length: number): User[] => {
-  const users: User[] = []
+export const generateUsers = (length: number): _Users[] => {
+  const users: _Users[] = []
   const inActivePercentage = 0.4
   for (let i = 0; i < length; i++) {
     const active = i > inActivePercentage * length
-    const obj: User = {
+    const obj: _Users = {
       // to compensate default users the id has to start from 5
       id: i + 5,
       name: `user-${i + 1}`,
-      password: 'user',
+      hashed_password: 'user',
       ...(active
         ? { departedDate: null }
         : { departedDate: generateRandomDate()[0].toString() }),
-      staffNumber: `d:${i + 1}`,
+      username: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
       role: getRandomRole(),
+      is_superuser: false,
       createdAt: nowDate(),
       departedDate: null,
       lastUpdatedAt: null,
-      lockoutAttempts: 0
+      lockoutAttempts: 0,
+      updateBefore: ''
     }
     users.push(obj)
   }

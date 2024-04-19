@@ -12,13 +12,14 @@ import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
 import {
   getErrorDetails,
   login,
-  checkIfDateHasPassed
+  checkIfDateHasPassed,
+  logout
 } from '../../utils/helper'
-import { isAxiosError } from 'axios'
+import axios, { isAxiosError } from 'axios'
 import bcrypt from 'bcryptjs'
 
-export const getUser = (): User | undefined => {
-  const encryptedUser = getCookie(constants.TOKEN_KEY)
+export const getUser = (): _Users | undefined => {
+  const encryptedUser = getCookie(constants.ACCESS_TOKEN_KEY)
   if (encryptedUser) {
     const decryptedData = decryptData(encryptedUser)
     return JSON.parse(decryptedData)
@@ -27,41 +28,34 @@ export const getUser = (): User | undefined => {
 }
 
 const getCookie = (name: string): string | null => {
-  const cookies = document.cookie.split('; ')
-  for (const cookie of cookies) {
-    const items = cookie.split('=')
-    if (items[0] === name) {
-      return decodeURIComponent(items[1])
-    }
-  }
-  return null
+  return localStorage.getItem(name)
 }
 
 const setToken = (token: string): void => {
-  const date = new Date()
-  date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
-  const expires = date.toUTCString()
-  document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
+  // const date = new Date()
+  // date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
+  // const expires = date.toUTCString()
+  // document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
+  localStorage.setItem(constants.ACCESS_TOKEN_KEY, token)
 }
 
 export const removeUserToken = (): void => {
-  removeCookie(constants.TOKEN_KEY)
+  void logout()
+  removeLocalStorageItem(constants.ACCESS_TOKEN_KEY)
 }
 
-const removeCookie = (name: string): void => {
-  // note: setting the expiry date of a cookie to a past data effectively
-  // removes it
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`
+const removeLocalStorageItem = (key: string): void => {
+  localStorage.removeItem(key)
 }
 
 const createUserToken = async (
-  user: User,
+  user: _Users,
   audit: AuditFunctionType
 ): Promise<void> => {
-  const clonedUser: User = {
+  const clonedUser: _Users = {
     ...user
   }
-  delete clonedUser.password
+  delete clonedUser.hashed_password
   const token = encryptData(`${JSON.stringify(clonedUser)}`)
   setToken(token)
   await audit({
@@ -78,28 +72,41 @@ const createUserToken = async (
 const updateLockouAttempts = async (
   val: number,
   dataProvider: DataProvider,
-  previousData: User
+  previousData: _Users
 ): Promise<void> => {
-  await dataProvider.update<User>(constants.R_USERS, {
+  await dataProvider.update<_Users>(constants.R_USERS, {
     id: previousData.id,
     data: { lockoutAttempts: val },
     previousData
   })
 }
+const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
+const fetchUser = async (username: string): Promise<any> => {
+  const user = await axios.get(
+    `${BASE_URL}/api/tables/_users/rows?_filters=username:${username}`
+  )
+
+  return user.data.data?.[0]
+}
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
   const audit = trackEvent(dataProvider)
   return {
-    login: async ({ staffNumber, password }) => {
+    login: async ({
+      username,
+      password
+    }: {
+      username: string
+      password: string
+    }) => {
       if (process.env.MOCK) {
-        const data = await dataProvider.getList<User>(constants.R_USERS, {
+        const data = await dataProvider.getList<_Users>(constants.R_USERS, {
           sort: { field: 'id', order: 'ASC' },
           pagination: { page: 1, perPage: 1 },
-          filter: { staffNumber }
+          filter: { username }
         })
-        const user = data.data.find(
-          (item: any) => item.staffNumber === staffNumber
-        )
+        const user = data.data.find((item: any) => item.username === username)
+
         if (user !== undefined) {
           const hasUserDeparted =
             user.departedDate !== undefined &&
@@ -113,16 +120,16 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
           }
 
           if (
-            user.password &&
-            bcrypt.compareSync(password, user.password) &&
+            user.hashed_password &&
+            bcrypt.compareSync(password, user.hashed_password) &&
             !hasUserDeparted
           ) {
             await updateLockouAttempts(0, dataProvider, user)
             await createUserToken(user, audit)
             return await Promise.resolve(data)
           } else if (
-            !user.password &&
-            password === user.staffNumber &&
+            !user.hashed_password &&
+            password === user.username &&
             !hasUserDeparted
           ) {
             await updateLockouAttempts(0, dataProvider, user)
@@ -142,9 +149,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         }
       } else {
         try {
-          const res = await login({ password, staffNumber })
-          const user = res.data.data
-          if (!user.role) return
+          await login({ password, username })
+          const user = await fetchUser(username)
           await createUserToken(user, audit)
           sessionStorage.setItem('login', 'true')
           return await Promise.resolve(user)
@@ -171,14 +177,15 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
     },
     checkAuth: async (): Promise<void> => {
       // await Promise.resolve()
-      const token = getUser()
-      token !== undefined
-        ? await Promise.resolve(true)
-        : await Promise.reject(new Error('Token not found'))
+      // const token = getUser()
+      // token !== undefined
+      //   ? await Promise.resolve(true)
+      //   : await Promise.reject(new Error('Token not found'))
+      await Promise.resolve(true)
     },
     checkError: async (error): Promise<any> => {
       const status = error.status
-      if (status === 401 || status === 403) {
+      if (status === 403) {
         removeUserToken()
         await Promise.reject(
           new Error('Server returned code ' + String(status))
@@ -194,12 +201,64 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       } else return await Promise.reject(new Error('user not found'))
     },
 
+    // getPermissions: async () => {
+    //   try {
+    //     const user = getUser()
+    //     if (user !== undefined) {
+    //       const permissions = await getPermissionsByRoles(user.role)
+    //       return await Promise.resolve(permissions)
+    //     } else {
+    //       throw new Error('You are not a registered user.')
+    //     }
+    //   } catch (error) {
+    //     throw new Error('You are not a registered user.')
+    //   }
+    // }
+
     getPermissions: async () => {
       try {
         const user = getUser()
         if (user !== undefined) {
-          const permissions = getPermissionsByRoles(user.role)
-          return await Promise.resolve(permissions)
+          let permissions
+          if (user.is_superuser) {
+            permissions = {
+              [constants.R_PROJECTS]: { read: true, write: true, delete: true },
+              [constants.R_BATCHES]: { read: true, write: true, delete: true },
+              [constants.R_ITEMS]: { read: true, write: true, delete: true },
+              [constants.R_ALL_ITEMS]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_USERS]: { read: true, write: true, delete: true },
+              [constants.R_PLATFORMS]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_VAULT_LOCATION]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_ADDRESSES]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_DESTRUCTION]: {
+                read: true,
+                write: true,
+                delete: true
+              },
+              [constants.R_DISPATCH]: { read: true, write: true, delete: true },
+              'reference-data': { read: true, write: true, delete: true },
+              'welcome-page': { read: true }
+            }
+          } else {
+            permissions = await getPermissionsByRoles(user.role)
+          }
+          return permissions
         } else {
           throw new Error('You are not a registered user.')
         }

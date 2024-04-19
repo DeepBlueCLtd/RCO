@@ -1,10 +1,10 @@
 interface CustomDataProvider {
   loanItems: (
     items: Array<Item['id']>,
-    loanedTo: User['id'],
+    loanedTo: _Users['id'],
     date?: string
   ) => Promise<any>
-  returnItems: (items: Array<Item['id']>, by?: User['id']) => Promise<any>
+  returnItems: (items: Array<Item['id']>, by?: _Users['id']) => Promise<any>
   getConfigData: (provider: DataProvider) => Promise<ConfigData | null>
 }
 
@@ -76,22 +76,24 @@ type StringReferenceItem = ActiveItem & {
 type ResourceWithCreation = RCOResource & {
   // ISO date value
   createdAt: string
-  createdBy: User['id'] | null // allow null, since some legacy data doesn't have created by
+  createdBy: _Users['id'] | null // allow null, since some legacy data doesn't have created by
 }
 
-type User = ResourceWithCreation & {
+type _Users = ResourceWithCreation & {
   name: string
-  password?: string
+  hashed_password?: string
   role: UserRole
-  staffNumber: string
+  is_superuser: boolean
+  username: string
   departedDate: string | null
   lastUpdatedAt: string | null
   lockoutAttempts: number
+  updateBefore: string
 }
 
 type Audit = RCOResource & {
   // the user making the change
-  user: User['id']
+  user: _Users['id']
   // when this happened
   dateTime: string
   // the type of data being reported on (opt)
@@ -188,7 +190,7 @@ type Item = ResourceWithCreation & {
   // notes relating to how this item is mustered
   musterRemarks: string
   // loan details
-  loanedTo: User['id'] | null
+  loanedTo: _Users['id'] | null
   loanedDate: string | null
   // dispatch details
   dispatchJob: Dispatch['id'] | null
@@ -222,7 +224,7 @@ interface RCOStore {
   // configuration data
   configData: ConfigData[]
   // business tables
-  user: User[]
+  _users: _Users[]
   audit: Audit[]
   batch: Batch[]
   item: Item[]
@@ -244,9 +246,9 @@ interface Destruction {
   name: string | null
   vault: Vault['id']
   createdAt: string
-  createdBy: User['id']
+  createdBy: _Users['id']
   finalisedAt: string | null
-  finalisedBy: User['id'] | null
+  finalisedBy: _Users['id'] | null
   remarks: string
   reportPrintedAt: string | null
 }
@@ -269,7 +271,7 @@ interface Dispatch {
   name: string
   vault: Vault['id']
   createdAt: string
-  createdBy: User['id']
+  createdBy: _Users['id']
   remarks: string
   dispatchedAt: string | null
   toName: string
@@ -281,9 +283,9 @@ interface Dispatch {
 
 /** type of data returned from the `loanUser` view */
 interface LoanUser {
-  id: User['id']
+  id: _Users['id']
   numItems: number // count of items this user has on loan
-  staffNumber: User['staffNumber']
+  username: _Users['username']
 }
 
 /** per instance config data. It is just intended to be one row deep */

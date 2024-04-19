@@ -9,6 +9,7 @@ import { makeStyles } from '@mui/styles'
 import useCanAccess from '../hooks/useCanAccess'
 import { useConfigData } from '../utils/useConfigData'
 import PendingReceiptNotes from '../components/PendingReceiptNotes'
+import { getUser } from '../providers/authProvider'
 
 const useStyles = makeStyles({
   root: {
@@ -44,15 +45,35 @@ const BatchComponent = (): React.ReactElement => {
 
 export default function Welcome(): React.ReactElement {
   const styles = useStyles()
+
   const { hasAccess, loading } = useCanAccess()
   const configData = useConfigData()
+
   const redirect = useRedirect()
+  const user = getUser()
+
+  const editPasswordTime = user?.updateBefore
 
   if (loading) return <></>
   if (!hasAccess('welcome-page', { read: true })) redirect('/login')
 
   return (
     <div className={styles.root}>
+      {!editPasswordTime ? (
+        ''
+      ) : (
+        <FlexBox
+          sx={{
+            justifyContent: 'center',
+            bgcolor: 'red',
+            borderRadius: '10px',
+            margin: '10px 0',
+            color: 'white',
+            padding: '5px 0'
+          }}>
+          Please update your password before it expires.
+        </FlexBox>
+      )}
       <FlexBox className={styles.header}>
         <FlexBox className={styles.headerColumn}>
           <img src={AppIcon} height='100px' />
@@ -108,7 +129,7 @@ export default function Welcome(): React.ReactElement {
           label='Items on Loan'
           resource={constants.R_LOAN_USERS}
           fields={[
-            { source: 'staffNumber', label: 'Username' },
+            { source: 'username', label: 'Username' },
             { source: 'numItems' }
           ]}
           rowClick={(id) => {

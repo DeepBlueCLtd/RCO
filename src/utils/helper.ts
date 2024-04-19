@@ -1,6 +1,8 @@
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { DateTime } from 'luxon'
 
+axios.defaults.withCredentials = true
+
 export const transformProtectionValues = (
   data: Record<string, any>
 ): Record<string, any> => {
@@ -12,7 +14,7 @@ export const transformProtectionValues = (
   return item
 }
 
-export const checkIfUserIsActive = (user: User): boolean => {
+export const checkIfUserIsActive = (user: _Users): boolean => {
   if (user.departedDate) {
     return DateTime.fromJSDate(new Date(user.departedDate)) > DateTime.now()
   }
@@ -71,21 +73,56 @@ export const insertAndUpdatePassword = async ({
 
 interface ChangePassword {
   password: string
-  currentPassword:string
+  currentPassword: string
   userId: number
 }
 
 export const changeAndUpdatePassword = async ({
   password,
-  currentPassword,
-  userId
+  currentPassword
 }: ChangePassword): Promise<AxiosResponse> => {
+  const res = await axios.put(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/change-password'
+      : '/api/auth/change-password',
+    { fields: { currentPassword, newPassword: password } }
+  )
+  return res
+}
+
+interface DeleteUpdateBefore {
+  userId: number
+}
+export const deleteUpdateBefore = async ({
+  userId
+}: DeleteUpdateBefore): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000/api/changepassword'
-      : '/api/changepassword',
-    { fields: { userId, password, currentPassword } }
+      ? 'http://localhost:8000/api/updateBefore'
+      : '/api/updateBefore',
+    { data: { userId } }
   )
+  return res
+}
+
+interface EditPassword {
+  newPassword: string
+  userId: number
+}
+export const editUserPassowrd = async ({
+  newPassword,
+  userId
+}: EditPassword): Promise<AxiosResponse> => {
+  const url =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/editpassword'
+      : '/api/editpassword'
+  const res = await axios.post(url, {
+    fields: {
+      newPassword,
+      userId
+    }
+  })
   return res
 }
 
@@ -94,7 +131,6 @@ interface ErrorDetails {
   status: number
   data: any
 }
-
 export const getErrorDetails = (error: AxiosError): ErrorDetails => {
   if (error.response) {
     const { data, status, statusText } = error.response
@@ -122,20 +158,66 @@ export const isDateNotInPastDays = (
   return currentDate.diff(dateToCheck, 'days').days > diffDays
 }
 
+export const logout = async (): Promise<AxiosResponse> => {
+  const res = await axios.get(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/logout'
+      : '/api/auth/logout'
+  )
+  return res
+}
+
 interface Login {
   password: string
-  staffNumber: string
+  username: string
 }
 
 export const login = async ({
   password,
-  staffNumber
+  username
 }: Login): Promise<AxiosResponse> => {
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/login'
       : '/api/login',
-    { password, staffNumber }
+    { password, username }
+  )
+  if (res.status === 200) {
+    await getAccessToken({ password, username })
+    return res
+  } else {
+    throw new Error('Login failed')
+  }
+}
+
+export const getAccessToken = async ({
+  password,
+  username
+}: Login): Promise<AxiosResponse> => {
+  const res = await axios.post(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/token/obtain'
+      : '/api/auth/token/obtain',
+    { fields: { password, username } }
   )
   return res
 }
+
+export const handleRefreshToken = async (): Promise<AxiosResponse> => {
+  const res = await axios.get(
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000/api/auth/token/refresh'
+      : '/api/auth/token/refresh'
+  )
+  return res
+}
+
+axios.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    if (error.response && error.response.status === 401) {
+      await handleRefreshToken()
+    }
+    return await Promise.reject(error)
+  }
+)

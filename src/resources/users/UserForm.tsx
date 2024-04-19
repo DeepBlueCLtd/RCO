@@ -32,18 +32,20 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     .toJSDate()
     .toISOString()
   const defaultValues: Omit<
-    User,
+    _Users,
     | 'id'
     | 'createdAt'
     | 'createdBy'
-    | 'staffNumber'
+    | 'username'
     | 'lastUpdatedAt'
     | 'lockoutAttempts'
   > = {
     name: '',
-    password: '',
+    hashed_password: '',
     role: 'rco-user',
-    departedDate: valueWithTenYears
+    departedDate: valueWithTenYears,
+    is_superuser: false,
+    updateBefore: ''
   }
   const { record } = useEditContext()
   const pageTitle = isEdit !== undefined ? 'Edit User' : 'Add new User'
@@ -67,7 +69,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           sx={{ width: '100%', flex: 1 }}
           choices={rolesOptions}
         />
-        <TextInput source='staffNumber' label='Username' sx={{ flex: 1 }} />
+        <TextInput source='username' label='Username' sx={{ flex: 1 }} />
       </FlexBox>
       <DateTimeInput
         source='departedDate'

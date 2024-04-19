@@ -21,7 +21,7 @@ const SourceField = <
     | Audit
     | Dispatch
     | Item
-    | User
+    | _Users
     | Batch
     | VaultLocation
     | Destruction
@@ -50,7 +50,7 @@ const SourceField = <
         <FunctionField
           label={label}
           {...textProps}
-          render={(record: User) => `${record.name}`}
+          render={(record: _Users) => `${record.name}`}
         />
       ) : (
         <TextField source={sourceField} {...textProps} />

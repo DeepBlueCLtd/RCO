@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS project (
        endDate TEXT NOT NULL,
        enduring INTEGER NOT NULL,
        active INTEGER NOT NULL,
-       FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (createdBy) REFERENCES _users(id)
 ) WITHOUT ROWID;
 
 
@@ -100,20 +100,22 @@ CREATE TABLE IF NOT EXISTS address(
        remarks TEXT
  ) WITHOUT ROWID;
 
---Resource table - User
-CREATE TABLE IF NOT EXISTS user (
+--Resource table - _Users
+CREATE TABLE IF NOT EXISTS _users (
        id INTEGER PRIMARY KEY,
        name TEXT NOT NULL,
-       password TEXT NOT NULL,
+       hashed_password TEXT NOT NULL,
        role TEXT,  /* Should be string Ex.: 'rco-user, 'rco-power-user' */
-       staffNumber TEXT NOT NULL,
+       username TEXT NOT NULL,
+       is_superuser INTEGER,
+       salt TEXT,
        departedDate TEXT,
        lastUpdatedAt TEXT,
        createdAt TEXT NOT NULL,
        createdBy INT NOT NULL,
        lockoutAttempts INTEGER NOT NULL DEFAULT 0,
 
-       FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (createdBy) REFERENCES _users(id)
 ) WITHOUT ROWID;
 
 
@@ -121,7 +123,7 @@ CREATE TABLE IF NOT EXISTS user (
 CREATE TABLE IF NOT EXISTS audit (
        id INTEGER PRIMARY KEY,
 
-       user INTEGER NOT NULL,
+       _users INTEGER NOT NULL,
        resource TEXT,
        dataId INTEGER,
        activityType INTEGER,
@@ -133,8 +135,8 @@ CREATE TABLE IF NOT EXISTS audit (
        subjectResource: TEXT,
        ip TEXT,
 
-       FOREIGN KEY (user) REFERENCES user(id),
-       FOREIGN KEY (subject) REFERENCES user(id),
+       FOREIGN KEY (_users) REFERENCES _users(id),
+       FOREIGN KEY (subject) REFERENCES _users(id),
        FOREIGN KEY (activityType) REFERENCES activityType(id)
 ) WITHOUT ROWID;
 
@@ -159,7 +161,7 @@ CREATE TABLE IF NOT EXISTS batch (
        FOREIGN KEY (department) REFERENCES department(id),
        FOREIGN KEY (organisation) REFERENCES organisation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
-       FOREIGN KEY (createdBy) REFERENCES user(id),
+       FOREIGN KEY (createdBy) REFERENCES _users(id),
        FOREIGN KEY (vault) REFERENCES vault(id)
 ) WITHOUT ROWID;
 
@@ -177,8 +179,8 @@ CREATE TABLE IF NOT EXISTS destruction(
        finalisedBy TEXT,
        remarks TEXT,
 
-       FOREIGN KEY (createdBy) REFERENCES user(id),
-       FOREIGN KEY (finalisedBy) REFERENCES user(id),
+       FOREIGN KEY (createdBy) REFERENCES _users(id),
+       FOREIGN KEY (finalisedBy) REFERENCES _users(id),
        FOREIGN KEY (vault) REFERENCES vault(id)
  ) WITHOUT ROWID;
 
@@ -200,7 +202,7 @@ CREATE TABLE IF NOT EXISTS dispatch(
 
        remarks TEXT,
 
-       FOREIGN KEY (createdBy) REFERENCES user(id),
+       FOREIGN KEY (createdBy) REFERENCES _users(id),
        FOREIGN KEY (address) REFERENCES address(id),
        FOREIGN KEY (vault) REFERENCES vault(id)
  ) WITHOUT ROWID;
@@ -236,10 +238,10 @@ CREATE TABLE IF NOT EXISTS item(
        FOREIGN KEY (batch) REFERENCES batch(id),
        FOREIGN KEY (vaultLocation) REFERENCES vaultLocation(id),
        FOREIGN KEY (protectiveMarking) REFERENCES protectiveMarking(id),
-       FOREIGN KEY (loanedTo) REFERENCES user(id),
+       FOREIGN KEY (loanedTo) REFERENCES _users(id),
        FOREIGN KEY (dispatchJob) REFERENCES dispatch(id),
        FOREIGN KEY (destruction) REFERENCES destruction(id),
-       FOREIGN KEY (createdBy) REFERENCES user(id)
+       FOREIGN KEY (createdBy) REFERENCES _users(id)
 
 ) WITHOUT ROWID;
 

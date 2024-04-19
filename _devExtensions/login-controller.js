@@ -10,21 +10,25 @@ const checkIfDateHasPassed = (dateString) => {
   return currentDateTime > dateTime
 }
 
-const updateLockoutAttempts = (db, val, staffNumber) => {
-  const updateLockoutAttemptsQuery = `UPDATE user SET lockoutAttempts = ? where staffNumber = ?`
-  db.prepare(updateLockoutAttemptsQuery).run(val, staffNumber)
+const updateLockoutAttempts = (db, val, username) => {
+  const updateLockoutAttemptsQuery = `UPDATE _users SET lockoutAttempts = ? where username = ?`
+  db.prepare(updateLockoutAttemptsQuery).run(val, username)
 }
 
-const validateUser = (staffNumber, password, db) => {
-  const query = `SELECT * FROM user WHERE staffNumber=?`
-  const user = db.prepare(query).get(staffNumber)
+const validateUser = (username, hashed_password, db) => {
+  const query = `SELECT * FROM _users WHERE username=?`
+  const user = db.prepare(query).get(username)
 
   if (!user) {
     throw new Error('User not found')
   }
 
   if (user.lockoutAttempts >= 5)
-    throw new Error('Your account is locked. Please contact your administrator [' + user.lockoutAttempts + ']')
+    throw new Error(
+      'Your account is locked. Please contact your administrator [' +
+        user.lockoutAttempts +
+        ']'
+    )
 
   const hasUserDeparted =
     user.departedDate !== undefined &&
@@ -33,20 +37,31 @@ const validateUser = (staffNumber, password, db) => {
 
   if (hasUserDeparted) throw new Error('User has departed organisation')
 
-  if (user.password === '' && password === staffNumber) {
-    updateLockoutAttempts(db, 0, staffNumber)
+  const currentTime = new Date().toISOString()
+  const hasUserNotUpdated = user.updateBefore
+  if (currentTime > hasUserNotUpdated && hasUserNotUpdated) {
+    throw new Error(
+      'You have not updated the password. Please contact your administrator'
+    )
+  }
+
+  if (user.hashed_password === '' && hashed_password === username) {
+    updateLockoutAttempts(db, 0, username)
     return user
   }
 
-  const isPasswordCorrect = bcrypt.compareSync(password, user.password)
+  const ishashed_passwordCorrect = bcrypt.compareSync(
+    hashed_password,
+    user.hashed_password
+  )
 
-  if (!isPasswordCorrect) {
-    updateLockoutAttempts(db, user.lockoutAttempts + 1, staffNumber)
+  if (!ishashed_passwordCorrect) {
+    updateLockoutAttempts(db, user.lockoutAttempts + 1, username)
     throw new Error('Invalid password')
   }
 
-  updateLockoutAttempts(db, 0, staffNumber)
-
+  updateLockoutAttempts(db, 0, username)
+  delete user.hashed_password
   return user
 }
 
@@ -54,14 +69,13 @@ const loginController = (req, res) => {
   let db
 
   try {
-    const { password, staffNumber } = req.body
+    const { password, username } = req.body
 
-    if (!password || !staffNumber)
-      throw new Error('Password and username is required')
+    if (!password || !username)
+      throw new Error('password and username is required')
 
     db = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
-
-    const user = validateUser(staffNumber, password, db)
+    const user = validateUser(username, password, db)
 
     res.status(200).json({ data: user })
   } catch (error) {
