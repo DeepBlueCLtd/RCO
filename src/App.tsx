@@ -100,9 +100,9 @@ const buttonPrimaryStyle = {
 }
 
 function App(): React.ReactElement {
-  const [dataProvider, setDataProvider] = useState<DataProvider | undefined>(
-    undefined
-  )
+  const [dataProvider, setDataProvider] = useState<
+    (CustomDataProvider & DataProvider) | DataProvider | undefined
+  >(undefined)
   const [permissions, setPermissions] = useState<ResourcePermissions>({})
   const [authProvider, setAuthProvider] = useState<AuthProvider | undefined>(
     undefined
@@ -136,7 +136,9 @@ function App(): React.ReactElement {
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
-  const [resetPasswordOpen, setResetPasswordOpen] = useState<boolean>(false)
+  const [resetPasswordTitle, setResetPasswordTitle] = useState<string | null>(
+    null
+  )
 
   const [showPassword, setShowPassword] = React.useState(false)
   const { notify } = useContext(NotificationContext)
@@ -233,8 +235,8 @@ function App(): React.ReactElement {
             userId: user.id as number
           })
           if (res.status === 201) {
-            setResetPasswordOpen(false)
-            notify(res.data.message)
+            setResetPasswordTitle(null)
+            notify(res.data.message as string)
           }
         }
       } catch (err) {
@@ -336,9 +338,11 @@ function App(): React.ReactElement {
             typeof lastUpdatedAt === 'string' &&
             isDateNotInPastDays(lastUpdatedAt, 120)
           ) {
-            setResetPasswordOpen(true)
+            setResetPasswordTitle(
+              'Your password has expired, please update it.'
+            )
           } else {
-            setResetPasswordOpen(false)
+            setResetPasswordTitle(null)
           }
         }
       }
@@ -351,7 +355,7 @@ function App(): React.ReactElement {
   useEffect(() => {
     async function getConfigData(): Promise<void> {
       if (dataProvider !== undefined) {
-        setConfigData(await dataProvider.configData())
+        setConfigData((await dataProvider.configData()) as ConfigData)
       }
     }
     getConfigData().catch(console.log)
@@ -396,13 +400,13 @@ function App(): React.ReactElement {
 
   return (
     <div>
-      <Modal open={resetPasswordOpen}>
+      <Modal open={!!resetPasswordTitle}>
         <Box sx={style}>
           {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <Typography>
               <p>
-                <b>Please provide an initial password</b>
+                <b>{resetPasswordTitle}</b>
               </p>
               <p>The password should include these items:</p>
             </Typography>
