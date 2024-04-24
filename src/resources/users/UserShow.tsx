@@ -51,7 +51,7 @@ import { DateTime } from 'luxon'
 import useAudit, { type AuditFunction } from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import LockResetIcon from '@mui/icons-material/LockReset'
-import { type AxiosError, isAxiosError } from 'axios'
+import axios, { type AxiosError, isAxiosError } from 'axios'
 import { getUser } from '../../providers/authProvider'
 const style = {
   position: 'absolute',
@@ -263,6 +263,7 @@ const UserShowComp = ({
   const { record, isLoading } = useShowContext<_Users>()
   const [departOpen, setDepartOpen] = useState(false)
   const [showReturn, setShowReturn] = useState<boolean>(false)
+  const [userRoleId, setUserRoleId] = useState('')
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -271,10 +272,29 @@ const UserShowComp = ({
     filter: { loanedTo: record?.id }
   })
   const { hasAccess } = useCanAccess()
+
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { id } = useParams()
   const [update] = useUpdate<_Users>()
   const notify = useNotify()
+
+  const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
+
+  const fetchData = async (): Promise<void> => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record?.id}`
+      )
+      setUserRoleId(response.data.data[0]?.role_id)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }
+  useEffect(() => {
+    fetchData()
+      .then(() => {})
+      .catch((error) => { console.error('Error in useEffect:', error) })
+  }, [])
 
   useEffect(() => {
     setShowReturn(
@@ -369,6 +389,27 @@ const UserShowComp = ({
                 sx={{ flex: 1 }}
               />
             </FlexBox>
+            <Typography
+              align='center'
+              sx={{
+                fontWeight: '200',
+                border: '1px dotted gray',
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px',
+                borderRadius: '3px',
+                fontSize: '14px',
+                color: 'gray',
+                margin: '5px 0'
+              }}>
+              User Role:{' '}
+              {userRoleId === '1'
+                ? 'Default Role'
+                : userRoleId === '2'
+                ? 'RCO User'
+                : 'RCO Power User'}
+            </Typography>
+
             <FlexBox justifyContent='left'>
               <Button
                 variant='outlined'
@@ -464,8 +505,18 @@ export default function UserShow(): React.ReactElement {
     <Show
       resource={constants.R_USERS}
       actions={
-        <TopToolbar sx={{ alignItems: 'center' }}>
-          {hasWriteAccess && <EditButton />}
+        <TopToolbar sx={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ flex: 1 }}>
+            {hasWriteAccess && <EditButton />}
+            {hasWriteAccess && (
+              <Button
+                onClick={handleEditPasswordOpen}
+                sx={{ fontSize: '12px' }}>
+                <LockResetIcon fontSize='medium' sx={{ paddingRight: '5px' }} />
+                Edit Password
+              </Button>
+            )}
+          </div>
           <HistoryButton
             onClick={() => {
               if (record) {
@@ -478,12 +529,6 @@ export default function UserShow(): React.ReactElement {
               }
             }}
           />
-          {hasWriteAccess && (
-            <Button onClick={handleEditPasswordOpen} sx={{ fontSize: '12px' }}>
-              <LockResetIcon fontSize='medium' sx={{ paddingRight: '5px' }} />
-              Edit Password
-            </Button>
-          )}
         </TopToolbar>
       }>
       <UserShowComp

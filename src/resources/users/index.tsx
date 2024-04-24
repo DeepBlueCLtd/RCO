@@ -19,7 +19,7 @@ const UserCreate = (): React.ReactElement => {
           redirect(`/${constants.R_USERS}/${data?.id}/show`)
         }
       }}>
-      <UserForm />
+      <UserForm isEdit={false} />
     </Create>
   )
 }
