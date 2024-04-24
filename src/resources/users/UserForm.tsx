@@ -56,7 +56,10 @@ interface UserDetails {
 
 const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
 
-const SaveButtonContext: React.FC<any> = (props) => {
+const SaveButtonContext: React.FC<any> = (props: {
+  selectUser: string
+  children: React.ReactNode
+}) => {
   const [create] = useCreate()
   const redirect = useRedirect()
   const createUserRole = async (
@@ -69,7 +72,6 @@ const SaveButtonContext: React.FC<any> = (props) => {
       )
       const userId = userResponse.data.data[0]?.id
       if (!userId) {
-        console.log('User not found')
         return
       }
       const roleResponse = await axios.get(
@@ -184,8 +186,8 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record.id}`
       )
       setUserRoleId(response.data.data)
-      setSelectUser(response.data.data[0]?.role_id || '')
-      originalUser = response.data.data[0]?.role_id || ''
+      setSelectUser((response.data.data[0]?.role_id as string) || '')
+      originalUser = (response.data.data[0]?.role_id as string) || ''
     } catch (error) {
       console.error('Error fetching data:', error)
     }

@@ -285,7 +285,7 @@ const UserShowComp = ({
       const response = await axios.get(
         `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record?.id}`
       )
-      setUserRoleId(response.data.data[0]?.role_id)
+      setUserRoleId(response.data.data[0]?.role_id as string)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
@@ -293,7 +293,9 @@ const UserShowComp = ({
   useEffect(() => {
     fetchData()
       .then(() => {})
-      .catch((error) => { console.error('Error in useEffect:', error) })
+      .catch((error) => {
+        console.error('Error in useEffect:', error)
+      })
   }, [])
 
   useEffect(() => {
