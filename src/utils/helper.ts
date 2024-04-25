@@ -216,7 +216,13 @@ axios.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
-      await handleRefreshToken()
+      try {
+        await handleRefreshToken()
+        const originalRequest = error.config
+        if (originalRequest) return await axios(originalRequest)
+      } catch (refreshError) {
+        return await Promise.reject(refreshError)
+      }
     }
     return await Promise.reject(error)
   }
