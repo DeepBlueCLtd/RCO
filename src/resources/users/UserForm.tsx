@@ -66,35 +66,25 @@ const SaveButtonContext: React.FC<any> = (props: {
     val: UserDetails,
     selectUser: string
   ): Promise<number | undefined> => {
-    try {
-      const userResponse = await axios.get(
-        `${BASE_URL}/api/tables/_users/rows?_filters=username:${val.username}`
-      )
-      const userId = userResponse.data.data[0]?.id
-      if (!userId) {
-        return
-      }
-      const roleResponse = await axios.get(
-        `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${userId}`
-      )
-      const roleId = roleResponse.data.data[0]?.id
-
-      if (!roleId) {
-        return
-      }
-
-      const updateResponse = await axios.put(
-        `${BASE_URL}/api/tables/_users_roles/rows/${roleId}`,
-        {
-          fields: { role_id: selectUser }
-        }
-      )
-      redirect(`/${R_USERS}/${userId}/show`)
-      console.log('User role updated successfully', updateResponse)
-    } catch (error) {
-      console.error('Error updating user role:', error)
-      throw error
+    const userResponse = await axios.get(
+      `${BASE_URL}/api/tables/_users/rows?_filters=username:${val.username}`
+    )
+    const userId = userResponse.data.data[0]?.id
+    if (!userId) {
+      return
     }
+    const roleResponse = await axios.get(
+      `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${userId}`
+    )
+    const roleId = roleResponse.data.data[0]?.id
+    if (!roleId) {
+      return
+    }
+
+    await axios.put(`${BASE_URL}/api/tables/_users_roles/rows/${roleId}`, {
+      fields: { role_id: selectUser }
+    })
+    redirect(`/${R_USERS}/${userId}/show`)
   }
 
   const save = async (val: UserDetails): Promise<void> => {
@@ -124,8 +114,6 @@ const CustomSaveButton: React.FC<{
   isEdit: boolean
   touched: boolean
 }> = ({ updateUserRole, selectUser, touched, isEdit }) => {
-  // const { record } = useEditContext()
-
   return (
     <div style={{ padding: '10px 15px' }}>
       <SaveButtonContext selectUser={selectUser}>
@@ -178,14 +166,14 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   const [selectUser, setSelectUser] = useState<string>('1')
   const [touched, setTouched] = useState(false)
   let originalUser: any = null
-  const [userRoleId, setUserRoleId] = useState<any[]>([])
+  const [userRoleId, setUserRoleId] = useState<string>('')
 
   const fetchData = async (): Promise<void> => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record.id}`
       )
-      setUserRoleId(response.data.data)
+      setUserRoleId(response.data.data[0]?.id as string)
       setSelectUser((response.data.data[0]?.role_id as string) || '')
       originalUser = (response.data.data[0]?.role_id as string) || ''
     } catch (error) {
@@ -204,7 +192,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   const updateUserRole: UpdateUserRoleFunction = async (): Promise<void> => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/tables/_users_roles/rows/${userRoleId[0]?.id}`,
+        `${BASE_URL}/api/tables/_users_roles/rows/${userRoleId}`,
         { fields: { role_id: selectUser } }
       )
       console.log('User role updated successfully:', response.data)

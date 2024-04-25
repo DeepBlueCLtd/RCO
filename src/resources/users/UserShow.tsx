@@ -18,7 +18,8 @@ import {
   useNotify,
   DateInput,
   useDataProvider,
-  FunctionField
+  FunctionField,
+  LoadingIndicator
 } from 'react-admin'
 import {
   Chip,
@@ -263,7 +264,8 @@ const UserShowComp = ({
   const { record, isLoading } = useShowContext<_Users>()
   const [departOpen, setDepartOpen] = useState(false)
   const [showReturn, setShowReturn] = useState<boolean>(false)
-  const [userRoleId, setUserRoleId] = useState('')
+  const [userRoleId, setUserRoleId] = useState<string>('')
+  const [loading, setLoading] = useState(true)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -286,17 +288,18 @@ const UserShowComp = ({
         `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record?.id}`
       )
       setUserRoleId(response.data.data[0]?.role_id as string)
+      setLoading(false)
     } catch (error) {
-      console.error('Error fetching data:', error)
+      throw new Error(`Error fetching data: ${error}`)
     }
   }
   useEffect(() => {
     fetchData()
       .then(() => {})
       .catch((error) => {
-        console.error('Error in useEffect:', error)
+        throw error
       })
-  }, [])
+  }, [record?.id])
 
   useEffect(() => {
     setShowReturn(
@@ -405,11 +408,15 @@ const UserShowComp = ({
                 margin: '5px 0'
               }}>
               User Role:{' '}
-              {userRoleId === '1'
-                ? 'Default Role'
-                : userRoleId === '2'
-                ? 'RCO User'
-                : 'RCO Power User'}
+              {loading ? (
+                <LoadingIndicator />
+              ) : parseInt(userRoleId) === 1 ? (
+                'Default Role'
+              ) : parseInt(userRoleId) === 2 ? (
+                'RCO User'
+              ) : (
+                'RCO Power User'
+              )}
             </Typography>
 
             <FlexBox justifyContent='left'>
