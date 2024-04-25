@@ -139,22 +139,25 @@ const valueWithTenYears = DateTime.now()
   .plus({ years: 10 })
   .toJSDate()
   .toISOString()
+const now = new Date()
+const futureTime = new Date(now.getTime() + 60 * 60000)
+const futureTimeString = futureTime.toISOString()
 
 const defaultValues: Omit<
   _Users,
   | 'id'
   | 'createdAt'
   | 'createdBy'
+  | 'hashed_password'
   | 'username'
   | 'lastUpdatedAt'
   | 'lockoutAttempts'
 > = {
   name: '',
-  hashed_password: '',
   role: 'rco-user',
   departedDate: valueWithTenYears,
   is_superuser: false,
-  updateBefore: ''
+  updateBefore: futureTimeString
 }
 interface FormProps {
   isEdit: boolean
@@ -163,6 +166,8 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   const { record } = useEditContext()
   const userDetails = getUser()
   const pageTitle = isEdit ? 'Edit User' : 'Add new User'
+  const passwordText =
+    'Note: the new user will need to login using this temporary password within 60 minutes. If they fail to do that, they will need to be provided with a new temporary password.'
   const [selectUser, setSelectUser] = useState<string>('1')
   const [touched, setTouched] = useState(false)
   let originalUser: any = null
@@ -233,7 +238,22 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         <TextInput source='username' label='Username' sx={{ flex: 1 }} />
       </FlexBox>
       {!isEdit ? (
-        <TextInput source='password' label='Password' sx={{ width: '100%' }} />
+        <>
+          <TextInput
+            source='password'
+            label='Password'
+            sx={{ width: '100%' }}
+          />
+          <Typography
+            sx={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '-25px',
+              marginBottom: '25px'
+            }}>
+            {passwordText}
+          </Typography>
+        </>
       ) : null}
       <DateTimeInput
         source='departedDate'
