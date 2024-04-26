@@ -414,8 +414,10 @@ const UserShowComp = ({
                 'Default Role'
               ) : parseInt(userRoleId) === 2 ? (
                 'RCO User'
-              ) : (
+              ) : parseInt(userRoleId) === 3 ? (
                 'RCO Power User'
+              ) : (
+                'User have no role'
               )}
             </Typography>
 
