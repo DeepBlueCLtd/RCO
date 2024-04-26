@@ -7394,9 +7394,10 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-"soul-cli@https://github.com/thevahidal/soul.git#44b47b0d0f69a423c03a9e5c5a2021bef171d17c":
+soul-cli@^0.7.6:
   version "0.7.6"
-  resolved "https://github.com/thevahidal/soul.git#44b47b0d0f69a423c03a9e5c5a2021bef171d17c"
+  resolved "https://registry.yarnpkg.com/soul-cli/-/soul-cli-0.7.6.tgz#caee350533c20e99164a2e3f6de2e22188367c77"
+  integrity sha512-zNI4qEOWyZP7NqTdxhdhw+yUwDyg7f96eWp55EOrKjB7RAWdDxqx+t8JoJAktsln8RQx03r3NU86kZjvYfOjtQ==
   dependencies:
     bcrypt "^5.1.1"
     better-sqlite3 "^8.1.0"
