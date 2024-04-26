@@ -3,7 +3,6 @@ import {
   SimpleForm,
   TextInput,
   useEditContext,
-  SelectInput,
   DateTimeInput,
   SaveButton,
   useCreate,
@@ -20,25 +19,14 @@ import {
   Select,
   Typography
 } from '@mui/material'
-import { rolesOptions } from '../../utils/options'
 import FlexBox from '../../components/FlexBox'
 import { DateTime } from 'luxon'
 import axios from 'axios'
 
 import { R_USERS } from '../../constants'
-import { getUser } from '../../providers/authProvider'
 
 const schema = yup.object({
-  name: yup.string().required(),
-  role: yup
-    .string()
-    .transform((val) => {
-      if (!val) return null
-      else return rolesOptions.find((role) => role.value === val)?.value
-    })
-    .oneOf(rolesOptions.map(({ value }) => value))
-    .nullable()
-    .optional()
+  name: yup.string().required()
 })
 
 type UpdateUserRoleFunction = () => Promise<void>
@@ -46,7 +34,7 @@ interface UserDetails {
   name: string
   id: number
   hashed_password?: string
-  role: UserRole
+
   is_superuser: boolean
   username: string
   departedDate: string | null
@@ -159,7 +147,7 @@ const defaultValues: Omit<
   | 'lockoutAttempts'
 > = {
   name: '',
-  role: 'rco-user',
+
   departedDate: valueWithTenYears,
   is_superuser: false,
   updateBefore: futureTimeString
@@ -169,7 +157,7 @@ interface FormProps {
 }
 export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   const { record } = useEditContext()
-  const userDetails = getUser()
+
   const pageTitle = isEdit ? 'Edit User' : 'Add new User'
   const passwordText =
     'Note: the new user will need to login using this temporary password within 60 minutes. If they fail to do that, they will need to be provided with a new temporary password.'
@@ -192,12 +180,12 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   }
 
   useEffect(() => {
-    if (userDetails?.role === 'rco-power-user' && isEdit) {
+    if (isEdit) {
       fetchData().catch((error) => {
         console.error('Error in fetchData:', error)
       })
     }
-  }, [userDetails?.role, isEdit])
+  }, [isEdit])
 
   const updateUserRole: UpdateUserRoleFunction = async (): Promise<void> => {
     try {
@@ -240,16 +228,12 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
       </Typography>
       <TextInput source='name' variant='outlined' sx={{ width: '100%' }} />
       <FlexBox>
-        <SelectInput
-          label='Role'
-          source='role'
-          optionValue='value'
-          optionText='label'
-          sx={{ width: '100%', flex: 1 }}
-          choices={rolesOptions}
-        />
-
         <TextInput source='username' label='Username' sx={{ flex: 1 }} />
+        <DateTimeInput
+          source='departedDate'
+          label='Departure Date'
+          sx={{ width: '50%' }}
+        />
       </FlexBox>
       {!isEdit ? (
         <>
@@ -269,11 +253,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           </Typography>
         </>
       ) : null}
-      <DateTimeInput
-        source='departedDate'
-        label='Departure Date'
-        sx={{ width: '50%' }}
-      />
 
       <FormControl variant='filled' sx={{ width: '50%' }}>
         <InputLabel id='demo-simple-select-filled-label'>User Role</InputLabel>

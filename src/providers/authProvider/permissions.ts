@@ -1,7 +1,7 @@
 import axios, { type AxiosResponse } from 'axios'
 import * as constants from '../../constants'
 const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
-const getRoleId = async (role: UserRole): Promise<number | undefined> => {
+const getRoleId = async (role: string): Promise<number | undefined> => {
   return await axios
     .get(`${BASE_URL}/api/tables/_roles/rows?_filters=name:${role}`)
     .then((res) => res.data.data?.[0]?.id)
@@ -75,9 +75,9 @@ const mapPermissions = (
 }
 
 export const getPermissionsByRoles = async (
-  role: UserRole
+  userRole: string
 ): Promise<ResourcePermissions> => {
-  const roleId = await getRoleId(role)
+  const roleId = await getRoleId(userRole)
   if (roleId === undefined) {
     throw new Error('Role ID is undefined')
   }

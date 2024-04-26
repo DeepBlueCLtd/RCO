@@ -82,7 +82,6 @@ type ResourceWithCreation = RCOResource & {
 type _Users = ResourceWithCreation & {
   name: string
   hashed_password?: string
-  role: UserRole
   is_superuser: boolean
   username: string
   departedDate: string | null
@@ -327,3 +326,5 @@ type ConfigData = RCOResource & {
    */
   headerMarking: string
 }
+
+type _UserWithRole = _Users & { userRole: string }

@@ -9,16 +9,10 @@ import { AuditType } from '../../utils/activity-types'
 import { decryptData, encryptData } from '../../utils/encryption'
 import { getPermissionsByRoles } from './permissions'
 import { type AuditFunctionType } from '../dataProvider/dataprovider-utils'
-import {
-  getErrorDetails,
-  login,
-  checkIfDateHasPassed,
-  logout
-} from '../../utils/helper'
+import { getErrorDetails, login, logout } from '../../utils/helper'
 import axios, { isAxiosError } from 'axios'
-import bcrypt from 'bcryptjs'
 
-export const getUser = (): _Users | undefined => {
+export const getUser = (): _UserWithRole | undefined => {
   const encryptedUser = getCookie(constants.ACCESS_TOKEN_KEY)
   if (encryptedUser) {
     const decryptedData = decryptData(encryptedUser)
@@ -49,11 +43,13 @@ const removeLocalStorageItem = (key: string): void => {
 }
 
 const createUserToken = async (
-  user: _Users,
+  user: _UserWithRole,
+  userRole: string,
   audit: AuditFunctionType
 ): Promise<void> => {
-  const clonedUser: _Users = {
-    ...user
+  const clonedUser: _UserWithRole = {
+    ...user,
+    userRole
   }
   delete clonedUser.hashed_password
   const token = encryptData(`${JSON.stringify(clonedUser)}`)
@@ -69,17 +65,17 @@ const createUserToken = async (
   })
 }
 
-const updateLockouAttempts = async (
-  val: number,
-  dataProvider: DataProvider,
-  previousData: _Users
-): Promise<void> => {
-  await dataProvider.update<_Users>(constants.R_USERS, {
-    id: previousData.id,
-    data: { lockoutAttempts: val },
-    previousData
-  })
-}
+// const updateLockouAttempts = async (
+//   val: number,
+//   dataProvider: DataProvider,
+//   previousData: _Users
+// ): Promise<void> => {
+//   await dataProvider.update<_Users>(constants.R_USERS, {
+//     id: previousData.id,
+//     data: { lockoutAttempts: val },
+//     previousData
+//   })
+// }
 const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
 const fetchUser = async (username: string): Promise<any> => {
   const user = await axios.get(
@@ -87,6 +83,19 @@ const fetchUser = async (username: string): Promise<any> => {
   )
 
   return user.data.data?.[0]
+}
+
+const fetchUserRoleId = async (userId: number): Promise<any> => {
+  const userRoleId = await axios.get(
+    `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${userId}`
+  )
+  const userValue =
+    userRoleId.data.data[0]?.role_id === 2
+      ? 'rco-power'
+      : userRoleId.data.data[0]?.role_id === 3
+      ? 'rco-power-user'
+      : 'default'
+  return userValue
 }
 
 const authProvider = (dataProvider: DataProvider): AuthProvider => {
@@ -99,66 +108,80 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       username: string
       password: string
     }) => {
-      if (process.env.MOCK) {
-        const data = await dataProvider.getList<_Users>(constants.R_USERS, {
-          sort: { field: 'id', order: 'ASC' },
-          pagination: { page: 1, perPage: 1 },
-          filter: { username }
-        })
-        const user = data.data.find((item: any) => item.username === username)
+      // if (process.env.MOCK) {
+      //   const data = await dataProvider.getList<_Users>(constants.R_USERS, {
+      //     sort: { field: 'id', order: 'ASC' },
+      //     pagination: { page: 1, perPage: 1 },
+      //     filter: { username }
+      //   })
+      //   const foundUser = data.data.find((item) => item.username === username)
+      //   const userRole = await fetchUserRoleId(foundUser?.id as number)
+      //   const user = { ...foundUser, userRole } as _UserWithRole
+      //   if (user !== undefined) {
+      //     const hasUserDeparted =
+      //       user.departedDate !== undefined &&
+      //       user.departedDate !== null &&
+      //       checkIfDateHasPassed(user.departedDate)
 
-        if (user !== undefined) {
-          const hasUserDeparted =
-            user.departedDate !== undefined &&
-            user.departedDate !== null &&
-            checkIfDateHasPassed(user.departedDate)
+      //     if (user.lockoutAttempts >= 5) {
+      //       throw new Error(
+      //         `Your account is locked. Please contact your administrator (' ${user.lockoutAttempts} ')`
+      //       )
+      //     }
 
-          if (user.lockoutAttempts >= 5) {
-            throw new Error(
-              `Your account is locked. Please contact your administrator (' ${user.lockoutAttempts} ')`
-            )
-          }
+      //     if (
+      //       user.hashed_password &&
+      //       bcrypt.compareSync(password, user.hashed_password) &&
+      //       !hasUserDeparted
+      //     ) {
+      //       await updateLockouAttempts(0, dataProvider, user)
+      //       await createUserToken(user, userRole, audit)
+      //       return await Promise.resolve(data)
+      //     } else if (
+      //       !user.hashed_password &&
+      //       password === user.username &&
+      //       !hasUserDeparted
+      //     ) {
+      //       await updateLockouAttempts(0, dataProvider, user)
+      //       await createUserToken(user, userRole, audit)
+      //     } else if (hasUserDeparted) {
+      //       throw new Error('User has departed organisation')
+      //     } else {
+      //       await updateLockouAttempts(
+      //         user.lockoutAttempts + 1,
+      //         dataProvider,
+      //         user
+      //       )
+      //       throw new Error('Wrong password')
+      //     }
+      //   } else {
+      //     throw new Error('Wrong username')
+      //   }
+      // } else {
+      //   try {
+      //     await login({ password, username })
+      //     const user = await fetchUser(username)
+      //     const userRole = await fetchUserRoleId(user?.id)
+      //     await createUserToken(user, userRole, audit)
+      //     sessionStorage.setItem('login', 'true')
+      //     return await Promise.resolve(user)
+      //   } catch (error) {
+      //     if (isAxiosError(error))
+      //       throw new Error(getErrorDetails(error).message)
+      //     throw new Error((error as Error).message)
+      //   }
+      // }
 
-          if (
-            user.hashed_password &&
-            bcrypt.compareSync(password, user.hashed_password) &&
-            !hasUserDeparted
-          ) {
-            await updateLockouAttempts(0, dataProvider, user)
-            await createUserToken(user, audit)
-            return await Promise.resolve(data)
-          } else if (
-            !user.hashed_password &&
-            password === user.username &&
-            !hasUserDeparted
-          ) {
-            await updateLockouAttempts(0, dataProvider, user)
-            await createUserToken(user, audit)
-          } else if (hasUserDeparted) {
-            throw new Error('User has departed organisation')
-          } else {
-            await updateLockouAttempts(
-              user.lockoutAttempts + 1,
-              dataProvider,
-              user
-            )
-            throw new Error('Wrong password')
-          }
-        } else {
-          throw new Error('Wrong username')
-        }
-      } else {
-        try {
-          await login({ password, username })
-          const user = await fetchUser(username)
-          await createUserToken(user, audit)
-          sessionStorage.setItem('login', 'true')
-          return await Promise.resolve(user)
-        } catch (error) {
-          if (isAxiosError(error))
-            throw new Error(getErrorDetails(error).message)
-          throw new Error((error as Error).message)
-        }
+      try {
+        await login({ password, username })
+        const user = await fetchUser(username)
+        const userRole = await fetchUserRoleId(user?.id)
+        await createUserToken(user, userRole, audit)
+        sessionStorage.setItem('login', 'true')
+        return await Promise.resolve(user)
+      } catch (error) {
+        if (isAxiosError(error)) throw new Error(getErrorDetails(error).message)
+        throw new Error((error as Error).message)
       }
     },
     logout: async (): Promise<void> => {
@@ -256,7 +279,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
               'welcome-page': { read: true }
             }
           } else {
-            permissions = await getPermissionsByRoles(user.role)
+            permissions = await getPermissionsByRoles(user.userRole)
           }
           return permissions
         } else {

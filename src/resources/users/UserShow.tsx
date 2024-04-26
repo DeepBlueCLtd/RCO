@@ -22,7 +22,6 @@ import {
   LoadingIndicator
 } from 'react-admin'
 import {
-  Chip,
   Typography,
   Button,
   Modal,
@@ -377,15 +376,14 @@ const UserShowComp = ({
               variant='outlined'
               sx={{ width: '100%' }}
             />
-            <FlexBox>
-              <Chip label={record?.role} />
-              <TextInput
-                disabled
-                source='username'
-                label='Username'
-                sx={{ flex: 1 }}
-              />
-            </FlexBox>
+
+            <TextInput
+              disabled
+              source='username'
+              label='Username'
+              sx={{ flex: 1 }}
+            />
+
             <FlexBox>
               <DateInput
                 disabled
@@ -499,6 +497,7 @@ export default function UserShow(): React.ReactElement {
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading } = useGetList<Audit>(R_AUDIT, {})
+  const userDetails = getUser()
   const audit = useAudit()
   const navigate = useNavigate()
 
@@ -519,14 +518,14 @@ export default function UserShow(): React.ReactElement {
         <TopToolbar sx={{ display: 'flex', alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
             {hasWriteAccess && <EditButton />}
-            {hasWriteAccess && (
+            {userDetails?.userRole === 'rco-power-user' ? (
               <Button
                 onClick={handleEditPasswordOpen}
                 sx={{ fontSize: '12px' }}>
                 <LockResetIcon fontSize='medium' sx={{ paddingRight: '5px' }} />
                 Edit Password
               </Button>
-            )}
+            ) : null}
           </div>
           <HistoryButton
             onClick={() => {
