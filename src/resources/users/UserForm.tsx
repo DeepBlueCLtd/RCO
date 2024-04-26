@@ -44,6 +44,7 @@ const schema = yup.object({
 type UpdateUserRoleFunction = () => Promise<void>
 interface UserDetails {
   name: string
+  id: number
   hashed_password?: string
   role: UserRole
   is_superuser: boolean
@@ -78,12 +79,16 @@ const SaveButtonContext: React.FC<any> = (props: {
     )
     const roleId = roleResponse.data.data[0]?.id
     if (!roleId) {
-      return
+      // no existing user_role, create a new one
+      await axios.post(`${BASE_URL}/api/tables/_users_roles/rows`, {
+        fields: { user_id: val.id, role_id: selectUser }
+      })
+    } else {
+      await axios.put(`${BASE_URL}/api/tables/_users_roles/rows/${roleId}`, {
+        fields: { role_id: selectUser }
+      })
     }
 
-    await axios.put(`${BASE_URL}/api/tables/_users_roles/rows/${roleId}`, {
-      fields: { role_id: selectUser }
-    })
     redirect(`/${R_USERS}/${userId}/show`)
   }
 
@@ -196,12 +201,21 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
 
   const updateUserRole: UpdateUserRoleFunction = async (): Promise<void> => {
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/tables/_users_roles/rows/${userRoleId}`,
-        { fields: { role_id: selectUser } }
-      )
-      console.log('User role updated successfully:', response.data)
-      return response.data
+      if (userRoleId === undefined) {
+        const response = await axios.post(
+          `${BASE_URL}/api/tables/_users_roles/rows`,
+          { fields: { user_id: record.id, role_id: selectUser } }
+        )
+        console.log('User role created successfully:', response.data)
+        return response.data
+      } else {
+        const response = await axios.put(
+          `${BASE_URL}/api/tables/_users_roles/rows/${userRoleId}`,
+          { fields: { role_id: selectUser } }
+        )
+        console.log('User role updated successfully:', response.data)
+        return response.data
+      }
     } catch (error) {
       console.error('Error updating user role:', error)
       throw error
