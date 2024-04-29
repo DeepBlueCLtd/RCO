@@ -43,7 +43,7 @@ const removeLocalStorageItem = (key: string): void => {
 }
 
 const createUserToken = async (
-  user: _UserWithRole,
+  user: _Users,
   userRole: string,
   audit: AuditFunctionType
 ): Promise<void> => {
@@ -174,8 +174,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
 
       try {
         await login({ password, username })
-        const user = await fetchUser(username)
-        const userRole = (await fetchUserRoleId(user?.id as number)) as string
+        const user: _Users = await fetchUser(username)
+        const userRole: string = await fetchUserRoleId(user?.id as number)
         await createUserToken(user, userRole, audit)
         sessionStorage.setItem('login', 'true')
         return await Promise.resolve(user)

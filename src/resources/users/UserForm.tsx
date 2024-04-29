@@ -24,6 +24,8 @@ import { DateTime } from 'luxon'
 import axios from 'axios'
 
 import { R_USERS } from '../../constants'
+import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 
 const schema = yup.object({
   name: yup.string().required()
@@ -51,6 +53,7 @@ const SaveButtonContext: React.FC<any> = (props: {
 }) => {
   const [create] = useCreate()
   const redirect = useRedirect()
+  const audit = useAudit()
   const createUserRole = async (
     val: UserDetails,
     selectUser: string
@@ -85,8 +88,17 @@ const SaveButtonContext: React.FC<any> = (props: {
       R_USERS,
       { data: { ...val } },
       {
-        onSettled: () => {
+        onSettled: async () => {
           createUserRole(val, props.selectUser).catch(console.log)
+          await audit({
+            resource: R_USERS,
+            activityType: AuditType.CREATE,
+            dataId: val.id,
+            activityDetail: `User Created`,
+            securityRelated: true,
+            subjectResource: null,
+            subjectId: null
+          })
         }
       }
     )

@@ -36,9 +36,17 @@ const UserEdit = (): React.ReactElement => {
             resource: constants.R_USERS,
             activityType: AuditType.EDIT,
             dataId: data.id,
-            activityDetail: `{"Previous values": ${
-              prev ? JSON.stringify(getDifference(data, prev)) : 'User edited'
-            }}`,
+            activityDetail: `{
+              ${
+                prev && Object.keys(getDifference(data, prev)).length === 0
+                  ? 'User Role updated'
+                  : `"Previous values": ${
+                      prev
+                        ? JSON.stringify(getDifference(data, prev))
+                        : '"User edited"'
+                    }`
+              }
+            }`,
             securityRelated: true,
             subjectResource: null,
             subjectId: null
