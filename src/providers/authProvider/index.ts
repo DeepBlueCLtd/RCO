@@ -175,7 +175,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       try {
         await login({ password, username })
         const user = await fetchUser(username)
-        const userRole = await fetchUserRoleId(user?.id)
+        const userRole = (await fetchUserRoleId(user?.id as number)) as string
         await createUserToken(user, userRole, audit)
         sessionStorage.setItem('login', 'true')
         return await Promise.resolve(user)
