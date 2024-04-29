@@ -98,9 +98,9 @@ export const canAccess = (
   if (typeof resourcePermissions === 'undefined') return false
 
   if (
-    resourcePermissions.read === true &&
-    resourcePermissions.delete === true &&
-    resourcePermissions.write === true
+    !!resourcePermissions.read &&
+    !!resourcePermissions.delete &&
+    !!resourcePermissions.write
   ) {
     return true
   }
