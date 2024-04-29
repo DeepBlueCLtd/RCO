@@ -37,9 +37,9 @@ const mapPermissions = (
 ): ResourcePermissions => {
   const mappedPermissions = permissions.reduce((acc: any, permission: any) => {
     acc[permission.table_name] = {
-      read: permission.read === 'true',
-      write: permission.create === 'true',
-      delete: permission.delete === 'true'
+      read: !!permission.read,
+      write: !!permission.create,
+      delete: !!permission.delete
     }
     return acc
   }, {})
@@ -98,9 +98,9 @@ export const canAccess = (
   if (typeof resourcePermissions === 'undefined') return false
 
   if (
-    resourcePermissions.read === true &&
-    resourcePermissions.delete === true &&
-    resourcePermissions.write === true
+    !!resourcePermissions.read &&
+    !!resourcePermissions.delete &&
+    !!resourcePermissions.write
   ) {
     return true
   }

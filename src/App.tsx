@@ -672,7 +672,7 @@ const createRoutes = (
     list = ReferenceDataList,
     show = ReferenceDataShow
   } = elements
-  if (read === true) {
+  if (read) {
     routes.push(
       ...[
         <Route
@@ -688,7 +688,7 @@ const createRoutes = (
       ]
     )
   }
-  if (write === true) {
+  if (write) {
     routes.push(
       ...[
         <Route
