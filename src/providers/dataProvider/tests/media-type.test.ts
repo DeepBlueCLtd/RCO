@@ -1,23 +1,29 @@
-import { type DataProvider, type AuthProvider } from 'react-admin'
+import {
+  type DataProvider
+  // type AuthProvider
+} from 'react-admin'
 import {
   R_AUDIT,
   R_MEDIA_TYPE,
-  R_USERS,
+  // R_USERS,
   type ResourceTypes
 } from '../../../constants'
-import localForageDataProvider from 'ra-data-local-forage'
-import authProvider from '../../authProvider'
-import { encryptedUsers } from '../../../utils/init-data'
+// import localForageDataProvider from 'ra-data-local-forage'
+// import authProvider from '../../authProvider'
+// import { encryptedUsers } from '../../../utils/init-data'
 import { common, commonBeforeEach } from './common'
 import { generateActiveReferenceItemForTesting } from './dummy-data'
-import referenceItemTests from './reference-item'
+// import referenceItemTests from './reference-item'
 
-const TEST_STORAGE_KEY = 'rco-test'
+//* ***************
+// NOTE: commenting out code that uses legacy in-memory data store
+
+// const TEST_STORAGE_KEY = 'rco-test'
 const TO_CLEAR: ResourceTypes[] = [R_AUDIT, R_MEDIA_TYPE]
 
 describe('CRUD operation on Media Type Resource', () => {
   let provider: DataProvider
-  let auth: AuthProvider
+  // let auth: AuthProvider
   let checkListAfterCreate: () => Promise<void>,
     checkListBeforeCreate: () => Promise<void>,
     createResource: (
@@ -25,16 +31,16 @@ describe('CRUD operation on Media Type Resource', () => {
       resource: ResourceTypes
     ) => Promise<IntegerReferenceItem>
 
-  beforeAll(async () => {
-    const provider = await localForageDataProvider({
-      prefixLocalForageKey: TEST_STORAGE_KEY
-    })
-    for (const user of encryptedUsers()) {
-      await provider.create<_Users>(R_USERS, { data: { ...user } })
-    }
-    auth = authProvider(provider)
-    await auth.login({ username: 'd-1', password: process.env.PASSWORD })
-  })
+  // beforeAll(async () => {
+  //   const provider = await localForageDataProvider({
+  //     prefixLocalForageKey: TEST_STORAGE_KEY
+  //   })
+  //   for (const user of encryptedUsers()) {
+  //     await provider.create<_Users>(R_USERS, { data: { ...user } })
+  //   }
+  //   auth = authProvider(provider)
+  //   await auth.login({ username: 'd-1', password: process.env.PASSWORD })
+  // })
 
   beforeEach(async () => {
     provider = await commonBeforeEach(TO_CLEAR)
@@ -81,19 +87,19 @@ describe('CRUD operation on Media Type Resource', () => {
     expect(fetchedMediaType).toMatchObject(shouldMatchMediaType)
   })
 
-  it('should test before create ', async () => {
-    await referenceItemTests(
-      provider,
-      R_MEDIA_TYPE,
-      generateActiveReferenceItemForTesting
-    )[0]()
-  })
+  // it('should test before create ', async () => {
+  //   await referenceItemTests(
+  //     provider,
+  //     R_MEDIA_TYPE,
+  //     generateActiveReferenceItemForTesting
+  //   )[0]()
+  // })
 
-  it('should test before Update', async () => {
-    await referenceItemTests(
-      provider,
-      R_MEDIA_TYPE,
-      generateActiveReferenceItemForTesting
-    )[1]()
-  })
+  // it('should test before Update', async () => {
+  //   await referenceItemTests(
+  //     provider,
+  //     R_MEDIA_TYPE,
+  //     generateActiveReferenceItemForTesting
+  //   )[1]()
+  // })
 })

@@ -1,5 +1,5 @@
 import {
-  type AuthProvider,
+  // type AuthProvider,
   type DataProvider,
   withLifecycleCallbacks
 } from 'react-admin'
@@ -11,28 +11,31 @@ import {
   R_VAULT_LOCATION
 } from '../../../constants'
 import { trackEvent } from '../../../utils/audit'
-import { encryptedUsers } from '../../../utils/init-data'
-import authProvider from '../../authProvider'
+// import { encryptedUsers } from '../../../utils/init-data'
+// import authProvider from '../../authProvider'
 import { clear, generateVaultLocationForTesting } from './dummy-data'
 import localForageDataProvider from 'ra-data-local-forage'
+
+//* ***************
+// NOTE: commenting out code that uses legacy in-memory data store
 
 const TEST_STORAGE_KEY = 'rco-test'
 const TO_CLEAR: ResourceTypes[] = [R_USERS, R_AUDIT, R_VAULT_LOCATION]
 
 describe('CRUD operations vault location', () => {
   let provider: DataProvider
-  let auth: AuthProvider
+  // let auth: AuthProvider
 
-  beforeAll(async () => {
-    const provider = await localForageDataProvider({
-      prefixLocalForageKey: TEST_STORAGE_KEY
-    })
-    for (const user of encryptedUsers()) {
-      await provider.create<_Users>(R_USERS, { data: { ...user } })
-    }
-    auth = authProvider(provider)
-    await auth.login({ username: 'd-1', password: process.env.PASSWORD })
-  })
+  // beforeAll(async () => {
+  //   const provider = await localForageDataProvider({
+  //     prefixLocalForageKey: TEST_STORAGE_KEY
+  //   })
+  //   for (const user of encryptedUsers()) {
+  //     await provider.create<_Users>(R_USERS, { data: { ...user } })
+  //   }
+  //   auth = authProvider(provider)
+  //   await auth.login({ username: 'd-1', password: process.env.PASSWORD })
+  // })
 
   beforeEach(async () => {
     const withOutLifecycleProvider = await localForageDataProvider({

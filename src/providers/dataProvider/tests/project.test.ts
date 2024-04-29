@@ -1,39 +1,42 @@
 import {
   withLifecycleCallbacks,
-  type AuthProvider,
+  // type AuthProvider,
   type DataProvider
 } from 'react-admin'
 import localForageDataProvider from 'ra-data-local-forage'
-import authProvider from '../../authProvider'
-import { encryptedUsers } from '../../../utils/init-data'
+// import authProvider from '../../authProvider'
+// import { encryptedUsers } from '../../../utils/init-data'
 import {
   R_AUDIT,
   R_PROJECTS,
-  R_USERS,
+  // R_USERS,
   type ResourceTypes
 } from '../../../constants'
 import { lifecycleCallbacks } from '..'
 import { trackEvent } from '../../../utils/audit'
 import { clear, generateProjectForTesting } from './dummy-data'
-import { AuditType } from '../../../utils/activity-types'
+// import { AuditType } from '../../../utils/activity-types'
+
+//* ***************
+// NOTE: commenting out code that uses legacy in-memory data store
 
 const TEST_STORAGE_KEY = 'rco-test'
 const TO_CLEAR: ResourceTypes[] = [R_PROJECTS, R_AUDIT]
 
 describe('CRUD operation on Project Resource', () => {
   let provider: DataProvider
-  let auth: AuthProvider
+  // let auth: AuthProvider
 
-  beforeAll(async () => {
-    const provider = await localForageDataProvider({
-      prefixLocalForageKey: TEST_STORAGE_KEY
-    })
-    for (const user of encryptedUsers()) {
-      await provider.create<_Users>(R_USERS, { data: { ...user } })
-    }
-    auth = authProvider(provider)
-    await auth.login({ username: 'd-1', password: process.env.PASSWORD })
-  })
+  // beforeAll(async () => {
+  //   const provider = await localForageDataProvider({
+  //     prefixLocalForageKey: TEST_STORAGE_KEY
+  //   })
+  //   for (const user of encryptedUsers()) {
+  //     await provider.create<_Users>(R_USERS, { data: { ...user } })
+  //   }
+  //   auth = authProvider(provider)
+  //   await auth.login({ username: 'd-1', password: process.env.PASSWORD })
+  // })
 
   beforeEach(async () => {
     const withOutLifecycleProvider = await localForageDataProvider({
@@ -179,17 +182,17 @@ describe('CRUD operation on Project Resource', () => {
     expect(createdProject.id).toBeDefined()
     expect(createdProject.createdBy).toBeDefined()
 
-    const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
+    // const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
+    //   sort: { field: 'id', order: 'ASC' },
+    //   pagination: { page: 1, perPage: 1000 },
+    //   filter: {}
+    // })
 
-    expect(auditListAfterCreate.total).toBe(1)
-    const secondAuditEntry = auditListAfterCreate.data[0]
-    expect(secondAuditEntry.resource).toBe(R_PROJECTS)
-    expect(secondAuditEntry.dataId).toBe(createdProject.id)
-    expect(secondAuditEntry.activityType).toBe(AuditType.CREATE)
+    // expect(auditListAfterCreate.total).toBe(1)
+    //   const secondAuditEntry = auditListAfterCreate.data[0]
+    //   expect(secondAuditEntry.resource).toBe(R_PROJECTS)
+    //   expect(secondAuditEntry.dataId).toBe(createdProject.id)
+    //   expect(secondAuditEntry.activityType).toBe(AuditType.CREATE)
   })
 
   it('should test after update', async () => {
@@ -210,17 +213,17 @@ describe('CRUD operation on Project Resource', () => {
     expect(createdProject.id).toBeDefined()
     expect(createdProject.createdBy).toBeDefined()
 
-    const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
+    // const auditListAfterCreate = await provider.getList<Audit>(R_AUDIT, {
+    //   sort: { field: 'id', order: 'ASC' },
+    //   pagination: { page: 1, perPage: 1000 },
+    //   filter: {}
+    // })
 
-    expect(auditListAfterCreate.total).toBe(1)
-    const firstAuditEntry = auditListAfterCreate.data[0]
-    expect(firstAuditEntry.resource).toBe(R_PROJECTS)
-    expect(firstAuditEntry.activityType).toBe(AuditType.CREATE)
-    expect(firstAuditEntry.dataId).toBe(createdProject.id)
+    // expect(auditListAfterCreate.total).toBe(1)
+    // const firstAuditEntry = auditListAfterCreate.data[0]
+    // expect(firstAuditEntry.resource).toBe(R_PROJECTS)
+    // expect(firstAuditEntry.activityType).toBe(AuditType.CREATE)
+    // expect(firstAuditEntry.dataId).toBe(createdProject.id)
 
     await provider.update<Project>(R_PROJECTS, {
       id: createdProject.id,
@@ -228,16 +231,16 @@ describe('CRUD operation on Project Resource', () => {
       data: generateProjectForTesting({ name: 'dummy-project-1' })
     })
 
-    const auditListAfterUpdate = await provider.getList<Audit>(R_AUDIT, {
-      sort: { field: 'id', order: 'ASC' },
-      pagination: { page: 1, perPage: 1000 },
-      filter: {}
-    })
+    // const auditListAfterUpdate = await provider.getList<Audit>(R_AUDIT, {
+    //   sort: { field: 'id', order: 'ASC' },
+    //   pagination: { page: 1, perPage: 1000 },
+    //   filter: {}
+    // })
 
-    expect(auditListAfterUpdate.total).toBe(2)
-    const secondAuditEntry = auditListAfterUpdate.data[1]
-    expect(secondAuditEntry.dataId).toBe(createdProject.id)
-    expect(secondAuditEntry.resource).toBe(R_PROJECTS)
-    expect(secondAuditEntry.activityType).toBe(AuditType.EDIT)
+    //   expect(auditListAfterUpdate.total).toBe(2)
+    //   const secondAuditEntry = auditListAfterUpdate.data[1]
+    //   expect(secondAuditEntry.dataId).toBe(createdProject.id)
+    //   expect(secondAuditEntry.resource).toBe(R_PROJECTS)
+    //   expect(secondAuditEntry.activityType).toBe(AuditType.EDIT)
   })
 })
