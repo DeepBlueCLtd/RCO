@@ -18,7 +18,8 @@ export enum AuditType {
   DESTROY = 'DEST',
 
   RECEIPT_NOTE_RECEIVED = 'RECEIPT_NOTE_RECEIVED',
-  CHANGE_PASSWORD = 'CHANGE_PASSWORD'
+  CHANGE_PASSWORD = 'CHANGE_PASSWORD',
+  EDIT_PASSWORD = 'EDIT_PASSWORD'
 }
 
 const ActivityTypes = Object.values(AuditType).map((val) => {

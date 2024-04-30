@@ -18,10 +18,10 @@ import {
   useNotify,
   DateInput,
   useDataProvider,
-  FunctionField
+  FunctionField,
+  LoadingIndicator
 } from 'react-admin'
 import {
-  Chip,
   Typography,
   Button,
   Modal,
@@ -51,7 +51,7 @@ import { DateTime } from 'luxon'
 import useAudit, { type AuditFunction } from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import LockResetIcon from '@mui/icons-material/LockReset'
-import { type AxiosError, isAxiosError } from 'axios'
+import axios, { type AxiosError, isAxiosError } from 'axios'
 import { getUser } from '../../providers/authProvider'
 const style = {
   position: 'absolute',
@@ -120,7 +120,7 @@ const DepartOrganisation = ({
   )
 }
 
-const EditPassword = ({ handleClose }: Props): React.ReactElement => {
+const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false)
   const [password, setPassword] = useState<string>('')
   const [passwordError, setPasswordError] = useState('')
@@ -138,8 +138,17 @@ const EditPassword = ({ handleClose }: Props): React.ReactElement => {
       newPassword: password,
       userId: parseInt(id)
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status === 201) {
+          await audit({
+            resource: constants.R_USERS,
+            activityType: AuditType.EDIT_PASSWORD,
+            dataId: user?.id as number | null,
+            activityDetail: 'Edit User Password',
+            securityRelated: true,
+            subjectResource: null,
+            subjectId: null
+          })
           notify(res.data.message, { type: 'success' })
           handleClose()
         }
@@ -263,6 +272,8 @@ const UserShowComp = ({
   const { record, isLoading } = useShowContext<_Users>()
   const [departOpen, setDepartOpen] = useState(false)
   const [showReturn, setShowReturn] = useState<boolean>(false)
+  const [userRoleId, setUserRoleId] = useState<string>('')
+  const [loading, setLoading] = useState(true)
   const loanedHistory = 'Loaned Items'
   const viewUser = 'View User'
   const loanedItems = useGetList<Item>(R_ITEMS, {
@@ -271,10 +282,32 @@ const UserShowComp = ({
     filter: { loanedTo: record?.id }
   })
   const { hasAccess } = useCanAccess()
+
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { id } = useParams()
   const [update] = useUpdate<_Users>()
   const notify = useNotify()
+
+  const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
+
+  const fetchData = async (): Promise<void> => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record?.id}`
+      )
+      setUserRoleId(response.data.data[0]?.role_id as string)
+      setLoading(false)
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error}`)
+    }
+  }
+  useEffect(() => {
+    fetchData()
+      .then(() => {})
+      .catch((error) => {
+        throw error
+      })
+  }, [record?.id])
 
   useEffect(() => {
     setShowReturn(
@@ -352,15 +385,14 @@ const UserShowComp = ({
               variant='outlined'
               sx={{ width: '100%' }}
             />
-            <FlexBox>
-              <Chip label={record?.role} />
-              <TextInput
-                disabled
-                source='username'
-                label='Username'
-                sx={{ flex: 1 }}
-              />
-            </FlexBox>
+
+            <TextInput
+              disabled
+              source='username'
+              label='Username'
+              sx={{ flex: 1 }}
+            />
+
             <FlexBox>
               <DateInput
                 disabled
@@ -369,6 +401,33 @@ const UserShowComp = ({
                 sx={{ flex: 1 }}
               />
             </FlexBox>
+            <Typography
+              align='center'
+              sx={{
+                fontWeight: '200',
+                border: '1px dotted gray',
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px',
+                borderRadius: '3px',
+                fontSize: '14px',
+                color: 'gray',
+                margin: '5px 0'
+              }}>
+              User Role:{' '}
+              {loading ? (
+                <LoadingIndicator />
+              ) : parseInt(userRoleId) === 1 ? (
+                'Default Role'
+              ) : parseInt(userRoleId) === 2 ? (
+                'RCO User'
+              ) : parseInt(userRoleId) === 3 ? (
+                'RCO Power User'
+              ) : (
+                'User have no role'
+              )}
+            </Typography>
+
             <FlexBox justifyContent='left'>
               <Button
                 variant='outlined'
@@ -447,6 +506,7 @@ export default function UserShow(): React.ReactElement {
   const { hasAccess } = useCanAccess()
   const hasWriteAccess = hasAccess(R_USERS, { write: true })
   const { isLoading } = useGetList<Audit>(R_AUDIT, {})
+  const userDetails = getUser()
   const audit = useAudit()
   const navigate = useNavigate()
 
@@ -464,8 +524,18 @@ export default function UserShow(): React.ReactElement {
     <Show
       resource={constants.R_USERS}
       actions={
-        <TopToolbar sx={{ alignItems: 'center' }}>
-          {hasWriteAccess && <EditButton />}
+        <TopToolbar sx={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ flex: 1 }}>
+            {hasWriteAccess && <EditButton />}
+            {userDetails?.userRole === 'rco-power-user' ? (
+              <Button
+                onClick={handleEditPasswordOpen}
+                sx={{ fontSize: '12px' }}>
+                <LockResetIcon fontSize='medium' sx={{ paddingRight: '5px' }} />
+                Edit Password
+              </Button>
+            ) : null}
+          </div>
           <HistoryButton
             onClick={() => {
               if (record) {
@@ -478,12 +548,6 @@ export default function UserShow(): React.ReactElement {
               }
             }}
           />
-          {hasWriteAccess && (
-            <Button onClick={handleEditPasswordOpen} sx={{ fontSize: '12px' }}>
-              <LockResetIcon fontSize='medium' sx={{ paddingRight: '5px' }} />
-              Edit Password
-            </Button>
-          )}
         </TopToolbar>
       }>
       <UserShowComp

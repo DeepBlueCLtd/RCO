@@ -135,7 +135,6 @@ export const generateUserForTesting = ({
   name: name ?? 'Dummy-User',
   hashed_password: password ?? undefined,
   ...(departedDate ? { departedDate } : null),
-  role: 'rco-user',
   is_superuser: false,
   username: 'd-1',
   lastUpdatedAt: null,

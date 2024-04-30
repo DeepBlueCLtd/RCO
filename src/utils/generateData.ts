@@ -296,13 +296,6 @@ export const generateItems = (
   }
   return items
 }
-function getRandomRole(): UserRole {
-  const roles: UserRole[] = ['rco-power-user', 'rco-user']
-  const randomIndex = Math.floor(Math.random() * roles.length)
-  const selectedRole = roles[randomIndex]
-
-  return selectedRole
-}
 
 export const generateUsers = (length: number): _Users[] => {
   const users: _Users[] = []
@@ -319,7 +312,7 @@ export const generateUsers = (length: number): _Users[] => {
         : { departedDate: generateRandomDate()[0].toString() }),
       username: `d:${i + 1}`,
       createdBy: generateRandomNumber(0, length - 1),
-      role: getRandomRole(),
+
       is_superuser: false,
       createdAt: nowDate(),
       departedDate: null,
