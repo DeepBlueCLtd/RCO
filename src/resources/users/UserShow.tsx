@@ -120,7 +120,7 @@ const DepartOrganisation = ({
   )
 }
 
-const EditPassword = ({ handleClose }: Props): React.ReactElement => {
+const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false)
   const [password, setPassword] = useState<string>('')
   const [passwordError, setPasswordError] = useState('')
@@ -138,8 +138,17 @@ const EditPassword = ({ handleClose }: Props): React.ReactElement => {
       newPassword: password,
       userId: parseInt(id)
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status === 201) {
+          await audit({
+            resource: constants.R_USERS,
+            activityType: AuditType.EDIT_PASSWORD,
+            dataId: user?.id as number,
+            activityDetail: 'Edit User Password',
+            securityRelated: true,
+            subjectResource: null,
+            subjectId: null
+          })
           notify(res.data.message, { type: 'success' })
           handleClose()
         }

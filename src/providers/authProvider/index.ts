@@ -91,7 +91,7 @@ const fetchUserRoleId = async (userId: number): Promise<any> => {
   )
   const userValue =
     userRoleId.data.data[0]?.role_id === 2
-      ? 'rco-power'
+      ? 'rco-user'
       : userRoleId.data.data[0]?.role_id === 3
       ? 'rco-power-user'
       : 'default'
@@ -175,7 +175,7 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       try {
         await login({ password, username })
         const user: _UserWithRole = await fetchUser(username)
-        const userRole: string = await fetchUserRoleId(user?.id )
+        const userRole: string = await fetchUserRoleId(user?.id)
         await createUserToken(user, userRole, audit)
         sessionStorage.setItem('login', 'true')
         return await Promise.resolve(user)

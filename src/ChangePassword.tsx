@@ -86,8 +86,11 @@ const ChangePassword = ({
             const res = await deleteUpdateBefore({
               userId: user.id as number
             })
-            const userData = res.data.userDetails
-            const updatedUser = { ...userData }
+
+            const updatedUser = {
+              ...user,
+              updateBefore: res.data.userDetails.updateBefore
+            }
             const token = encryptData(`${JSON.stringify(updatedUser)}`)
             localStorage.setItem(constants.ACCESS_TOKEN_KEY, token)
             await audit({

@@ -94,7 +94,7 @@ const SaveButtonContext: React.FC<any> = (props: {
             resource: R_USERS,
             activityType: AuditType.CREATE,
             dataId: val.id,
-            activityDetail: `User Created`,
+            activityDetail: 'User Created',
             securityRelated: true,
             subjectResource: null,
             subjectId: null

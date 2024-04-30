@@ -4,7 +4,7 @@ const path = require('path')
 
 const getUserById = (db, userId) => {
   const query = `
-    SELECT createdAt, createdBy, departedDate, id, is_superuser, lastUpdatedAt, lockoutAttempts, name, role, updateBefore, username
+    SELECT createdAt, createdBy, departedDate, id, is_superuser, lastUpdatedAt, lockoutAttempts, name, updateBefore, username
     FROM _users
     WHERE id = ?;
   `
