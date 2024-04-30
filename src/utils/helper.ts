@@ -215,13 +215,19 @@ export const handleRefreshToken = async (): Promise<AxiosResponse> => {
 axios.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    if (error.response && error.response.status === 401) {
-      try {
-        await handleRefreshToken()
-        const originalRequest = error.config
-        if (originalRequest) return await axios(originalRequest)
-      } catch (refreshError) {
-        return await Promise.reject(refreshError)
+    if (error.response) {
+      const errorMessage = (error.response.data as any)?.message as string
+      if (errorMessage === 'Invalid current password') {
+        return await Promise.reject(error)
+      }
+      if (error.response.status === 401) {
+        try {
+          await handleRefreshToken()
+          const originalRequest = error.config
+          if (originalRequest) return await axios(originalRequest)
+        } catch (refreshError) {
+          return await Promise.reject(refreshError)
+        }
       }
     }
     return await Promise.reject(error)
