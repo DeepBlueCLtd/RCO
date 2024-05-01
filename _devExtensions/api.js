@@ -81,7 +81,12 @@ const insertPasswordRecord = {
       const { fields: queryFields } = req.body
       queryFields.createdAt = new Date().toISOString()
 
-      const { userId, password } = queryFields
+      const { userId, currentPassword, password } = queryFields
+
+      // if currentPassword present, validate it
+      if (currentPassword !== undefined) {
+        validateCurrentPassword(mainDb, userId, currentPassword)
+      }
 
       await passwordValidationSchema.validate(password)
       checkAgainstLastFivePassowrds(securityDb, userId, password)
@@ -90,7 +95,9 @@ const insertPasswordRecord = {
       queryFields.password = bcrypt.hashSync(password)
 
       const fields = Object.fromEntries(
-        Object.entries(queryFields).filter(([_, value]) => value !== null)
+        Object.entries(queryFields).filter(
+          ([name, value]) => (value !== null) & (name !== 'currentPassword')
+        )
       )
 
       const fieldsString = Object.keys(fields).join(', ')
