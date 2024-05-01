@@ -288,7 +288,7 @@ const UserShowComp = ({
   const [update] = useUpdate<_Users>()
   const notify = useNotify()
 
-  const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
+  const BASE_URL = process.env.NODE_ENV === 'development' ?? 'http://localhost:8000'
 
   const fetchData = async (): Promise<void> => {
     try {
