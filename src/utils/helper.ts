@@ -78,14 +78,15 @@ interface ChangePassword {
 }
 
 export const changeAndUpdatePassword = async ({
+  userId,
   password,
   currentPassword
 }: ChangePassword): Promise<AxiosResponse> => {
-  const res = await axios.put(
+  const res = await axios.post(
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000/api/auth/change-password'
-      : '/api/auth/change-password',
-    { fields: { currentPassword, newPassword: password } }
+      ? 'http://localhost:8000/api/insert-password'
+      : '/api/insert-password',
+    { fields: { userId, currentPassword, password } }
   )
   return res
 }
