@@ -45,7 +45,8 @@ interface UserDetails {
   updateBefore: string
 }
 
-const BASE_URL = process.env.NODE_ENV === 'development' ?? 'http://localhost:8000'
+const BASE_URL =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : ''
 
 const SaveButtonContext: React.FC<any> = (props: {
   selectUser: string
