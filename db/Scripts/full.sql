@@ -18,7 +18,7 @@ CREATE TABLE _roles (
 );
 
 -- address definition
-CREATE TABLE "address" (
+CREATE TABLE address (
 	"id" INTEGER NOT NULL UNIQUE,
 	"createdAt" TEXT NOT NULL,
 	"fullAddress" TEXT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE "address" (
 );
 
 -- catCave definition
-CREATE TABLE "catCave" (
+CREATE TABLE catCave (
 	"id" TEXT NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE "catCave" (
 );
 
 -- catCode definition
-CREATE TABLE "catCode" (
+CREATE TABLE catCode (
 	"id" TEXT NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE "catCode" (
 );
 
 -- catHandle definition
-CREATE TABLE "catHandle" (
+CREATE TABLE catHandle (
 	"id" TEXT NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE "catHandle" (
 );
 
 -- configData definition
-CREATE TABLE "configData" (
+CREATE TABLE configData (
 	"projectName" TEXT NOT NULL,
 	"projectsName" TEXT NOT NULL,
 	"fromAddress" TEXT NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE "configData" (
 );
 
 -- department definition
-CREATE TABLE "department" (
+CREATE TABLE department (
 	"id" TEXT NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE "department" (
 );
 
 -- mediaType definition
-CREATE TABLE "mediaType" (
+CREATE TABLE mediaType (
 	"id" INTEGER NOT NULL UNIQUE,
 	"active" INTEGER NOT NULL,
 	"name" TEXT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE "mediaType" (
 );
 
 -- organisation definition
-CREATE TABLE "organisation" (
+CREATE TABLE organisation (
 	"id" TEXT NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE "organisation" (
 );
 
 -- platform definition
-CREATE TABLE "platform" (
+CREATE TABLE platform (
 	"id" INTEGER NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE "platform" (
 );
 
 -- protectiveMarking definition
-CREATE TABLE "protectiveMarking" (
+CREATE TABLE protectiveMarking (
 	"id" INTEGER NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE "protectiveMarking" (
 );
 
 -- vault definition
-CREATE TABLE "vault" (
+CREATE TABLE vault (
 	"id" TEXT NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE "vault" (
 );
 
 -- vaultLocation definition
-CREATE TABLE "vaultLocation" (
+CREATE TABLE vaultLocation (
 	"id" INTEGER NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE _roles_permissions (
 );
 
 -- "_users" definition
-CREATE TABLE "_users" (
+CREATE TABLE _users (
 	"id" INTEGER NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"hashed_password" TEXT NOT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE _users_roles (
 );
 
 -- audit definition
-CREATE TABLE "audit" (
+CREATE TABLE audit (
 	"id" INTEGER NOT NULL UNIQUE,
 	"user" INTEGER NOT NULL,
 	"resource" TEXT,
@@ -183,7 +183,7 @@ CREATE TABLE "audit" (
 );
 
 -- destruction definition
-CREATE TABLE "destruction" (
+CREATE TABLE destruction (
 	"id" INTEGER NOT NULL UNIQUE,
 	"vault" TEXT NOT NULL,
 	"name" TEXT,
@@ -200,7 +200,7 @@ CREATE TABLE "destruction" (
 );
 
 -- "dispatch" definition
-CREATE TABLE "dispatch" (
+CREATE TABLE dispatch (
 	"id" INTEGER NOT NULL UNIQUE,
 	"vault" TEXT NOT NULL,
 	"name" TEXT,
@@ -219,7 +219,7 @@ CREATE TABLE "dispatch" (
 );
 
 -- project definition
-CREATE TABLE "project" (
+CREATE TABLE project (
 	"id" INTEGER NOT NULL UNIQUE,
 	"name" TEXT NOT NULL,
 	"startDate" TEXT NOT NULL,
@@ -234,7 +234,7 @@ CREATE TABLE "project" (
 );
 
 -- batch definition
-CREATE TABLE "batch" (
+CREATE TABLE batch (
 	"id" INTEGER NOT NULL UNIQUE,
 	"vault" TEXT NOT NULL,
 	"batchNumber" TEXT NOT NULL,
@@ -257,7 +257,7 @@ CREATE TABLE "batch" (
 );
 
 -- item definition
-CREATE TABLE "item" (
+CREATE TABLE item (
 	"id" INTEGER NOT NULL UNIQUE,
 	"mediaType" INTEGER NOT NULL,
 	"legacyMediaType" INTEGER,
@@ -292,7 +292,7 @@ CREATE TABLE "item" (
 );
 
 -- itemCave definition
-CREATE TABLE "itemCave" (
+CREATE TABLE itemCave (
 	"id" INTEGER NOT NULL UNIQUE,
 	"item" INTEGER NOT NULL,
 	"catCave" TEXT NOT NULL,
@@ -302,7 +302,7 @@ CREATE TABLE "itemCave" (
 );
 
 -- itemCode definition
-CREATE TABLE "itemCode" (
+CREATE TABLE itemCode (
 	"id" INTEGER NOT NULL UNIQUE,
 	"item" INTEGER NOT NULL,
 	"catCode" TEXT NOT NULL,
@@ -312,7 +312,7 @@ CREATE TABLE "itemCode" (
 );
 
 -- itemHandle definition
-CREATE TABLE "itemHandle" (
+CREATE TABLE itemHandle (
 	"id" INTEGER NOT NULL UNIQUE,
 	"item" INTEGER NOT NULL,
 	"catHandle" TEXT NOT NULL,
