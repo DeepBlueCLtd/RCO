@@ -15,6 +15,21 @@ const getIp = {
   }
 }
 
+const validateCurrentPassword = (db, userId, currentPassword) => {
+  const query = `SELECT hashed_password FROM _users WHERE id = ?`
+  const user = db.prepare(query).get(userId)
+  if (!user) {
+    throw new Error('User not found')
+  }
+  const isPasswordValid = bcrypt.compareSync(
+    currentPassword,
+    user.hashed_password
+  )
+  if (!isPasswordValid) {
+    throw new Error('Invalid current password')
+  }
+}
+
 const removeOldPasswords = (db, userId) => {
   const deleteQuery = `
     DELETE FROM ${tableName}
@@ -69,7 +84,6 @@ const insertPasswordRecord = {
       const { userId, password } = queryFields
 
       await passwordValidationSchema.validate(password)
-
       checkAgainstLastFivePassowrds(securityDb, userId, password)
       removeOldPasswords(securityDb, userId)
 
