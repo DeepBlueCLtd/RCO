@@ -15,6 +15,21 @@ const getIp = {
   }
 }
 
+const validateCurrentPassword = (db, userId, currentPassword) => {
+  const query = `SELECT hashed_password FROM _users WHERE id = ?`
+  const user = db.prepare(query).get(userId)
+  if (!user) {
+    throw new Error('User not found')
+  }
+  const isPasswordValid = bcrypt.compareSync(
+    currentPassword,
+    user.hashed_password
+  )
+  if (!isPasswordValid) {
+    throw new Error('Invalid current password')
+  }
+}
+
 const removeOldPasswords = (db, userId) => {
   const deleteQuery = `
     DELETE FROM ${tableName}
@@ -66,17 +81,23 @@ const insertPasswordRecord = {
       const { fields: queryFields } = req.body
       queryFields.createdAt = new Date().toISOString()
 
-      const { userId, password } = queryFields
+      const { userId, currentPassword, password } = queryFields
+
+      // if currentPassword present, validate it
+      if (currentPassword !== undefined) {
+        validateCurrentPassword(mainDb, userId, currentPassword)
+      }
 
       await passwordValidationSchema.validate(password)
-
       checkAgainstLastFivePassowrds(securityDb, userId, password)
       removeOldPasswords(securityDb, userId)
 
       queryFields.password = bcrypt.hashSync(password)
 
       const fields = Object.fromEntries(
-        Object.entries(queryFields).filter(([_, value]) => value !== null)
+        Object.entries(queryFields).filter(
+          ([name, value]) => (value !== null) & (name !== 'currentPassword')
+        )
       )
 
       const fieldsString = Object.keys(fields).join(', ')

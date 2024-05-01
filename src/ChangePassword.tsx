@@ -81,7 +81,7 @@ const ChangePassword = ({
             currentPassword,
             userId: user.id as number
           })
-          if (res.status === 200) {
+          if (res.status === 201) {
             setOpenChangePasswordModal(false)
             const res = await deleteUpdateBefore({
               userId: user.id as number
@@ -97,7 +97,7 @@ const ChangePassword = ({
               resource: constants.R_USERS,
               activityType: AuditType.CHANGE_PASSWORD,
               dataId: user.id as number,
-              activityDetail: 'User Password Changed',
+              activityDetail: 'User Password Changed (forced change)',
               securityRelated: true,
               subjectResource: null,
               subjectId: null
@@ -110,7 +110,7 @@ const ChangePassword = ({
             currentPassword,
             userId: user.id as number
           })
-          if (res.status === 200) {
+          if (res.status === 201) {
             setOpenChangePasswordModal(false)
             await audit({
               resource: constants.R_USERS,
