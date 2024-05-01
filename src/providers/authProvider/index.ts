@@ -76,8 +76,9 @@ const createUserToken = async (
 //     previousData
 //   })
 // }
-const BASE_URL = process.env.API_BASE_URL_KEY ?? 'http://localhost:8000'
+const BASE_URL = process.env.NODE_ENV === 'development' ?? 'http://localhost:8000'
 const fetchUser = async (username: string): Promise<any> => {
+
   const user = await axios.get(
     `${BASE_URL}/api/tables/_users/rows?_filters=username:${username}`
   )
