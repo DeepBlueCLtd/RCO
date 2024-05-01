@@ -1,5 +1,3 @@
-
--- MARKER
 -- "_revoked_refresh_tokens" definition
 CREATE TABLE _revoked_refresh_tokens (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +31,7 @@ CREATE TABLE catCave (
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
 	PRIMARY KEY("id")
-);
+) WITHOUT ROWID;
 
 -- catCode definition
 CREATE TABLE catCode (
@@ -41,7 +39,7 @@ CREATE TABLE catCode (
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
 	PRIMARY KEY("id")
-);
+) WITHOUT ROWID;
 
 -- catHandle definition
 CREATE TABLE catHandle (
@@ -49,7 +47,7 @@ CREATE TABLE catHandle (
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
 	PRIMARY KEY("id")
-);
+) WITHOUT ROWID;
 
 -- configData definition
 CREATE TABLE configData (
@@ -70,7 +68,7 @@ CREATE TABLE department (
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
 	PRIMARY KEY("id")
-);
+) WITHOUT ROWID;
 
 -- mediaType definition
 CREATE TABLE mediaType (
@@ -87,7 +85,7 @@ CREATE TABLE organisation (
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
 	PRIMARY KEY("id")
-);
+) WITHOUT ROWID;
 
 -- platform definition
 CREATE TABLE platform (
@@ -111,7 +109,7 @@ CREATE TABLE vault (
 	"name" TEXT NOT NULL,
 	"active" INTEGER NOT NULL,
 	PRIMARY KEY("id")
-);
+) WITHOUT ROWID;
 
 -- vaultLocation definition
 CREATE TABLE vaultLocation (
