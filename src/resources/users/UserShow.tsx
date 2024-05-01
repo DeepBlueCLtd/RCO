@@ -520,6 +520,8 @@ export default function UserShow(): React.ReactElement {
     setEditPasswordOpen(false)
   }
 
+  const rolesThatCanEditPassword = ['rco-user', 'rco-power-user']
+
   return (
     <Show
       resource={constants.R_USERS}
@@ -527,7 +529,8 @@ export default function UserShow(): React.ReactElement {
         <TopToolbar sx={{ display: 'flex', alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
             {hasWriteAccess && <EditButton />}
-            {userDetails?.userRole === 'rco-power-user' ? (
+            {userDetails &&
+            rolesThatCanEditPassword.includes(userDetails.userRole) ? (
               <Button
                 onClick={handleEditPasswordOpen}
                 sx={{ fontSize: '12px' }}>
