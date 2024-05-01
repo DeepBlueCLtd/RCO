@@ -1,3 +1,4 @@
+PRAGMA foreign_keys = ON;
 
 -- "_revoked_refresh_tokens" definition
 CREATE TABLE _revoked_refresh_tokens (
