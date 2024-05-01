@@ -143,8 +143,8 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
           await audit({
             resource: constants.R_USERS,
             activityType: AuditType.EDIT_PASSWORD,
-            dataId: user?.id as number | null,
-            activityDetail: 'Edit User Password',
+            dataId: parseInt(id),
+            activityDetail: 'Edit (other) User Password',
             securityRelated: true,
             subjectResource: null,
             subjectId: null
