@@ -1,6 +1,7 @@
 import axios, { type AxiosResponse } from 'axios'
 import * as constants from '../../constants'
-const BASE_URL = process.env.NODE_ENV === 'development' ?? 'http://localhost:8000'
+const BASE_URL =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : ''
 
 const getRoleId = async (role: string): Promise<number | undefined> => {
   return await axios
