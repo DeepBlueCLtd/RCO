@@ -26,6 +26,7 @@ import { type AxiosError, isAxiosError } from 'axios'
 import { AuditType } from './utils/activity-types'
 import { trackEvent } from './utils/audit'
 import { encryptData } from './utils/encryption'
+import FlexBox from './components/FlexBox'
 
 interface ChangePasswordForm {
   currentPassword: string
@@ -62,6 +63,10 @@ const ChangePassword = ({
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+
+  const handleClose = (): void => {
+    setOpenChangePasswordModal(false)
+  }
 
   const { notify } = useContext(NotificationContext)
 
@@ -239,9 +244,17 @@ const ChangePassword = ({
                 )
               }}
             />
-            <Button type='submit' variant='contained' sx={buttonPrimaryStyle}>
-              Submit
-            </Button>
+            <FlexBox marginTop='20px'>
+              <Button type='submit' variant='contained' sx={buttonPrimaryStyle}>
+                Submit
+              </Button>
+              <Button
+                variant='outlined'
+                color='secondary'
+                onClick={handleClose}>
+                Cancel
+              </Button>
+            </FlexBox>
           </form>
         </Box>
       </Modal>
