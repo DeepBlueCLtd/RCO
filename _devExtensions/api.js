@@ -151,7 +151,7 @@ const editPassword = {
 }
 const updateBefore = {
   method: 'POST',
-  path: '/api/updateBefore',
+  path: '/api/update-before',
   handler: updateBeforeController
 }
 
