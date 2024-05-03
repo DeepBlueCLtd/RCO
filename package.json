@@ -9,7 +9,7 @@
   "scripts": {
     "build:prod": "yarn build",
     "build:test": "cross-env VAL_TEST=true yarn build",
-    "serve": "yarn run check-dist && port=$1 && soul --d ./db/RCO2.sqlite --e $(realpath ./_extensions) --a --ts ADD_YOUR_SECRET_HERE --atet 15m --rtet 60m --c http://localhost:5173,http://127.0.0.1:5173",
+    "serve": "yarn run check-dist && port=$1 && dotenv -- cross-var soul  --d ./db/RCO2.sqlite --e $(realpath ./_extensions) --a --ts %TOKEN_SECRET% --atet 15m --rtet 60m --c http://localhost:5173,http://127.0.0.1:5173",
     "dev": "cross-env NODE_ENV=development vite --open",
     "dev:mock": "cross-env MOCK=true vite --open",
     "build": "tsc && vite build",
@@ -41,6 +41,7 @@
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^8.1.0",
     "cross-env": "^7.0.3",
+    "cross-var": "^1.1.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
     "luxon": "^3.3.0",
