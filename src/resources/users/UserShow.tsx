@@ -204,7 +204,7 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
         p: 4
       }}>
       <Typography>
-        <b>Edit User Password</b>
+        <b>Provide Temporary Password</b>
       </Typography>
       <Typography>
         The password should include these items:
@@ -214,6 +214,8 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
           <li>At least one digit</li>
           <li>At least one special character</li>
         </ul>
+        The temporary password will be valid for one hour. If not updated in
+        that time a new one must be provided.
       </Typography>
       <SimpleForm toolbar={false}>
         <TextInput
