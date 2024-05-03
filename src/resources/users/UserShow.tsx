@@ -204,7 +204,7 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
         p: 4
       }}>
       <Typography>
-        <b>Edit User Password</b>
+        <b>Provide Temporary Password</b>
       </Typography>
       <Typography>
         The password should include these items:
