@@ -3,7 +3,8 @@ const express = require('express')
 const {
   insertPasswordRecord,
   login,
-  editPassword
+  editPassword,
+  updateBefore
 } = require('../_devExtensions/api')
 
 const getIp = {
@@ -29,5 +30,6 @@ module.exports = {
   rcoClient,
   insertPasswordRecord,
   login,
-  editPassword
+  editPassword,
+  updateBefore
 }
