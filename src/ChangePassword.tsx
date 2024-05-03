@@ -63,6 +63,10 @@ const ChangePassword = ({
     resolver: yupResolver(schema)
   })
 
+  const handleClose = (): void => {
+    setOpenChangePasswordModal(false)
+  }
+
   const { notify } = useContext(NotificationContext)
 
   const onSubmit = async (data: ChangePasswordForm): Promise<void> => {
@@ -241,6 +245,9 @@ const ChangePassword = ({
             />
             <Button type='submit' variant='contained' sx={buttonPrimaryStyle}>
               Submit
+            </Button>
+            <Button variant='outlined' color='secondary' onClick={handleClose}>
+              Cancel
             </Button>
           </form>
         </Box>
