@@ -97,12 +97,14 @@ interface DeleteUpdateBefore {
 export const deleteUpdateBefore = async ({
   userId
 }: DeleteUpdateBefore): Promise<AxiosResponse> => {
+  console.log('In deleteUpdateBefore 1')
   const res = await axios.post(
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8000/api/updateBefore'
       : '/api/updateBefore',
     { data: { userId } }
   )
+  console.log('In deleteUpdateBefore 2')
   return res
 }
 
