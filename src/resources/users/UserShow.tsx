@@ -214,6 +214,8 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
           <li>At least one digit</li>
           <li>At least one special character</li>
         </ul>
+        The temporary password will be valid for one hour. If not updated in
+        that time a new one must be provided.
       </Typography>
       <SimpleForm toolbar={false}>
         <TextInput
