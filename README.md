@@ -23,6 +23,7 @@ As the data sample grows, the trend line will become more valuable.
 - run `yarn serve` on host device
 
 ## Build test application
+
 It is possible to produce a build of VAL that cosmetically changes the color scheme and application title to make it clear that this is a test instance, not a production instance.
 
 - run `yarn build:test` to create test instance
@@ -51,3 +52,7 @@ It is possible to produce a build of VAL that cosmetically changes the color sch
 ### Run the application (production)
 
 - Run command `yarn serve:soul` in root project folder
+
+## Note
+
+When running the `serve` or `serve:dev` commands, `soul-cli` executes and passes most of the keys to the `soul` commands, such as `PORT`, `DB`, `TOKEN_EXPIRATION_TIME`, and others. However, please note that, for security reasons, the `TOKEN_SECRET` key is extracted from the environment variables.
