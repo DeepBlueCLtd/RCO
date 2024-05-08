@@ -55,5 +55,7 @@ It is possible to produce a build of VAL that cosmetically changes the color sch
 
 ## Note
 
-When running the `serve` or `serve:dev` commands, `soul-cli` executes and passes most of the keys to the `soul` commands, such as `PORT`, `DB`, `TOKEN_EXPIRATION_TIME`, and others.
-However, please note that, for security reasons, the `TOKEN_SECRET` key is extracted from the environment variables.
+When running the `serve` or `serve:dev` commands, `soul-cli` executes and passes most of the keys
+to the `soul` commands, such as `PORT`, `DB`, `TOKEN_EXPIRATION_TIME`, and others.
+However, please note that, for security reasons, the `TOKEN_SECRET` key is extracted
+from the environment variables.
