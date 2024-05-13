@@ -40,6 +40,7 @@
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^8.1.0",
+    "cross-env": "^7.0.3",
     "cross-var": "^1.1.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
