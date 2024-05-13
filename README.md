@@ -59,4 +59,4 @@ When running the `serve` or `serve:dev` commands, `soul-cli` executes and passes
 most of the keys to the `soul` commands,
 such as `PORT`, `DB`, `TOKEN_EXPIRATION_TIME`, and others.
 However, please note that, for security reasons, the `TOKEN_SECRET` key is extracted
-from the environment variables.
+from the environment variables, or the `.env` file in the VAL installation folder.  An example of the `.env` file is provided [here](https://github.com/DeepBlueCLtd/RCO/blob/main/.env).
