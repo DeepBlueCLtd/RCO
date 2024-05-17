@@ -284,6 +284,49 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           <MenuItem value='3'>RCO Power User</MenuItem>
         </Select>
       </FormControl>
+      <Typography
+        sx={{
+          marginTop: '30px',
+          marginBottom: '-20px',
+          fontSize: '14px'
+        }}>
+        <p>
+          <span
+            style={{
+              fontWeight: '600',
+              fontSize: '18px'
+            }}>
+            User Role
+          </span>{' '}
+          The above user roles have these permissions in VAL:
+          <ul>
+            <li>
+              <b>None</b> this user can log into VAL, but cannot make any
+              changes to any data
+            </li>
+            <li>
+              <b>RCO-User</b> can perform all VAL processes (including setting
+              temporary passwords), with the exception of editing some rarely
+              changing drop-down lists
+            </li>
+            <li>
+              <b>RCO-Power-User</b> can perform all processes of RCO-User, plus
+              can modify drop-down lists (such as media-type or vault-location)
+            </li>
+          </ul>
+        </p>
+        <p>
+          <span
+            style={{
+              fontWeight: '600',
+              fontSize: '18px'
+            }}>
+            Departure Date
+          </span>{' '}
+          This is the date when the user will no longer be able to log into VAL.
+          If the user needs to be reactivated, this date can be updated.
+        </p>
+      </Typography>
     </SimpleForm>
   )
 }
