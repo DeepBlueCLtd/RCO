@@ -284,6 +284,27 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           <MenuItem value='3'>RCO Power User</MenuItem>
         </Select>
       </FormControl>
+      <Typography
+        sx={{
+          marginTop: '30px',
+          marginBottom: '-20px',
+          fontSize: '14px'
+        }}>
+        <span
+          style={{
+            fontWeight: '600',
+            fontSize: '18px'
+          }}>
+          Important Note:
+        </span>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, sapiente
+        eos eaque similique molestias itaque quisquam quaerat nostrum
+        accusantium harum fuga officiis fugit placeat quod? Repudiandae at modi
+        tenetur ullam!Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        Aut, sapiente eos eaque similique molestias itaque quisquam quaerat
+        nostrum accusantium harum fuga officiis fugit placeat quod? Repudiandae
+        at modi tenetur ullam!
+      </Typography>
     </SimpleForm>
   )
 }
