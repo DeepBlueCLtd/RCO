@@ -40,8 +40,17 @@ export default function DestroyRestoreItems(props: Props): React.ReactElement {
         activityType: AuditType.EDIT,
         activityDetail: 'Remove item from destruction',
         securityRelated: false,
-        resource: constants.R_ITEMS,
+        dataId: destruction,
+        resource: constants.R_DESTRUCTION,
+        subjectId: id,
+        subjectResource: constants.R_ITEMS
+      })
+      await audit({
+        activityType: AuditType.EDIT,
+        activityDetail: 'Remove item from destruction',
+        securityRelated: false,
         dataId: id,
+        resource: constants.R_ITEMS,
         subjectId: destruction,
         subjectResource: constants.R_DESTRUCTION
       })
