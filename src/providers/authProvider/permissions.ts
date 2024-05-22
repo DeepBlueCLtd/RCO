@@ -65,9 +65,15 @@ const mapPermissions = (
       write: true,
       delete: false
     }
-  } else {
+  } else if (permissions[0]?.role_id === 2) {
     mappedPermissions['reference-data'] = {
       read: true,
+      write: false,
+      delete: false
+    }
+  } else if (permissions[0]?.role_id === 1) {
+    mappedPermissions['reference-data'] = {
+      read: false,
       write: false,
       delete: false
     }
