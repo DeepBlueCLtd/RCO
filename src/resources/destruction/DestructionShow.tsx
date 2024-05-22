@@ -31,6 +31,7 @@ import { AuditType } from '../../utils/activity-types'
 import HistoryButton from '../../components/HistoryButton'
 import { type AuditData } from '../../utils/audit'
 import { ConditionalDateField } from '../dispatch/DispatchList'
+import { getUser } from '../../providers/authProvider'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -83,7 +84,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const hasWritePermission = hasAccess(constants.R_ITEMS, { write: true })
   const { data } = useGetIdentity()
   const { handleOpen, destroy } = props
-
+  const user = getUser()
   const destroyed: boolean =
     !hasWritePermission ||
     (typeof record?.finalisedAt !== 'undefined' &&
@@ -107,24 +108,30 @@ const Footer = (props: FooterProps): React.ReactElement => {
   }
 
   if (typeof record === 'undefined') return <></>
-
+  const DestructionCetificateAndDestoryCanAccessBy = [
+    'rco-user',
+    'rco-power-user'
+  ]
   return (
     <>
-      <FlexBox justifyContent='end' padding={2}>
-        <Button
-          variant='outlined'
-          label='Destruction Certificate'
-          onClick={() => {
-            handleOpen('report')
-          }}
-        />
-        <Button
-          variant='contained'
-          label='Destroy'
-          disabled={destroyed || !record.reportPrintedAt}
-          onClick={handleDestroy}
-        />
-      </FlexBox>
+      {user &&
+      DestructionCetificateAndDestoryCanAccessBy.includes(user.userRole) ? (
+        <FlexBox justifyContent='end' padding={2}>
+          <Button
+            variant='outlined'
+            label='Destruction Certificate'
+            onClick={() => {
+              handleOpen('report')
+            }}
+          />
+          <Button
+            variant='contained'
+            label='Destroy'
+            disabled={destroyed || !record.reportPrintedAt}
+            onClick={handleDestroy}
+          />
+        </FlexBox>
+      ) : null}
       <Confirm
         open={open}
         onClose={() => {
