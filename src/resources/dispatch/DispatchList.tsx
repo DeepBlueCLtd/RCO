@@ -90,10 +90,10 @@ const BulkActions = (): React.ReactElement => {
       type: 'success'
     })
   }
-  const rolesThatCanEditPassword = ['rco-user', 'rco-power-user']
+  const rolesThatCanCreateReceiptNote = ['rco-user', 'rco-power-user']
   return (
     <FlexBox>
-      {user && rolesThatCanEditPassword.includes(user.userRole) ? (
+      {user && rolesThatCanCreateReceiptNote.includes(user.userRole) ? (
         <Button
           disabled={!showReceiptButton}
           onClick={receiptReceived as any}

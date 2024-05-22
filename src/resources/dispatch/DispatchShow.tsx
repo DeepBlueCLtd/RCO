@@ -148,10 +148,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   }
 
   if (typeof record === 'undefined') return <></>
-  const rolesThatCanEditPassword = ['rco-user', 'rco-power-user']
+  const rolesThatCanCreateReceiptNote = ['rco-user', 'rco-power-user']
   return (
     <>
-      {user && rolesThatCanEditPassword.includes(user.userRole) ? (
+      {user && rolesThatCanCreateReceiptNote.includes(user.userRole) ? (
         <FlexBox flexDirection='column' gap='6px' marginBottom='20px'>
           <FlexBox justifyContent='space-around'>
             <Button
