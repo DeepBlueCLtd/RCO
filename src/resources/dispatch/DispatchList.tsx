@@ -21,6 +21,7 @@ import NullUndefinedFilter from '../../components/NullUndefinedFilter'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import { useEffect, useState } from 'react'
+import { getUser } from '../../providers/authProvider'
 
 const filters = [
   <SearchInput source='q' key='q' alwaysOn />,
@@ -47,6 +48,7 @@ const BulkActions = (): React.ReactElement => {
   const refresh = useRefresh()
   const notify = useNotify()
   const audit = useAudit()
+  const user = getUser()
   const { data } = useGetMany<Dispatch>(constants.R_DISPATCH, {
     ids: selectedIds
   })
@@ -88,10 +90,10 @@ const BulkActions = (): React.ReactElement => {
       type: 'success'
     })
   }
-
+  const rolesThatCanCreateReceiptNote = ['rco-user', 'rco-power-user']
   return (
-    <>
-      <FlexBox>
+    <FlexBox>
+      {user && rolesThatCanCreateReceiptNote.includes(user.userRole) ? (
         <Button
           disabled={!showReceiptButton}
           onClick={receiptReceived as any}
@@ -99,8 +101,8 @@ const BulkActions = (): React.ReactElement => {
           variant='outlined'>
           Receipt Note Received
         </Button>
-      </FlexBox>
-    </>
+      ) : null}
+    </FlexBox>
   )
 }
 
