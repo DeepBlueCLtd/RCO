@@ -200,6 +200,8 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
+      // NOTE: we just do superficial check of auth here,
+      // because every backend interaction includes auth validation
       await Promise.resolve()
       const token = localStorage.getItem(constants.ACCESS_TOKEN_KEY)
       token !== undefined
