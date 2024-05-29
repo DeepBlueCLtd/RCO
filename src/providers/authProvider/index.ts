@@ -200,12 +200,11 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       await Promise.resolve()
     },
     checkAuth: async (): Promise<void> => {
-      // await Promise.resolve()
-      // const token = getUser()
-      // token !== undefined
-      //   ? await Promise.resolve(true)
-      //   : await Promise.reject(new Error('Token not found'))
-      await Promise.resolve(true)
+      await Promise.resolve()
+      const token = localStorage.getItem(constants.ACCESS_TOKEN_KEY)
+      token !== undefined
+        ? await Promise.resolve(true)
+        : await Promise.reject(new Error('Token not found'))
     },
     checkError: async (error): Promise<any> => {
       const status = error.status
