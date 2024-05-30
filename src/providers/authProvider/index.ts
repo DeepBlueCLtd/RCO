@@ -26,10 +26,6 @@ const getCookie = (name: string): string | null => {
 }
 
 const setToken = (token: string): void => {
-  // const date = new Date()
-  // date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
-  // const expires = date.toUTCString()
-  // document.cookie = `${constants.TOKEN_KEY}=${token}; expires=${expires}; path=/ `
   localStorage.setItem(constants.ACCESS_TOKEN_KEY, token)
 }
 
@@ -65,17 +61,6 @@ const createUserToken = async (
   })
 }
 
-// const updateLockouAttempts = async (
-//   val: number,
-//   dataProvider: DataProvider,
-//   previousData: _Users
-// ): Promise<void> => {
-//   await dataProvider.update<_Users>(constants.R_USERS, {
-//     id: previousData.id,
-//     data: { lockoutAttempts: val },
-//     previousData
-//   })
-// }
 const BASE_URL =
   process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : ''
 const fetchUser = async (username: string): Promise<any> => {
@@ -109,70 +94,6 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
       username: string
       password: string
     }) => {
-      // if (process.env.MOCK) {
-      //   const data = await dataProvider.getList<_Users>(constants.R_USERS, {
-      //     sort: { field: 'id', order: 'ASC' },
-      //     pagination: { page: 1, perPage: 1 },
-      //     filter: { username }
-      //   })
-      //   const foundUser = data.data.find((item) => item.username === username)
-      //   const userRole = await fetchUserRoleId(foundUser?.id as number)
-      //   const user = { ...foundUser, userRole } as _UserWithRole
-      //   if (user !== undefined) {
-      //     const hasUserDeparted =
-      //       user.departedDate !== undefined &&
-      //       user.departedDate !== null &&
-      //       checkIfDateHasPassed(user.departedDate)
-
-      //     if (user.lockoutAttempts >= 5) {
-      //       throw new Error(
-      //         `Your account is locked. Please contact your administrator (' ${user.lockoutAttempts} ')`
-      //       )
-      //     }
-
-      //     if (
-      //       user.hashed_password &&
-      //       bcrypt.compareSync(password, user.hashed_password) &&
-      //       !hasUserDeparted
-      //     ) {
-      //       await updateLockouAttempts(0, dataProvider, user)
-      //       await createUserToken(user, userRole, audit)
-      //       return await Promise.resolve(data)
-      //     } else if (
-      //       !user.hashed_password &&
-      //       password === user.username &&
-      //       !hasUserDeparted
-      //     ) {
-      //       await updateLockouAttempts(0, dataProvider, user)
-      //       await createUserToken(user, userRole, audit)
-      //     } else if (hasUserDeparted) {
-      //       throw new Error('User has departed organisation')
-      //     } else {
-      //       await updateLockouAttempts(
-      //         user.lockoutAttempts + 1,
-      //         dataProvider,
-      //         user
-      //       )
-      //       throw new Error('Wrong password')
-      //     }
-      //   } else {
-      //     throw new Error('Wrong username')
-      //   }
-      // } else {
-      //   try {
-      //     await login({ password, username })
-      //     const user = await fetchUser(username)
-      //     const userRole = await fetchUserRoleId(user?.id)
-      //     await createUserToken(user, userRole, audit)
-      //     sessionStorage.setItem('login', 'true')
-      //     return await Promise.resolve(user)
-      //   } catch (error) {
-      //     if (isAxiosError(error))
-      //       throw new Error(getErrorDetails(error).message)
-      //     throw new Error((error as Error).message)
-      //   }
-      // }
-
       try {
         await login({ password, username })
         const user: _UserWithRole = await fetchUser(username)
@@ -225,20 +146,6 @@ const authProvider = (dataProvider: DataProvider): AuthProvider => {
         return userIdentity
       } else return await Promise.reject(new Error('user not found'))
     },
-
-    // getPermissions: async () => {
-    //   try {
-    //     const user = getUser()
-    //     if (user !== undefined) {
-    //       const permissions = await getPermissionsByRoles(user.role)
-    //       return await Promise.resolve(permissions)
-    //     } else {
-    //       throw new Error('You are not a registered user.')
-    //     }
-    //   } catch (error) {
-    //     throw new Error('You are not a registered user.')
-    //   }
-    // }
 
     getPermissions: async () => {
       try {
