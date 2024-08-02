@@ -639,6 +639,11 @@ export default function ItemList(
       }
     }
   }
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('RaStore.items-items-list');
+    }; 
+  }, [location.pathname]); 
 
   useEffect(() => {
     if (configData?.projectName) {
