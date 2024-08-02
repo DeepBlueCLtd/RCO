@@ -640,10 +640,9 @@ export default function ItemList(
     }
   }
   useEffect(() => {
-    return () => {
-      localStorage.removeItem('RaStore.items-items-list');
-    }; 
-  }, [location.pathname]); 
+    localStorage.removeItem('RaStore.items-items-list');
+    localStorage.removeItem("RaStore.richItem.selectedIds")
+  }, [location.pathname]);
 
   useEffect(() => {
     if (configData?.projectName) {
