@@ -9,7 +9,7 @@ import {
 } from 'react-admin'
 import useRowClick from '../hooks/useRowClick'
 import { type ResourceTypes } from '../constants'
-import { Preview } from '@mui/icons-material'
+import { Preview, Link } from '@mui/icons-material'
 import { ButtonBase } from '@mui/material'
 
 const PreviewButton = ({
@@ -22,17 +22,21 @@ const PreviewButton = ({
   const createPath = useCreatePath()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    if (event.ctrlKey || event.button === 1) {
-      window.open(`/#/${resource}/${id}/show`, '_blank')
+    if (resource === 'richItem') {
+      if (event.ctrlKey || event.button === 1) {
+        window.open(`/#/${resource}/${id}/show`, '_blank')
+      }
     } else {
-      const path = createPath({ resource, type: 'show', id })
-      redirect(path)
+      if (!(event.ctrlKey || event.button === 1)) {
+        const path = createPath({ resource, type: 'show', id })
+        redirect(path)
+      }
     }
   }
 
   return (
     <ButtonBase onClick={handleClick}>
-      <Preview />
+      {resource === 'richItem'  ? <Link /> : <Preview />}
     </ButtonBase>
   )
 }
