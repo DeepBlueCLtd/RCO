@@ -258,9 +258,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           <Typography
             sx={{
               color: 'red',
-              fontSize: '14px',
-              marginTop: '-25px',
-              marginBottom: '25px'
+              fontSize: '14px'
             }}>
             {passwordText}
           </Typography>
@@ -296,8 +294,36 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
               fontWeight: '600',
               fontSize: '18px'
             }}>
-            User Role
+            Departure Date
           </span>{' '}
+          This is the date when the user will no longer be able to log into VAL.
+          If the user needs to be reactivated, this date can be updated.
+        </p>
+
+        <p>
+          <span
+            style={{
+              fontWeight: '600',
+              fontSize: '18px'
+            }}>
+            Password
+          </span>{' '}
+          The password should include these items:
+          <ul>
+            <li>At least 10 characters in length</li>
+            <li>Upper and lower case letters</li>
+            <li>At least one digit</li>
+            <li>At least one special character</li>
+          </ul>
+        </p>
+        <p>
+          <span
+            style={{
+              fontWeight: '600',
+              fontSize: '18px'
+            }}>
+            User Role
+          </span>
           The above user roles have these permissions in VAL:
           <ul>
             <li>
@@ -314,17 +340,6 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
               can modify drop-down lists (such as media-type or vault-location)
             </li>
           </ul>
-        </p>
-        <p>
-          <span
-            style={{
-              fontWeight: '600',
-              fontSize: '18px'
-            }}>
-            Departure Date
-          </span>{' '}
-          This is the date when the user will no longer be able to log into VAL.
-          If the user needs to be reactivated, this date can be updated.
         </p>
       </Typography>
     </SimpleForm>
