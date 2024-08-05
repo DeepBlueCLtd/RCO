@@ -20,15 +20,12 @@ const PreviewButton = ({
   const { id } = useRecordContext()
   const redirect = useRedirect()
   const createPath = useCreatePath()
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleClick = (): void => {
     if (resource === 'richItem') {
       window.open(`/#/${resource}/${id}/show`, '_blank');
     }
-    if (!(event.ctrlKey || event.button === 1)) {
       const path = createPath({ resource, type: 'show', id });
-      redirect(path);
-    }
+      redirect(path);    
   };
 
   return (
