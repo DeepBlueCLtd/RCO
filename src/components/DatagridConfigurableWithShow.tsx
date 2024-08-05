@@ -23,14 +23,13 @@ const PreviewButton = ({
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     if (resource === 'richItem') {
-        window.open(`/#/${resource}/${id}/show`, '_blank') 
-    } else {
-      if (!(event.ctrlKey || event.button === 1)) {
-        const path = createPath({ resource, type: 'show', id })
-        redirect(path)
-      }
+      window.open(`/#/${resource}/${id}/show`, '_blank');
     }
-  }
+    if (!(event.ctrlKey || event.button === 1)) {
+      const path = createPath({ resource, type: 'show', id });
+      redirect(path);
+    }
+  };
 
   return (
     <ButtonBase onClick={handleClick}>
