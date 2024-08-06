@@ -23,6 +23,7 @@ const PreviewButton = ({
   const handleClick = (): void => {
     if (resource === 'richItem') {
       window.open(`/#/${resource}/${id}/show`, '_blank');
+     return
     }
       const path = createPath({ resource, type: 'show', id });
       redirect(path);    
