@@ -85,7 +85,7 @@ const commonPatterns = [
   'nasa'
 ]
 
-const common = yup
+export const common = yup
   .string()
   .required('Password is required')
   .min(10, 'Password must be at least 10 characters long')

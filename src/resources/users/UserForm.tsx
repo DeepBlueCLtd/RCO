@@ -26,11 +26,11 @@ import axios from 'axios'
 import { R_USERS } from '../../constants'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
-import { passwordValidationSchema } from '../../utils/password-validation.schema'
+import { common } from '../../utils/password-validation.schema'
 
 const schema = yup.object({
   name: yup.string().required(),
-  password: passwordValidationSchema
+  password: common
 })
 
 type UpdateUserRoleFunction = () => Promise<void>

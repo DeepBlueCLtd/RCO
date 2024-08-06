@@ -51,8 +51,10 @@ import { DateTime } from 'luxon'
 import useAudit, { type AuditFunction } from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import LockResetIcon from '@mui/icons-material/LockReset'
-import axios, { type AxiosError, isAxiosError } from 'axios'
+import axios, { isAxiosError } from 'axios'
+import * as Yup from 'yup';
 import { getUser } from '../../providers/authProvider'
+import { common } from '../../utils/password-validation.schema'
 const style = {
   position: 'absolute',
   top: '50%',
@@ -128,67 +130,49 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
   const notify = useNotify()
   const user = getUser()
 
-  const handleEditPassword = (): void => {
-    if (!id || user?.id.toString() === id) {
-      notify('User cannot edit own password.', { type: 'error' })
-      return
-    }
+  const handleEditPassword = async (): Promise<void> => {
+    try {
+      await common.validate(password);
+      setPassword('')
+      if (!id || user?.id.toString() === id) {
+        notify('User cannot edit own password.', { type: 'error' });
+        return;
+      }
 
-    editUserPassowrd({
-      newPassword: password,
-      userId: parseInt(id)
-    })
-      .then(async (res) => {
-        if (res.status === 201) {
-          await audit({
-            resource: constants.R_USERS,
-            activityType: AuditType.EDIT_PASSWORD,
-            dataId: parseInt(id),
-            activityDetail: 'Edit (other) User Password',
-            securityRelated: true,
-            subjectResource: null,
-            subjectId: null
-          })
-          notify(res.data.message, { type: 'success' })
-          handleClose()
+      const response = await editUserPassowrd({
+        newPassword: password,
+        userId: parseInt(id)
+      });
+
+      if (response.status === 201) {
+        await audit({
+          resource: constants.R_USERS,
+          activityType: AuditType.EDIT_PASSWORD,
+          dataId: parseInt(id),
+          activityDetail: 'Edit (other) User Password',
+          securityRelated: true,
+          subjectResource: null,
+          subjectId: null
+        });
+        notify(response.data.message, { type: 'success' });
+        handleClose();
+      }
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setPasswordError(error.message);
+      } else {
+        if (isAxiosError(error)) {
+          notify(getErrorDetails(error).message, { type: 'error' });
+        } else {
+          notify((error as Error).message, { type: 'error' });
         }
-      })
-      .catch((err) => {
-        if (isAxiosError(err))
-          notify(getErrorDetails(err as AxiosError).message, { type: 'error' })
-        else notify((err as Error).message, { type: 'error' })
-      })
-  }
+      }
+    }
+  };
 
   const handleClickShowPassword = (): void => {
-    setShowPassword((show) => !show)
-  }
-
-  const validatePassword = (value: string | string[]): void => {
-    if (typeof value !== 'string') {
-      setPasswordError('')
-      return
-    }
-    if (value.length < 10) {
-      setPasswordError('Password must be at least 10 characters long.')
-      return
-    }
-    if (!/[A-Z]/.test(value) || !/[a-z]/.test(value)) {
-      setPasswordError(
-        'Password must contain both uppercase and lowercase letters.'
-      )
-      return
-    }
-    if (!/\d/.test(value)) {
-      setPasswordError('Password must contain at least one digit.')
-      return
-    }
-    if (!/[^a-zA-Z0-9]/.test(value)) {
-      setPasswordError('Password must contain at least one special character.')
-      return
-    }
-    setPasswordError('')
-  }
+    setShowPassword((show) => !show);
+  };
 
   return (
     <Box
@@ -233,10 +217,18 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
               </InputAdornment>
             )
           }}
-          onChange={(e) => {
-            const value = e.target.value
-            setPassword(value as string)
-            validatePassword(value as string)
+          onChange={async (e) => {
+            const value = e.target.value;
+            setPassword(value);
+            try {
+              await common.validate(value);
+              setPasswordError('');
+            } catch (error) {
+              // debugger
+              if (error instanceof Yup.ValidationError) {
+                setPasswordError(error.message);
+              }
+            }
           }}
           error={Boolean(passwordError)}
           helperText={
