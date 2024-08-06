@@ -218,7 +218,7 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
             )
           }}
           onChange={async (e) => {
-            const value = e.target.value;
+            const value = e.target.value as string;
             setPassword(value);
             try {
               await common.validate(value);
