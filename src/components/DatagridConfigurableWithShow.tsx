@@ -7,7 +7,6 @@ import {
   useCreatePath,
   useListContext
 } from 'react-admin'
-import useRowClick from '../hooks/useRowClick'
 import { type ResourceTypes } from '../constants'
 import { Preview } from '@mui/icons-material'
 import { ButtonBase } from '@mui/material'
@@ -22,12 +21,12 @@ const PreviewButton = ({
   const createPath = useCreatePath()
   const handleClick = (): void => {
     if (resource === 'richItem') {
-      window.open(`/#/${resource}/${id}/show`, '_blank');
-     return
+      window.open(`/#/${resource}/${id}/show`, '_blank')
+      return
     }
-      const path = createPath({ resource, type: 'show', id });
-      redirect(path);    
-  };
+    const path = createPath({ resource, type: 'show', id })
+    redirect(path)
+  }
 
   return (
     <ButtonBase onClick={handleClick}>
@@ -46,7 +45,6 @@ export default function DatagridConfigurableWithShow(
 ): React.ReactElement {
   const { children, resource, storeKey = '', ...rest } = props
 
-  const handleRowClick = useRowClick(resource)
   const { selectedIds } = useListContext()
 
   const itemsStoreKeys = ['filtered-item-list', 'items-items-list']
@@ -69,10 +67,7 @@ export default function DatagridConfigurableWithShow(
   const sx = itemsStoreKeys.includes(storeKey as string) ? styles : null
 
   return (
-    <DatagridConfigurable
-      sx={sx}
-      rowClick={(id) => handleRowClick(id as number)}
-      {...rest}>
+    <DatagridConfigurable sx={sx} {...rest}>
       <PreviewButton resource={resource} />
       {children}
     </DatagridConfigurable>
