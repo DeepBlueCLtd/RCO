@@ -28,7 +28,15 @@ import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 
 const schema = yup.object({
-  name: yup.string().required()
+  name: yup.string().required(),
+  password: yup
+  .string()
+  .required('Password is required')
+  .min(10, 'Password must be at least 10 characters')
+  .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .matches(/\d/, 'Password must contain at least one digit')
+  .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
 })
 
 type UpdateUserRoleFunction = () => Promise<void>
@@ -36,7 +44,6 @@ interface UserDetails {
   name: string
   id: number
   hashed_password?: string
-
   is_superuser: boolean
   username: string
   departedDate: string | null
