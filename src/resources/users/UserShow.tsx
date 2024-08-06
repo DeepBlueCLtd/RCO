@@ -124,7 +124,7 @@ const DepartOrganisation = ({
 
 const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false)
-  const [password, setPassword] = useState<string>('')
+  const [password, setPassword] = React.useState<string>('');
   const [passwordError, setPasswordError] = useState('')
   const { id } = useParams()
   const notify = useNotify()
