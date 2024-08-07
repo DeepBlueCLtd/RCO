@@ -191,14 +191,13 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
         <b>Provide Temporary Password</b>
       </Typography>
       <Typography>
-        The password should include these items:
+        {constants.PASSWORD_INSTRUCTION_TITLE} 
         <ul>
-          <li>At least 10 characters in length</li>
-          <li>Upper and lower case letters</li>
-          <li>At least one digit</li>
-          <li>At least one special character</li>
+          {constants.PASSWORD_VALIDATION_CRITERIA.map((criteria, index) => (
+            <li key={index}>{criteria}</li>
+          ))}
         </ul>
-        The temporary password will be valid for one hour. If not updated in
+         The temporary password will be valid for one hour. If not updated in
         that time a new one must be provided.
       </Typography>
       <SimpleForm toolbar={false}>

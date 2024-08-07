@@ -23,7 +23,7 @@ import FlexBox from '../../components/FlexBox'
 import { DateTime } from 'luxon'
 import axios from 'axios'
 
-import { R_USERS } from '../../constants'
+import { R_USERS, PASSWORD_INSTRUCTION_TITLE, PASSWORD_VALIDATION_CRITERIA } from '../../constants'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import { common } from '../../utils/password-validation.schema'
@@ -130,7 +130,7 @@ const CustomSaveButton: React.FC<{
           onClick={() => {
             if (isEdit) {
               updateUserRole()
-                .then(() => {})
+                .then(() => { })
                 .catch((error) => {
                   console.error('Error updating user role:', error)
                 })
@@ -307,12 +307,11 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           }}>
           Password
         </span>{' '}
-        The password should include these items:
+        {PASSWORD_INSTRUCTION_TITLE}
         <ul>
-          <li>At least 10 characters in length</li>
-          <li>Upper and lower case letters</li>
-          <li>At least one digit</li>
-          <li>At least one special character</li>
+          {PASSWORD_VALIDATION_CRITERIA.map((criteria, index) => (
+            <li key={index}>{criteria}</li>
+          ))}
         </ul>
         <span
           style={{

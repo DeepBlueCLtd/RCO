@@ -1,4 +1,5 @@
 import * as yup from 'yup'
+import { PASSWORD_SPECIAL_CHARACTER } from '../constants'
 
 const commonPatterns = [
   'password',
@@ -94,7 +95,7 @@ export const common = yup
   .matches(/[0-9]/, 'Password must contain at least one numeric digit')
   .matches(
     /[!@#$%^&*(),.?":{}|<>]/,
-    'Special character required - !@#$%^&*(),.?":{}|<>'
+    `${PASSWORD_SPECIAL_CHARACTER}`
   )
   .test(
     'no-common-patterns',
