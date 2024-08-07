@@ -129,12 +129,13 @@ export const cosmeticLabels = {
   [R_PROTECTIVE_MARKING]: 'Protective Marking'
 }
 
-
-export const PASSWORD_INSTRUCTION_TITLE = 'The password should include these items:'
+export const PASSWORD_INSTRUCTION_TITLE =
+  'The password should include these items:'
 export const PASSWORD_VALIDATION_CRITERIA = [
   'At least 10 characters in length',
   'Upper and lower case letters',
   'At least one digit',
   'At least one special character'
-];
-export const PASSWORD_SPECIAL_CHARACTER = 'Special character required - !@#$%^&*(),.?":{}|<>'
+]
+export const PASSWORD_SPECIAL_CHARACTER =
+  'Special character required - !@#$%^&*(),.?":{}|<>'
