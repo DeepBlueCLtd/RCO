@@ -94,7 +94,7 @@ const passwordValidationSchema = yup
   .matches(/[0-9]/, 'Password must contain at least one numeric digit')
   .matches(
     /[!@#$%^&*(),.?":{}|<>]/,
-    `${PASSWORD_SPECIAL_CHARACTER}`
+    'Special character required - !@#$%^&*(),.?":{}|<>'
   )
   .test(
     'no-common-patterns',
