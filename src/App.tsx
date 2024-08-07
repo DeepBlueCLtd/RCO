@@ -408,14 +408,13 @@ function App(): React.ReactElement {
               <p>
                 <b>{resetPasswordTitle}</b>
               </p>
-              <p>The password should include these items:</p>
+              <p>{constants.PASSWORD_INSTRUCTION_TITLE}</p>
             </Typography>
             <Typography>
               <ul>
-                <li>At least 10 characters in length</li>
-                <li>Upper and lower case letters</li>
-                <li>At least one digit</li>
-                <li>At least one special character</li>
+                {constants.PASSWORD_VALIDATION_CRITERIA.map((criteria, index) => (
+                  <li key={index}>{criteria}</li>
+                ))}
               </ul>
             </Typography>
 

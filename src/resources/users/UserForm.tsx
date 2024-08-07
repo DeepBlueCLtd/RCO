@@ -23,12 +23,14 @@ import FlexBox from '../../components/FlexBox'
 import { DateTime } from 'luxon'
 import axios from 'axios'
 
-import { R_USERS } from '../../constants'
+import { R_USERS, PASSWORD_INSTRUCTION_TITLE, PASSWORD_VALIDATION_CRITERIA } from '../../constants'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
+import { common } from '../../utils/password-validation.schema'
 
 const schema = yup.object({
-  name: yup.string().required()
+  name: yup.string().required(),
+  password: common
 })
 
 type UpdateUserRoleFunction = () => Promise<void>
@@ -36,7 +38,6 @@ interface UserDetails {
   name: string
   id: number
   hashed_password?: string
-
   is_superuser: boolean
   username: string
   departedDate: string | null
@@ -129,7 +130,7 @@ const CustomSaveButton: React.FC<{
           onClick={() => {
             if (isEdit) {
               updateUserRole()
-                .then(() => {})
+                .then(() => { })
                 .catch((error) => {
                   console.error('Error updating user role:', error)
                 })
@@ -258,9 +259,7 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           <Typography
             sx={{
               color: 'red',
-              fontSize: '14px',
-              marginTop: '-25px',
-              marginBottom: '25px'
+              fontSize: '14px'
             }}>
             {passwordText}
           </Typography>
@@ -285,47 +284,58 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
         </Select>
       </FormControl>
       <Typography
+        component={'div'}
         sx={{
           marginTop: '30px',
           marginBottom: '-20px',
           fontSize: '14px'
         }}>
-        <p>
-          <span
-            style={{
-              fontWeight: '600',
-              fontSize: '18px'
-            }}>
-            User Role
-          </span>{' '}
-          The above user roles have these permissions in VAL:
-          <ul>
-            <li>
-              <b>None</b> this user can log into VAL, but cannot make any
-              changes to any data
-            </li>
-            <li>
-              <b>RCO-User</b> can perform all VAL processes (including setting
-              temporary passwords), with the exception of editing some rarely
-              changing drop-down lists
-            </li>
-            <li>
-              <b>RCO-Power-User</b> can perform all processes of RCO-User, plus
-              can modify drop-down lists (such as media-type or vault-location)
-            </li>
-          </ul>
-        </p>
-        <p>
-          <span
-            style={{
-              fontWeight: '600',
-              fontSize: '18px'
-            }}>
-            Departure Date
-          </span>{' '}
-          This is the date when the user will no longer be able to log into VAL.
-          If the user needs to be reactivated, this date can be updated.
-        </p>
+        <span
+          style={{
+            fontWeight: '600',
+            fontSize: '18px'
+          }}>
+          Departure Date
+        </span>{' '}
+        This is the date when the user will no longer be able to log into VAL.
+        If the user needs to be reactivated, this date can be updated.
+        <br />
+        <span
+          style={{
+            fontWeight: '600',
+            fontSize: '18px'
+          }}>
+          Password
+        </span>{' '}
+        {PASSWORD_INSTRUCTION_TITLE}
+        <ul>
+          {PASSWORD_VALIDATION_CRITERIA.map((criteria, index) => (
+            <li key={index}>{criteria}</li>
+          ))}
+        </ul>
+        <span
+          style={{
+            fontWeight: '600',
+            fontSize: '18px'
+          }}>
+          User Role
+        </span>{' '}
+        The above user roles have these permissions in VAL:
+        <ul>
+          <li>
+            <b>None</b> this user can log into VAL, but cannot make any changes
+            to any data
+          </li>
+          <li>
+            <b>RCO-User</b> can perform all VAL processes (including setting
+            temporary passwords), with the exception of editing some rarely
+            changing drop-down lists
+          </li>
+          <li>
+            <b>RCO-Power-User</b> can perform all processes of RCO-User, plus
+            can modify drop-down lists (such as media-type or vault-location)
+          </li>
+        </ul>
       </Typography>
     </SimpleForm>
   )
