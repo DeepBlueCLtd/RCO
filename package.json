@@ -9,7 +9,7 @@
   "scripts": {
     "build:prod": "yarn build",
     "build:test": "cross-env VAL_TEST=true yarn build",
-    "serve": "yarn run check-dist && port=$1 && soul  --d ./db/RCO2.sqlite --e $(realpath ./_extensions) --a --atet 15m --rtet 60m --env=$(realpath ./.env) --c http://localhost:5173,http://127.0.0.1:5173",
+    "serve": "yarn run check-dist && soul --p ${PORT:-$1} --h 0.0.0.0 --d ./db/RCO2.sqlite --e $(realpath ./_extensions) --a --atet 15m --rtet 60m --env=$(realpath ./.env) --c http://localhost:${PORT:-$1},http://127.0.0.1:${PORT:-$1}",
     "dev": "cross-env NODE_ENV=development vite --open",
     "dev:mock": "cross-env MOCK=true vite --open",
     "build": "tsc && vite build",
