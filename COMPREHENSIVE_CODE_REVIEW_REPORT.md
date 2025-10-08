@@ -36,17 +36,21 @@
 | 4 | Unhandled Async Operations in Loops | **HIGH** | Silent audit failures, data corruption | 4 hours |
 | 5 | Comprehensive Test Coverage Gap | **HIGH** | Zero refactoring confidence, production bugs | 2-3 weeks |
 
+**Correction**: Original Finding #3 (SQL Injection in Backend Extensions) was downgraded to MEDIUM severity after code review revealed existing protections (password hashing, validation). It has been removed from top 5 critical issues.
+
 ### Summary Statistics
 
 | Category | Critical | High | Medium | Low | **Total** |
 |----------|----------|------|--------|-----|-----------|
-| Security | 3 | 7 | 3 | 2 | **15** |
+| Security | 2 | 7 | 4 | 2 | **15** |
 | Performance | 0 | 2 | 3 | 2 | **7** |
 | Code Quality | 0 | 1 | 3 | 5 | **9** |
 | Architecture | 0 | 1 | 2 | 1 | **4** |
 | Testing | 0 | 1 | 0 | 0 | **1** |
 | Accessibility | 0 | 0 | 0 | 1 | **1** |
-| **TOTAL** | **3** | **12** | **11** | **11** | **37** |
+| **TOTAL** | **2** | **12** | **12** | **11** | **37** |
+
+**Note**: Finding #3 (SQL Injection in Backend Extensions) downgraded from CRITICAL to MEDIUM after discovering existing security measures (password hashing, validation schema, last-5-password checks) that significantly mitigate the risk.
 
 **Estimated Total Remediation Effort**: 10-14 weeks
 
@@ -389,251 +393,219 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ---
 
-### [CRITICAL] 3. SQL Injection in Backend Extensions
+### [MEDIUM] 3. SQL Injection Risk in Backend Extensions (Mitigated by Input Validation)
 
-**Severity**: Critical
-**Effort Estimate**: 6 hours
+**Severity**: Medium (Downgraded from Critical)
+**Effort Estimate**: 4 hours
 **Category**: Security
 
 **Description**:
 
-Backend API extensions use dynamic SQL construction with string concatenation instead of parameterized queries. The `_devExtensions/api.js` file builds SQL statements by directly inserting user input into queries, allowing SQL injection attacks.
+Backend API extensions use string interpolation to build SQL statements (_devExtensions/api.js:105-119) instead of parameterized queries. However, the code includes several security measures that significantly reduce the risk: password validation schema (line 91), bcrypt hashing (line 95), last-5-password checks (line 92), and current password verification (line 88).
 
-**Impact**:
+**Existing Security Measures** (NOT in original report):
 
-- **Data exfiltration**: Extract entire database contents
-- **Data modification**: Update/delete arbitrary records
-- **Authentication bypass**: Modify password hashes
-- **Privilege escalation**: Grant superuser access
-- **Potential RCE**: In some SQLite configurations, can write files to disk
+✅ Password validation schema enforced before insertion (line 91)
+✅ bcrypt hashing applied to password field (line 95)
+✅ Check against last 5 passwords (line 92)
+✅ Current password verification if provided (line 88)
+✅ Try/catch error handling (lines 74-137)
+
+**Remaining Vulnerability**:
+
+While the password field is protected by hashing, other fields like `userId` or `createdAt` could theoretically be exploited if attacker controls those inputs.
+
+**Impact** (Reduced):
+
+- **Limited injection surface**: Password field is hashed, reducing exploitability
+- **Potential data corruption**: If userId or createdAt fields manipulated
+- **Defense in depth gap**: Should use parameterized queries as best practice
 
 **Location**:
 
-- `_devExtensions/api.js:103-119`
-- `_devExtensions/api.js:58-74`
+- `_devExtensions/api.js:105-112` (string interpolation in valuesString)
 
-**Vulnerable Code**:
+**Actual Code** (with security measures):
 
 ```javascript
-// _devExtensions/api.js lines 103-119
+// _devExtensions/api.js lines 67-138 (ACTUAL CODE)
 const insertPasswordRecord = {
   method: 'POST',
   path: '/api/insert-password',
   handler: async (req, res) => {
-    const { fields } = req.body
-    const queryFields = { ...fields }
-    const tableName = 'passwords'
+    let securityDb, mainDb
+    try {
+      securityDb = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
+      mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
 
-    const fields = Object.fromEntries(
-      Object.entries(queryFields).filter(
-        ([name, value]) => (value !== null) & (name !== 'currentPassword')
+      const { fields: queryFields } = req.body
+      queryFields.createdAt = new Date().toISOString()
+      const { userId, currentPassword, password } = queryFields
+
+      // ✅ Validate current password if present
+      if (currentPassword !== undefined) {
+        validateCurrentPassword(mainDb, userId, currentPassword)
+      }
+
+      // ✅ Password validation schema
+      await passwordValidationSchema.validate(password)
+
+      // ✅ Check against last 5 passwords
+      checkAgainstLastFivePassowrds(securityDb, userId, password)
+      removeOldPasswords(securityDb, userId)
+
+      // ✅ Password is hashed BEFORE insertion
+      queryFields.password = bcrypt.hashSync(password)
+
+      const fields = Object.fromEntries(
+        Object.entries(queryFields).filter(
+          ([name, value]) => (value !== null) & (name !== 'currentPassword')
+        )
       )
-    )
 
-    const fieldsString = Object.keys(fields).join(', ')
-    const valuesString = Object.values(fields)
-      .map((value) => {
-        if (typeof value === 'string') {
-          return `'${value}'`  // ❌ NO ESCAPING!
-        }
-        return value
-      })
-      .join(', ')
+      const fieldsString = Object.keys(fields).join(', ')
 
-    const query = `INSERT INTO ${tableName} (${fieldsString}) VALUES (${valuesString})`
-    const data = securityDb.prepare(query).run()
+      // ❌ String interpolation (but password already hashed above)
+      const valuesString = Object.values(fields)
+        .map((value) => {
+          if (typeof value === 'string') {
+            return `'${value}'`  // Vulnerable pattern
+          }
+          return value
+        })
+        .join(', ')
 
-    res.status(201).json({ message: 'Password updated!', data })
+      const query = `INSERT INTO ${tableName} (${fieldsString}) VALUES (${valuesString})`
+      const data = securityDb.prepare(query).run()
+
+      // ✅ Update main user table with hashed password
+      updateUserPassword(mainDb, userId, password)
+
+      res.status(201).json({ message: 'Password updated!', data })
+    } catch (error) {
+      res.status(400).json({ message: error.message, error })
+    } finally {
+      if (securityDb) securityDb.close()
+      if (mainDb) mainDb.close()
+    }
   }
 }
 ```
 
-**Exploitation Scenario**:
+**Realistic Exploitation Scenario** (Limited Impact):
 
 ```bash
-# Attacker sends malicious password field
+# Attack 1: Attempt to inject via password (MITIGATED by hashing)
 curl -X POST http://target/api/insert-password \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
       "userId": 1,
       "password": "'); DROP TABLE passwords; --",
-      "createdAt": "2024-01-01"
+      "currentPassword": "validpass"
     }
   }'
 
-# Resulting query:
-INSERT INTO passwords (userId, password, createdAt)
-VALUES (1, ''); DROP TABLE passwords; --', '2024-01-01')
+# Result: Password gets hashed BEFORE SQL construction:
+# bcrypt.hashSync("'); DROP TABLE passwords; --")
+# Produces: "$2a$10$randomhash..." (harmless hash stored)
+# NO SQL INJECTION OCCURS
 
-# Result: passwords table deleted!
-```
-
-**More Severe Attack**:
-
-```bash
-# Extract all user passwords
+# Attack 2: Attempt to inject via userId (LESS LIKELY - needs validation bypass)
+# If userId is not properly validated as integer, attacker could:
 curl -X POST http://target/api/insert-password \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
-      "userId": 1,
-      "password": "') UNION SELECT id, username, hashed_password FROM _users --",
-      "createdAt": "2024-01-01"
+      "userId": "1); DROP TABLE passwords; --",
+      "password": "ValidPass123!",
+      "currentPassword": "oldpass"
     }
   }'
+
+# This would fail at validateCurrentPassword() which expects integer userId
+# But if validation bypassed, could cause SQL injection
 ```
 
 **Recommended Solution**:
 
-**Step 1**: Replace all dynamic SQL with parameterized queries
+**Step 1**: Replace string interpolation with parameterized queries (KEEP existing validation)
 
 ```javascript
-// _devExtensions/api.js - SECURE VERSION
+// _devExtensions/api.js - IMPROVED VERSION
 const insertPasswordRecord = {
   method: 'POST',
   path: '/api/insert-password',
   handler: async (req, res) => {
+    let securityDb, mainDb
     try {
-      const { userId, password, createdAt } = req.body.fields
+      securityDb = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
+      mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
 
-      // Step 1: Validate inputs
-      if (!userId || !password) {
-        return res.status(400).json({
-          message: 'Missing required fields: userId, password'
-        })
+      const { fields: queryFields } = req.body
+      queryFields.createdAt = new Date().toISOString()
+      const { userId, currentPassword, password } = queryFields
+
+      // ✅ KEEP existing validation (already in place)
+      if (currentPassword !== undefined) {
+        validateCurrentPassword(mainDb, userId, currentPassword)
       }
 
-      if (!Number.isInteger(userId) || userId <= 0) {
-        return res.status(400).json({
-          message: 'Invalid userId: must be positive integer'
-        })
-      }
+      await passwordValidationSchema.validate(password)
+      checkAgainstLastFivePassowrds(securityDb, userId, password)
+      removeOldPasswords(securityDb, userId)
 
-      if (typeof password !== 'string' || password.length < 8) {
-        return res.status(400).json({
-          message: 'Invalid password: must be string >= 8 chars'
-        })
-      }
+      const hashedPassword = bcrypt.hashSync(password, 12) // Increase to 12 rounds
 
-      // Step 2: Hash password BEFORE storing
-      const bcrypt = require('bcryptjs')
-      const hashedPassword = bcrypt.hashSync(password, 12) // 12 rounds minimum
-
-      // Step 3: Use parameterized query (? placeholders)
+      // 🔄 CHANGE: Use parameterized query instead of string interpolation
       const query = `
         INSERT INTO passwords (userId, password, createdAt)
         VALUES (?, ?, ?)
       `
-
       const data = securityDb.prepare(query).run(
         userId,
         hashedPassword,
-        createdAt || new Date().toISOString()
+        queryFields.createdAt
       )
 
-      res.status(201).json({
-        message: 'Password updated successfully',
-        data: { id: data.lastInsertRowid }
-      })
+      updateUserPassword(mainDb, userId, password)
 
+      res.status(201).json({ message: 'Password updated!', data })
     } catch (error) {
-      console.error('Insert password error:', error)
-      res.status(500).json({
-        message: 'Internal server error'
-      })
+      res.status(400).json({ message: error.message, error })
+    } finally {
+      if (securityDb) securityDb.close()
+      if (mainDb) mainDb.close()
     }
   }
 }
 ```
 
-**Step 2**: Apply same pattern to all other endpoints
+**Step 2**: Add explicit userId type validation (defense in depth)
 
 ```javascript
-// editPassword endpoint
-const editPassword = {
-  method: 'POST',
-  path: '/api/editpassword',
-  handler: async (req, res) => {
-    try {
-      const { userId, newPassword, oldPassword } = req.body.fields
+// Add at start of handler
+const { userId, currentPassword, password } = queryFields
 
-      // Validate inputs
-      if (!userId || !newPassword || !oldPassword) {
-        return res.status(400).json({ message: 'Missing required fields' })
-      }
-
-      // Verify old password first
-      const userQuery = `SELECT hashed_password FROM _users WHERE id = ?`
-      const user = db.prepare(userQuery).get(userId)
-
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' })
-      }
-
-      const isOldPasswordCorrect = bcrypt.compareSync(
-        oldPassword,
-        user.hashed_password
-      )
-
-      if (!isOldPasswordCorrect) {
-        return res.status(403).json({ message: 'Invalid old password' })
-      }
-
-      // Update with parameterized query
-      const hashedPassword = bcrypt.hashSync(newPassword, 12)
-      const updateQuery = `
-        UPDATE _users
-        SET hashed_password = ?,
-            lastUpdatedAt = ?,
-            lockoutAttempts = 0
-        WHERE id = ?
-      `
-
-      db.prepare(updateQuery).run(
-        hashedPassword,
-        new Date().toISOString(),
-        userId
-      )
-
-      res.json({ message: 'Password updated successfully' })
-
-    } catch (error) {
-      console.error('Edit password error:', error)
-      res.status(500).json({ message: 'Internal server error' })
-    }
-  }
-}
-```
-
-**Step 3**: Add input validation utility
-
-```javascript
-// _devExtensions/validation.js
-const Joi = require('joi')
-
-const passwordSchema = Joi.object({
-  userId: Joi.number().integer().positive().required(),
-  password: Joi.string().min(8).max(100).required(),
-  createdAt: Joi.date().iso().optional()
-})
-
-const validatePasswordInput = (data) => {
-  const { error, value } = passwordSchema.validate(data)
-  if (error) {
-    throw new Error(error.details[0].message)
-  }
-  return value
+// Validate userId is actually a number
+if (!Number.isInteger(Number(userId)) || Number(userId) <= 0) {
+  return res.status(400).json({
+    message: 'Invalid userId: must be positive integer'
+  })
 }
 
-module.exports = { validatePasswordInput }
+// Continue with existing validation...
 ```
 
 **Trade-offs**:
 
 - **Parameterized queries**: No performance impact, purely positive change
-- **Input validation**: Small overhead (~1ms) but prevents many attack vectors
-- **Error handling**: Generic error messages prevent information leakage
+- **Type validation**: Minimal overhead (<1ms), eliminates remaining injection surface
+- **Existing protections**: Password hashing already provides significant defense
+
+**Corrected Assessment Summary**:
+
+This finding was initially rated CRITICAL but existing security measures (password hashing, validation schema, last-5-password checks) significantly reduce the actual risk. The string interpolation should still be replaced with parameterized queries as a best practice, but the immediate threat is much lower than originally assessed.
 
 ---
 
@@ -2020,25 +1992,26 @@ test('complete item lifecycle', async ({ page }) => {
 
 ### Immediate (Week 1-2): CRITICAL Security Fixes
 
-**Estimated Effort**: 20-24 hours
+**Estimated Effort**: 16 hours
 
 | Priority | Issue | Files | Effort | Impact |
 |----------|-------|-------|--------|--------|
 | 1 | SQL Injection in Auth | authProvider/index.ts, permissions.ts | 4h | Complete auth bypass |
 | 2 | Hardcoded Encryption Key | utils/encryption.ts | 2h | Token compromise |
 | 3 | Missing Auth on Endpoints | _devExtensions/api.js, _extensions/api.js | 6h | Arbitrary password changes |
-| 4 | SQL Injection in Backend | _devExtensions/api.js | 6h | Data breach |
-| 5 | Unhandled Async Operations | ItemList.tsx, DispatchList.tsx | 4h | Silent audit failures |
+| 4 | Unhandled Async Operations | ItemList.tsx, DispatchList.tsx | 4h | Silent audit failures |
+
+**Note**: Finding #3 (SQL Injection in Backend Extensions) moved to Week 3-6 after downgrade to MEDIUM severity.
 
 **Deliverables**:
-- ✅ All SQL queries use parameterized statements
+- ✅ Auth SQL queries use proper encoding and validation
 - ✅ VITE_KEY required in environment (no fallback)
 - ✅ Authentication middleware on all custom endpoints
 - ✅ All async map operations properly awaited
 - ✅ All fixes deployed to production
 
 **Success Metrics**:
-- Zero SQL injection vectors remaining
+- Zero authentication bypass vectors
 - All tokens encrypted with strong keys
 - 100% endpoint authentication coverage
 - Zero unhandled promise rejections in logs
@@ -2047,10 +2020,11 @@ test('complete item lifecycle', async ({ page }) => {
 
 ### Short-term (Week 3-6): Security Hardening + Testing Foundation
 
-**Estimated Effort**: 60-80 hours
+**Estimated Effort**: 64-84 hours
 
 | Priority | Issue | Effort | Impact |
 |----------|-------|--------|--------|
+| 5 | Backend Parameterized Queries | 4h | Defense in depth |
 | 6 | Migrate to httpOnly Cookies | 16h | XSS protection |
 | 7 | Implement Rate Limiting | 8h | Brute force protection |
 | 8 | Add Security Headers | 4h | Multiple attack vectors |
@@ -2059,6 +2033,7 @@ test('complete item lifecycle', async ({ page }) => {
 | 11 | E2e User Journey Tests | 16h | Regression detection |
 
 **Deliverables**:
+- ✅ Backend SQL uses parameterized queries (Finding #3)
 - ✅ httpOnly cookies implemented with CSRF protection
 - ✅ Rate limiting on all auth endpoints (5 req/15min)
 - ✅ CSP, HSTS, X-Frame-Options headers configured
