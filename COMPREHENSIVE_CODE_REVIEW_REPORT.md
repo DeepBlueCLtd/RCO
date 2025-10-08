@@ -1416,10 +1416,13 @@ SELECT
   i.*,
   u.name as createdByName,
   u.username as createdByUsername,
+  lt.name as loanedToName,
+  lt.username as loanedToUsername,
   v.name as vaultLocationName,
   v.building as vaultLocationBuilding
 FROM items i
 LEFT JOIN _users u ON i.createdBy = u.id
+LEFT JOIN _users lt ON i.loanedTo = lt.id
 LEFT JOIN _vault_location v ON i.vaultLocation = v.id
 
 // Frontend: Single request gets all data
