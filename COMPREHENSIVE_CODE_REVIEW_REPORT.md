@@ -112,8 +112,52 @@ Since soul-cli uses parameterized queries internally, this would search for a us
 
 1. **Username enumeration**: Different error messages/timing reveal valid usernames
 2. **No input validation**: Accepts any length/characters without sanitization
-3. **Information disclosure**: Error messages leak user existence
+3. **Information disclosure**: Error messages leak user existence and account state
 4. **Missing rate limiting**: Covered separately in Finding #9
+
+**Evidence of Username Enumeration** (`_devExtensions/login-controller.js:18-66`):
+
+```javascript
+// Distinct error messages reveal account state:
+
+if (!user) {
+  throw new Error('User not found')  // ⚠️ Reveals: username invalid
+}
+
+if (user.lockoutAttempts >= 5) {
+  throw new Error('Your account is locked. Please contact your administrator')  // ⚠️ Reveals: valid username, locked
+}
+
+if (hasUserDeparted) {
+  throw new Error('User has departed organisation')  // ⚠️ Reveals: valid username, departed
+}
+
+if (currentTime > hasUserNotUpdated && hasUserNotUpdated) {
+  throw new Error('You have not updated the password. Please contact your administrator')  // ⚠️ Reveals: valid username, expired password
+}
+
+if (!ishashed_passwordCorrect) {
+  throw new Error('Invalid password')  // ⚠️ Reveals: valid username, wrong password
+}
+```
+
+**Timing Attack Evidence**:
+
+```javascript
+// Fast path (~0.1ms): Empty password
+if (user.hashed_password === '' && hashed_password === username) {
+  return user  // No bcrypt
+}
+
+// Slow path (~60-100ms): bcrypt comparison
+const ishashed_passwordCorrect = bcrypt.compareSync(hashed_password, user.hashed_password)
+```
+
+**Measurable timing differences**:
+- Invalid username: DB query only (~1-2ms)
+- Valid username, empty password: String comparison (~0.1ms)
+- Valid username, wrong password: bcrypt comparison (~60-100ms)
+- Locked/departed/expired: DB query + checks (~2-5ms, no bcrypt)
 
 **Impact** (Reduced):
 
@@ -588,24 +632,27 @@ This finding was initially rated CRITICAL but existing security measures (passwo
 ### [HIGH] 4. Missing Authentication on Critical Backend Endpoints
 
 **Severity**: High
-**Effort Estimate**: 6 hours
+**Effort Estimate**: 6-8 hours (pragmatic approach with password validation)
 **Category**: Security
 
 **Description**:
 
-Custom API endpoints in `_devExtensions/` and `_extensions/` lack authentication middleware. Any user (including unauthenticated attackers) can call password change, user update, and admin functions without verification.
+Custom API endpoints in `_devExtensions/` and `_extensions/` lack authentication middleware. Any user (including unauthenticated attackers) can call password change, user update, password expiration bypass, and admin functions without verification.
 
 **Impact**:
 
 - **Complete authentication bypass**
-- **Arbitrary password changes** for any user
+- **Arbitrary password changes** for any user (editPassword, insertPasswordRecord)
+- **Password expiration bypass** for any user (updateBefore)
 - **Account takeover** without credentials
-- **Privilege escalation** via password expiration bypass
+- **Privilege escalation** via unauthorized admin operations
 
 **Location**:
 
 - `_devExtensions/api.js` (all endpoints)
-- `_extensions/api.js:19-24` (exports dev endpoints to production)
+- `_devExtensions/editPassword-controller.js:24-43` (no oldPassword validation)
+- `_devExtensions/updateBefore-controller.js:24-43` (no authentication)
+- `_extensions/api.js:3-8,31-34` (exports vulnerable endpoints to production)
 
 **Vulnerable Code**:
 
@@ -650,7 +697,7 @@ curl -X POST http://target/api/editpassword \
 # Result: Admin password changed! No authentication, no oldPassword check
 # editPassword-controller.js DOES NOT validate oldPassword (lines 26-51)
 
-# Attack 2: Bypass password expiration
+# Attack 2: Bypass password expiration for ANY user
 curl -X POST http://target/api/update-before \
   -H "Content-Type: application/json" \
   -d '{
@@ -658,6 +705,12 @@ curl -X POST http://target/api/update-before \
       "userId": 1
     }
   }'
+
+# Result: Password expiration cleared! Attacker can:
+# - Keep using stolen credentials indefinitely (120-day expiration bypassed)
+# - Clear updateBefore for admin accounts after changing password in Attack 1
+# - Prevent legitimate password rotation policies from working
+# updateBefore-controller.js has NO authentication (lines 24-43)
 
 # Attack 3: Insert password record (this ONE checks currentPassword if provided)
 curl -X POST http://target/api/insert-password \
@@ -789,6 +842,96 @@ const editPasswordController = async (req, res) => {
 
 module.exports = editPasswordController
 ```
+
+**Fix for updateBefore endpoint** (User just entered password at login, hashed version available):
+
+```javascript
+// _devExtensions/updateBefore-controller.js
+const bcrypt = require('bcryptjs')
+const BS3Database = require('better-sqlite3')
+const path = require('path')
+
+const getUserById = (db, userId) => {
+  const query = `
+    SELECT createdAt, createdBy, departedDate, id, is_superuser, lastUpdatedAt,
+           lockoutAttempts, name, updateBefore, username
+    FROM _users
+    WHERE id = ?;
+  `
+  return db.prepare(query).get(userId)
+}
+
+const clearUserUpdateBefore = (db, userId) => {
+  const futureTimeString = ''
+  const query = `
+    UPDATE _users
+    SET updateBefore = ?
+    WHERE id = ?;
+  `
+  db.prepare(query).run(futureTimeString, userId)
+}
+
+const updateBeforeController = async (req, res) => {
+  let mainDb
+  try {
+    mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
+    const { userId, currentHashedPassword } = req.body.data
+
+    // ✅ Step 1: Validate caller identity
+    if (!userId || !currentHashedPassword) {
+      return res.status(400).json({
+        message: 'userId and currentHashedPassword required'
+      })
+    }
+
+    // ✅ Step 2: Verify caller's hashed password matches database
+    const query = `SELECT hashed_password FROM _users WHERE id = ?`
+    const user = mainDb.prepare(query).get(userId)
+
+    if (!user || user.hashed_password !== currentHashedPassword) {
+      // ✅ Audit failed attempt
+      await logSecurityEvent({
+        eventType: 'UPDATEBEFORE_CLEAR_FAILED',
+        userId: userId,
+        reason: 'Invalid credentials',
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
+
+      return res.status(403).json({ message: 'Invalid credentials' })
+    }
+
+    // ✅ Step 3: Clear updateBefore (user owns this account)
+    clearUserUpdateBefore(mainDb, userId)
+    const updatedUser = getUserById(mainDb, userId)
+
+    // ✅ Step 4: Audit successful clear
+    await logSecurityEvent({
+      eventType: 'UPDATEBEFORE_CLEARED',
+      userId: userId,
+      ipAddress: req.ip,
+      timestamp: new Date().toISOString()
+    })
+
+    res.status(201).json({
+      userDetails: updatedUser
+    })
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+      error: error
+    })
+  } finally {
+    if (mainDb) mainDb.close()
+  }
+}
+
+module.exports = updateBeforeController
+```
+
+**Advantage**: User just entered password at login flow, so hashed version immediately available. No additional user input required.
+
+---
 
 **Security audit logging**:
 
