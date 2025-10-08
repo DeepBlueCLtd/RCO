@@ -712,19 +712,21 @@ curl -X POST http://target/api/update-before \
 # - Prevent legitimate password rotation policies from working
 # updateBefore-controller.js has NO authentication (lines 24-43)
 
-# Attack 3: Insert password record (this ONE checks currentPassword if provided)
+# Attack 3: Insert password record (validates currentPassword but NO authentication/role check)
 curl -X POST http://target/api/insert-password \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
       "userId": 1,
       "password": "hacked123!A",
-      "currentPassword": "userpassword"
+      "currentPassword": "guessedPassword123"
     }
   }'
-# But without authentication, attacker can try passwords until currentPassword matches
+# This endpoint validates currentPassword via bcrypt (api.js:86-89, validateCurrentPassword:18-31)
+# BUT: No authentication check, no role verification, no rate limiting
+# Result: Attacker can brute force currentPassword until it matches
 
-# Result: Complete account takeover without authentication!
+# Result: All three attacks enable complete account takeover without authentication!
 ```
 
 **Recommended Solution (Option 1 - Pragmatic)**:
@@ -1022,6 +1024,154 @@ module.exports = updateBeforeController
 
 ---
 
+**Fix for insertPasswordRecord endpoint** (currently has currentPassword validation but needs authentication):
+
+```javascript
+// _devExtensions/api.js
+const insertPasswordRecord = {
+  method: 'POST',
+  path: '/api/insert-password',
+  handler: async (req, res) => {
+    let securityDb
+    let mainDb
+
+    try {
+      securityDb = new BS3Database(path.join(process.cwd(), 'db/Security.sqlite'))
+      mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
+
+      const { fields: queryFields } = req.body
+      const { userId, password, username, authPassword } = queryFields
+
+      // ✅ Step 1: Validate required fields
+      if (!username || !authPassword) {
+        return res.status(400).json({
+          message: 'username and password required for authentication'
+        })
+      }
+
+      // ✅ Step 2: Authenticate caller using existing validateUser
+      let caller
+      try {
+        caller = validateUser(username, authPassword, mainDb)
+      } catch (error) {
+        await logSecurityEvent({
+          eventType: 'PASSWORD_INSERT_FAILED',
+          username: username,
+          targetUserId: userId,
+          reason: error.message,
+          ipAddress: req.ip,
+          timestamp: new Date().toISOString()
+        })
+
+        return res.status(403).json({
+          message: 'Authentication failed: ' + error.message
+        })
+      }
+
+      // ✅ Step 3: Check authorization (rco-user or rco-power-user required)
+      const roleQuery = `
+        SELECT r.name
+        FROM _users_roles ur
+        JOIN _roles r ON ur.role_id = r.id
+        WHERE ur.user_id = ?
+      `
+      const userRole = mainDb.prepare(roleQuery).get(caller.id)
+
+      if (!userRole || !['rco-user', 'rco-power-user'].includes(userRole.name)) {
+        await logSecurityEvent({
+          eventType: 'PASSWORD_INSERT_FAILED',
+          userId: caller.id,
+          targetUserId: userId,
+          reason: 'Insufficient role permissions',
+          ipAddress: req.ip,
+          timestamp: new Date().toISOString()
+        })
+
+        return res.status(403).json({
+          message: 'Forbidden: rco-user or rco-power-user role required'
+        })
+      }
+
+      const isPowerUser = userRole.name === 'rco-power-user'
+      const targetUserId = userId || caller.id
+
+      // ✅ Step 4: Verify authorization scope
+      if (!isPowerUser && caller.id !== targetUserId) {
+        await logSecurityEvent({
+          eventType: 'PASSWORD_INSERT_FAILED',
+          userId: caller.id,
+          targetUserId: targetUserId,
+          reason: 'Cannot insert password for other user without rco-power-user role',
+          ipAddress: req.ip,
+          timestamp: new Date().toISOString()
+        })
+
+        return res.status(403).json({
+          message: 'Forbidden: can only insert password for own account'
+        })
+      }
+
+      // ✅ Step 5: Validate new password
+      queryFields.createdAt = new Date().toISOString()
+      await passwordValidationSchema.validate(password)
+      checkAgainstLastFivePassowrds(securityDb, targetUserId, password)
+      removeOldPasswords(securityDb, targetUserId)
+
+      queryFields.password = bcrypt.hashSync(password)
+
+      // ✅ Step 6: Insert password record
+      const fields = Object.fromEntries(
+        Object.entries(queryFields).filter(
+          ([name, value]) => (value !== null) && !['username', 'authPassword'].includes(name)
+        )
+      )
+
+      const fieldsString = Object.keys(fields).join(', ')
+      const valuesString = Object.values(fields)
+        .map((value) => typeof value === 'string' ? `'${value}'` : value)
+        .join(', ')
+
+      const values = valuesString === '' ? 'DEFAULT VALUES' : `(${fieldsString}) VALUES (${valuesString})`
+      const query = `INSERT INTO ${tableName} ${values}`
+
+      const data = securityDb.prepare(query).run()
+      updateUserPassword(mainDb, targetUserId, password)
+
+      // ✅ Step 7: Audit successful insert (security critical)
+      await logSecurityEvent({
+        eventType: 'PASSWORD_INSERTED',
+        userId: caller.id,
+        targetUserId: targetUserId,
+        insertedByPowerUser: isPowerUser,
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
+
+      res.status(201).json({
+        message: 'Password updated!',
+        data
+      })
+    } catch (error) {
+      res.status(400).json({
+        message: error.message,
+        error: error
+      })
+    } finally {
+      if (securityDb) securityDb.close()
+      if (mainDb) mainDb.close()
+    }
+  }
+}
+```
+
+**Note**: This replaces the existing `currentPassword` validation approach with the consistent `validateUser + username/password` approach used by other endpoints. This provides:
+- Consistent authentication across all endpoints
+- Automatic handling of lockout, departed users, password expiration
+- Role-based authorization (rco-user/rco-power-user)
+- Comprehensive audit logging
+
+---
+
 **Security audit logging** (shared by all endpoints):
 
 ```javascript
@@ -1075,9 +1225,19 @@ module.exports = { logSecurityEvent }
 
 All endpoints in `_devExtensions/api.js` exported to production via `_extensions/api.js`:
 - ✅ `/api/editpassword` - editPassword endpoint (fixed above)
+  - Current state: NO password validation, NO authentication, NO role check
+  - Fix: Add validateUser + role check
+
 - ✅ `/api/update-before` - updateBefore endpoint (fixed above)
+  - Current state: NO authentication, NO role check
+  - Fix: Add validateUser + role check
+
 - ⚠️ `/api/insert-password` - insertPasswordRecord endpoint (requires similar fix)
-- ✅ `/api/login` - login endpoint (already has validateUser, needs audit logging)
+  - Current state: HAS currentPassword validation (bcrypt), but NO authentication, NO role check, vulnerable to brute force
+  - Fix: Replace with validateUser + username/password approach for consistency
+
+- ✅ `/api/login` - login endpoint (already has validateUser)
+  - Current state: Already uses validateUser, needs enhanced audit logging
 
 **Trade-offs**:
 
