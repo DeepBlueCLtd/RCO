@@ -673,7 +673,182 @@ curl -X POST http://target/api/insert-password \
 # Result: Complete account takeover without authentication!
 ```
 
-**Recommended Solution**:
+**Recommended Solution (Option 1 - Pragmatic)**:
+
+**Use current user password validation instead of full middleware**
+
+This is a simpler, lower-risk alternative that validates the caller knows the current user's password:
+
+```javascript
+// _devExtensions/editPassword-controller.js
+const bcrypt = require('bcryptjs')
+const BS3Database = require('better-sqlite3')
+const path = require('path')
+const passwordValidationSchema = require('./password-validation.schema')
+
+const editPasswordController = async (req, res) => {
+  let mainDb
+
+  try {
+    mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
+    const { fields } = req.body
+    const { userId, newPassword, currentUserId, currentHashedPassword } = fields
+
+    // ✅ Step 1: Validate caller identity
+    if (!currentUserId || !currentHashedPassword) {
+      return res.status(400).json({
+        message: 'currentUserId and currentHashedPassword required'
+      })
+    }
+
+    // ✅ Step 2: Verify caller's hashed password matches database
+    const callerQuery = `SELECT hashed_password FROM _users WHERE id = ?`
+    const caller = mainDb.prepare(callerQuery).get(currentUserId)
+
+    if (!caller || caller.hashed_password !== currentHashedPassword) {
+      // ✅ Audit failed attempt
+      await logSecurityEvent({
+        eventType: 'PASSWORD_CHANGE_FAILED',
+        userId: currentUserId,
+        targetUserId: userId,
+        reason: 'Invalid credentials',
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
+
+      return res.status(403).json({
+        message: 'Invalid credentials'
+      })
+    }
+
+    // ✅ Step 3: Check authorization (rco-power-user can reset any password)
+    const roleQuery = `
+      SELECT r.name
+      FROM _users_roles ur
+      JOIN _roles r ON ur.role_id = r.id
+      WHERE ur.user_id = ?
+    `
+    const role = mainDb.prepare(roleQuery).get(currentUserId)
+
+    const isPowerUser = role?.name === 'rco-power-user'
+    const isSelfPasswordChange = currentUserId === userId
+
+    if (!isPowerUser && !isSelfPasswordChange) {
+      return res.status(403).json({
+        message: 'Forbidden: can only change own password'
+      })
+    }
+
+    // ✅ Step 4: Validate new password
+    await passwordValidationSchema.validate(newPassword)
+
+    // ✅ Step 5: Update password
+    const hashedPassword = bcrypt.hashSync(newPassword, 12) // 12 rounds
+    const now = new Date()
+    const futureTime = new Date(now.getTime() + 60 * 60000)
+
+    const updateQuery = `
+      UPDATE _users
+      SET hashed_password = ?,
+          lastUpdatedAt = ?,
+          updateBefore = ?,
+          lockoutAttempts = 0
+      WHERE id = ?
+    `
+    mainDb.prepare(updateQuery).run(
+      hashedPassword,
+      now.toISOString(),
+      futureTime.toISOString(),
+      userId
+    )
+
+    // ✅ Step 6: Audit successful change
+    await logSecurityEvent({
+      eventType: 'PASSWORD_CHANGED',
+      userId: currentUserId,
+      targetUserId: userId,
+      changedByPowerUser: isPowerUser,
+      ipAddress: req.ip,
+      timestamp: now.toISOString()
+    })
+
+    res.status(200).json({
+      message: 'Password updated successfully'
+    })
+
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+      error: error
+    })
+  } finally {
+    if (mainDb) mainDb.close()
+  }
+}
+
+module.exports = editPasswordController
+```
+
+**Security audit logging**:
+
+```javascript
+// _devExtensions/security-logger.js
+const BS3Database = require('better-sqlite3')
+const path = require('path')
+
+const logSecurityEvent = async (event) => {
+  let auditDb
+  try {
+    auditDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
+
+    const query = `
+      INSERT INTO _audit (
+        activityType,
+        user,
+        resource,
+        dataId,
+        activityDetail,
+        dateTime,
+        securityRelated
+      ) VALUES (?, ?, ?, ?, ?, ?, 1)
+    `
+
+    auditDb.prepare(query).run(
+      event.eventType,
+      event.userId,
+      '_users',
+      event.targetUserId,
+      JSON.stringify({
+        reason: event.reason,
+        changedByPowerUser: event.changedByPowerUser,
+        ipAddress: event.ipAddress
+      }),
+      event.timestamp
+    )
+  } finally {
+    if (auditDb) auditDb.close()
+  }
+}
+
+module.exports = { logSecurityEvent }
+```
+
+**Trade-offs**:
+
+| Aspect | Password Validation (Option 1) | JWT Middleware (Option 2) |
+|--------|-------------------------------|---------------------------|
+| Implementation | ⭐⭐⭐⭐⭐ Simple (4h) | ⭐⭐ Complex (2-3 days) |
+| Security | ⭐⭐⭐ Good | ⭐⭐⭐⭐⭐ Excellent |
+| Risk | ⭐⭐⭐⭐ Low (minimal changes) | ⭐⭐ High (infrastructure change) |
+| Audit Trail | ⭐⭐⭐⭐⭐ Comprehensive | ⭐⭐⭐⭐⭐ Comprehensive |
+| Replay Attacks | ⚠️ Vulnerable | ✅ Protected |
+| Session Management | ❌ None | ✅ Built-in |
+
+**Recommendation**: Use Option 1 (password validation) as immediate fix, consider Option 2 (JWT middleware) for long-term improvement.
+
+---
+
+**Recommended Solution (Option 2 - Full Middleware)**:
 
 **Step 1**: Create authentication middleware
 
