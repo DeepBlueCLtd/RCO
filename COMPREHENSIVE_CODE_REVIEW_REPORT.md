@@ -729,9 +729,9 @@ curl -X POST http://target/api/insert-password \
 
 **Recommended Solution (Option 1 - Pragmatic)**:
 
-**Use current user password validation instead of full middleware**
+**Use username + password validation via existing validateUser function**
 
-This is a simpler, lower-risk alternative that validates the caller knows the current user's password:
+This approach reuses the existing `validateUser` function from login-controller.js, which already handles lockout, departed users, and password expiration:
 
 ```javascript
 // _devExtensions/editPassword-controller.js
@@ -739,6 +739,7 @@ const bcrypt = require('bcryptjs')
 const BS3Database = require('better-sqlite3')
 const path = require('path')
 const passwordValidationSchema = require('./password-validation.schema')
+const { validateUser } = require('./login-controller')
 
 const editPasswordController = async (req, res) => {
   let mainDb
@@ -746,57 +747,91 @@ const editPasswordController = async (req, res) => {
   try {
     mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
     const { fields } = req.body
-    const { userId, newPassword, currentUserId, currentHashedPassword } = fields
+    const { userId, newPassword, username, password } = fields
 
-    // ✅ Step 1: Validate caller identity
-    if (!currentUserId || !currentHashedPassword) {
+    // ✅ Step 1: Validate required fields
+    if (!username || !password) {
       return res.status(400).json({
-        message: 'currentUserId and currentHashedPassword required'
+        message: 'username and password required for authentication'
       })
     }
 
-    // ✅ Step 2: Verify caller's hashed password matches database
-    const callerQuery = `SELECT hashed_password FROM _users WHERE id = ?`
-    const caller = mainDb.prepare(callerQuery).get(currentUserId)
+    if (!userId || !newPassword) {
+      return res.status(400).json({
+        message: 'userId and newPassword required'
+      })
+    }
 
-    if (!caller || caller.hashed_password !== currentHashedPassword) {
-      // ✅ Audit failed attempt
+    // ✅ Step 2: Authenticate caller using existing validateUser
+    // (handles lockout, departed users, password expiration automatically)
+    let caller
+    try {
+      caller = validateUser(username, password, mainDb)
+    } catch (error) {
+      // ✅ Audit failed authentication
       await logSecurityEvent({
         eventType: 'PASSWORD_CHANGE_FAILED',
-        userId: currentUserId,
+        username: username,
         targetUserId: userId,
-        reason: 'Invalid credentials',
+        reason: error.message,
         ipAddress: req.ip,
         timestamp: new Date().toISOString()
       })
 
       return res.status(403).json({
-        message: 'Invalid credentials'
+        message: 'Authentication failed: ' + error.message
       })
     }
 
-    // ✅ Step 3: Check authorization (rco-power-user can reset any password)
+    // ✅ Step 3: Check authorization (rco-user or rco-power-user required)
     const roleQuery = `
       SELECT r.name
       FROM _users_roles ur
       JOIN _roles r ON ur.role_id = r.id
       WHERE ur.user_id = ?
     `
-    const role = mainDb.prepare(roleQuery).get(currentUserId)
+    const userRole = mainDb.prepare(roleQuery).get(caller.id)
 
-    const isPowerUser = role?.name === 'rco-power-user'
-    const isSelfPasswordChange = currentUserId === userId
+    if (!userRole || !['rco-user', 'rco-power-user'].includes(userRole.name)) {
+      await logSecurityEvent({
+        eventType: 'PASSWORD_CHANGE_FAILED',
+        userId: caller.id,
+        targetUserId: userId,
+        reason: 'Insufficient role permissions',
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
 
+      return res.status(403).json({
+        message: 'Forbidden: rco-user or rco-power-user role required'
+      })
+    }
+
+    const isPowerUser = userRole.name === 'rco-power-user'
+    const isSelfPasswordChange = caller.id === userId
+
+    // ✅ Step 4: Verify authorization scope
+    // rco-user can only change own password
+    // rco-power-user can change any password
     if (!isPowerUser && !isSelfPasswordChange) {
+      await logSecurityEvent({
+        eventType: 'PASSWORD_CHANGE_FAILED',
+        userId: caller.id,
+        targetUserId: userId,
+        reason: 'Cannot change other user password without rco-power-user role',
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
+
       return res.status(403).json({
         message: 'Forbidden: can only change own password'
       })
     }
 
-    // ✅ Step 4: Validate new password
+    // ✅ Step 5: Validate new password
     await passwordValidationSchema.validate(newPassword)
 
-    // ✅ Step 5: Update password
+    // ✅ Step 6: Update password
     const hashedPassword = bcrypt.hashSync(newPassword, 12) // 12 rounds
     const now = new Date()
     const futureTime = new Date(now.getTime() + 60 * 60000)
@@ -816,10 +851,10 @@ const editPasswordController = async (req, res) => {
       userId
     )
 
-    // ✅ Step 6: Audit successful change
+    // ✅ Step 7: Audit successful change (security critical)
     await logSecurityEvent({
       eventType: 'PASSWORD_CHANGED',
-      userId: currentUserId,
+      userId: caller.id,
       targetUserId: userId,
       changedByPowerUser: isPowerUser,
       ipAddress: req.ip,
@@ -843,17 +878,17 @@ const editPasswordController = async (req, res) => {
 module.exports = editPasswordController
 ```
 
-**Fix for updateBefore endpoint** (User just entered password at login, hashed version available):
+**Fix for updateBefore endpoint**:
 
 ```javascript
 // _devExtensions/updateBefore-controller.js
-const bcrypt = require('bcryptjs')
 const BS3Database = require('better-sqlite3')
 const path = require('path')
+const { validateUser } = require('./login-controller')
 
 const getUserById = (db, userId) => {
   const query = `
-    SELECT createdAt, createdBy, departedDate, id, is_superuser, lastUpdatedAt,
+    SELECT createdAt, createdBy, departedDate, id, lastUpdatedAt,
            lockoutAttempts, name, updateBefore, username
     FROM _users
     WHERE id = ?;
@@ -875,40 +910,89 @@ const updateBeforeController = async (req, res) => {
   let mainDb
   try {
     mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
-    const { userId, currentHashedPassword } = req.body.data
+    const { userId, username, password } = req.body.data
 
-    // ✅ Step 1: Validate caller identity
-    if (!userId || !currentHashedPassword) {
+    // ✅ Step 1: Validate required fields
+    if (!username || !password) {
       return res.status(400).json({
-        message: 'userId and currentHashedPassword required'
+        message: 'username and password required for authentication'
       })
     }
 
-    // ✅ Step 2: Verify caller's hashed password matches database
-    const query = `SELECT hashed_password FROM _users WHERE id = ?`
-    const user = mainDb.prepare(query).get(userId)
-
-    if (!user || user.hashed_password !== currentHashedPassword) {
-      // ✅ Audit failed attempt
+    // ✅ Step 2: Authenticate caller using existing validateUser
+    let caller
+    try {
+      caller = validateUser(username, password, mainDb)
+    } catch (error) {
       await logSecurityEvent({
         eventType: 'UPDATEBEFORE_CLEAR_FAILED',
-        userId: userId,
-        reason: 'Invalid credentials',
+        username: username,
+        targetUserId: userId,
+        reason: error.message,
         ipAddress: req.ip,
         timestamp: new Date().toISOString()
       })
 
-      return res.status(403).json({ message: 'Invalid credentials' })
+      return res.status(403).json({
+        message: 'Authentication failed: ' + error.message
+      })
     }
 
-    // ✅ Step 3: Clear updateBefore (user owns this account)
-    clearUserUpdateBefore(mainDb, userId)
-    const updatedUser = getUserById(mainDb, userId)
+    // ✅ Step 3: Check authorization (rco-user or rco-power-user required)
+    const roleQuery = `
+      SELECT r.name
+      FROM _users_roles ur
+      JOIN _roles r ON ur.role_id = r.id
+      WHERE ur.user_id = ?
+    `
+    const userRole = mainDb.prepare(roleQuery).get(caller.id)
 
-    // ✅ Step 4: Audit successful clear
+    if (!userRole || !['rco-user', 'rco-power-user'].includes(userRole.name)) {
+      await logSecurityEvent({
+        eventType: 'UPDATEBEFORE_CLEAR_FAILED',
+        userId: caller.id,
+        targetUserId: userId,
+        reason: 'Insufficient role permissions',
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
+
+      return res.status(403).json({
+        message: 'Forbidden: rco-user or rco-power-user role required'
+      })
+    }
+
+    const isPowerUser = userRole.name === 'rco-power-user'
+    const targetUserId = userId || caller.id // Default to self if not specified
+
+    // ✅ Step 4: Verify authorization scope
+    // rco-user can only clear own updateBefore
+    // rco-power-user can clear any user's updateBefore
+    if (!isPowerUser && caller.id !== targetUserId) {
+      await logSecurityEvent({
+        eventType: 'UPDATEBEFORE_CLEAR_FAILED',
+        userId: caller.id,
+        targetUserId: targetUserId,
+        reason: 'Cannot clear other user updateBefore without rco-power-user role',
+        ipAddress: req.ip,
+        timestamp: new Date().toISOString()
+      })
+
+      return res.status(403).json({
+        message: 'Forbidden: can only clear own updateBefore'
+      })
+    }
+
+    // ✅ Step 5: Clear updateBefore
+    clearUserUpdateBefore(mainDb, targetUserId)
+    const updatedUser = getUserById(mainDb, targetUserId)
+
+    // ✅ Step 6: Audit successful clear (security critical)
     await logSecurityEvent({
       eventType: 'UPDATEBEFORE_CLEARED',
-      userId: userId,
+      userId: caller.id,
+      targetUserId: targetUserId,
+      clearedByPowerUser: isPowerUser,
       ipAddress: req.ip,
       timestamp: new Date().toISOString()
     })
@@ -929,11 +1013,16 @@ const updateBeforeController = async (req, res) => {
 module.exports = updateBeforeController
 ```
 
-**Advantage**: User just entered password at login flow, so hashed version immediately available. No additional user input required.
+**Advantages**:
+- Reuses existing `validateUser` function (handles lockout, departed, expired automatically)
+- User enters password to authorize security-critical change
+- Consistent with login flow
+- rco-user can only modify own account, rco-power-user can modify any account
+- All attempts logged to audit with securityRelated flag
 
 ---
 
-**Security audit logging**:
+**Security audit logging** (shared by all endpoints):
 
 ```javascript
 // _devExtensions/security-logger.js
@@ -957,15 +1046,20 @@ const logSecurityEvent = async (event) => {
       ) VALUES (?, ?, ?, ?, ?, ?, 1)
     `
 
+    // For failed auth, use username; for successful ops, use userId
+    const userIdentifier = event.userId || event.username || 'unknown'
+
     auditDb.prepare(query).run(
       event.eventType,
-      event.userId,
+      userIdentifier,
       '_users',
-      event.targetUserId,
+      event.targetUserId || null,
       JSON.stringify({
         reason: event.reason,
         changedByPowerUser: event.changedByPowerUser,
-        ipAddress: event.ipAddress
+        clearedByPowerUser: event.clearedByPowerUser,
+        ipAddress: event.ipAddress,
+        username: event.username // Track attempted username for failed auth
       }),
       event.timestamp
     )
@@ -977,18 +1071,32 @@ const logSecurityEvent = async (event) => {
 module.exports = { logSecurityEvent }
 ```
 
+**Endpoints requiring this fix**:
+
+All endpoints in `_devExtensions/api.js` exported to production via `_extensions/api.js`:
+- ✅ `/api/editpassword` - editPassword endpoint (fixed above)
+- ✅ `/api/update-before` - updateBefore endpoint (fixed above)
+- ⚠️ `/api/insert-password` - insertPasswordRecord endpoint (requires similar fix)
+- ✅ `/api/login` - login endpoint (already has validateUser, needs audit logging)
+
 **Trade-offs**:
 
-| Aspect | Password Validation (Option 1) | JWT Middleware (Option 2) |
+| Aspect | validateUser + Role Check (Option 1) | JWT Middleware (Option 2) |
 |--------|-------------------------------|---------------------------|
-| Implementation | ⭐⭐⭐⭐⭐ Simple (4h) | ⭐⭐ Complex (2-3 days) |
-| Security | ⭐⭐⭐ Good | ⭐⭐⭐⭐⭐ Excellent |
-| Risk | ⭐⭐⭐⭐ Low (minimal changes) | ⭐⭐ High (infrastructure change) |
+| Implementation | ⭐⭐⭐⭐⭐ Simple (6-8h) | ⭐⭐ Complex (2-3 days) |
+| Security | ⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐⭐ Excellent |
+| Risk | ⭐⭐⭐⭐⭐ Very Low (reuses existing code) | ⭐⭐ High (infrastructure change) |
 | Audit Trail | ⭐⭐⭐⭐⭐ Comprehensive | ⭐⭐⭐⭐⭐ Comprehensive |
-| Replay Attacks | ⚠️ Vulnerable | ✅ Protected |
-| Session Management | ❌ None | ✅ Built-in |
+| Code Reuse | ⭐⭐⭐⭐⭐ Uses existing validateUser | ⭐⭐ New infrastructure |
+| Replay Protection | ⚠️ Limited (rate limiting needed) | ✅ Built-in |
+| Session Management | ⚠️ Stateless per-request | ✅ Token-based |
 
-**Recommendation**: Use Option 1 (password validation) as immediate fix, consider Option 2 (JWT middleware) for long-term improvement.
+**Recommendation**: Use Option 1 (validateUser + role check) as immediate fix. This approach:
+- Reuses battle-tested `validateUser` function (handles lockout, departed, expired automatically)
+- Requires user to enter password for security-critical operations
+- Low implementation risk (6-8 hours total for all endpoints)
+- Comprehensive audit logging with securityRelated flag
+- Consider Option 2 (JWT middleware) for long-term if replay protection or session management becomes priority
 
 ---
 
