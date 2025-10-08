@@ -1,24 +1,32 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Developer guide for working with this repository.
 
 ## Project Overview
 
-VAL (Vault Asset Log) is a secure asset register application built with React, React-Admin, and TypeScript. It manages items (media assets), batches, projects, dispatch, destruction, and vault locations with role-based access control and comprehensive audit logging.
+VAL (Vault Asset Log) is a secure asset register application built
+with React, React-Admin, and TypeScript. It manages items (media
+assets), batches, projects, dispatch, destruction, and vault locations
+with role-based access control and comprehensive audit logging.
 
 ## Build & Development Commands
 
 ### Development
 
-- `yarn dev` - Start development server with Vite (opens at http://localhost:5173)
-- `yarn dev:mock` - Start with mock data (uses LocalForage instead of backend)
-- `yarn serve:dev` - Run soul-cli backend for development (requires `dist` folder to exist first)
+- `yarn dev` - Start development server with Vite (opens at
+  <http://localhost:5173>)
+- `yarn dev:mock` - Start with mock data (uses LocalForage instead
+  of backend)
+- `yarn serve:dev` - Run soul-cli backend for development (requires
+  `dist` folder to exist first)
 
 ### Building
 
-- `yarn build` - Build production application (runs TypeScript compiler + Vite build)
+- `yarn build` - Build production application (runs TypeScript
+  compiler + Vite build)
 - `yarn build:prod` - Same as `yarn build`
-- `yarn build:test` - Build test instance with cosmetic changes (different color scheme/title)
+- `yarn build:test` - Build test instance with cosmetic changes
+  (different color scheme/title)
 
 ### Production Server
 
@@ -49,20 +57,23 @@ VAL (Vault Asset Log) is a secure asset register application built with React, R
 ### Frontend Stack
 
 - **React 18** + **TypeScript** with strict mode enabled
-- **React-Admin 4.13.1** - Admin framework providing CRUD interfaces, routing, auth
+- **React-Admin 4.13.1** - Admin framework providing CRUD
+  interfaces, routing, auth
 - **Material-UI v5** - UI components and theming
 - **Vite** - Build tool and dev server
 - **React Hook Form + Yup** - Form validation
 
 ### Backend
 
-- **soul-cli** (v0.7.8) - Node.js backend serving SQLite database via REST API
+- **soul-cli** (v0.7.8) - Node.js backend serving SQLite database
+  via REST API
 - Custom API extensions in `_extensions/` and `_devExtensions/`
 - SQLite database at `db/RCO2.sqlite`
 
 ### Data Provider Architecture
 
-The data provider (`src/providers/dataProvider/index.ts`) sits between React-Admin and the backend:
+The data provider (`src/providers/dataProvider/index.ts`) sits
+between React-Admin and the backend:
 
 - In production: REST API via soul-cli (`/api/tables`)
 - In mock mode: LocalForage (IndexedDB) for offline development
@@ -99,15 +110,19 @@ All callbacks use the `trackEvent` audit function to log changes.
 
 Defined in `src/App.tsx` and `src/constants.ts`:
 
-- **Items** (`R_RICH_ITEMS`, `R_ALL_ITEMS`) - Media assets with complex relationships
+- **Items** (`R_RICH_ITEMS`, `R_ALL_ITEMS`) - Media assets with
+  complex relationships
 - **Batches** (`R_BATCHES`) - Collections of items
-- **Projects** (`R_PROJECTS`) - Configurable project/programme entities
-- **Dispatch** (`R_DISPATCH`) - Item dispatch workflows with hastener tracking
+- **Projects** (`R_PROJECTS`) - Configurable project/programme
+  entities
+- **Dispatch** (`R_DISPATCH`) - Item dispatch workflows with
+  hastener tracking
 - **Destruction** (`R_DESTRUCTION`) - Item destruction workflows
 - **Vault Locations** (`R_VAULT_LOCATION`) - Storage locations
 - **Users** (`R_USERS`) - User management
 - **Audit** (`R_AUDIT`) - Comprehensive audit log
-- **Reference Data** - Multiple lookup tables (protective marking, cat codes, departments, etc.)
+- **Reference Data** - Multiple lookup tables (protective marking,
+  cat codes, departments, etc.)
 
 ### State Management
 
@@ -124,10 +139,12 @@ Defined in `src/App.tsx` and `src/constants.ts`:
 
 All in `src/types.d.ts`:
 
-- Database entities extend `RCOResource` (has `id`) or `ResourceWithCreation` (adds `createdAt`, `createdBy`)
+- Database entities extend `RCOResource` (has `id`) or
+  `ResourceWithCreation` (adds `createdAt`, `createdBy`)
 - `CustomDataProvider` - Extended data provider interface
 - `Permission`, `ResourcePermissions` - Access control types
-- All SQL table types: `Item`, `Batch`, `Project`, `Dispatch`, `Destruction`, etc.
+- All SQL table types: `Item`, `Batch`, `Project`, `Dispatch`,
+  `Destruction`, etc.
 
 ### Custom Extensions
 
@@ -137,11 +154,13 @@ All in `src/types.d.ts`:
 
 ### Configuration
 
-- `.env` - Environment variables (`TOKEN_SECRET`, `VITE_DATA_VERSION`, `VITE_APP_VERSION`)
-- `_config` table in database - Runtime config (project names, labels, report settings)
+- `.env` - Environment variables (`TOKEN_SECRET`,
+  `VITE_DATA_VERSION`, `VITE_APP_VERSION`)
+- `_config` table in database - Runtime config (project names,
+  labels, report settings)
 - `src/constants.ts` - Resource names, icons, validation criteria
 
-### Testing
+### Test Configuration
 
 - **Jest** tests in `src/providers/dataProvider/tests/`
 - **Playwright** e2e tests in `e2e/tests/`
