@@ -708,17 +708,26 @@ const authenticateToken = (req, res, next) => {
 }
 
 /**
- * Verify user owns the resource or is superuser
+ * Verify user owns the resource or has password edit role
  */
-const authorizeUser = (req, res, next) => {
+const authorizePasswordChange = (req, res, next) => {
   const targetUserId = req.body.fields?.userId ||
                        req.body.data?.userId ||
                        req.params.userId
 
-  // Users can only modify their own data (unless superuser)
-  if (req.user.id !== targetUserId && !req.user.is_superuser) {
+  const allowedRoles = ['rco-user', 'rco-power-user']
+  const hasRole = allowedRoles.includes(req.user.userRole)
+
+  if (!hasRole) {
     return res.status(403).json({
-      message: 'Forbidden: insufficient permissions'
+      message: 'Forbidden: insufficient permissions (requires rco-user or rco-power-user role)'
+    })
+  }
+
+  // Users can only change their own password
+  if (req.user.id !== targetUserId) {
+    return res.status(403).json({
+      message: 'Forbidden: can only change own password'
     })
   }
 
@@ -726,12 +735,12 @@ const authorizeUser = (req, res, next) => {
 }
 
 /**
- * Require superuser role
+ * Verify user has rco-power-user role (for admin operations)
  */
-const requireSuperuser = (req, res, next) => {
-  if (!req.user.is_superuser) {
+const requirePowerUser = (req, res, next) => {
+  if (req.user.userRole !== 'rco-power-user') {
     return res.status(403).json({
-      message: 'Forbidden: superuser access required'
+      message: 'Forbidden: rco-power-user role required'
     })
   }
 
@@ -740,45 +749,56 @@ const requireSuperuser = (req, res, next) => {
 
 module.exports = {
   authenticateToken,
-  authorizeUser,
-  requireSuperuser
+  authorizePasswordChange,
+  requirePowerUser
 }
 ```
 
-**Step 2**: Apply middleware to all endpoints
+**Step 2**: Apply middleware to all endpoints with correct role authorization
 
 ```javascript
 // _devExtensions/api.js
-const { authenticateToken, authorizeUser } = require('../_extensions/middleware/auth')
+const {
+  authenticateToken,
+  authorizePasswordChange,
+  requirePowerUser
+} = require('../_extensions/middleware/auth')
 
+// User password change (with history tracking)
 const insertPasswordRecord = {
   method: 'POST',
   path: '/api/insert-password',
-  middleware: [authenticateToken, authorizeUser], // ✅ Protected!
+  middleware: [authenticateToken, authorizePasswordChange], // ✅ Protected!
   handler: async (req, res) => {
     // Now req.user is available and verified
-    const { userId, password } = req.body.fields
+    // authorizePasswordChange ensures:
+    // - User has rco-user or rco-power-user role
+    // - User can only change their own password (req.user.id === userId)
+    const { userId, password, currentPassword } = req.body.fields
 
-    // Additional check: user can only change their own password
-    if (req.user.id !== userId) {
-      return res.status(403).json({ message: 'Forbidden' })
+    // Validate currentPassword (already in code lines 87-89)
+    if (currentPassword !== undefined) {
+      validateCurrentPassword(mainDb, userId, currentPassword)
     }
 
     // ... rest of handler
   }
 }
 
+// Admin password reset (no old password validation needed)
+// Note: This allows rco-power-user to reset any user's password
 const editPassword = {
   method: 'POST',
   path: '/api/editpassword',
-  middleware: [authenticateToken, authorizeUser], // ✅ Protected!
+  middleware: [authenticateToken, requirePowerUser], // ✅ rco-power-user only!
   handler: editPasswordController
 }
 
+// Clear password expiration
 const updateBefore = {
   method: 'POST',
   path: '/api/update-before',
-  middleware: [authenticateToken, requireSuperuser], // ✅ Admin only!
+  middleware: [authenticateToken, authorizePasswordChange], // ✅ Own password only!
   handler: updateBeforeController
 }
 ```
