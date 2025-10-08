@@ -1,10 +1,12 @@
 # Database Schema Documentation
 
-This document describes the structure of the RCO2.sqlite database used by the VAL (Vault Asset Log) application.
+This document describes the structure of the RCO2.sqlite database
+used by the VAL (Vault Asset Log) application.
 
 ## Overview
 
-The database contains **27 tables** and **2 views**, organized into several functional areas:
+The database contains **27 tables** and **2 views**, organized into
+several functional areas:
 
 - Core business entities (items, batches, projects, dispatch, destruction)
 - Reference data (lookups for media types, locations, organizations, etc.)
@@ -63,36 +65,39 @@ erDiagram
 
 ### item
 
-The central table storing media assets (2024+ records in typical database).
+The central table storing media assets (2024+ records in typical
+database).
 
-| Column            | Type    | Description                                        |
-| ----------------- | ------- | -------------------------------------------------- |
-| id                | INTEGER | Primary key                                        |
-| mediaType         | INTEGER | FK to mediaType - current media type               |
-| legacyMediaType   | INTEGER | FK to mediaType - original media type if converted |
-| startDate         | TEXT    | ISO date - content start date                      |
-| endDate           | TEXT    | ISO date - content end date                        |
-| batch             | INTEGER | FK to batch - parent batch                         |
-| itemNumber        | TEXT    | Item identifier within batch                       |
-| consecSheets      | TEXT    | Originator reference number or number of sheets    |
-| vaultLocation     | INTEGER | FK to vaultLocation - physical location            |
-| remarks           | TEXT    | General notes                                      |
-| protectiveMarking | INTEGER | FK to protectiveMarking - security classification  |
-| protectionString  | TEXT    | Computed string of all protection categories       |
-| musterRemarks     | TEXT    | Notes for mustering/inventory                      |
-| loanedTo          | INTEGER | FK to \_users - user who has item on loan          |
-| loanedDate        | TEXT    | ISO date - when loaned                             |
-| dispatchJob       | INTEGER | FK to dispatch - dispatch workflow                 |
-| dispatchedDate    | TEXT    | ISO date - when dispatched                         |
-| destruction       | INTEGER | FK to destruction - destruction workflow           |
-| destructionDate   | TEXT    | ISO date - when destroyed                          |
-| createdAt         | TEXT    | ISO date - record creation                         |
-| createdBy         | INTEGER | FK to \_users - creator                            |
+| Column            | Type    | Description                          |
+| ----------------- | ------- | ------------------------------------ |
+| id                | INTEGER | Primary key                          |
+| mediaType         | INTEGER | FK to mediaType - current type       |
+| legacyMediaType   | INTEGER | FK to mediaType - original if conv.  |
+| startDate         | TEXT    | ISO date - content start date        |
+| endDate           | TEXT    | ISO date - content end date          |
+| batch             | INTEGER | FK to batch - parent batch           |
+| itemNumber        | TEXT    | Item identifier within batch         |
+| consecSheets      | TEXT    | Originator ref or sheet count        |
+| vaultLocation     | INTEGER | FK to vaultLocation - phys. location |
+| remarks           | TEXT    | General notes                        |
+| protectiveMarking | INTEGER | FK to protectiveMarking - sec. class |
+| protectionString  | TEXT    | Computed protection categories       |
+| musterRemarks     | TEXT    | Notes for mustering/inventory        |
+| loanedTo          | INTEGER | FK to \_users - user with item loan  |
+| loanedDate        | TEXT    | ISO date - when loaned               |
+| dispatchJob       | INTEGER | FK to dispatch - dispatch workflow   |
+| dispatchedDate    | TEXT    | ISO date - when dispatched           |
+| destruction       | INTEGER | FK to destruction - workflow         |
+| destructionDate   | TEXT    | ISO date - when destroyed            |
+| createdAt         | TEXT    | ISO date - record creation           |
+| createdBy         | INTEGER | FK to \_users - creator              |
 
 **Key behaviors:**
 
-- Soft deletes: Items are never deleted, only marked with dispatchedDate or destructionDate
-- Protection categories stored in bridging tables (itemCode, itemCave, itemHandle)
+- Soft deletes: Items never deleted, only marked with dispatchedDate
+  or destructionDate
+- Protection categories stored in bridging tables (itemCode,
+  itemCave, itemHandle)
 - Loan tracking: loanedTo and loanedDate track current loans
 
 ### batch
@@ -116,7 +121,8 @@ Groups of items received together.
 
 **Key behaviors:**
 
-- Batch properties (project, platform, etc.) are inherited by items via richItem view
+- Batch properties (project, platform, etc.) inherited by items via
+  richItem view
 - Batch numbers are auto-generated by BatchLifeCycle
 
 ### project
@@ -187,11 +193,13 @@ Many-to-many relationships between items and protection categories.
 | item                      | INTEGER | FK to item                      |
 | catCode/catCave/catHandle | TEXT    | FK to respective category table |
 
-**Usage:** Each item can have multiple category values. These are used to build the protectionString field.
+**Usage:** Each item can have multiple category values. These build
+the protectionString field.
 
 ## Reference Data Tables
 
-All reference data tables share a common structure with `id`, `name`, and `active` fields.
+All reference data tables share a common structure with `id`, `name`,
+and `active` fields.
 
 ### platform
 
@@ -423,7 +431,8 @@ FROM item i
 INNER JOIN batch b ON i.batch = b.id
 ```
 
-**Purpose:** Provides efficient access to item data with inherited batch properties. Used by frontend for most item queries.
+**Purpose:** Provides efficient access to item data with inherited
+batch properties. Used by frontend for most item queries.
 
 ### loanUsers
 
@@ -445,11 +454,13 @@ GROUP BY u.name, i.loanedTo
 
 ### Soft Deletes
 
-The database does **not support hard deletes** for core business entities (items, batches, projects, etc.). Instead:
+The database does **not support hard deletes** for core business
+entities (items, batches, projects, etc.). Instead:
 
 - Items are marked with `dispatchedDate` or `destructionDate`
 - Reference data uses `active = 0` to hide deprecated values
-- Only bridging tables (itemCode, itemCave, itemHandle) support DELETE operations
+- Only bridging tables (itemCode, itemCave, itemHandle) support
+  DELETE operations
 
 ### Audit Trail
 
@@ -467,13 +478,16 @@ All CRUD operations are logged to the `audit` table with:
 
 ### Data Types
 
-- **Dates**: TEXT columns storing ISO 8601 format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)
+- **Dates**: TEXT columns storing ISO 8601 format (YYYY-MM-DD or
+  YYYY-MM-DDTHH:MM:SS)
 - **Booleans**: INTEGER (0 = false, 1 = true)
-- **IDs**: INTEGER with AUTOINCREMENT (except vault, department, organisation, catCode/Cave/Handle which use TEXT)
+- **IDs**: INTEGER with AUTOINCREMENT (except vault, department,
+  organisation, catCode/Cave/Handle which use TEXT)
 
 ### Referential Integrity
 
-Foreign key constraints are defined for all relationships. The soul-cli backend enforces these constraints.
+Foreign key constraints are defined for all relationships. The
+soul-cli backend enforces these constraints.
 
 ### Active Flags
 
