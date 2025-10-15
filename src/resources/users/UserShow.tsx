@@ -52,7 +52,7 @@ import useAudit, { type AuditFunction } from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import LockResetIcon from '@mui/icons-material/LockReset'
 import axios, { isAxiosError } from 'axios'
-import * as Yup from 'yup';
+import * as Yup from 'yup'
 import { getUser } from '../../providers/authProvider'
 import { common } from '../../utils/password-validation.schema'
 const style = {
@@ -124,7 +124,7 @@ const DepartOrganisation = ({
 
 const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false)
-  const [password, setPassword] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('')
   const [passwordError, setPasswordError] = useState('')
   const { id } = useParams()
   const notify = useNotify()
@@ -132,17 +132,17 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
 
   const handleEditPassword = async (): Promise<void> => {
     try {
-      await common.validate(password);
+      await common.validate(password)
       setPassword('')
       if (!id || user?.id.toString() === id) {
-        notify('User cannot edit own password.', { type: 'error' });
-        return;
+        notify('User cannot edit own password.', { type: 'error' })
+        return
       }
 
       const response = await editUserPassowrd({
         newPassword: password,
         userId: parseInt(id)
-      });
+      })
 
       if (response.status === 201) {
         await audit({
@@ -153,26 +153,26 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
           securityRelated: true,
           subjectResource: null,
           subjectId: null
-        });
-        notify(response.data.message, { type: 'success' });
-        handleClose();
+        })
+        notify(response.data.message, { type: 'success' })
+        handleClose()
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        setPasswordError(error.message);
+        setPasswordError(error.message)
       } else {
         if (isAxiosError(error)) {
-          notify(getErrorDetails(error).message, { type: 'error' });
+          notify(getErrorDetails(error).message, { type: 'error' })
         } else {
-          notify((error as Error).message, { type: 'error' });
+          notify((error as Error).message, { type: 'error' })
         }
       }
     }
-  };
+  }
 
   const handleClickShowPassword = (): void => {
-    setShowPassword((show) => !show);
-  };
+    setShowPassword((show) => !show)
+  }
 
   return (
     <Box
@@ -191,13 +191,13 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
         <b>Provide Temporary Password</b>
       </Typography>
       <Typography>
-        {constants.PASSWORD_INSTRUCTION_TITLE} 
+        {constants.PASSWORD_INSTRUCTION_TITLE}
         <ul>
           {constants.PASSWORD_VALIDATION_CRITERIA.map((criteria, index) => (
             <li key={index}>{criteria}</li>
           ))}
         </ul>
-         The temporary password will be valid for one hour. If not updated in
+        The temporary password will be valid for one hour. If not updated in
         that time a new one must be provided.
       </Typography>
       <SimpleForm toolbar={false}>
@@ -216,18 +216,20 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
               </InputAdornment>
             )
           }}
-          onChange={async (e) => {
-            const value = e.target.value as string;
-            setPassword(value);
-            try {
-              await common.validate(value);
-              setPasswordError('');
-            } catch (error) {
-              // debugger
-              if (error instanceof Yup.ValidationError) {
-                setPasswordError(error.message);
+          onChange={(e) => {
+            const value = e.target.value as string
+            setPassword(value)
+            void (async () => {
+              try {
+                await common.validate(value)
+                setPasswordError('')
+              } catch (error) {
+                // debugger
+                if (error instanceof Yup.ValidationError) {
+                  setPasswordError(error.message)
+                }
               }
-            }
+            })()
           }}
           error={Boolean(passwordError)}
           helperText={
@@ -238,7 +240,11 @@ const EditPassword = ({ handleClose, audit }: Props): React.ReactElement => {
         />
       </SimpleForm>
       <FlexBox marginTop='20px'>
-        <Button variant='contained' onClick={handleEditPassword}>
+        <Button
+          variant='contained'
+          onClick={() => {
+            void handleEditPassword()
+          }}>
           Confirm
         </Button>
         <Button variant='outlined' color='secondary' onClick={handleClose}>
