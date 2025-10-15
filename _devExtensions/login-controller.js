@@ -45,11 +45,6 @@ const validateUser = (username, hashed_password, db) => {
     )
   }
 
-  if (user.hashed_password === '' && hashed_password === username) {
-    updateLockoutAttempts(db, 0, username)
-    return user
-  }
-
   const ishashed_passwordCorrect = bcrypt.compareSync(
     hashed_password,
     user.hashed_password
