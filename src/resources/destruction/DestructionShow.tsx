@@ -161,7 +161,8 @@ export default function DestructionShow(): React.ReactElement {
   const audit = useAudit()
   const { id } = useParams()
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
-    filter: { destruction: id }
+    filter: { destruction: id },
+    pagination: { page: 1, perPage: 1000 }
   })
   const { data: record } = useGetOne(constants.R_DESTRUCTION, { id })
 

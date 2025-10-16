@@ -224,7 +224,8 @@ export default function DispatchShow(): React.ReactElement {
   const audit = useAudit()
   const { id } = useParams()
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
-    filter: { dispatchJob: id }
+    filter: { dispatchJob: id },
+    pagination: { page: 1, perPage: 1000 }
   })
   const { data: record } = useGetOne(constants.R_DISPATCH, { id })
 
