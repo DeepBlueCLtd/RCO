@@ -31,8 +31,14 @@ import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
-import { type AuditData } from '../../utils/audit'
 import { getUser } from '../../providers/authProvider'
+import {
+  executeDispatch,
+  type UpdateFunction,
+  type UpdateManyFunction,
+  type AuditFunction,
+  type NotifyFunction
+} from './dispatch-operations'
 
 interface ShowActionsProps {
   showEdit: boolean
@@ -224,7 +230,8 @@ export default function DispatchShow(): React.ReactElement {
   const audit = useAudit()
   const { id } = useParams()
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
-    filter: { dispatchJob: id }
+    filter: { dispatchJob: id },
+    pagination: { page: 1, perPage: 1000 }
   })
   const { data: record } = useGetOne(constants.R_DISPATCH, { id })
 
@@ -232,40 +239,19 @@ export default function DispatchShow(): React.ReactElement {
     setOpen(name)
   }
 
-  const dispatchAudits = async (itemId: Item['id']): Promise<void> => {
-    const audiData: AuditData = {
-      activityType: AuditType.SENT,
-      activityDetail: 'Dispatch Sent',
-      securityRelated: false,
-      resource: constants.R_ITEMS,
-      dataId: itemId,
-      subjectId: record.id,
-      subjectResource: constants.R_DISPATCH
-    }
-    await audit(audiData)
-  }
-
   const dispatch = async (data: UpdateParams): Promise<void> => {
-    const audiData: AuditData = {
-      activityType: AuditType.SENT,
-      activityDetail: 'Dispatch Sent',
-      securityRelated: false,
-      resource: constants.R_DISPATCH,
-      dataId: parseInt(id as string),
-      subjectId: null,
-      subjectResource: null
-    }
-    await audit(audiData)
-    const ids = itemsAdded.map((item) => item.id)
-    await update(constants.R_DISPATCH, data)
-    await updateMany(constants.R_ITEMS, {
-      ids,
-      data: {
-        dispatchedDate: nowDate()
-      }
-    })
-    ids.map(dispatchAudits)
-    notify('Element dispatched', { type: 'success' })
+    if (!record?.id || !id) return
+
+    await executeDispatch(
+      itemsAdded as Item[],
+      parseInt(id),
+      record.id as number,
+      data,
+      update as UpdateFunction,
+      updateMany as UpdateManyFunction,
+      audit as AuditFunction,
+      notify as NotifyFunction
+    )
   }
 
   const saveReportPrinted = (): void => {

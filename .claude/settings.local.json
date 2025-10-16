@@ -8,7 +8,18 @@
       "Bash(git worktree:*)",
       "Bash(gh pr list:*)",
       "Bash(git fetch:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(curl -d \"*\" ntfy.sh/iancc2025)",
+      "Bash(yarn test)",
+      "Bash(yarn lint:*)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Bash(nvm use:*)",
+      "Bash([ -f .husky/pre-push ])",
+      "Bash(bash:*)",
+      "Bash(gh issue edit:*)",
+      "Bash(yarn test:*)",
+      "Bash(curl:*)",
+      "Bash(yarn build)"
     ],
     "deny": [],
     "ask": []

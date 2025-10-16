@@ -27,11 +27,16 @@ import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
 import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
 import HistoryButton from '../../components/HistoryButton'
-import { type AuditData } from '../../utils/audit'
 import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
+import {
+  executeDestruction,
+  type UpdateFunction,
+  type UpdateManyFunction,
+  type AuditFunction,
+  type NotifyFunction
+} from './destruction-operations'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -161,7 +166,8 @@ export default function DestructionShow(): React.ReactElement {
   const audit = useAudit()
   const { id } = useParams()
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
-    filter: { destruction: id }
+    filter: { destruction: id },
+    pagination: { page: 1, perPage: 1000 }
   })
   const { data: record } = useGetOne(constants.R_DESTRUCTION, { id })
 
@@ -169,40 +175,19 @@ export default function DestructionShow(): React.ReactElement {
     setOpen(value)
   }
 
-  const DestroyAudits = async (item: Item): Promise<void> => {
-    const audiData: AuditData = {
-      activityType: AuditType.DESTROY,
-      activityDetail: 'Destroyed',
-      securityRelated: false,
-      resource: constants.R_ITEMS,
-      dataId: item.id,
-      subjectId: record.id,
-      subjectResource: constants.R_DESTRUCTION
-    }
-    await audit(audiData)
-  }
-
   const destroy = async (data: UpdateParams): Promise<void> => {
-    const audiData = {
-      activityType: AuditType.DESTROY,
-      activityDetail: 'Destroyed',
-      securityRelated: false,
-      resource: constants.R_DESTRUCTION,
-      dataId: parseInt(id as string),
-      subjectId: id ? Number(id) : null,
-      subjectResource: constants.R_ITEMS
-    }
-    await audit(audiData)
-    const ids = itemsAdded.map((item: Item) => item.id)
-    await update(constants.R_DESTRUCTION, data)
-    await updateMany(constants.R_ITEMS, {
-      ids,
-      data: {
-        destructionDate: nowDate()
-      }
-    })
-    itemsAdded.forEach(DestroyAudits as any)
-    notify('Element destroyed', { type: 'success' })
+    if (!record?.id || !id) return
+
+    await executeDestruction(
+      itemsAdded as Item[],
+      parseInt(id),
+      record.id as number,
+      data,
+      update as UpdateFunction,
+      updateMany as UpdateManyFunction,
+      audit as AuditFunction,
+      notify as NotifyFunction
+    )
   }
 
   const saveReportPrinted = (): void => {
