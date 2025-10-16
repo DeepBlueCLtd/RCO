@@ -32,7 +32,13 @@ import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
 import { getUser } from '../../providers/authProvider'
-import { executeDispatch } from './dispatch-operations'
+import {
+  executeDispatch,
+  type UpdateFunction,
+  type UpdateManyFunction,
+  type AuditFunction,
+  type NotifyFunction
+} from './dispatch-operations'
 
 interface ShowActionsProps {
   showEdit: boolean
@@ -234,15 +240,17 @@ export default function DispatchShow(): React.ReactElement {
   }
 
   const dispatch = async (data: UpdateParams): Promise<void> => {
+    if (!record?.id || !id) return
+
     await executeDispatch(
-      itemsAdded,
-      parseInt(id as string),
-      record.id,
+      itemsAdded as Item[],
+      parseInt(id),
+      record.id as number,
       data,
-      update,
-      updateMany,
-      audit,
-      notify
+      update as UpdateFunction,
+      updateMany as UpdateManyFunction,
+      audit as AuditFunction,
+      notify as NotifyFunction
     )
   }
 

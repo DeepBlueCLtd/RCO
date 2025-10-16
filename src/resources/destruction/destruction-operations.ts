@@ -4,6 +4,11 @@ import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 
+export type UpdateFunction = (resource: string, params: UpdateParams) => Promise<any>
+export type UpdateManyFunction = (resource: string, params: { ids: number[]; data: any }) => Promise<any>
+export type AuditFunction = (data: AuditData) => Promise<void>
+export type NotifyFunction = (message: any, options?: any) => void
+
 /**
  * Executes destruction workflow for all items in a destruction job.
  * This function processes ALL items regardless of batch size by:
@@ -27,13 +32,10 @@ export const executeDestruction = async (
   destructionId: number,
   recordId: number,
   data: UpdateParams,
-  update: (resource: string, params: UpdateParams) => Promise<any>,
-  updateMany: (
-    resource: string,
-    params: { ids: number[]; data: any }
-  ) => Promise<any>,
-  audit: (data: AuditData) => Promise<void>,
-  notify: (message: any, options?: any) => void
+  update: UpdateFunction,
+  updateMany: UpdateManyFunction,
+  audit: AuditFunction,
+  notify: NotifyFunction
 ): Promise<void> => {
 
   // Audit the destruction job itself

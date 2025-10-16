@@ -30,7 +30,13 @@ import useAudit from '../../hooks/useAudit'
 import HistoryButton from '../../components/HistoryButton'
 import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
-import { executeDestruction } from './destruction-operations'
+import {
+  executeDestruction,
+  type UpdateFunction,
+  type UpdateManyFunction,
+  type AuditFunction,
+  type NotifyFunction
+} from './destruction-operations'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -170,15 +176,17 @@ export default function DestructionShow(): React.ReactElement {
   }
 
   const destroy = async (data: UpdateParams): Promise<void> => {
+    if (!record?.id || !id) return
+
     await executeDestruction(
-      itemsAdded,
-      parseInt(id as string),
-      record.id,
+      itemsAdded as Item[],
+      parseInt(id),
+      record.id as number,
       data,
-      update,
-      updateMany,
-      audit,
-      notify
+      update as UpdateFunction,
+      updateMany as UpdateManyFunction,
+      audit as AuditFunction,
+      notify as NotifyFunction
     )
   }
 
