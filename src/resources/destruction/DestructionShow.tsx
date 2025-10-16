@@ -27,11 +27,10 @@ import { useParams } from 'react-router-dom'
 import useCanAccess from '../../hooks/useCanAccess'
 import Confirm from '../../components/Confirm'
 import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
 import HistoryButton from '../../components/HistoryButton'
-import { type AuditData } from '../../utils/audit'
 import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
+import { executeDestruction } from './destruction-operations'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -170,40 +169,17 @@ export default function DestructionShow(): React.ReactElement {
     setOpen(value)
   }
 
-  const DestroyAudits = async (item: Item): Promise<void> => {
-    const audiData: AuditData = {
-      activityType: AuditType.DESTROY,
-      activityDetail: 'Destroyed',
-      securityRelated: false,
-      resource: constants.R_ITEMS,
-      dataId: item.id,
-      subjectId: record.id,
-      subjectResource: constants.R_DESTRUCTION
-    }
-    await audit(audiData)
-  }
-
   const destroy = async (data: UpdateParams): Promise<void> => {
-    const audiData = {
-      activityType: AuditType.DESTROY,
-      activityDetail: 'Destroyed',
-      securityRelated: false,
-      resource: constants.R_DESTRUCTION,
-      dataId: parseInt(id as string),
-      subjectId: id ? Number(id) : null,
-      subjectResource: constants.R_ITEMS
-    }
-    await audit(audiData)
-    const ids = itemsAdded.map((item: Item) => item.id)
-    await update(constants.R_DESTRUCTION, data)
-    await updateMany(constants.R_ITEMS, {
-      ids,
-      data: {
-        destructionDate: nowDate()
-      }
-    })
-    itemsAdded.forEach(DestroyAudits as any)
-    notify('Element destroyed', { type: 'success' })
+    await executeDestruction(
+      itemsAdded,
+      parseInt(id as string),
+      record.id,
+      data,
+      update,
+      updateMany,
+      audit,
+      notify
+    )
   }
 
   const saveReportPrinted = (): void => {
