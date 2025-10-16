@@ -32,7 +32,7 @@ export const executeDestruction = async (
     params: { ids: number[]; data: any }
   ) => Promise<any>,
   audit: (data: AuditData) => Promise<void>,
-  notify: (message: string, options: { type: string }) => void
+  notify: (message: any, options?: any) => void
 ): Promise<void> => {
 
   // Audit the destruction job itself
