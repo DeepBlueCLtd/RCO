@@ -2,6 +2,8 @@ import { describe, it, expect, jest } from '@jest/globals'
 import { executeDestruction } from './destruction-operations'
 import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
+import { type UpdateParams } from 'react-admin'
+import { type AuditData } from '../../utils/audit'
 
 describe('executeDestruction', () => {
   it('should process all 50 items in a batch', async () => {
@@ -12,10 +14,10 @@ describe('executeDestruction', () => {
       destruction: 1
     })) as Item[]
 
-    const mockUpdate = jest.fn().mockResolvedValue({})
-    const mockUpdateMany = jest.fn().mockResolvedValue({})
-    const mockAudit = jest.fn().mockResolvedValue(undefined)
-    const mockNotify = jest.fn()
+    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
+    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
+    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
+    const mockNotify = jest.fn<(message: any, options?: any) => void>()
 
     const updateParams = {
       id: 1,
@@ -46,7 +48,7 @@ describe('executeDestruction', () => {
       })
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1]
+    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
     expect(updateManyCall.ids).toHaveLength(50)
 
     // Verify audit was called 51 times (1 for job + 50 for items)
@@ -65,10 +67,10 @@ describe('executeDestruction', () => {
       destruction: 1
     })) as Item[]
 
-    const mockUpdate = jest.fn().mockResolvedValue({})
-    const mockUpdateMany = jest.fn().mockResolvedValue({})
-    const mockAudit = jest.fn().mockResolvedValue(undefined)
-    const mockNotify = jest.fn()
+    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
+    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
+    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
+    const mockNotify = jest.fn<(message: any, options?: any) => void>()
 
     await executeDestruction(
       mockItems,
@@ -81,7 +83,7 @@ describe('executeDestruction', () => {
       mockNotify
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1]
+    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
     expect(updateManyCall.ids).toHaveLength(25)
     expect(mockAudit).toHaveBeenCalledTimes(26) // 1 + 25
   })
@@ -93,10 +95,10 @@ describe('executeDestruction', () => {
       destruction: 1
     })) as Item[]
 
-    const mockUpdate = jest.fn().mockResolvedValue({})
-    const mockUpdateMany = jest.fn().mockResolvedValue({})
-    const mockAudit = jest.fn().mockResolvedValue(undefined)
-    const mockNotify = jest.fn()
+    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
+    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
+    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
+    const mockNotify = jest.fn<(message: any, options?: any) => void>()
 
     await executeDestruction(
       mockItems,
@@ -109,7 +111,7 @@ describe('executeDestruction', () => {
       mockNotify
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1]
+    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
     expect(updateManyCall.ids).toHaveLength(26)
     expect(updateManyCall.ids[25]).toBe(26) // Verify 26th item is included
   })
@@ -122,10 +124,10 @@ describe('executeDestruction', () => {
       destruction: 1
     })) as Item[]
 
-    const mockUpdate = jest.fn().mockResolvedValue({})
-    const mockUpdateMany = jest.fn().mockResolvedValue({})
-    const mockAudit = jest.fn().mockResolvedValue(undefined)
-    const mockNotify = jest.fn()
+    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
+    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
+    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
+    const mockNotify = jest.fn<(message: any, options?: any) => void>()
 
     await executeDestruction(
       mockItems,
@@ -138,7 +140,7 @@ describe('executeDestruction', () => {
       mockNotify
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1]
+    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
 
     // Verify all 69 items are included
     expect(updateManyCall.ids).toHaveLength(69)
@@ -154,10 +156,10 @@ describe('executeDestruction', () => {
 
   it('should create correct audit entries for destruction job', async () => {
     const mockItems = [{ id: 1, itemNumber: 'ITEM-1', destruction: 1 }] as Item[]
-    const mockUpdate = jest.fn().mockResolvedValue({})
-    const mockUpdateMany = jest.fn().mockResolvedValue({})
-    const mockAudit = jest.fn().mockResolvedValue(undefined)
-    const mockNotify = jest.fn()
+    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
+    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
+    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
+    const mockNotify = jest.fn<(message: any, options?: any) => void>()
 
     await executeDestruction(
       mockItems,
@@ -195,10 +197,10 @@ describe('executeDestruction', () => {
 
   it('should call update with correct destruction record data', async () => {
     const mockItems = [{ id: 1, itemNumber: 'ITEM-1', destruction: 1 }] as Item[]
-    const mockUpdate = jest.fn().mockResolvedValue({})
-    const mockUpdateMany = jest.fn().mockResolvedValue({})
-    const mockAudit = jest.fn().mockResolvedValue(undefined)
-    const mockNotify = jest.fn()
+    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
+    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
+    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
+    const mockNotify = jest.fn<(message: any, options?: any) => void>()
 
     const updateParams = {
       id: 5,
