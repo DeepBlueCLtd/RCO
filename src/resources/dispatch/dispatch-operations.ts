@@ -21,6 +21,7 @@ import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
  * @param audit - Audit function
  * @param notify - Notification function
  */
+// eslint-disable-next-line max-params
 export const executeDispatch = async (
   items: Item[],
   dispatchId: number,
