@@ -1,76 +1,46 @@
-import { describe, it, expect, jest } from '@jest/globals'
+import { describe, it, expect } from '@jest/globals'
 import { executeDispatch } from './dispatch-operations'
 import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
-import { type UpdateParams } from 'react-admin'
-import { type AuditData } from '../../utils/audit'
+import {
+  createMockOperationDependencies,
+  createMockItems,
+  getUpdateManyCallParams
+} from '../test-helpers/operation-test-helpers'
 
 describe('executeDispatch', () => {
   it('should process all 50 items in a batch', async () => {
-    // Setup: Create 50 mock items
-    const mockItems = Array.from({ length: 50 }, (_, i) => ({
-      id: i + 1,
-      itemNumber: `ITEM-${i + 1}`,
-      dispatchJob: 1
-    })) as Item[]
+    const mockItems = createMockItems(50, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
-
-    const updateParams = {
-      id: 1,
-      data: { dispatchedAt: '2025-01-01' },
-      previousData: {}
-    }
-
-    // Execute
     await executeDispatch(
       mockItems,
       1, // dispatchId
       1, // recordId
-      updateParams,
+      { id: 1, data: { dispatchedAt: '2025-01-01' }, previousData: {} },
       mockUpdate,
       mockUpdateMany,
       mockAudit,
       mockNotify
     )
 
-    // Verify updateMany was called with all 50 item IDs
     expect(mockUpdateMany).toHaveBeenCalledWith(
       constants.R_ITEMS,
       expect.objectContaining({
         ids: expect.arrayContaining([1, 2, 3, 25, 26, 49, 50]),
-        data: expect.objectContaining({
-          dispatchedDate: expect.any(String)
-        })
+        data: expect.objectContaining({ dispatchedDate: expect.any(String) })
       })
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any } as { ids: number[]; data: any }
-    expect(updateManyCall.ids).toHaveLength(50)
-
-    // Verify audit was called 51 times (1 for job + 50 for items)
-    expect(mockAudit).toHaveBeenCalledTimes(51)
-
-    // Verify notification was sent
-    expect(mockNotify).toHaveBeenCalledWith('Element dispatched', {
-      type: 'success'
-    })
+    const updateManyParams = getUpdateManyCallParams(mockUpdateMany)
+    expect(updateManyParams.ids).toHaveLength(50)
+    expect(mockAudit).toHaveBeenCalledTimes(51) // 1 + 50
+    expect(mockNotify).toHaveBeenCalledWith('Element dispatched', { type: 'success' })
   })
 
   it('should handle exactly 25 items (boundary condition)', async () => {
-    const mockItems = Array.from({ length: 25 }, (_, i) => ({
-      id: i + 1,
-      itemNumber: `ITEM-${i + 1}`,
-      dispatchJob: 1
-    })) as Item[]
-
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
+    const mockItems = createMockItems(25, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDispatch(
       mockItems,
@@ -83,22 +53,14 @@ describe('executeDispatch', () => {
       mockNotify
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
-    expect(updateManyCall.ids).toHaveLength(25)
+    const updateManyParams = getUpdateManyCallParams(mockUpdateMany)
+    expect(updateManyParams.ids).toHaveLength(25)
     expect(mockAudit).toHaveBeenCalledTimes(26) // 1 + 25
   })
 
   it('should handle 26 items (edge case beyond default pagination)', async () => {
-    const mockItems = Array.from({ length: 26 }, (_, i) => ({
-      id: i + 1,
-      itemNumber: `ITEM-${i + 1}`,
-      dispatchJob: 1
-    })) as Item[]
-
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
+    const mockItems = createMockItems(26, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDispatch(
       mockItems,
@@ -111,22 +73,14 @@ describe('executeDispatch', () => {
       mockNotify
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
-    expect(updateManyCall.ids).toHaveLength(26)
-    expect(updateManyCall.ids[25]).toBe(26) // Verify 26th item is included
+    const updateManyParams = getUpdateManyCallParams(mockUpdateMany)
+    expect(updateManyParams.ids).toHaveLength(26)
+    expect(updateManyParams.ids[25]).toBe(26) // Verify 26th item is included
   })
 
   it('should handle 100 items (large batch)', async () => {
-    const mockItems = Array.from({ length: 100 }, (_, i) => ({
-      id: i + 1,
-      itemNumber: `ITEM-${i + 1}`,
-      dispatchJob: 1
-    })) as Item[]
-
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
+    const mockItems = createMockItems(100, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDispatch(
       mockItems,
@@ -139,17 +93,14 @@ describe('executeDispatch', () => {
       mockNotify
     )
 
-    const updateManyCall = mockUpdateMany.mock.calls[0][1] as { ids: number[]; data: any }
-    expect(updateManyCall.ids).toHaveLength(100)
+    const updateManyParams = getUpdateManyCallParams(mockUpdateMany)
+    expect(updateManyParams.ids).toHaveLength(100)
     expect(mockAudit).toHaveBeenCalledTimes(101) // 1 + 100
   })
 
   it('should create correct audit entries for dispatch job', async () => {
-    const mockItems = [{ id: 1, itemNumber: 'ITEM-1', dispatchJob: 1 }] as Item[]
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
+    const mockItems = createMockItems(1, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDispatch(
       mockItems,
@@ -186,11 +137,8 @@ describe('executeDispatch', () => {
   })
 
   it('should call update with correct dispatch record data', async () => {
-    const mockItems = [{ id: 1, itemNumber: 'ITEM-1', dispatchJob: 1 }] as Item[]
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
+    const mockItems = createMockItems(1, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     const updateParams = {
       id: 5,
@@ -213,16 +161,8 @@ describe('executeDispatch', () => {
   })
 
   it('should set dispatchedDate on all items', async () => {
-    const mockItems = Array.from({ length: 3 }, (_, i) => ({
-      id: i + 1,
-      itemNumber: `ITEM-${i + 1}`,
-      dispatchJob: 1
-    })) as Item[]
-
-    const mockUpdate = jest.fn<(resource: string, params: UpdateParams) => Promise<any>>().mockResolvedValue({})
-    const mockUpdateMany = jest.fn<(resource: string, params: { ids: number[]; data: any }) => Promise<any>>().mockResolvedValue({})
-    const mockAudit = jest.fn<(data: AuditData) => Promise<void>>().mockResolvedValue(undefined)
-    const mockNotify = jest.fn<(message: any, options?: any) => void>()
+    const mockItems = createMockItems(3, 1, { dispatchJob: 1 })
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDispatch(
       mockItems,
@@ -239,9 +179,7 @@ describe('executeDispatch', () => {
       constants.R_ITEMS,
       expect.objectContaining({
         ids: [1, 2, 3],
-        data: expect.objectContaining({
-          dispatchedDate: expect.any(String)
-        })
+        data: expect.objectContaining({ dispatchedDate: expect.any(String) })
       })
     )
   })
