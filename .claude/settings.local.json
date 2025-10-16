@@ -17,7 +17,9 @@
       "Bash([ -f .husky/pre-push ])",
       "Bash(bash:*)",
       "Bash(gh issue edit:*)",
-      "Bash(yarn test:*)"
+      "Bash(yarn test:*)",
+      "Bash(curl:*)",
+      "Bash(yarn build)"
     ],
     "deny": [],
     "ask": []
