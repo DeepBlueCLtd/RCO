@@ -9,6 +9,7 @@
       "Bash(gh pr list:*)",
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
+      "Bash(node:*)",
       "Bash(curl -d \"*\" ntfy.sh/iancc2025)",
       "Bash(yarn test)",
       "Bash(yarn lint:*)",
@@ -19,9 +20,8 @@
       "Bash(gh issue edit:*)",
       "Bash(yarn test:*)",
       "Bash(curl:*)",
-      "Bash(yarn build)"
-      "Bash(gh label list:*)",
-      "Bash(gh issue edit:*)"
+      "Bash(yarn build)",
+      "Bash(gh label list:*)"
     ],
     "deny": [],
     "ask": []

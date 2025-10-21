@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const BS3Database = require('better-sqlite3')
 const path = require('path')
+const { authenticateRequest, canManagePasswords } = require('./auth-helper')
 
 const getUserById = (db, userId) => {
   const query = `
@@ -24,11 +25,27 @@ const clearUserUpdateBefore = (db, userId) => {
 const updateBeforeController = async (req, res) => {
   let mainDb
   try {
-    mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
-    const { userId } = req.body.data
+    // Authenticate the request and extract caller information
+    const { userId: callerId, roleIds } = authenticateRequest(req)
 
-    clearUserUpdateBefore(mainDb, userId)
-    const user = getUserById(mainDb, userId)
+    const { userId: targetUserId } = req.body.data
+
+    // Dual-flow authorization:
+    // Flow 1: Self-service - any user can clear their own password expiration
+    // Flow 2: Admin - rco-user or rco-power-user can clear any user's password expiration
+    const isSelfService = callerId === targetUserId
+    const canManageOthersPasswords = canManagePasswords(roleIds)
+
+    if (!isSelfService && !canManageOthersPasswords) {
+      return res.status(403).json({
+        message: 'Insufficient permissions. Can only clear your own password expiration unless you have rco-user or rco-power-user role.'
+      })
+    }
+
+    mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
+
+    clearUserUpdateBefore(mainDb, targetUserId)
+    const user = getUserById(mainDb, targetUserId)
     res.status(201).json({
       userDetails: user
     })
