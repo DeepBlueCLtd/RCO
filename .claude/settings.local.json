@@ -21,7 +21,8 @@
       "Bash(yarn test:*)",
       "Bash(curl:*)",
       "Bash(yarn build)",
-      "Bash(gh label list:*)"
+      "Bash(gh label list:*)",
+      "Bash(gh release:*)"
     ],
     "deny": [],
     "ask": []
