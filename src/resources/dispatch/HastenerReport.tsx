@@ -20,9 +20,10 @@ const BottomText = (): React.ReactElement => {
 interface Props {
   open: boolean
   handleOpen: (name: DestructionModal) => void
+  onPrint?: () => void
 }
 export default function HastenerReport(props: Props): React.ReactElement {
-  const { open, handleOpen } = props
+  const { open, handleOpen, onPrint } = props
   const title = 'Hastener Receipt Note'
 
   return (
@@ -30,7 +31,8 @@ export default function HastenerReport(props: Props): React.ReactElement {
       open={open}
       onClose={() => {
         handleOpen('')
-      }}>
+      }}
+      onPrint={onPrint}>
       <Box>
         <ReportData title={title} />
         <Show component={'div'} actions={<></>}>
