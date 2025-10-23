@@ -27,6 +27,7 @@ import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
 import ItemList, { BulkActions } from '../items/ItemList'
 import useAudit from '../../hooks/useAudit'
+import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
@@ -248,16 +249,23 @@ export default function DispatchShow(): React.ReactElement {
       .catch(console.error)
   }
 
-  const saveHastenerPrinted = (): void => {
-    update(constants.R_DISPATCH, {
+  const saveHastenerPrinted = async (): Promise<void> => {
+    await update(constants.R_DISPATCH, {
       id: record.id,
       previousData: record,
       data: {
         lastHastenerSent: nowDate()
       }
     })
-      .then(console.log)
-      .catch(console.error)
+    await audit({
+      activityType: AuditType.EDIT,
+      activityDetail: 'Hastener sent',
+      securityRelated: false,
+      resource: constants.R_DISPATCH,
+      dataId: record.id,
+      subjectId: null,
+      subjectResource: null
+    })
   }
 
   return (
@@ -277,7 +285,9 @@ export default function DispatchShow(): React.ReactElement {
           <HastenerReport
             open={open === 'hastener'}
             handleOpen={handleOpen}
-            onPrint={saveHastenerPrinted}
+            onPrint={() => {
+              saveHastenerPrinted().catch(console.error)
+            }}
           />
           <Show
             actions={
