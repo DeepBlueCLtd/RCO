@@ -15,7 +15,7 @@ const DispatchDetail = (): React.ReactElement => {
   return (
     <Show component={'div'} actions={<></>} sx={{ marginBottom: '10px' }}>
       <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
-        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline', fontSize: '1rem' }}>
           Serial No.:{' '}
         </Typography>
         <FunctionField<Dispatch>
@@ -25,7 +25,7 @@ const DispatchDetail = (): React.ReactElement => {
         />
       </Box>
       <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
-        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline', fontSize: '1rem' }}>
           Date:{' '}
         </Typography>
         <Typography component='span' sx={{ fontSize: '1rem' }}>
@@ -37,7 +37,7 @@ const DispatchDetail = (): React.ReactElement => {
         </Typography>
       </Box>
       <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
-        <Typography fontWeight='bold'>
+        <Typography fontWeight='bold' sx={{ fontSize: '1rem' }}>
           From:
           <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>
             &nbsp;{configData?.fromAddress}
@@ -45,7 +45,7 @@ const DispatchDetail = (): React.ReactElement => {
         </Typography>
       </Box>
       <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
-        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline', fontSize: '1rem' }}>
           To:{' '}
         </Typography>
         <FunctionField<Dispatch>
