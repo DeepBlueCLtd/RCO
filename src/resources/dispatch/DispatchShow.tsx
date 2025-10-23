@@ -211,6 +211,7 @@ export default function DispatchShow(): React.ReactElement {
   const [updateMany] = useUpdateMany()
   const notify = useNotify()
   const audit = useAudit()
+  const refresh = useRefresh()
   const { id } = useParams()
   const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
     filter: { dispatchJob: id },
@@ -250,22 +251,28 @@ export default function DispatchShow(): React.ReactElement {
   }
 
   const saveHastenerPrinted = async (): Promise<void> => {
-    await update(constants.R_DISPATCH, {
-      id: record.id,
-      previousData: record,
-      data: {
-        lastHastenerSent: nowDate()
-      }
-    })
-    await audit({
-      activityType: AuditType.EDIT,
-      activityDetail: 'Hastener sent',
-      securityRelated: false,
-      resource: constants.R_DISPATCH,
-      dataId: record.id,
-      subjectId: null,
-      subjectResource: null
-    })
+    try {
+      await update(constants.R_DISPATCH, {
+        id: record.id,
+        previousData: record,
+        data: {
+          lastHastenerSent: nowDate()
+        }
+      })
+      refresh()
+      await audit({
+        activityType: AuditType.EDIT,
+        activityDetail: 'Hastener sent',
+        securityRelated: false,
+        resource: constants.R_DISPATCH,
+        dataId: record.id,
+        subjectId: null,
+        subjectResource: null
+      })
+    } catch (error) {
+      notify('Failed to update hastener sent date', { type: 'error' })
+      console.error(error)
+    }
   }
 
   return (
