@@ -2,18 +2,12 @@
 
 Secure asset register (Vault Asset Log)
 
-## Burndown Chart
-
-The cumulative height of the chart is the overall amount of work to be done for VAL, starting on 24th July. The green area is the volume of work completed, the red area is the volume of work pending, and the red line is the trend for the remaining work - which will eventually forecast the completion date.
-
-As the data sample grows, the trend line will become more valuable.
-![Burndown chart](https://docs.google.com/spreadsheets/d/e/2PACX-1vTOhfaDcSORmcH_LCzAVAkRcUvEZbz_DqZVo63WaSAmqwIy_CpSq1g-EQ2hM7-O_pM02HRcr_4S48f2/pubchart?oid=1341797319&format=image)
-
 # Production Installs
 
 ## Install dependencies
 
-- Download a zip snapshot from GitHub
+- Ensure build machine has Node v18.x and yarn v1.22.x installed
+- Download a zip snapshot from GitHub (probably from the newest Release)
 - run `yarn` command in root project folder to install/update dependencies
 
 ## Build production application
