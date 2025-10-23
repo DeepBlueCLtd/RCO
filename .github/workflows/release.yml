@@ -21,6 +21,11 @@ jobs:
           node-version: 18
           cache: 'yarn'
 
+      - name: Update package.json version from tag
+        run: |
+          TAG_VERSION=${GITHUB_REF_NAME#v}
+          npm version $TAG_VERSION --no-git-tag-version --allow-same-version
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
