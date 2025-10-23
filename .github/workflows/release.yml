@@ -35,15 +35,7 @@ jobs:
       - name: Build production
         run: yarn build
 
-      - name: Package dist
-        run: |
-          cd dist
-          zip -r ../dist-${{ github.ref_name }}.zip .
-          cd ..
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist-${{ github.ref_name }}.zip
           generate_release_notes: true
-          fail_on_unmatched_files: true
