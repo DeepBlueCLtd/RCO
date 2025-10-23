@@ -1,4 +1,4 @@
-import { DateField, FunctionField, Show, TextField } from 'react-admin'
+import { FunctionField, Show, TextField } from 'react-admin'
 import FieldWithLabel from '../../components/FieldWithLabel'
 import { Typography } from '@mui/material'
 import ItemsReport from '../items/ItemsReport'
@@ -24,19 +24,18 @@ const DispatchDetail = (): React.ReactElement => {
           }}
         />
       </Box>
-      <FieldWithLabel<Dispatch>
-        label='Date'
-        source='createdAt'
-        labelStyles={{ fontSize: '1rem' }}
-        component={DateField}
-        locales='en-GB'
-        options={{
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        }}
-        textProps={{ variant: 'h6', sx: { fontSize: '1rem' } }}
-      />
+      <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
+        <Typography fontWeight='bold' sx={{ display: 'inline' }}>
+          Date:{' '}
+        </Typography>
+        <Typography component='span' sx={{ fontSize: '1rem' }}>
+          {new Date().toLocaleDateString('en-GB', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </Typography>
+      </Box>
       <Box fontWeight='bold' sx={{ fontSize: '1rem' }}>
         <Typography fontWeight='bold'>
           From:

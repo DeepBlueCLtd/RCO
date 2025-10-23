@@ -21,7 +21,7 @@ import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import FlexBox from '../../components/FlexBox'
 import { Box } from '@mui/system'
-import { Typography } from '@mui/material'
+import { Typography, Tooltip } from '@mui/material'
 import DispatchForm from './DispatchForm'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
@@ -133,26 +133,6 @@ const Footer = (props: FooterProps): React.ReactElement => {
     })
   }
 
-  const sendHastener = async (): Promise<void> => {
-    await update(constants.R_DISPATCH, {
-      id: record.id,
-      previousData: record,
-      data: {
-        lastHastenerSent: nowDate()
-      }
-    })
-    refresh()
-    await audit({
-      activityType: AuditType.EDIT,
-      activityDetail: 'Hastener sent',
-      securityRelated: false,
-      resource: constants.R_DISPATCH,
-      dataId: record.id,
-      subjectId: null,
-      subjectResource: null
-    })
-  }
-
   if (typeof record === 'undefined') return <></>
   const rolesThatCanCreateReceiptNote = ['rco-user', 'rco-power-user']
   return (
@@ -186,11 +166,15 @@ const Footer = (props: FooterProps): React.ReactElement => {
           </FlexBox>
           {dispatched && !receiptReceived && (
             <FlexBox justifyContent='space-around'>
-              <Button
-                variant='outlined'
-                label='Record Hastener Sent'
-                onClick={sendHastener as any}
-              />
+              <Tooltip title='Last Hastener Sent Date is updated automatically when hastener is printed'>
+                <span>
+                  <Button
+                    variant='outlined'
+                    label='Record Hastener Sent'
+                    disabled={true}
+                  />
+                </span>
+              </Tooltip>
               <Button
                 variant='outlined'
                 label='Receipt Note Received'
@@ -266,6 +250,18 @@ export default function DispatchShow(): React.ReactElement {
       .catch(console.error)
   }
 
+  const saveHastenerPrinted = (): void => {
+    update(constants.R_DISPATCH, {
+      id: record.id,
+      previousData: record,
+      data: {
+        lastHastenerSent: nowDate()
+      }
+    })
+      .then(console.log)
+      .catch(console.error)
+  }
+
   return (
     <FlexBox alignItems={'flex-start'}>
       <Box component='fieldset' style={{ width: '500px', padding: '0 15px' }}>
@@ -280,7 +276,11 @@ export default function DispatchShow(): React.ReactElement {
             open={open === 'dispatch'}
             handleOpen={handleOpen}
           />
-          <HastenerReport open={open === 'hastener'} handleOpen={handleOpen} />
+          <HastenerReport
+            open={open === 'hastener'}
+            handleOpen={handleOpen}
+            onPrint={saveHastenerPrinted}
+          />
           <Show
             actions={
               <ShowActions
