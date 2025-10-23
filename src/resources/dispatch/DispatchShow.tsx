@@ -27,7 +27,6 @@ import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
 import ItemList, { BulkActions } from '../items/ItemList'
 import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
@@ -89,7 +88,6 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const hasWritePermission = hasAccess(constants.R_ITEMS, { write: true })
   const { handleOpen, dispatch } = props
-  const audit = useAudit()
   const refresh = useRefresh()
   const [update] = useUpdate()
   const notify = useNotify()
