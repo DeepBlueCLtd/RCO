@@ -52,6 +52,25 @@ with role-based access control and comprehensive audit logging.
 - `yarn` - Install dependencies
 - `yarn prepare` - Install Husky git hooks (runs lint-staged on commit)
 
+### Releases
+
+To create a new release for clients:
+
+```bash
+# Create and push a version tag - that's all you need to do
+git tag v1.0.2
+git push origin v1.0.2
+```
+
+The GitHub Actions release workflow (`.github/workflows/release.yml`) automatically:
+1. Updates `package.json` version from the tag
+2. Runs tests (must pass)
+3. Builds production bundle
+4. Creates GitHub Release with `dist-v1.0.2.zip` + source code
+5. Auto-generates release notes from commits
+
+**Note:** The `version` field in `package.json` is a placeholder - git tags are the source of truth for version numbers.
+
 ## Architecture
 
 ### Frontend Stack
