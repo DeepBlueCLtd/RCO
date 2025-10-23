@@ -22,7 +22,8 @@
       "Bash(curl:*)",
       "Bash(yarn build)",
       "Bash(gh label list:*)",
-      "Bash(gh release:*)"
+      "Bash(gh release:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
