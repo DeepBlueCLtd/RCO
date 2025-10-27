@@ -65,11 +65,40 @@ git push origin v1.0.2
 The GitHub Actions release workflow (`.github/workflows/release.yml`) automatically:
 1. Updates `package.json` version from the tag
 2. Runs tests (must pass)
-3. Builds production bundle
-4. Creates GitHub Release with `dist-v1.0.2.zip` + source code
-5. Auto-generates release notes from commits
+3. Creates GitHub Release with source code
+4. Auto-generates release notes from commits
 
 **Note:** The `version` field in `package.json` is a placeholder - git tags are the source of truth for version numbers.
+
+### Client Deployment (Air-Gapped Environments)
+
+For deploying to secure/air-gapped client environments:
+
+**On Build Machine (must match target OS):**
+
+1. Download release source code from GitHub
+2. Install dependencies: `yarn install --frozen-lockfile`
+3. Build production frontend: `yarn build`
+4. Create deployment package containing:
+   - `dist/` - Built React frontend
+   - `_extensions/` - Production soul-cli extensions
+   - `_devExtensions/` - Authentication implementation (required by `_extensions/`)
+   - `node_modules/` - All dependencies (includes platform-specific native modules)
+   - `package.json` - Package metadata
+5. Zip the package for transfer
+
+**On Target Server:**
+
+1. Extract deployment package
+2. Ensure `.env` file exists with required variables (`TOKEN_SECRET`, etc.)
+3. Ensure `db/` folder exists with `RCO2.sqlite` and `Security.sqlite` databases
+4. Start server: `yarn serve`
+
+**Important Notes:**
+- **DO NOT** copy `db/` folder or `.env` from build machine - these contain target-specific data
+- Build machine OS must match target OS (native modules like `better-sqlite3` are platform-specific)
+- For database schema changes, manually apply SQL migrations to target database
+- For `.env` changes, manually update target `.env` file
 
 ## Architecture
 
@@ -167,8 +196,10 @@ All in `src/types.d.ts`:
 
 ### Custom Extensions
 
-- `_extensions/api.js` - Production API extensions (serves client, auth endpoints)
-- `_devExtensions/` - Development-only extensions (login, password management)
+- `_extensions/api.js` - Production wrapper that serves client and imports auth endpoints
+- `_devExtensions/` - Soul authentication implementation (login, password management, lockout)
+  - Required by `_extensions/api.js` in production
+  - Used directly by `yarn serve:dev` during development
 - Extensions integrate with soul-cli to add custom Express routes
 
 ### Configuration
