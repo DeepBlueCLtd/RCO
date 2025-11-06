@@ -40,14 +40,17 @@ export async function login(page: Page, credentials: LoginCredentials): Promise<
  * Logout helper function
  */
 export async function logout(page: Page): Promise<void> {
-  // Click user menu button
-  await page.locator('[aria-label="User menu"]').click()
+  // Click user menu button (uses Profile aria-label from React-Admin)
+  await page.locator('.RaUserMenu-userButton, [aria-label="Profile"]').click()
+
+  // Wait for menu to open
+  await page.waitForTimeout(500)
 
   // Click logout option
   await page.locator('text=Logout').click()
 
   // Wait for redirect to login page
-  await page.waitForURL('/')
+  await page.waitForURL('/#/login', { timeout: 10000 })
   await expect(page.locator('#username')).toBeVisible()
 }
 
