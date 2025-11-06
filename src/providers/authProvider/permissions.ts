@@ -3,13 +3,13 @@ import * as constants from '../../constants'
 const BASE_URL =
   process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : ''
 
-const getRoleId = async (role: string): Promise<number | undefined> => {
+export const getRoleId = async (role: string): Promise<number | undefined> => {
   return await axios
     .get(`${BASE_URL}/api/tables/_roles/rows?_filters=name:${role}`)
     .then((res) => res.data.data?.[0]?.id)
 }
 
-const getPermissionsByRoleId = async (
+export const getPermissionsByRoleId = async (
   roleId: number
 ): Promise<AxiosResponse<any, any>> => {
   try {
@@ -34,7 +34,7 @@ interface DBPermissionType {
   updatedAt: string
 }
 
-const mapPermissions = (
+export const mapPermissions = (
   permissions: DBPermissionType[]
 ): ResourcePermissions => {
   const mappedPermissions = permissions.reduce((acc: any, permission: any) => {
