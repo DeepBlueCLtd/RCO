@@ -242,8 +242,8 @@ export default function DispatchShow(): React.ReactElement {
   const saveReportPrinted = (): void => {
     if (!record) return
     saveDispatchReportPrinted(
-      record.id,
-      record,
+      record.id as number,
+      record as Dispatch,
       update as UpdateFunction
     )
       .then(console.log)
