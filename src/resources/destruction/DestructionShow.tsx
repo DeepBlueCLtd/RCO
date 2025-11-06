@@ -163,7 +163,7 @@ export default function DestructionShow(): React.ReactElement {
   const notify = useNotify()
   const audit = useAudit()
   const { id } = useParams()
-  const { data: itemsAdded = [] } = useGetList<Item>(constants.R_ITEMS, {
+  const { data: itemsAdded = [] as Item[] } = useGetList<Item>(constants.R_ITEMS, {
     filter: { destruction: id },
     pagination: { page: 1, perPage: 1000 }
   })
