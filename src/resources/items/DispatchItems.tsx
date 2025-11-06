@@ -83,7 +83,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       await addItemsToDispatch(
         data,
         ids,
-        dispatchJobId as number,
+        dispatchJobId,
         dataProvider as DataProvider,
         audit as AuditFunction,
         notify as NotifyFunction

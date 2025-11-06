@@ -22,26 +22,31 @@ const createMockDataProvider = (): DataProvider => ({
   updateMany: jest.fn()
 })
 
+// Helpers to create mock objects
+const createMockItem = (partial: Partial<Item>): Item => partial as unknown as Item
+const createMockDispatch = (partial: Partial<Dispatch>): Dispatch => partial as unknown as Dispatch
+const createMockDestruction = (partial: Partial<Destruction>): Destruction => partial as unknown as Destruction
+
 describe('item-operations', () => {
   describe('addItemsToDestruction', () => {
     it('should add eligible items to destruction job', async () => {
       const items: Item[] = [
-        {
+        createMockItem({
           id: 1,
           loanedDate: null,
           loanedTo: null,
           destructionDate: null,
           createdAt: '2024-01-01',
           createdBy: 1
-        } as unknown as Item,
-        {
+        }),
+        createMockItem({
           id: 2,
           loanedDate: null,
           loanedTo: null,
           destructionDate: null,
           createdAt: '2024-01-01',
           createdBy: 1
-        } as unknown as Item
+        })
       ]
       const itemIds = [1, 2]
       const destructionJobId = 100
@@ -78,22 +83,22 @@ describe('item-operations', () => {
 
     it('should filter out loaned items', async () => {
       const items: Item[] = [
-        {
+        createMockItem({
           id: 1,
           loanedDate: null,
           loanedTo: null,
           destructionDate: null,
           createdAt: '2024-01-01',
           createdBy: 1
-        } as unknown as Item,
-        {
+        }),
+        createMockItem({
           id: 2,
           loanedDate: '2024-01-01',
           loanedTo: 'Someone',
           destructionDate: null,
           createdAt: '2024-01-01',
           createdBy: 1
-        } as unknown as Item
+        })
       ]
       const itemIds = [1, 2]
       const destructionJobId = 100
@@ -121,22 +126,22 @@ describe('item-operations', () => {
 
     it('should filter out already destroyed items', async () => {
       const items: Item[] = [
-        {
+        createMockItem({
           id: 1,
           loanedDate: null,
           loanedTo: null,
           destructionDate: null,
           createdAt: '2024-01-01',
           createdBy: 1
-        } as unknown as Item,
-        {
+        }),
+        createMockItem({
           id: 2,
           loanedDate: null,
           loanedTo: null,
           destructionDate: '2024-01-01',
           createdAt: '2024-01-01',
           createdBy: 1
-        } as unknown as Item
+        })
       ]
       const itemIds = [1, 2]
       const destructionJobId = 100
@@ -166,8 +171,8 @@ describe('item-operations', () => {
   describe('addItemsToDispatch', () => {
     it('should add items to dispatch job', async () => {
       const items: Item[] = [
-        { id: 1, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item,
-        { id: 2, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item
+        createMockItem({ id: 1, createdAt: '2024-01-01', createdBy: 1 }),
+        createMockItem({ id: 2, createdAt: '2024-01-01', createdBy: 1 })
       ]
       const itemIds = [1, 2]
       const dispatchJobId = 200
@@ -204,9 +209,9 @@ describe('item-operations', () => {
 
     it('should only process items in the itemIds array', async () => {
       const items: Item[] = [
-        { id: 1, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item,
-        { id: 2, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item,
-        { id: 3, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item
+        createMockItem({ id: 1, createdAt: '2024-01-01', createdBy: 1 }),
+        createMockItem({ id: 2, createdAt: '2024-01-01', createdBy: 1 }),
+        createMockItem({ id: 3, createdAt: '2024-01-01', createdBy: 1 })
       ]
       const itemIds = [1, 3]
       const dispatchJobId = 200
@@ -236,8 +241,8 @@ describe('item-operations', () => {
   describe('removeItemsFromDestruction', () => {
     it('should remove items from destruction', async () => {
       const items: Item[] = [
-        { id: 1, destruction: 100, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item,
-        { id: 2, destruction: 100, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item
+        createMockItem({ id: 1, destruction: 100, createdAt: '2024-01-01', createdBy: 1 }),
+        createMockItem({ id: 2, destruction: 100, createdAt: '2024-01-01', createdBy: 1 })
       ]
       const itemIds = [1, 2]
       const dataProvider = createMockDataProvider()
@@ -270,7 +275,7 @@ describe('item-operations', () => {
 
     it('should create correct audit entries', async () => {
       const items: Item[] = [
-        { id: 1, destruction: 100, createdAt: '2024-01-01', createdBy: 1 } as unknown as Item
+        createMockItem({ id: 1, destruction: 100, createdAt: '2024-01-01', createdBy: 1 })
       ]
       const itemIds = [1]
       const dataProvider = createMockDataProvider()
@@ -311,7 +316,7 @@ describe('item-operations', () => {
   describe('recordReceiptReceived', () => {
     it('should update dispatch with receipt received date', async () => {
       const dispatchId = 1
-      const previousData = { id: 1 } as Dispatch
+      const previousData: Dispatch = createMockDispatch({ id: 1 })
       const update = createMockUpdate()
       const notify = createMockNotify()
 
@@ -334,7 +339,7 @@ describe('item-operations', () => {
   describe('saveDispatchReportPrinted', () => {
     it('should update dispatch with report printed timestamp', async () => {
       const dispatchId = 1
-      const previousData = { id: 1 } as Dispatch
+      const previousData: Dispatch = createMockDispatch({ id: 1 })
       const update = createMockUpdate()
 
       await saveDispatchReportPrinted(dispatchId, previousData, update)
@@ -352,7 +357,7 @@ describe('item-operations', () => {
   describe('saveDestructionReportPrinted', () => {
     it('should update destruction with report printed timestamp', async () => {
       const destructionId = 1
-      const previousData = { id: 1 } as Destruction
+      const previousData: Destruction = createMockDestruction({ id: 1 })
       const update = createMockUpdate()
 
       await saveDestructionReportPrinted(destructionId, previousData, update)
@@ -370,7 +375,7 @@ describe('item-operations', () => {
   describe('saveHastenerPrinted', () => {
     it('should update dispatch with hastener sent date and create audit entry', async () => {
       const dispatchId = 1
-      const previousData = { id: 1 } as Dispatch
+      const previousData: Dispatch = createMockDispatch({ id: 1 })
       const update = createMockUpdate()
       const audit = createMockAudit()
       const notify = createMockNotify()

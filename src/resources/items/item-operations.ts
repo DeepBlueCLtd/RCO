@@ -8,7 +8,7 @@ export type UpdateFunction = (resource: string, params: UpdateParams) => Promise
 export type UpdateManyFunction = (resource: string, params: { ids: number[]; data: any }) => Promise<any>
 export type AuditFunction = (data: AuditData) => Promise<void>
 export type NotifyFunction = (message: any, options?: any) => void
-export type DataProvider = {
+export interface DataProvider {
   updateMany: (resource: string, params: { ids: number[]; data: any }) => Promise<any>
 }
 

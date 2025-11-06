@@ -84,7 +84,7 @@ export default function DestroyItems(props: Props): React.ReactElement {
         await addItemsToDestruction(
           data,
           ids,
-          destructionJobId as number,
+          destructionJobId,
           dataProvider as DataProvider,
           audit as AuditFunction,
           notify as NotifyFunction
