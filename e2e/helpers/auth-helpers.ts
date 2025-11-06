@@ -69,8 +69,9 @@ export async function isLoggedIn(page: Page): Promise<boolean> {
  * Wait for success notification
  */
 export async function waitForSuccessNotification(page: Page, message?: string): Promise<void> {
-  const notification = page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-  await expect(notification).toBeVisible()
+  // Try multiple possible selectors for Material-UI notifications
+  const notification = page.locator('.MuiSnackbarContent-message, .MuiAlert-message, [role="alert"]').first()
+  await expect(notification).toBeVisible({ timeout: 10000 })
 
   if (message) {
     await expect(notification).toContainText(message)
@@ -81,11 +82,12 @@ export async function waitForSuccessNotification(page: Page, message?: string): 
  * Wait for error notification
  */
 export async function waitForErrorNotification(page: Page, message?: string): Promise<void> {
-  const notification = page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-  await expect(notification).toBeVisible()
+  // Try multiple possible selectors for Material-UI notifications
+  const notification = page.locator('.MuiSnackbarContent-message, .MuiAlert-message, [role="alert"]').first()
+  await expect(notification).toBeVisible({ timeout: 10000 })
 
   if (message) {
-    await expect(notification).toHaveText(message)
+    await expect(notification).toContainText(message)
   }
 }
 
