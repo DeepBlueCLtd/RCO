@@ -50,7 +50,7 @@ const Finalised = (): React.ReactElement => {
 
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-  const record = useRecordContext()
+  const record = useRecordContext<Destruction>()
   const finalised =
     typeof record?.finalisedAt !== 'undefined' &&
     record?.finalisedAt !== null &&
@@ -161,12 +161,12 @@ export type DestructionModal = 'history' | 'report' | ''
 
 export default function DestructionShow(): React.ReactElement {
   const [open, setOpen] = useState<DestructionModal>('')
-  const [update] = useUpdate()
-  const [updateMany] = useUpdateMany()
+  const [update] = useUpdate<Destruction>()
+  const [updateMany] = useUpdateMany<Item>()
   const notify = useNotify()
   const audit = useAudit()
   const { id } = useParams()
-  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+  const { data: itemsAdded = [] } = useGetList<Item>(constants.R_ITEMS, {
     filter: { destruction: id },
     pagination: { page: 1, perPage: 1000 }
   })

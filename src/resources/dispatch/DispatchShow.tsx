@@ -51,7 +51,7 @@ interface ShowActionsProps {
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { showEdit } = props
   const { hasAccess } = useCanAccess()
-  const record = useRecordContext()
+  const record = useRecordContext<Dispatch>()
   const dispatched = typeof record?.dispatchedAt !== 'undefined'
   const redirect = useRedirect()
 
@@ -94,7 +94,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const hasWritePermission = hasAccess(constants.R_ITEMS, { write: true })
   const { handleOpen, dispatch } = props
   const refresh = useRefresh()
-  const [update] = useUpdate()
+  const [update] = useUpdate<Dispatch>()
   const notify = useNotify()
   const user = getUser()
   const dispatched: boolean =
@@ -208,13 +208,13 @@ export type DestructionModal = 'history' | 'hastener' | 'dispatch' | ''
 
 export default function DispatchShow(): React.ReactElement {
   const [open, setOpen] = useState<DestructionModal>()
-  const [update] = useUpdate()
-  const [updateMany] = useUpdateMany()
+  const [update] = useUpdate<Dispatch>()
+  const [updateMany] = useUpdateMany<Item>()
   const notify = useNotify()
   const audit = useAudit()
   const refresh = useRefresh()
   const { id } = useParams()
-  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+  const { data: itemsAdded = [] } = useGetList<Item>(constants.R_ITEMS, {
     filter: { dispatchJob: id },
     pagination: { page: 1, perPage: 1000 }
   })
