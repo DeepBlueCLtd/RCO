@@ -25,7 +25,8 @@
       "Bash(gh release:*)",
       "WebSearch",
       "Bash(git tag:*)",
-      "Bash(yarn e2e)"
+      "Bash(yarn e2e)",
+      "Bash(yarn playwright test:*)"
     ],
     "deny": [],
     "ask": []
