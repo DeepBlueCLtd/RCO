@@ -19,11 +19,11 @@ import { getClientIp } from './helper'
 
 describe('trackEvent (audit logging)', () => {
   let mockDataProvider: DataProvider
-  let mockCreate: jest.Mock
+  let mockCreate: jest.MockedFunction<(...args: any[]) => Promise<any>>
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreate = jest.fn().mockResolvedValue({ data: { id: 1 } })
+    mockCreate = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ data: { id: 1 } })
     mockDataProvider = {
       create: mockCreate
     } as unknown as DataProvider
@@ -201,7 +201,7 @@ describe('trackEvent (audit logging)', () => {
     await trackEventFn(auditData)
 
     const afterTime = new Date().toISOString()
-    const callArgs = mockCreate.mock.calls[0][1]
+    const callArgs = mockCreate.mock.calls[0][1] as { data: Audit }
     const auditDateTime = callArgs.data.dateTime
 
     expect(auditDateTime).toBeTruthy()

@@ -3,6 +3,7 @@ import UserLifeCycleFactory from './UserLifeCycle'
 import { AuditType } from '../../../utils/activity-types'
 import { R_USERS } from '../../../constants'
 import type { CreateParams, UpdateParams, UpdateResult } from 'react-admin'
+import type { AuditFunctionType } from '../dataprovider-utils'
 
 // Mock getUser from authProvider
 jest.mock('../../../providers/authProvider', () => ({
@@ -10,12 +11,12 @@ jest.mock('../../../providers/authProvider', () => ({
 }))
 
 describe('UserLifeCycle', () => {
-  let mockAudit: jest.Mock
+  let mockAudit: jest.MockedFunction<AuditFunctionType>
   let userLifeCycle: any
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockAudit = jest.fn().mockResolvedValue(undefined)
+    mockAudit = jest.fn<AuditFunctionType>().mockResolvedValue(undefined)
     userLifeCycle = UserLifeCycleFactory(mockAudit)
   })
 
@@ -67,8 +68,10 @@ describe('UserLifeCycle', () => {
         previousData: {
           id: 1,
           username: 'testuser',
-          hashed_password: null
-        } as _Users
+          hashed_password: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
+        } as unknown as _Users
       }
 
       const result = await userLifeCycle.beforeUpdate(updateParams)
@@ -125,8 +128,10 @@ describe('UserLifeCycle', () => {
         previousData: {
           id: 42,
           username: 'testuser',
-          hashed_password: null
-        } as _Users
+          hashed_password: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
+        } as unknown as _Users
       }
 
       await userLifeCycle.beforeUpdate(updateParams)
