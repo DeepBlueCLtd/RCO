@@ -19,10 +19,21 @@ export const TEST_USERS = {
  */
 export async function login(page: Page, credentials: LoginCredentials): Promise<void> {
   await page.goto('/')
+
+  // Wait for login form to be visible and ready
+  await page.waitForSelector('#username', { state: 'visible', timeout: 10000 })
+  await page.waitForSelector('#password', { state: 'visible', timeout: 10000 })
+
+  // Fill in credentials
   await page.locator('#username').fill(credentials.username)
   await page.locator('#password').fill(credentials.password)
+
+  // Submit and wait for navigation
   await page.locator('button[type="submit"]').click()
   await page.waitForLoadState('networkidle')
+
+  // Give React time to render authenticated state
+  await page.waitForTimeout(1000)
 }
 
 /**
