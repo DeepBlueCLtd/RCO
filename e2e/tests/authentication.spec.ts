@@ -99,8 +99,8 @@ test.describe('Authentication Flows', () => {
       // Try to access protected page
       await page.goto('/items')
 
-      // Should redirect to login
-      await expect(page).toHaveURL('/')
+      // Should redirect to login (URL will be /items#/login due to hash routing)
+      await expect(page).toHaveURL(/.*#\/login/)
       await expect(page.locator('#username')).toBeVisible()
     })
 
