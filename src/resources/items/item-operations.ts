@@ -4,12 +4,28 @@ import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 
-export type UpdateFunction<RecordType extends RaRecord<Identifier> = any> = (resource: string, params: UpdateParams<RecordType>) => Promise<any>
-export type UpdateManyFunction = (resource: string, params: { ids: number[]; data: any }) => Promise<any>
+export type UpdateFunction<RecordType extends RaRecord<Identifier> = RaRecord<Identifier>> = (
+  resource: string,
+  params: UpdateParams<RecordType>
+) => Promise<unknown>
+
+export type UpdateManyFunction = (
+  resource?: string,
+  params?: { ids?: number[]; data?: unknown }
+) => Promise<unknown>
+
 export type AuditFunction = (data: AuditData) => Promise<void>
-export type NotifyFunction = (message: any, options?: any) => void
+
+export type NotifyFunction = (
+  message: string,
+  options?: { type?: 'success' | 'error' | 'warning' | 'info' }
+) => void
+
 export interface DataProvider {
-  updateMany: (resource: string, params: { ids: number[]; data: any }) => Promise<any>
+  updateMany: (
+    resource?: string,
+    params?: { ids?: number[]; data?: unknown }
+  ) => Promise<unknown>
 }
 
 /**

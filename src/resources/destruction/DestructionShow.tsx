@@ -31,7 +31,8 @@ import HistoryButton from '../../components/HistoryButton'
 import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
 import {
-  executeDestruction
+  executeDestruction,
+  type UpdateManyFunction
 } from './destruction-operations'
 import { saveDestructionReportPrinted } from '../items/item-operations'
 
@@ -181,7 +182,7 @@ export default function DestructionShow(): React.ReactElement {
       record.id,
       data,
       update,
-      updateMany,
+      updateMany as UpdateManyFunction,
       audit,
       notify
     )

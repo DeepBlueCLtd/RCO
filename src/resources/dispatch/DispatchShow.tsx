@@ -32,7 +32,8 @@ import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
 import { getUser } from '../../providers/authProvider'
 import {
-  executeDispatch
+  executeDispatch,
+  type UpdateManyFunction
 } from './dispatch-operations'
 import {
   recordReceiptReceived,
@@ -229,7 +230,7 @@ export default function DispatchShow(): React.ReactElement {
       record.id,
       data,
       update,
-      updateMany,
+      updateMany as UpdateManyFunction,
       audit,
       notify
     )
