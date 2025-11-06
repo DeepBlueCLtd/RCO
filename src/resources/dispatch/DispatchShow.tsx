@@ -27,18 +27,19 @@ import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 import Confirm from '../../components/Confirm'
 import ItemList, { BulkActions } from '../items/ItemList'
 import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
 import DispatchReport from './DispatchReport'
 import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
 import { getUser } from '../../providers/authProvider'
 import {
   executeDispatch,
-  type UpdateFunction,
-  type UpdateManyFunction,
-  type AuditFunction,
-  type NotifyFunction
+  type UpdateManyFunction
 } from './dispatch-operations'
+import {
+  recordReceiptReceived,
+  saveDispatchReportPrinted,
+  saveHastenerPrinted
+} from '../items/item-operations'
 
 interface ShowActionsProps {
   showEdit: boolean
@@ -47,7 +48,7 @@ interface ShowActionsProps {
 const ShowActions = (props: ShowActionsProps): React.ReactElement => {
   const { showEdit } = props
   const { hasAccess } = useCanAccess()
-  const record = useRecordContext()
+  const record = useRecordContext<Dispatch>()
   const dispatched = typeof record?.dispatchedAt !== 'undefined'
   const redirect = useRedirect()
 
@@ -90,7 +91,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const hasWritePermission = hasAccess(constants.R_ITEMS, { write: true })
   const { handleOpen, dispatch } = props
   const refresh = useRefresh()
-  const [update] = useUpdate()
+  const [update] = useUpdate<Dispatch>()
   const notify = useNotify()
   const user = getUser()
   const dispatched: boolean =
@@ -119,17 +120,14 @@ const Footer = (props: FooterProps): React.ReactElement => {
   }
 
   const sendReceiptReceived = async (): Promise<void> => {
-    await update(constants.R_DISPATCH, {
-      id: record.id,
-      data: {
-        receiptReceived: nowDate()
-      },
-      previousData: record
-    })
+    if (!record) return
+    await recordReceiptReceived(
+      record.id,
+      record,
+      update,
+      notify
+    )
     refresh()
-    notify('Receipt Received', {
-      type: 'success'
-    })
   }
 
   if (typeof record === 'undefined') return <></>
@@ -207,17 +205,17 @@ export type DestructionModal = 'history' | 'hastener' | 'dispatch' | ''
 
 export default function DispatchShow(): React.ReactElement {
   const [open, setOpen] = useState<DestructionModal>()
-  const [update] = useUpdate()
-  const [updateMany] = useUpdateMany()
+  const [update] = useUpdate<Dispatch>()
+  const [updateMany] = useUpdateMany<Item>()
   const notify = useNotify()
   const audit = useAudit()
   const refresh = useRefresh()
   const { id } = useParams()
-  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+  const { data: itemsAdded = [] as Item[] } = useGetList<Item>(constants.R_ITEMS, {
     filter: { dispatchJob: id },
     pagination: { page: 1, perPage: 1000 }
   })
-  const { data: record } = useGetOne(constants.R_DISPATCH, { id })
+  const { data: record } = useGetOne<Dispatch>(constants.R_DISPATCH, { id: Number(id) })
 
   const handleOpen = (name: DestructionModal): void => {
     setOpen(name)
@@ -227,52 +225,38 @@ export default function DispatchShow(): React.ReactElement {
     if (!record?.id || !id) return
 
     await executeDispatch(
-      itemsAdded as Item[],
+      itemsAdded,
       parseInt(id),
-      record.id as number,
+      record.id,
       data,
-      update as UpdateFunction,
+      update,
       updateMany as UpdateManyFunction,
-      audit as AuditFunction,
-      notify as NotifyFunction
+      audit,
+      notify
     )
   }
 
   const saveReportPrinted = (): void => {
-    update(constants.R_DISPATCH, {
-      id: record.id,
-      previousData: record,
-      data: {
-        reportPrintedAt: nowDate()
-      }
-    })
+    if (!record) return
+    saveDispatchReportPrinted(
+      record.id,
+      record,
+      update
+    )
       .then(console.log)
       .catch(console.error)
   }
 
-  const saveHastenerPrinted = async (): Promise<void> => {
-    try {
-      await update(constants.R_DISPATCH, {
-        id: record.id,
-        previousData: record,
-        data: {
-          lastHastenerSent: nowDate()
-        }
-      })
-      refresh()
-      await audit({
-        activityType: AuditType.EDIT,
-        activityDetail: 'Hastener sent',
-        securityRelated: false,
-        resource: constants.R_DISPATCH,
-        dataId: record.id,
-        subjectId: null,
-        subjectResource: null
-      })
-    } catch (error) {
-      notify('Failed to update hastener sent date', { type: 'error' })
-      console.error(error)
-    }
+  const saveHastenerPrintedCallback = async (): Promise<void> => {
+    if (!record) return
+    await saveHastenerPrinted(
+      record.id,
+      record,
+      update,
+      audit,
+      notify
+    )
+    refresh()
   }
 
   return (
@@ -293,7 +277,7 @@ export default function DispatchShow(): React.ReactElement {
             open={open === 'hastener'}
             handleOpen={handleOpen}
             onPrint={() => {
-              saveHastenerPrinted().catch(console.error)
+              saveHastenerPrintedCallback().catch(console.error)
             }}
           />
           <Show

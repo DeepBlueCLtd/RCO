@@ -32,11 +32,9 @@ import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
 import {
   executeDestruction,
-  type UpdateFunction,
-  type UpdateManyFunction,
-  type AuditFunction,
-  type NotifyFunction
+  type UpdateManyFunction
 } from './destruction-operations'
+import { saveDestructionReportPrinted } from '../items/item-operations'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -49,7 +47,7 @@ const Finalised = (): React.ReactElement => {
 
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-  const record = useRecordContext()
+  const record = useRecordContext<Destruction>()
   const finalised =
     typeof record?.finalisedAt !== 'undefined' &&
     record?.finalisedAt !== null &&
@@ -160,16 +158,16 @@ export type DestructionModal = 'history' | 'report' | ''
 
 export default function DestructionShow(): React.ReactElement {
   const [open, setOpen] = useState<DestructionModal>('')
-  const [update] = useUpdate()
-  const [updateMany] = useUpdateMany()
+  const [update] = useUpdate<Destruction>()
+  const [updateMany] = useUpdateMany<Item>()
   const notify = useNotify()
   const audit = useAudit()
   const { id } = useParams()
-  const { data: itemsAdded = [] } = useGetList(constants.R_ITEMS, {
+  const { data: itemsAdded = [] as Item[] } = useGetList<Item>(constants.R_ITEMS, {
     filter: { destruction: id },
     pagination: { page: 1, perPage: 1000 }
   })
-  const { data: record } = useGetOne(constants.R_DESTRUCTION, { id })
+  const { data: record } = useGetOne<Destruction>(constants.R_DESTRUCTION, { id: Number(id) })
 
   const handleOpen = (value: DestructionModal): void => {
     setOpen(value)
@@ -179,25 +177,24 @@ export default function DestructionShow(): React.ReactElement {
     if (!record?.id || !id) return
 
     await executeDestruction(
-      itemsAdded as Item[],
+      itemsAdded,
       parseInt(id),
-      record.id as number,
+      record.id,
       data,
-      update as UpdateFunction,
+      update,
       updateMany as UpdateManyFunction,
-      audit as AuditFunction,
-      notify as NotifyFunction
+      audit,
+      notify
     )
   }
 
   const saveReportPrinted = (): void => {
-    update(constants.R_DESTRUCTION, {
-      id: record.id,
-      previousData: record,
-      data: {
-        reportPrintedAt: nowDate()
-      }
-    })
+    if (!record) return
+    saveDestructionReportPrinted(
+      record.id,
+      record,
+      update
+    )
       .then(console.log)
       .catch(console.error)
   }

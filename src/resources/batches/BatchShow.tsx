@@ -30,7 +30,7 @@ export interface ShowActionProps {
 
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
-  const { record } = useShowContext()
+  const { record } = useShowContext<Batch>()
   const redirect = useRedirect()
 
   return (
@@ -44,12 +44,14 @@ const ShowActions = (): React.ReactElement => {
       {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
       <HistoryButton
         onClick={() => {
-          redirect(
-            `/audit?filter=${JSON.stringify({
-              dataId: record.id,
-              resource: constants.R_BATCHES
-            })}`
-          )
+          if (record) {
+            redirect(
+              `/audit?filter=${JSON.stringify({
+                dataId: record.id,
+                resource: constants.R_BATCHES
+              })}`
+            )
+          }
         }}
       />
     </TopToolbar>

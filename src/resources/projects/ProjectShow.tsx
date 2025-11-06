@@ -45,7 +45,7 @@ const Actions = (): React.ReactElement => {
   const { id = '' } = useParams()
   const projectId: string = id
   const { hasAccess } = useCanAccess()
-  const { record } = useShowContext()
+  const { record } = useShowContext<Project>()
   const navigate = useNavigate()
 
   return (
@@ -61,12 +61,14 @@ const Actions = (): React.ReactElement => {
       ) : null}
       <HistoryButton
         onClick={() => {
-          navigate(
-            `/audit?filter=${JSON.stringify({
-              dataId: record.id,
-              resource: constants.R_PROJECTS
-            })}`
-          )
+          if (record) {
+            navigate(
+              `/audit?filter=${JSON.stringify({
+                dataId: record.id,
+                resource: constants.R_PROJECTS
+              })}`
+            )
+          }
         }}
       />
     </TopToolbar>

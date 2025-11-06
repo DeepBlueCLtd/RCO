@@ -12,7 +12,12 @@ import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useEffect, useState } from 'react'
 import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
+import {
+  addItemsToDispatch,
+  type AuditFunction,
+  type NotifyFunction,
+  type DataProvider
+} from './item-operations'
 
 interface Props {
   onClose: () => void
@@ -73,38 +78,16 @@ export default function DispatchItems(props: Props): React.ReactElement {
     ) ?? {
       name: undefined
     }
-    if (typeof dispatchId !== 'undefined') {
-      const items = data
-        .filter(({ id }) => ids.includes(id))
-        .map(async (item) => {
-          const audiData = {
-            activityType: AuditType.EDIT,
-            activityDetail: 'Item added to dispatch',
-            securityRelated: false,
-            resource: constants.R_ITEMS,
-            dataId: item.id,
-            subjectId: dispatchJobId as number,
-            subjectResource: constants.R_DISPATCH
-          }
-          await audit(audiData)
-          await audit({
-            ...audiData,
-            resource: constants.R_DISPATCH,
-            dataId: dispatchJobId as number,
-            subjectId: item.id,
-            subjectResource: constants.R_ITEMS
-          })
-          return item.id
-        })
 
-      await dataProvider.updateMany<Item>(constants.R_ITEMS, {
-        ids: await Promise.all(items),
-        data: {
-          dispatchJob: Number(dispatchId)
-        }
-      })
-
-      notify(`${items.length} items added to dispatch`, { type: 'success' })
+    if (dispatchId !== undefined && dispatchJobId) {
+      await addItemsToDispatch(
+        data,
+        ids,
+        dispatchJobId,
+        dataProvider as DataProvider,
+        audit as AuditFunction,
+        notify as NotifyFunction
+      )
       successCallback()
     }
   }

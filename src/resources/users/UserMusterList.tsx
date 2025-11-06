@@ -58,7 +58,7 @@ const CompositeField = (props: CompositeFieldProps): React.ReactElement => {
 }
 
 const Title = (): React.ReactElement => {
-  const record = useRecordContext()
+  const record = useRecordContext<_Users>()
   return (
     <Typography fontSize='18px' variant='h4' textAlign='center' margin='10px'>
       VAL - Loans to {record.name}

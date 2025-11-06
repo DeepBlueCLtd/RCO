@@ -6,7 +6,7 @@ import { Show, useRecordContext } from 'react-admin'
 import { type DestructionModal } from './DispatchShow'
 
 const BottomText = (): React.ReactElement => {
-  const { dispatchedAt } = useRecordContext()
+  const { dispatchedAt } = useRecordContext<Dispatch>()
 
   return (
     <Typography padding='20px'>
