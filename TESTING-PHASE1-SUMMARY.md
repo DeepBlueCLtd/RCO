@@ -17,9 +17,10 @@ This phase focused on establishing comprehensive test coverage (unit + e2e) for 
 
 ### E2E Tests
 - **Baseline:** 1 file (login.spec.ts with basic tests)
-- **Phase-1:** 4 files with 43 comprehensive e2e tests ✅
+- **Phase-1:** 4 files with 43 comprehensive e2e tests ⚠️
 - **Added:** 3 new test files + helpers
 - **Coverage:** Authentication, Items, Batches (43 tests total)
+- **Status:** Written but not executed (requires database setup to run)
 
 ## New Test Coverage
 
@@ -360,27 +361,96 @@ yarn e2e authentication.spec.ts
 
 **Note:** E2E tests require the development server to be running. The Playwright config automatically starts `yarn dev` before running tests.
 
+### ⚠️ E2E Test Status - REQUIRES ADDITIONAL SETUP
+
+**Important:** The e2e tests have been **written but not executed** and require additional configuration:
+
+#### Missing Infrastructure
+1. **Backend Server:** Tests need both frontend AND backend running
+   - Current config only starts `yarn dev` (frontend on port 5173)
+   - Needs `yarn serve:dev` (backend on port 8000) with database
+
+2. **Database State Management:** Tests need consistent database state
+   - Database should be reset/reverted between test runs
+   - Need `git revert` on `db/` folder between test suites
+   - Or create a test database fixture mechanism
+
+3. **Playwright Config Update Needed:**
+   ```javascript
+   // playwright.config.ts needs update to:
+   webServer: [
+     {
+       command: 'yarn serve:dev',  // Backend
+       url: 'http://localhost:8000',
+       reuseExistingServer: !process.env.CI
+     },
+     {
+       command: 'yarn dev',         // Frontend
+       url: 'http://localhost:5173',
+       reuseExistingServer: !process.env.CI
+     }
+   ]
+   ```
+
+#### Required Actions Before E2E Tests Can Run
+1. **Update `playwright.config.ts`** to start both servers
+2. **Create database reset mechanism** (test fixture or git revert script)
+3. **Add test database** with known test data (users: ian/admin, jason/user)
+4. **Run tests locally** to verify they work
+5. **Fix any selector/timing issues** discovered during execution
+
+#### Current Status
+- ✅ E2E test files written following Playwright patterns
+- ✅ Helper functions created for reusability
+- ❌ Not executed or verified to run
+- ❌ Missing server configuration
+- ❌ Missing database state management
+
+**Recommendation:** Consider e2e tests as "drafted but incomplete" - they provide a foundation but need setup work before they're functional.
+
 ## Conclusion
 
-🎉 **Phase-1 System Testing Implementation: COMPLETE**
+### Phase-1 System Testing Implementation Status
 
-### Summary
-- ✅ **88 new tests added** (45 unit + 43 e2e)
-- ✅ **100% test pass rate** (85/85 unit tests)
-- ✅ **Critical paths covered:** Password validation, audit logging, user lifecycle, permissions, authentication, items, batches
+#### ✅ Fully Complete: Unit Tests
+- ✅ **45 new unit tests** - all passing (85/85 total)
+- ✅ **100% test pass rate**
+- ✅ **Critical paths covered:** Password validation, audit logging, user lifecycle, permissions
 - ✅ **Test infrastructure established:** Reusable helpers, proper mocking, type safety
 - ✅ **Zero TypeScript errors**
 - ✅ **Regression baseline documented**
 
-### Impact
-Phase-1 establishes a **comprehensive test safety net** that will:
-1. Catch regressions during Phase-2 dependency upgrades
-2. Enable confident refactoring
-3. Document expected system behavior
-4. Reduce manual testing burden
-5. Improve code quality and maintainability
+#### ⚠️ Partially Complete: E2E Tests
+- ⚠️ **43 e2e tests drafted** - NOT executed or verified
+- ✅ **Test files created:** authentication, items, batches
+- ✅ **Helper functions created:** Reusable auth and navigation helpers
+- ❌ **Missing:** Server configuration to run both backend + frontend
+- ❌ **Missing:** Database state management between test runs
+- ❌ **Not verified:** Tests may have selector or timing issues
 
-The codebase is now **upgrade-ready** with solid test coverage protecting critical functionality.
+**E2E Test Status:** Drafted but requires additional setup work before functional.
+
+### Impact
+
+**Unit Test Safety Net (Functional):**
+The 85 passing unit tests provide:
+1. ✅ Protection for critical business logic during upgrades
+2. ✅ Confidence for refactoring password, audit, and permission systems
+3. ✅ Documentation of expected behavior for security-critical functions
+4. ✅ Automated verification reducing manual testing burden
+
+**E2E Test Foundation (Requires Work):**
+The drafted e2e tests provide:
+1. ⚠️ Starting point for end-to-end testing
+2. ⚠️ Patterns and helpers for future e2e test development
+3. ⚠️ Structure for testing critical workflows
+4. ❌ Not yet functional - requires infrastructure setup
+
+**Readiness Assessment:**
+- ✅ **Unit test coverage:** Ready for Phase-2 dependency upgrades
+- ⚠️ **E2E test coverage:** Needs setup work before useful
+- ✅ **Critical paths protected:** Password, audit, permissions, lifecycle
+- ⚠️ **User workflows:** Partially drafted, not verified
 
 ---
 
