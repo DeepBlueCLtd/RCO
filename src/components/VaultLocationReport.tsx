@@ -39,7 +39,7 @@ function ProtectiveMarking({
 }: {
   filter: filterType
 }): React.ReactElement {
-  const { data = [], isLoading } = useGetList(constants.R_ITEMS, {
+  const { data = [], isLoading } = useGetList<Item>(constants.R_ITEMS, {
     filter,
     pagination: { page: 1, perPage: 1000 }
   })

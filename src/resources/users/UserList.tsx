@@ -86,8 +86,8 @@ export default function UserList(props: Props): React.ReactElement {
 }
 
 function ChipField(): React.ReactElement {
-  const record = useRecordContext<any>()
-  const role = rolesOptions.find(({ value }) => value === record.role)
+  const record = useRecordContext<_Users & { role?: string }>()
+  const role = rolesOptions.find(({ value }) => value === record?.role)
 
   if (typeof role === 'undefined') return <></>
 

@@ -29,7 +29,7 @@ import { type DestructionModal } from './DestructionShow'
 import { useConfigData } from '../../utils/useConfigData'
 
 const ItemsCount = (): React.ReactElement => {
-  const record = useRecordContext()
+  const record = useRecordContext<Destruction>()
   return (
     <Typography variant='h5' textAlign='center' margin='10px'>
       {
@@ -240,8 +240,8 @@ const TablesData = ({
 }: {
   prefix: string | undefined
 }): React.ReactElement => {
-  const record = useRecordContext()
-  const { total } = useGetList(constants.R_ITEMS, {
+  const record = useRecordContext<Destruction>()
+  const { total } = useGetList<Item>(constants.R_ITEMS, {
     filter: {
       destruction: record.id
     }

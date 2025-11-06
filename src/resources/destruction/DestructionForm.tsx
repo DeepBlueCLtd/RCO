@@ -56,8 +56,8 @@ export default function DestructionForm(props: Props): React.ReactElement {
   const createPath = useCreatePath()
   const redirect = useRedirect()
   const notify = useNotify()
-  const [update] = useUpdate()
-  const record = useRecordContext()
+  const [update] = useUpdate<Destruction>()
+  const record = useRecordContext<Destruction>()
   const audit = useAudit()
   const getName = async (): Promise<string> => {
     const name = await generateReference<Destruction>(

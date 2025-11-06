@@ -35,7 +35,7 @@ const CoreForm = (props: Props): React.ReactElement => {
     formState: { isSubmitted, isSubmitting }
   } = formContext
   const [mediaTypes, setMediaTypes] = useState<MediaType[]>([])
-  const { data = [] } = useGetList(constants.R_MEDIA_TYPE)
+  const { data = [] } = useGetList<MediaType>(constants.R_MEDIA_TYPE)
   const dateRef = useRef<HTMLInputElement>(null)
   const mediaTypeRef = useRef<HTMLInputElement>(null)
 
