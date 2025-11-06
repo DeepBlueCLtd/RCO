@@ -32,11 +32,7 @@ import HastenerReport from './HastenerReport'
 import HistoryButton from '../../components/HistoryButton'
 import { getUser } from '../../providers/authProvider'
 import {
-  executeDispatch,
-  type UpdateFunction,
-  type UpdateManyFunction,
-  type AuditFunction,
-  type NotifyFunction
+  executeDispatch
 } from './dispatch-operations'
 import {
   recordReceiptReceived,
@@ -125,10 +121,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const sendReceiptReceived = async (): Promise<void> => {
     if (!record) return
     await recordReceiptReceived(
-      record.id as number,
-      record as Dispatch,
-      update as UpdateFunction,
-      notify as NotifyFunction
+      record.id,
+      record,
+      update,
+      notify
     )
     refresh()
   }
@@ -228,23 +224,23 @@ export default function DispatchShow(): React.ReactElement {
     if (!record?.id || !id) return
 
     await executeDispatch(
-      itemsAdded as Item[],
+      itemsAdded,
       parseInt(id),
-      record.id as number,
+      record.id,
       data,
-      update as UpdateFunction,
-      updateMany as UpdateManyFunction,
-      audit as AuditFunction,
-      notify as NotifyFunction
+      update,
+      updateMany,
+      audit,
+      notify
     )
   }
 
   const saveReportPrinted = (): void => {
     if (!record) return
     saveDispatchReportPrinted(
-      record.id as number,
-      record as Dispatch,
-      update as UpdateFunction
+      record.id,
+      record,
+      update
     )
       .then(console.log)
       .catch(console.error)
@@ -253,11 +249,11 @@ export default function DispatchShow(): React.ReactElement {
   const saveHastenerPrintedCallback = async (): Promise<void> => {
     if (!record) return
     await saveHastenerPrinted(
-      record.id as number,
-      record as Dispatch,
-      update as UpdateFunction,
-      audit as AuditFunction,
-      notify as NotifyFunction
+      record.id,
+      record,
+      update,
+      audit,
+      notify
     )
     refresh()
   }

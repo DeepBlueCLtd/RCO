@@ -31,11 +31,7 @@ import HistoryButton from '../../components/HistoryButton'
 import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
 import {
-  executeDestruction,
-  type UpdateFunction,
-  type UpdateManyFunction,
-  type AuditFunction,
-  type NotifyFunction
+  executeDestruction
 } from './destruction-operations'
 import { saveDestructionReportPrinted } from '../items/item-operations'
 
@@ -180,23 +176,23 @@ export default function DestructionShow(): React.ReactElement {
     if (!record?.id || !id) return
 
     await executeDestruction(
-      itemsAdded as Item[],
+      itemsAdded,
       parseInt(id),
-      record.id as number,
+      record.id,
       data,
-      update as UpdateFunction,
-      updateMany as UpdateManyFunction,
-      audit as AuditFunction,
-      notify as NotifyFunction
+      update,
+      updateMany,
+      audit,
+      notify
     )
   }
 
   const saveReportPrinted = (): void => {
     if (!record) return
     saveDestructionReportPrinted(
-      record.id as number,
-      record as Destruction,
-      update as UpdateFunction
+      record.id,
+      record,
+      update
     )
       .then(console.log)
       .catch(console.error)
