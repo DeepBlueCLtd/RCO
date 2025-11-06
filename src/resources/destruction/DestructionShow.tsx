@@ -192,9 +192,10 @@ export default function DestructionShow(): React.ReactElement {
   }
 
   const saveReportPrinted = (): void => {
+    if (!record) return
     saveDestructionReportPrinted(
-      record.id,
-      record,
+      record.id as number,
+      record as Destruction,
       update as UpdateFunction
     )
       .then(console.log)

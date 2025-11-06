@@ -403,7 +403,7 @@ describe('item-operations', () => {
 
     it('should handle errors and notify user', async () => {
       const dispatchId = 1
-      const previousData = { id: 1 } as Dispatch
+      const previousData: Dispatch = createMockDispatch({ id: 1 })
       const update = jest.fn().mockRejectedValue(new Error('Update failed'))
       const audit = createMockAudit()
       const notify = createMockNotify()
