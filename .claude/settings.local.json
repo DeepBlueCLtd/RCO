@@ -23,7 +23,8 @@
       "Bash(yarn build)",
       "Bash(gh label list:*)",
       "Bash(gh release:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git tag:*)"
     ],
     "deny": [],
     "ask": []
