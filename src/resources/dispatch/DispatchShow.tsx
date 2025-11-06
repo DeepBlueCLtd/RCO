@@ -125,8 +125,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const sendReceiptReceived = async (): Promise<void> => {
     if (!record) return
     await recordReceiptReceived(
-      record.id as number,
-      record as Dispatch,
+      record.id,
+      record,
       update as UpdateFunction,
       notify as NotifyFunction
     )
@@ -218,7 +218,7 @@ export default function DispatchShow(): React.ReactElement {
     filter: { dispatchJob: id },
     pagination: { page: 1, perPage: 1000 }
   })
-  const { data: record } = useGetOne(constants.R_DISPATCH, { id })
+  const { data: record } = useGetOne<Dispatch>(constants.R_DISPATCH, { id: Number(id) })
 
   const handleOpen = (name: DestructionModal): void => {
     setOpen(name)
@@ -242,8 +242,8 @@ export default function DispatchShow(): React.ReactElement {
   const saveReportPrinted = (): void => {
     if (!record) return
     saveDispatchReportPrinted(
-      record.id as number,
-      record as Dispatch,
+      record.id,
+      record,
       update as UpdateFunction
     )
       .then(console.log)
@@ -253,8 +253,8 @@ export default function DispatchShow(): React.ReactElement {
   const saveHastenerPrintedCallback = async (): Promise<void> => {
     if (!record) return
     await saveHastenerPrinted(
-      record.id as number,
-      record as Dispatch,
+      record.id,
+      record,
       update as UpdateFunction,
       audit as AuditFunction,
       notify as NotifyFunction

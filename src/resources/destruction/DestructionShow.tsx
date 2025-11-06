@@ -170,7 +170,7 @@ export default function DestructionShow(): React.ReactElement {
     filter: { destruction: id },
     pagination: { page: 1, perPage: 1000 }
   })
-  const { data: record } = useGetOne(constants.R_DESTRUCTION, { id })
+  const { data: record } = useGetOne<Destruction>(constants.R_DESTRUCTION, { id: Number(id) })
 
   const handleOpen = (value: DestructionModal): void => {
     setOpen(value)
@@ -194,8 +194,8 @@ export default function DestructionShow(): React.ReactElement {
   const saveReportPrinted = (): void => {
     if (!record) return
     saveDestructionReportPrinted(
-      record.id as number,
-      record as Destruction,
+      record.id,
+      record,
       update as UpdateFunction
     )
       .then(console.log)
