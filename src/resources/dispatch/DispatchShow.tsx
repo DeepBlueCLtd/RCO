@@ -125,8 +125,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const sendReceiptReceived = async (): Promise<void> => {
     if (!record) return
     await recordReceiptReceived(
-      record.id,
-      record,
+      record.id as number,
+      record as Dispatch,
       update as UpdateFunction,
       notify as NotifyFunction
     )
