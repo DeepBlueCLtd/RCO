@@ -94,7 +94,7 @@ describe('item-operations', () => {
         createMockItem({
           id: 2,
           loanedDate: '2024-01-01',
-          loanedTo: 'Someone',
+          loanedTo: 999,
           destructionDate: null,
           createdAt: '2024-01-01',
           createdBy: 1
