@@ -1,10 +1,10 @@
-import { type UpdateParams } from 'react-admin'
+import { type UpdateParams, type RaRecord, type Identifier } from 'react-admin'
 import { type AuditData } from '../../utils/audit'
 import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 
-export type UpdateFunction = (resource: string, params: UpdateParams) => Promise<any>
+export type UpdateFunction<RecordType extends RaRecord<Identifier> = any> = (resource: string, params: UpdateParams<RecordType>) => Promise<any>
 export type UpdateManyFunction = (resource: string, params: { ids: number[]; data: any }) => Promise<any>
 export type AuditFunction = (data: AuditData) => Promise<void>
 export type NotifyFunction = (message: any, options?: any) => void
@@ -32,7 +32,7 @@ export const executeDestruction = async (
   destructionId: number,
   recordId: number,
   data: UpdateParams,
-  update: UpdateFunction,
+  update: UpdateFunction<Destruction>,
   updateMany: UpdateManyFunction,
   audit: AuditFunction,
   notify: NotifyFunction
