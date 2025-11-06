@@ -10,8 +10,8 @@ export interface LoginCredentials {
 }
 
 export const TEST_USERS = {
-  admin: { username: 'ian', password: 'admin' },
-  user: { username: 'jason', password: 'user' }
+  admin: { username: '20300', password: 'admin' },
+  user: { username: '20300', password: 'admin' } // TODO: Add a second test user with regular user role
 }
 
 /**

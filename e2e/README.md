@@ -129,12 +129,12 @@ Tests use predefined test users from `e2e/helpers/auth-helpers.ts`:
 
 ```typescript
 TEST_USERS = {
-  admin: { username: 'ian', password: 'admin' },
-  user: { username: 'jason', password: 'user' }
+  admin: { username: '20300', password: 'admin' },
+  user: { username: '20300', password: 'admin' }
 }
 ```
 
-Ensure these users exist in your test database with appropriate roles and permissions.
+These credentials work with the default test database. If you need to test different user roles, create additional test users in the database and update the `TEST_USERS` constant.
 
 ## Helper Functions
 
