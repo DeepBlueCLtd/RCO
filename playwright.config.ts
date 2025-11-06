@@ -13,16 +13,16 @@ export default defineConfig({
       url: 'http://localhost:8000/api/tables',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
-      stdout: 'pipe',
-      stderr: 'pipe'
+      stdout: 'inherit',
+      stderr: 'inherit'
     },
     {
       command: 'bash -c "source ~/.nvm/nvm.sh 2>/dev/null || source /opt/nvm/nvm.sh 2>/dev/null || true; nvm use 18 2>/dev/null || true; yarn dev"',
       url: 'http://localhost:5173/',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
-      stdout: 'pipe',
-      stderr: 'pipe'
+      stdout: 'inherit',
+      stderr: 'inherit'
     }
   ],
   use: {
