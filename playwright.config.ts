@@ -10,7 +10,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'bash -c "source ~/.nvm/nvm.sh 2>/dev/null || source /opt/nvm/nvm.sh 2>/dev/null || true; nvm use 18 2>/dev/null || true; yarn serve:dev"',
-      url: 'http://localhost:8000/api/tables',
+      url: 'http://localhost:8000/api/',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
       stdout: 'inherit',
