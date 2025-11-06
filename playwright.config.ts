@@ -9,7 +9,7 @@ export default defineConfig({
   // Run both backend and frontend servers before starting tests
   webServer: [
     {
-      command: 'export NVM_DIR="/opt/nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && nvm use 18 && yarn serve:dev',
+      command: 'bash -c "source ~/.nvm/nvm.sh 2>/dev/null || source /opt/nvm/nvm.sh 2>/dev/null || true; nvm use 18 2>/dev/null || true; yarn serve:dev"',
       url: 'http://localhost:8000/api/tables',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
@@ -17,7 +17,7 @@ export default defineConfig({
       stderr: 'pipe'
     },
     {
-      command: 'export NVM_DIR="/opt/nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && nvm use 18 && yarn dev',
+      command: 'bash -c "source ~/.nvm/nvm.sh 2>/dev/null || source /opt/nvm/nvm.sh 2>/dev/null || true; nvm use 18 2>/dev/null || true; yarn dev"',
       url: 'http://localhost:5173/',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
