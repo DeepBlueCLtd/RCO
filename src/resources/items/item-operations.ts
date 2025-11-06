@@ -38,9 +38,9 @@ export const addItemsToDestruction = async (
   const eligibleItems = items.filter(({ loanedDate, loanedTo, destructionDate, id }) => {
     return (
       itemIds.includes(id) &&
-      (loanedTo === null || typeof loanedTo === 'undefined') &&
-      (loanedDate === null || typeof loanedDate === 'undefined') &&
-      (destructionDate === null || typeof destructionDate === 'undefined')
+      (loanedTo === null || loanedTo === undefined) &&
+      (loanedDate === null || loanedDate === undefined) &&
+      (destructionDate === null || destructionDate === undefined)
     )
   })
 

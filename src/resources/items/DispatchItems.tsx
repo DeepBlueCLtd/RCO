@@ -79,7 +79,7 @@ export default function DispatchItems(props: Props): React.ReactElement {
       name: undefined
     }
 
-    if (typeof dispatchId !== 'undefined' && dispatchJobId) {
+    if (dispatchId !== undefined && dispatchJobId) {
       await addItemsToDispatch(
         data,
         ids,
