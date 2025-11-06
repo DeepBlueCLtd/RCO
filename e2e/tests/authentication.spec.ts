@@ -215,7 +215,7 @@ test.describe('Authentication Flows', () => {
       await page.locator('button[type="submit"]').click()
 
       // Should fail to login
-      await waitForErrorNotification(page, 'Invalid staff-ID or password')
+      await waitForErrorNotification(page, 'User not found')
       expect(await isLoggedIn(page)).toBe(false)
     })
 
@@ -226,7 +226,7 @@ test.describe('Authentication Flows', () => {
       await page.locator('button[type="submit"]').click()
 
       // Should fail to login and not execute script
-      await waitForErrorNotification(page, 'Invalid staff-ID or password')
+      await waitForErrorNotification(page, 'User not found')
 
       // No alert should have appeared (script not executed)
       const dialogs: string[] = []
