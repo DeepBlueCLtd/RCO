@@ -1,7 +1,6 @@
 import { Box, Button, Typography } from '@mui/material'
 import FlexBox from '../../components/FlexBox'
 import { useDataProvider, useNotify } from 'react-admin'
-import * as constants from '../../constants'
 import React from 'react'
 import useAudit from '../../hooks/useAudit'
 import {

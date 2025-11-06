@@ -30,13 +30,17 @@ describe('item-operations', () => {
           id: 1,
           loanedDate: null,
           loanedTo: null,
-          destructionDate: null
+          destructionDate: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
         } as Item,
         {
           id: 2,
           loanedDate: null,
           loanedTo: null,
-          destructionDate: null
+          destructionDate: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
         } as Item
       ]
       const itemIds = [1, 2]
@@ -78,13 +82,17 @@ describe('item-operations', () => {
           id: 1,
           loanedDate: null,
           loanedTo: null,
-          destructionDate: null
+          destructionDate: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
         } as Item,
         {
           id: 2,
           loanedDate: '2024-01-01',
           loanedTo: 'Someone',
-          destructionDate: null
+          destructionDate: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
         } as Item
       ]
       const itemIds = [1, 2]
@@ -117,13 +125,17 @@ describe('item-operations', () => {
           id: 1,
           loanedDate: null,
           loanedTo: null,
-          destructionDate: null
+          destructionDate: null,
+          createdAt: '2024-01-01',
+          createdBy: 1
         } as Item,
         {
           id: 2,
           loanedDate: null,
           loanedTo: null,
-          destructionDate: '2024-01-01'
+          destructionDate: '2024-01-01',
+          createdAt: '2024-01-01',
+          createdBy: 1
         } as Item
       ]
       const itemIds = [1, 2]
@@ -154,8 +166,8 @@ describe('item-operations', () => {
   describe('addItemsToDispatch', () => {
     it('should add items to dispatch job', async () => {
       const items: Item[] = [
-        { id: 1 } as Item,
-        { id: 2 } as Item
+        { id: 1, createdAt: '2024-01-01', createdBy: 1 } as Item,
+        { id: 2, createdAt: '2024-01-01', createdBy: 1 } as Item
       ]
       const itemIds = [1, 2]
       const dispatchJobId = 200
@@ -192,9 +204,9 @@ describe('item-operations', () => {
 
     it('should only process items in the itemIds array', async () => {
       const items: Item[] = [
-        { id: 1 } as Item,
-        { id: 2 } as Item,
-        { id: 3 } as Item
+        { id: 1, createdAt: '2024-01-01', createdBy: 1 } as Item,
+        { id: 2, createdAt: '2024-01-01', createdBy: 1 } as Item,
+        { id: 3, createdAt: '2024-01-01', createdBy: 1 } as Item
       ]
       const itemIds = [1, 3]
       const dispatchJobId = 200
@@ -224,8 +236,8 @@ describe('item-operations', () => {
   describe('removeItemsFromDestruction', () => {
     it('should remove items from destruction', async () => {
       const items: Item[] = [
-        { id: 1, destruction: 100 } as Item,
-        { id: 2, destruction: 100 } as Item
+        { id: 1, destruction: 100, createdAt: '2024-01-01', createdBy: 1 } as Item,
+        { id: 2, destruction: 100, createdAt: '2024-01-01', createdBy: 1 } as Item
       ]
       const itemIds = [1, 2]
       const dataProvider = createMockDataProvider()
@@ -258,7 +270,7 @@ describe('item-operations', () => {
 
     it('should create correct audit entries', async () => {
       const items: Item[] = [
-        { id: 1, destruction: 100 } as Item
+        { id: 1, destruction: 100, createdAt: '2024-01-01', createdBy: 1 } as Item
       ]
       const itemIds = [1]
       const dataProvider = createMockDataProvider()
