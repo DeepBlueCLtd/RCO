@@ -253,8 +253,8 @@ export default function DispatchShow(): React.ReactElement {
   const saveHastenerPrintedCallback = async (): Promise<void> => {
     if (!record) return
     await saveHastenerPrinted(
-      record.id,
-      record,
+      record.id as number,
+      record as Dispatch,
       update as UpdateFunction,
       audit as AuditFunction,
       notify as NotifyFunction
