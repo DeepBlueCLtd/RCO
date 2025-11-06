@@ -11,12 +11,12 @@ test.describe('Item Workflows', () => {
   test.describe('Item List', () => {
     test('should display items list', async ({ page }) => {
       // Wait for list to load
-      await page.waitForSelector('[role="grid"], [data-testid="items-list"], .MuiDataGrid-root', {
+      await page.waitForSelector('table', {
         timeout: 10000
       })
 
       // Should have list elements
-      const hasGrid = await page.locator('[role="grid"], .MuiDataGrid-root').count()
+      const hasGrid = await page.locator('table').count()
       expect(hasGrid).toBeGreaterThan(0)
     })
 

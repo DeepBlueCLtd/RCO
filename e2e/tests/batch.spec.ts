@@ -12,7 +12,7 @@ test.describe('Batch Management Workflows', () => {
       await page.waitForLoadState('networkidle')
 
       // Should have list or grid
-      const hasList = await page.locator('[role="grid"], .MuiDataGrid-root, [role="table"]').count()
+      const hasList = await page.locator('table').count()
       expect(hasList).toBeGreaterThan(0)
     })
 
