@@ -49,8 +49,8 @@ export async function logout(page: Page): Promise<void> {
   // Click logout option
   await page.locator('text=Logout').click()
 
-  // Wait for redirect to login page
-  await page.waitForURL('/#/login', { timeout: 10000 })
+  // Wait for redirect to login page (URL will contain #/login)
+  await page.waitForURL(/.*#\/login/, { timeout: 10000 })
   await expect(page.locator('#username')).toBeVisible()
 }
 

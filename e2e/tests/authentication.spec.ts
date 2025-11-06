@@ -79,8 +79,8 @@ test.describe('Authentication Flows', () => {
       // Logout
       await logout(page)
 
-      // Verify we're back on login page
-      await expect(page).toHaveURL('/')
+      // Verify we're back on login page (URL should contain #/login)
+      await expect(page).toHaveURL(/\/#\/login/)
       await expect(page.locator('#username')).toBeVisible()
       await expect(page.locator('#password')).toBeVisible()
     })
