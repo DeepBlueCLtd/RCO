@@ -33,7 +33,7 @@ test.describe('Authentication Flows', () => {
       await page.locator('#password').fill('password')
       await page.locator('button[type="submit"]').click()
 
-      await waitForErrorNotification(page, 'Invalid staff-ID or password')
+      await waitForErrorNotification(page, 'User not found')
 
       // Should still be on login page
       await expect(page.locator('#username')).toBeVisible()
@@ -45,7 +45,7 @@ test.describe('Authentication Flows', () => {
       await page.locator('#password').fill('wrongpassword')
       await page.locator('button[type="submit"]').click()
 
-      await waitForErrorNotification(page, 'Invalid staff-ID or password')
+      await waitForErrorNotification(page, 'Invalid password')
 
       // Should still be on login page
       await expect(page.locator('#username')).toBeVisible()
