@@ -4,7 +4,12 @@ import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React from 'react'
 import useAudit from '../../hooks/useAudit'
-import { AuditType } from '../../utils/activity-types'
+import {
+  removeItemsFromDestruction,
+  type AuditFunction,
+  type NotifyFunction,
+  type DataProvider
+} from './item-operations'
 
 interface Props {
   onClose: () => void
@@ -33,37 +38,13 @@ export default function DestroyRestoreItems(props: Props): React.ReactElement {
   const audit = useAudit()
 
   const onRemove = async (): Promise<void> => {
-    const promisees = data.map(async (item) => {
-      const { id, destruction } = item
-
-      await audit({
-        activityType: AuditType.EDIT,
-        activityDetail: 'Remove item from destruction',
-        securityRelated: false,
-        dataId: destruction,
-        resource: constants.R_DESTRUCTION,
-        subjectId: id,
-        subjectResource: constants.R_ITEMS
-      })
-      await audit({
-        activityType: AuditType.EDIT,
-        activityDetail: 'Remove item from destruction',
-        securityRelated: false,
-        dataId: id,
-        resource: constants.R_ITEMS,
-        subjectId: destruction,
-        subjectResource: constants.R_DESTRUCTION
-      })
-    })
-    await Promise.all(promisees)
-    await dataProvider.updateMany<Item>(constants.R_ITEMS, {
+    await removeItemsFromDestruction(
+      data,
       ids,
-      data: {
-        destruction: null,
-        destructionDate: null
-      }
-    })
-    notify(`${ids.length} items removed from destruction`)
+      dataProvider as DataProvider,
+      audit as AuditFunction,
+      notify as NotifyFunction
+    )
     successCallback()
   }
 

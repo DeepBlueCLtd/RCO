@@ -11,8 +11,13 @@ import FlexBox from '../../components/FlexBox'
 import { useDataProvider, useNotify } from 'react-admin'
 import * as constants from '../../constants'
 import React, { useEffect, useState } from 'react'
-import { AuditType } from '../../utils/activity-types'
 import useAudit from '../../hooks/useAudit'
+import {
+  addItemsToDestruction,
+  type AuditFunction,
+  type NotifyFunction,
+  type DataProvider
+} from './item-operations'
 
 interface Props {
   onClose: () => void
@@ -74,46 +79,18 @@ export default function DestroyItems(props: Props): React.ReactElement {
       const { id: destructionJobId } = items.find(
         (job) => job.id === parseInt(destructionId as string)
       ) ?? { name: undefined }
-      const itemsAdded = data
-        .filter(({ loanedDate, loanedTo, destructionDate, id }) => {
-          return (
-            ids.includes(id) &&
-            (loanedTo === null || typeof loanedTo === 'undefined') &&
-            (loanedDate === null || typeof loanedDate === 'undefined') &&
-            (destructionDate === null || typeof destructionDate === 'undefined')
-          )
-        })
-        .map(async (item) => {
-          const audiData = {
-            activityType: AuditType.EDIT,
-            activityDetail: 'Item added to destruction',
-            securityRelated: false,
-            resource: constants.R_ITEMS,
-            dataId: item.id,
-            subjectId: destructionJobId as number,
-            subjectResource: constants.R_DESTRUCTION
-          }
-          await audit(audiData)
-          await audit({
-            ...audiData,
-            resource: constants.R_DESTRUCTION,
-            dataId: destructionJobId as number,
-            subjectId: item.id,
-            subjectResource: constants.R_ITEMS
-          })
 
-          return item.id
-        })
-
-      await dataProvider.updateMany<Item>(constants.R_ITEMS, {
-        ids: await Promise.all(itemsAdded),
-        data: {
-          destruction: Number(destructionId)
-        }
-      })
-
-      notify(`${ids.length} items marked for destruction`, { type: 'success' })
-      successCallback()
+      if (destructionJobId) {
+        await addItemsToDestruction(
+          data,
+          ids,
+          destructionJobId as number,
+          dataProvider as DataProvider,
+          audit as AuditFunction,
+          notify as NotifyFunction
+        )
+        successCallback()
+      }
     }
   }
   const label = 'Destructions'

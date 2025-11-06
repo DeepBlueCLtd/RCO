@@ -37,6 +37,7 @@ import {
   type AuditFunction,
   type NotifyFunction
 } from './destruction-operations'
+import { saveDestructionReportPrinted } from '../items/item-operations'
 
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
@@ -191,13 +192,11 @@ export default function DestructionShow(): React.ReactElement {
   }
 
   const saveReportPrinted = (): void => {
-    update(constants.R_DESTRUCTION, {
-      id: record.id,
-      previousData: record,
-      data: {
-        reportPrintedAt: nowDate()
-      }
-    })
+    saveDestructionReportPrinted(
+      record.id,
+      record,
+      update as UpdateFunction
+    )
       .then(console.log)
       .catch(console.error)
   }

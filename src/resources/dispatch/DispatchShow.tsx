@@ -39,6 +39,11 @@ import {
   type AuditFunction,
   type NotifyFunction
 } from './dispatch-operations'
+import {
+  recordReceiptReceived,
+  saveDispatchReportPrinted,
+  saveHastenerPrinted
+} from '../items/item-operations'
 
 interface ShowActionsProps {
   showEdit: boolean
@@ -119,17 +124,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
   }
 
   const sendReceiptReceived = async (): Promise<void> => {
-    await update(constants.R_DISPATCH, {
-      id: record.id,
-      data: {
-        receiptReceived: nowDate()
-      },
-      previousData: record
-    })
+    await recordReceiptReceived(
+      record.id,
+      record,
+      update as UpdateFunction,
+      notify as NotifyFunction
+    )
     refresh()
-    notify('Receipt Received', {
-      type: 'success'
-    })
   }
 
   if (typeof record === 'undefined') return <></>
@@ -239,40 +240,24 @@ export default function DispatchShow(): React.ReactElement {
   }
 
   const saveReportPrinted = (): void => {
-    update(constants.R_DISPATCH, {
-      id: record.id,
-      previousData: record,
-      data: {
-        reportPrintedAt: nowDate()
-      }
-    })
+    saveDispatchReportPrinted(
+      record.id,
+      record,
+      update as UpdateFunction
+    )
       .then(console.log)
       .catch(console.error)
   }
 
-  const saveHastenerPrinted = async (): Promise<void> => {
-    try {
-      await update(constants.R_DISPATCH, {
-        id: record.id,
-        previousData: record,
-        data: {
-          lastHastenerSent: nowDate()
-        }
-      })
-      refresh()
-      await audit({
-        activityType: AuditType.EDIT,
-        activityDetail: 'Hastener sent',
-        securityRelated: false,
-        resource: constants.R_DISPATCH,
-        dataId: record.id,
-        subjectId: null,
-        subjectResource: null
-      })
-    } catch (error) {
-      notify('Failed to update hastener sent date', { type: 'error' })
-      console.error(error)
-    }
+  const saveHastenerPrintedCallback = async (): Promise<void> => {
+    await saveHastenerPrinted(
+      record.id,
+      record,
+      update as UpdateFunction,
+      audit as AuditFunction,
+      notify as NotifyFunction
+    )
+    refresh()
   }
 
   return (
@@ -293,7 +278,7 @@ export default function DispatchShow(): React.ReactElement {
             open={open === 'hastener'}
             handleOpen={handleOpen}
             onPrint={() => {
-              saveHastenerPrinted().catch(console.error)
+              saveHastenerPrintedCallback().catch(console.error)
             }}
           />
           <Show
