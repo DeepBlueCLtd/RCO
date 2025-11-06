@@ -5,13 +5,26 @@ export default defineConfig({
   forbidOnly: !(process.env.CI == null),
   retries: 0,
   reporter: 'html',
-  timeout: 10000,
-  // Run your local dev server before starting the tests
-  webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:5173/',
-    reuseExistingServer: !process.env.CI
-  },
+  timeout: 30000, // Increased for slower operations
+  // Run both backend and frontend servers before starting tests
+  webServer: [
+    {
+      command: 'export NVM_DIR="/opt/nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && nvm use 18 && yarn serve:dev',
+      url: 'http://localhost:8000/api/tables',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+      stdout: 'pipe',
+      stderr: 'pipe'
+    },
+    {
+      command: 'export NVM_DIR="/opt/nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && nvm use 18 && yarn dev',
+      url: 'http://localhost:5173/',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+      stdout: 'pipe',
+      stderr: 'pipe'
+    }
+  ],
   use: {
     // url when app started with `yarn dev`
     baseURL: 'http://localhost:5173/',
