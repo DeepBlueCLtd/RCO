@@ -82,8 +82,12 @@ test.describe('Platforms CRUD Operations', () => {
 
   test.describe('Platform Editing', () => {
     test('should open edit form for existing platform', async ({ page }) => {
+      // Wait for table to load first
+      const table = page.locator('table')
+      await table.waitFor({ state: 'visible' })
+
       // Navigate to first platform row
-      const firstRow = page.locator('[role="row"]').nth(1)
+      const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -104,8 +108,12 @@ test.describe('Platforms CRUD Operations', () => {
     })
 
     test('should save edits to platform', async ({ page }) => {
+      // Wait for table to load first
+      const table = page.locator('table')
+      await table.waitFor({ state: 'visible' })
+
       // Navigate to first platform
-      const firstRow = page.locator('[role="row"]').nth(1)
+      const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -137,8 +145,12 @@ test.describe('Platforms CRUD Operations', () => {
     })
 
     test('should toggle platform active status', async ({ page }) => {
+      // Wait for table to load first
+      const table = page.locator('table')
+      await table.waitFor({ state: 'visible' })
+
       // Navigate to first platform
-      const firstRow = page.locator('[role="row"]').nth(1)
+      const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -183,13 +195,16 @@ test.describe('Platforms CRUD Operations', () => {
     })
 
     test('should show platform name in list', async ({ page }) => {
-      // Wait for data rows to load
-      const dataRows = page.locator('[role="row"]')
-      await dataRows.nth(1).waitFor({ state: 'visible' })
+      // Wait for table to load first
+      const table = page.locator('table')
+      await table.waitFor({ state: 'visible' })
 
-      // Check if second row (first data row) has content
-      const firstDataRow = dataRows.nth(1)
-      const hasText = await firstDataRow.textContent()
+      // Wait for data rows to load
+      const firstRow = page.locator('tbody tr').first()
+      await firstRow.waitFor({ state: 'visible' })
+
+      // Check if first row has content
+      const hasText = await firstRow.textContent()
       expect(hasText).toBeTruthy()
     })
   })
