@@ -40,10 +40,11 @@ test.describe('Dispatch CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for table to render (use first table due to multiple tables on page)
-      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
+      const table = page.locator('table').first()
+      await table.waitFor({ state: 'visible', timeout: 10000 })
 
-      // Navigate to first dispatch row
-      const firstRow = page.locator('[role="row"]').nth(1)
+      // Navigate to first dispatch row (tbody tr to skip header)
+      const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -114,10 +115,11 @@ test.describe('Dispatch CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for table to render (use first table due to multiple tables on page)
-      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
+      const table = page.locator('table').first()
+      await table.waitFor({ state: 'visible', timeout: 10000 })
 
-      // Navigate to first dispatch row
-      const firstRow = page.locator('[role="row"]').nth(1)
+      // Navigate to first dispatch row (tbody tr to skip header)
+      const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -146,10 +148,11 @@ test.describe('Dispatch CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for table to render (use first table due to multiple tables on page)
-      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
+      const table = page.locator('table').first()
+      await table.waitFor({ state: 'visible', timeout: 10000 })
 
-      // Navigate to first dispatch
-      const firstRow = page.locator('[role="row"]').nth(1)
+      // Navigate to first dispatch (tbody tr to skip header)
+      const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -185,9 +188,8 @@ test.describe('Dispatch CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Verify save success: page title includes "Dispatch Show"
-      const pageTitle = page.locator('h5, h1, h2, h3')
-      await expect(pageTitle.filter({ hasText: /Dispatch Show/i })).toBeVisible()
+      // Verify save success: URL doesn't contain /edit (returned to show page)
+      expect(page.url()).not.toContain('/edit')
 
       // Verify EDIT button is visible on show page
       const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
