@@ -4,6 +4,10 @@ import { AuditType } from './activity-types'
 import * as constants from '../constants'
 import type { DataProvider } from 'react-admin'
 
+// Import mocked modules
+import { getUser } from '../providers/authProvider'
+import { getClientIp } from './helper'
+
 // Mock dependencies
 jest.mock('../providers/authProvider', () => ({
   getUser: jest.fn()
@@ -12,10 +16,6 @@ jest.mock('../providers/authProvider', () => ({
 jest.mock('./helper', () => ({
   getClientIp: jest.fn(() => '192.168.1.1')
 }))
-
-// Import mocked modules
-import { getUser } from '../providers/authProvider'
-import { getClientIp } from './helper'
 
 describe('trackEvent (audit logging)', () => {
   let mockDataProvider: DataProvider

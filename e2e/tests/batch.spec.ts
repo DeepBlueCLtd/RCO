@@ -91,8 +91,11 @@ test.describe('Batch Management Workflows', () => {
       await saveButton.click()
 
       // Wait for redirect to batch show page
-      await page.waitForURL('**/show')
+      await page.waitForURL('**/show', { timeout: 10000 })
       await page.waitForLoadState('networkidle')
+
+      // Give extra time for save to fully complete before navigation
+      await page.waitForTimeout(1000)
 
       // Verify we're on the batch show page
       const showUrl = page.url()
@@ -207,13 +210,13 @@ test.describe('Batch Management Workflows', () => {
       const editButton = page.locator('[data-testid="batch-edit-button"]')
       await editButton.waitFor({ state: 'visible' })
 
-      // Scroll into view and click
+      // Scroll into view and click (no force - let it be properly clickable)
       await editButton.scrollIntoViewIfNeeded()
-      await editButton.click({ force: true })
+      await editButton.click()
 
-      // Wait for URL to change from show page (removes /show suffix)
-      // Edit page URL is /batch/133 (not /batch/133/edit)
-      await page.waitForURL(/\/batch\/\d+$/)
+      // Wait for navigation to complete
+      // Edit page URL is /batch/133 (not /batch/133/edit or /batch/133/show)
+      await page.waitForURL(/\/batch\/\d+$/, { timeout: 10000 })
       await page.waitForLoadState('networkidle')
 
       // Should show "Edit Batch" title
