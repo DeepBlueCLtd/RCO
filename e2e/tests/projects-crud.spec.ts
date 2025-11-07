@@ -137,20 +137,21 @@ test.describe('Projects CRUD Operations', () => {
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Update Start date to today (yyyy-MM-dd for input[type="date"])
-      const startDateField = page.locator('input[name="startDate"]')
-      await startDateField.waitFor({ state: 'visible' })
-      const today = new Date()
-      const todayISO = today.toISOString().split('T')[0] // yyyy-MM-dd format
-      await startDateField.fill(todayISO)
+      // Update project name with timestamp
+      const nameField = page.locator('input[name="name"], [id*="name"]')
+      await nameField.first().waitFor({ state: 'visible' })
+      const currentName = await nameField.first().inputValue()
+      const updatedName = `${currentName} - Edited ${Date.now()}`
+      await nameField.first().fill(updatedName)
 
-      // Update End date to tomorrow (endDate must be after startDate)
+      // Update End date to 3 days in future (ensures actual value change)
       const endDateField = page.locator('input[name="endDate"]')
       await endDateField.waitFor({ state: 'visible' })
-      const tomorrow = new Date(today)
-      tomorrow.setDate(today.getDate() + 1)
-      const tomorrowISO = tomorrow.toISOString().split('T')[0]
-      await endDateField.fill(tomorrowISO)
+      const today = new Date()
+      const threeDaysLater = new Date(today)
+      threeDaysLater.setDate(today.getDate() + 3)
+      const threeDaysLaterISO = threeDaysLater.toISOString().split('T')[0]
+      await endDateField.fill(threeDaysLaterISO)
 
       // Wait for form validation to complete
       await page.waitForTimeout(500)
@@ -171,6 +172,9 @@ test.describe('Projects CRUD Operations', () => {
       // Verify EDIT button is visible on show page
       const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
       await expect(editButtonOnShow.first()).toBeVisible()
+
+      // Verify the updated name is displayed
+      await expect(page.locator('text=' + updatedName).first()).toBeVisible()
     })
   })
 

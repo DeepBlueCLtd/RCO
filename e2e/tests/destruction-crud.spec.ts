@@ -12,7 +12,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Should have destruction list table
       const hasTable = await page.locator('table').count()
@@ -23,7 +23,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Look for filter controls - wait for them to be visible
       const filterButton = page.locator('button:has-text("Filter")').or(page.locator('[aria-label*="filter" i]')).or(page.locator('input[type="search"]'))
@@ -40,7 +40,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render first
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Find and click create button - wait for it to be visible
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
@@ -64,7 +64,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render first
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Find and click create button - wait for it to be visible
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
@@ -90,7 +90,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Wait for first data row to render
       const firstRow = page.locator('[role="row"]').nth(1)
@@ -118,7 +118,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Wait for first data row to render
       const firstRow = page.locator('[role="row"]').nth(1)
@@ -149,7 +149,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Wait for first data row to render
       const firstRow = page.locator('[role="row"]').nth(1)

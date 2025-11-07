@@ -11,20 +11,20 @@ test.describe('Dispatch CRUD Operations', () => {
     test('should display dispatches list', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for dispatch list table to render
-      const table = page.locator('table')
+      // Wait for dispatch list table to render (use first table due to multiple tables on page)
+      const table = page.locator('table').first()
       await table.waitFor({ state: 'visible', timeout: 10000 })
 
       // Should have list table
-      const hasTable = await table.count()
+      const hasTable = await page.locator('table').count()
       expect(hasTable).toBeGreaterThan(0)
     })
 
     test('should allow filtering dispatches', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for table to render first
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for table to render first (use first table due to multiple tables on page)
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Look for filter controls
       const filterButton = page.locator('button:has-text("Filter")').or(page.locator('[aria-label*="filter" i]')).or(page.locator('input[type="search"]'))
@@ -39,8 +39,8 @@ test.describe('Dispatch CRUD Operations', () => {
     test('should display dispatch details', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for table to render (use first table due to multiple tables on page)
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Navigate to first dispatch row
       const firstRow = page.locator('[role="row"]').nth(1)
@@ -65,8 +65,8 @@ test.describe('Dispatch CRUD Operations', () => {
     test('should open create dispatch form', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for table to render first
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for table to render first (use first table due to multiple tables on page)
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Find and click create button
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
@@ -87,8 +87,8 @@ test.describe('Dispatch CRUD Operations', () => {
     test('should validate required fields on dispatch creation', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for table to render first
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for table to render first (use first table due to multiple tables on page)
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Open create form
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
@@ -113,8 +113,8 @@ test.describe('Dispatch CRUD Operations', () => {
     test('should open edit form for existing dispatch', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for table to render (use first table due to multiple tables on page)
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Navigate to first dispatch row
       const firstRow = page.locator('[role="row"]').nth(1)
@@ -145,8 +145,8 @@ test.describe('Dispatch CRUD Operations', () => {
     test('should save edits to dispatch', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Wait for table to render
-      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for table to render (use first table due to multiple tables on page)
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Navigate to first dispatch
       const firstRow = page.locator('[role="row"]').nth(1)
