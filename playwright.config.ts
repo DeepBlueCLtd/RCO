@@ -5,7 +5,7 @@ export default defineConfig({
   forbidOnly: !(process.env.CI == null),
   retries: 0,
   reporter: 'html',
-  timeout: 5000, // Lightweight local app - fail fast
+  timeout: 15000, // Allow time for parallel login/navigation in beforeEach
   workers: 2, // Run 2 tests in parallel - balance speed vs stability
   globalTeardown: './e2e/global-teardown.ts', // Reset database after all tests
   // Run both backend and frontend servers before starting tests
