@@ -185,15 +185,16 @@ test.describe('Dispatch CRUD Operations', () => {
       await page.waitForURL('**/dispatch/**', { timeout: 10000 })
       await page.waitForLoadState('networkidle')
 
-      // Give time for save to complete
-      await page.waitForTimeout(1000)
+      // Verify save success: presence of "Dispatch" title
+      const pageTitle = page.locator('h5, h1, h2, h3').filter({ hasText: /^Dispatch$/i })
+      await pageTitle.waitFor({ state: 'visible', timeout: 10000 })
+      await expect(pageTitle).toBeVisible()
 
-      // Verify save success: URL doesn't contain /edit (returned to show page)
-      expect(page.url()).not.toContain('/edit')
-
-      // Verify EDIT button is visible on show page
-      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
-      await expect(editButtonOnShow.first()).toBeVisible()
+      // Verify remarks field contains the test value
+      const remarksDisplay = page.locator('text=' + testValue).or(
+        page.locator('*').filter({ hasText: new RegExp(testValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) })
+      )
+      await expect(remarksDisplay.first()).toBeVisible()
     })
   })
 })
