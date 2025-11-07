@@ -26,7 +26,8 @@
       "WebSearch",
       "Bash(git tag:*)",
       "Bash(yarn e2e)",
-      "Bash(yarn playwright test:*)"
+      "Bash(yarn playwright test:*)",
+      "Bash(npx playwright show-report)"
     ],
     "deny": [],
     "ask": []
