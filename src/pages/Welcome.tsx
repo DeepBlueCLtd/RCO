@@ -113,6 +113,7 @@ export default function Welcome(): React.ReactElement {
           label='Recent Batches'
           resource={constants.R_BATCHES}
           itemsCount={10}
+          data-testid='recent-batches-table'
           fields={[
             { source: 'batchNumber', component: BatchComponent },
             { source: 'platform', reference: constants.R_PLATFORMS },

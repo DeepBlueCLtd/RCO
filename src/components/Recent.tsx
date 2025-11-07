@@ -62,6 +62,7 @@ interface Props<T> extends DatagridProps {
   search?: string
   rowStyle?: (data: T) => SxProps
   isTitleClickable?: boolean
+  'data-testid'?: string
 }
 
 function Column<T extends Batch | Dispatch | LoanUser>(
@@ -91,10 +92,11 @@ interface RecentCardProps extends DatagridProps {
   resource?: string
   search?: string
   isTitleClickable?: boolean
+  'data-testid'?: string
 }
 
 export function RecentCard(props: RecentCardProps): React.ReactElement {
-  const { label, resource = '', children, search, isTitleClickable } = props
+  const { label, resource = '', children, search, isTitleClickable, 'data-testid': dataTestId } = props
   const classes = useStyles()
   return (
     <Box>
@@ -124,7 +126,7 @@ export function RecentCard(props: RecentCardProps): React.ReactElement {
                 ))}
             </Typography>
           </div>
-          <Box sx={{ mt: 2 }} className={classes.container}>
+          <Box sx={{ mt: 2 }} className={classes.container} data-testid={dataTestId}>
             {children}
           </Box>
         </CardContent>
@@ -144,7 +146,8 @@ export default function Recent<T extends Batch | Dispatch | LoanUser>(
     search,
     rowStyle,
     rowClick,
-    isTitleClickable
+    isTitleClickable,
+    'data-testid': dataTestId
   } = props
 
   return (
@@ -152,7 +155,8 @@ export default function Recent<T extends Batch | Dispatch | LoanUser>(
       label={label}
       resource={resource}
       search={search}
-      isTitleClickable={isTitleClickable}>
+      isTitleClickable={isTitleClickable}
+      data-testid={dataTestId}>
       <ResourceContext.Provider value={resource}>
         <List
           filter={filter}

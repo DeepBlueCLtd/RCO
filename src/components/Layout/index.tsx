@@ -234,6 +234,7 @@ const MyAppBar = (props: AppBarProps): React.ReactElement => {
         }}>
         <img
           src={AppIcon}
+          data-testid="home-button"
           style={{
             width: '28px',
             height: '28px',
