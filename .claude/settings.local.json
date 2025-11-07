@@ -28,7 +28,11 @@
       "Bash(yarn e2e)",
       "Bash(yarn playwright test:*)",
       "Bash(npx playwright show-report)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(git restore:*)",
+      "Bash(yarn e2e:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

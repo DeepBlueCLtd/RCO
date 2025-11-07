@@ -70,7 +70,11 @@ test.describe('Item Workflows', () => {
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
 
       // Find and click create button - fail if not found
-      const createButton = page.locator('a:has-text("Create"), a:has-text("ADD NEW ITEM"), [aria-label*="create" i]')
+      const createButton = page.locator('a:has-text("Create")').or(
+        page.locator('a:has-text("ADD NEW ITEM")')
+      ).or(
+        page.locator('[aria-label*="create" i]')
+      )
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -93,7 +97,9 @@ test.describe('Item Workflows', () => {
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
 
       // Open create form
-      const createButton = page.locator('a:has-text("Create"), a:has-text("ADD NEW ITEM")')
+      const createButton = page.locator('a:has-text("Create")').or(
+        page.locator('a:has-text("ADD NEW ITEM")')
+      )
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -102,7 +108,9 @@ test.describe('Item Workflows', () => {
       await page.locator('form').waitFor({ state: 'visible' })
 
       // Try to save without filling required fields
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(
+        page.locator('button[type="submit"]')
+      )
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForTimeout(1000)
@@ -129,7 +137,11 @@ test.describe('Item Workflows', () => {
 
       // Click edit button - fail if not found
       const editButton = page.locator('[data-testid="item-edit-button"]').or(
-        page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+        page.locator('button:has-text("Edit")')
+      ).or(
+        page.locator('a:has-text("Edit")')
+      ).or(
+        page.locator('[aria-label*="edit" i]')
       )
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
@@ -183,7 +195,9 @@ test.describe('Item Workflows', () => {
       await page.waitForLoadState('networkidle')
 
       // Look for delete button - fail if not found
-      const deleteButton = page.locator('button:has-text("Delete"), [aria-label*="delete" i]')
+      const deleteButton = page.locator('button:has-text("Delete")').or(
+        page.locator('[aria-label*="delete" i]')
+      )
       await deleteButton.first().waitFor({ state: 'visible' })
       await deleteButton.first().click()
       await page.waitForTimeout(500)
@@ -194,7 +208,9 @@ test.describe('Item Workflows', () => {
       await expect(confirmDialog.first()).toBeVisible()
 
       // Cancel the deletion
-      const cancelButton = page.locator('button:has-text("Cancel"), button:has-text("No")')
+      const cancelButton = page.locator('button:has-text("Cancel")').or(
+        page.locator('button:has-text("No")')
+      )
       await cancelButton.first().waitFor({ state: 'visible' })
       await cancelButton.first().click()
       await page.waitForTimeout(500)

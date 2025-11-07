@@ -11,7 +11,7 @@ test.describe('Platforms CRUD Operations', () => {
   test.describe('Platform Creation', () => {
     test('should open create platform form', async ({ page }) => {
       // Find and click create button - fail if not found
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -27,13 +27,13 @@ test.describe('Platforms CRUD Operations', () => {
 
     test('should validate required fields on platform creation', async ({ page }) => {
       // Open create form
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
       // Try to submit without filling required fields
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForTimeout(1000)
@@ -46,19 +46,19 @@ test.describe('Platforms CRUD Operations', () => {
 
     test('should create new platform with valid data', async ({ page }) => {
       // Open create form
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
       // Fill in name field (required per schema)
-      const nameField = page.locator('input[name="name"], [id*="name"]')
+      const nameField = page.locator('input[name="name"]').or(page.locator('[id*="name"]'))
       await nameField.first().waitFor({ state: 'visible' })
       const testName = `Test Platform ${Date.now()}`
       await nameField.first().fill(testName)
 
       // Active checkbox should default to true
-      const activeCheckbox = page.locator('input[name="active"], [type="checkbox"][name="active"]')
+      const activeCheckbox = page.locator('input[name="active"]').or(page.locator('[type="checkbox"][name="active"]'))
       await activeCheckbox.first().waitFor({ state: 'visible' })
       const isChecked = await activeCheckbox.first().isChecked()
       if (!isChecked) {
@@ -66,7 +66,7 @@ test.describe('Platforms CRUD Operations', () => {
       }
 
       // Save the form
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -93,7 +93,7 @@ test.describe('Platforms CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Look for edit button
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -119,7 +119,7 @@ test.describe('Platforms CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Click edit button
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -132,7 +132,7 @@ test.describe('Platforms CRUD Operations', () => {
       await nameField.first().fill(testValue)
 
       // Save the form
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -156,13 +156,13 @@ test.describe('Platforms CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Click edit button
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
 
       // Toggle the active checkbox
-      const activeCheckbox = page.locator('input[name="active"], [type="checkbox"][name="active"]')
+      const activeCheckbox = page.locator('input[name="active"]').or(page.locator('[type="checkbox"][name="active"]'))
       await activeCheckbox.first().waitFor({ state: 'visible' })
       const wasChecked = await activeCheckbox.first().isChecked()
       await activeCheckbox.first().click()
@@ -173,7 +173,7 @@ test.describe('Platforms CRUD Operations', () => {
       expect(isNowChecked).toBe(!wasChecked)
 
       // Save the form
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')

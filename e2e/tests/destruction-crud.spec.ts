@@ -26,9 +26,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
 
       // Look for filter controls - wait for them to be visible
-      const filterButton = page.locator(
-        'button:has-text("Filter"), [aria-label*="filter" i], input[type="search"]'
-      )
+      const filterButton = page.locator('button:has-text("Filter")').or(page.locator('[aria-label*="filter" i]')).or(page.locator('input[type="search"]'))
       await filterButton.first().waitFor({ state: 'visible', timeout: 10000 })
 
       // Filter functionality should exist
@@ -45,7 +43,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
 
       // Find and click create button - wait for it to be visible
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -69,7 +67,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
 
       // Find and click create button - wait for it to be visible
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -78,7 +76,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
 
       // Try to submit without filling required fields
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await saveButton.first().click()
 
@@ -137,7 +135,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Look for edit button - wait for it to be visible
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -168,7 +166,7 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Look for edit button - wait for it to be visible
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -185,7 +183,7 @@ test.describe('Destruction CRUD Operations', () => {
       await remarksField.first().fill(testValue)
 
       // Save the form - wait for save button to be visible
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')

@@ -11,7 +11,7 @@ test.describe('Projects CRUD Operations', () => {
   test.describe('Project Creation', () => {
     test('should open create project form', async ({ page }) => {
       // Find and click create button - fail if not found
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -27,13 +27,13 @@ test.describe('Projects CRUD Operations', () => {
 
     test('should validate required fields on project creation', async ({ page }) => {
       // Open create form
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
       // Try to submit without filling required fields
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForTimeout(1000)
@@ -46,7 +46,7 @@ test.describe('Projects CRUD Operations', () => {
 
     test('should create new project with valid data', async ({ page }) => {
       // Open create form
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -58,7 +58,7 @@ test.describe('Projects CRUD Operations', () => {
       await nameField.first().fill(testName)
 
       // Save the form
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -73,14 +73,18 @@ test.describe('Projects CRUD Operations', () => {
 
   test.describe('Project Editing', () => {
     test('should open edit form for existing project', async ({ page }) => {
-      // Navigate to first project
-      const firstRow = page.locator('[role="row"]').nth(1)
+      // Wait for table to load first
+      const table = page.locator('table').first()
+      await table.waitFor({ state: 'visible' })
+
+      // Navigate to first project row
+      const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
 
       // Look for edit button
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -95,14 +99,18 @@ test.describe('Projects CRUD Operations', () => {
     })
 
     test('should save edits to project', async ({ page }) => {
+      // Wait for table to load first
+      const table = page.locator('table').first()
+      await table.waitFor({ state: 'visible' })
+
       // Navigate to first project
-      const firstRow = page.locator('[role="row"]').nth(1)
+      const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
 
       // Click edit button
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -115,7 +123,7 @@ test.describe('Projects CRUD Operations', () => {
       await editableField.first().fill(testValue)
 
       // Save the form
-      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -130,8 +138,12 @@ test.describe('Projects CRUD Operations', () => {
 
   test.describe('Project Details View', () => {
     test('should display project details', async ({ page }) => {
+      // Wait for table to load first
+      const table = page.locator('table').first()
+      await table.waitFor({ state: 'visible' })
+
       // Navigate to first project
-      const firstRow = page.locator('[role="row"]').nth(1)
+      const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
       await page.waitForLoadState('networkidle')
@@ -149,16 +161,14 @@ test.describe('Projects CRUD Operations', () => {
   test.describe('Project List', () => {
     test('should display projects list', async ({ page }) => {
       // Should have list table
-      const table = page.locator('table')
+      const table = page.locator('table').first()
       await table.waitFor({ state: 'visible' })
       await expect(table).toBeVisible()
     })
 
     test('should allow filtering projects', async ({ page }) => {
       // Look for filter controls
-      const filterButton = page.locator(
-        'button:has-text("Filter"), [aria-label*="filter" i], input[type="search"]'
-      )
+      const filterButton = page.locator('button:has-text("Filter")').or(page.locator('[aria-label*="filter" i]')).or(page.locator('input[type="search"]'))
       await filterButton.first().waitFor({ state: 'visible' })
 
       // Filter functionality exists

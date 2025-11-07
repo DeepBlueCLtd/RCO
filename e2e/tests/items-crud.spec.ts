@@ -11,7 +11,7 @@ test.describe('Items CRUD Operations', () => {
   test.describe('Item Creation', () => {
     test('should open create item form', async ({ page }) => {
       // Find and click create button - wait for it to be visible
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -29,7 +29,7 @@ test.describe('Items CRUD Operations', () => {
 
     test('should validate required fields on item creation', async ({ page }) => {
       // Open create form
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
+      const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -59,7 +59,7 @@ test.describe('Items CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Look for edit button - wait for it to be visible
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
@@ -83,7 +83,7 @@ test.describe('Items CRUD Operations', () => {
       await page.waitForLoadState('networkidle')
 
       // Click edit button - wait for it to be visible
-      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
