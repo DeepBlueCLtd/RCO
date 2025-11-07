@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToResourceByTestId, TEST_USERS } from '../helpers/auth-helpers'
+import { login, navigateToReferenceDataResource, TEST_USERS } from '../helpers/auth-helpers'
 
 test.describe('Platforms CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
-    await navigateToResourceByTestId(page, 'menu-platforms')
+    await navigateToReferenceDataResource(page, 'platforms')
     await page.waitForLoadState('networkidle')
   })
 

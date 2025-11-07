@@ -136,6 +136,39 @@ export async function navigateToResourceByTestId(page: Page, testId: string): Pr
 }
 
 /**
+ * Navigate to a reference data sub-resource (nested under Reference Data menu)
+ * These resources are accessed via cards on the Reference Data page
+ */
+export async function navigateToReferenceDataResource(page: Page, resourceName: string): Promise<void> {
+  // Map resource names to card titles shown on Reference Data page
+  const referenceDataMap: Record<string, string> = {
+    'platforms': 'Platforms',
+    'audit': 'Audit Log',
+    'addresses': 'Addresses',
+    'organisation': 'Organisation',
+    'protective-marking': 'Protective Marking',
+    'media-type': 'Media Type',
+    'vault': 'Vault',
+    'cat-code': 'Cat Code',
+    'cat-handle': 'Cat Handle',
+    'cat-cave': 'Cat Cave',
+    'department': 'Department'
+  }
+
+  const cardTitle = referenceDataMap[resourceName]
+  if (!cardTitle) {
+    throw new Error(`Unknown reference data resource: ${resourceName}. Add it to referenceDataMap in auth-helpers.ts`)
+  }
+
+  // First navigate to Reference Data page
+  await navigateToResourceByTestId(page, 'menu-reference-data')
+
+  // Then click the specific resource card
+  await page.locator(`text=${cardTitle}`).first().click()
+  await page.waitForLoadState('networkidle')
+}
+
+/**
  * Check if element is accessible (visible and enabled)
  */
 export async function isAccessible(page: Page, selector: string): Promise<boolean> {

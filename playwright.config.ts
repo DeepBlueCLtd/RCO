@@ -6,7 +6,7 @@ export default defineConfig({
   retries: 0,
   reporter: 'html',
   timeout: 5000, // Lightweight local app - fail fast
-  workers: 1, // Run tests serially to avoid "Target closed" errors
+  workers: 2, // Run 2 tests in parallel - balance speed vs stability
   globalTeardown: './e2e/global-teardown.ts', // Reset database after all tests
   // Run both backend and frontend servers before starting tests
   webServer: [
