@@ -5,7 +5,7 @@ export default defineConfig({
   forbidOnly: !(process.env.CI == null),
   retries: 0,
   reporter: 'html',
-  timeout: 20000, // Timeout for tests with complex navigation
+  timeout: 5000, // Lightweight local app - fail fast
   workers: 1, // Run tests serially to avoid "Target closed" errors
   globalTeardown: './e2e/global-teardown.ts', // Reset database after all tests
   // Run both backend and frontend servers before starting tests
