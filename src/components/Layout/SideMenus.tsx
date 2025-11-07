@@ -61,9 +61,6 @@ export const SideMenus = (): React.ReactElement => {
       {accessStates.vaultLocationHasAccess && (
         <Menu.ResourceItem name={constants.R_VAULT_LOCATION} />
       )}
-      {accessStates.platformsHasAccess && (
-        <Menu.ResourceItem name={constants.R_PLATFORMS} />
-      )}
       {accessStates.usersHasAccess && (
         <Menu.ResourceItem name={constants.R_USERS} />
       )}
@@ -81,6 +78,7 @@ export const SideMenus = (): React.ReactElement => {
           to='/reference-data'
           primaryText='Reference Data'
           leftIcon={<LibraryBooks />}
+          data-testid="menu-reference-data"
         />
       )}
     </Menu>
