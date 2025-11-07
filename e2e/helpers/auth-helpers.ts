@@ -109,7 +109,7 @@ export async function navigateToResourceByTestId(page: Page, testId: string): Pr
   // React-Admin Menu.ResourceItem displays singular capitalized resource names
   const resourceMap: Record<string, string> = {
     'menu-platforms': 'Platform',
-    'menu-projects': 'Project',
+    'menu-projects': 'Projekts',
     'menu-batches': 'Batch',
     'menu-items': 'Items',  // RichItems resource displays as "Items"
     'menu-vault-location': 'Vault Location',
