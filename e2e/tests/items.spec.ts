@@ -1,19 +1,17 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToResource, waitForSuccessNotification, TEST_USERS } from '../helpers/auth-helpers'
+import { login, navigateToResourceByTestId, waitForSuccessNotification, TEST_USERS } from '../helpers/auth-helpers'
 
 test.describe('Item Workflows', () => {
   // Login before each test
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
-    await navigateToResource(page, 'Items')
+    await navigateToResourceByTestId(page, 'menu-items')
   })
 
   test.describe('Item List', () => {
     test('should display items list', async ({ page }) => {
       // Wait for list to load
-      await page.waitForSelector('table', {
-        timeout: 10000
-      })
+      await page.waitForSelector('table')
 
       // Should have list elements
       const hasGrid = await page.locator('table').count()
@@ -161,7 +159,7 @@ test.describe('Item Workflows', () => {
         const itemUrl = page.url()
 
         // Navigate away
-        await navigateToResource(page, 'Items')
+        await navigateToResourceByTestId(page, 'menu-items')
 
         // Navigate back
         await page.goto(itemUrl)

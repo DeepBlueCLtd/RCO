@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToResource, TEST_USERS } from '../helpers/auth-helpers'
+import { login, navigateToResourceByTestId, TEST_USERS } from '../helpers/auth-helpers'
 
 test.describe('Platforms CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
-    // Platforms might be under Reference Data - try direct navigation first
-    await navigateToResource(page, 'Platforms')
+    // Navigate to Platforms using data-testid
+    await navigateToResourceByTestId(page, 'menu-platforms')
   })
 
   test.describe('Platform Creation', () => {

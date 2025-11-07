@@ -1,16 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToResource, TEST_USERS } from '../helpers/auth-helpers'
+import { login, navigateToResourceByTestId, TEST_USERS } from '../helpers/auth-helpers'
 
 test.describe('Projects CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
-    // Projects might be labeled differently - try common variations
-    const projectsText = await page.locator('text=/projects/i, text=/programmes/i').first().textContent()
-    if (projectsText) {
-      await navigateToResource(page, projectsText)
-    } else {
-      await navigateToResource(page, 'Projects')
-    }
+    // Navigate to Projects using data-testid
+    await navigateToResourceByTestId(page, 'menu-projects')
   })
 
   test.describe('Project Creation', () => {

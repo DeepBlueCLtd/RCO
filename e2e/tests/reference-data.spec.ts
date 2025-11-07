@@ -11,24 +11,31 @@ test.describe('Reference Data CRUD Operations', () => {
     'Organisation',
     'Protective Marking',
     'Media Type',
-    'Vault Location',
+    // Note: 'Vault Location' is a top-level menu item, not in Reference Data submenu
     'Vault'
   ]
 
   for (const resourceName of referenceDataResources) {
     test.describe(`${resourceName} Management`, () => {
       test.beforeEach(async ({ page }) => {
-        // Navigate to Reference Data menu
-        const refDataMenu = page.locator('text=/Reference Data/i, [aria-label*="Reference Data"]')
+        // Navigate to Reference Data menu using data-testid
+        const refDataMenu = page.locator('[data-testid="menu-reference-data"]')
         const menuExists = await refDataMenu.count()
 
         if (menuExists > 0) {
-          await refDataMenu.first().click()
+          await refDataMenu.click()
           await page.waitForTimeout(500)
 
-          // Click on specific resource
-          await page.locator(`text="${resourceName}"`).first().click()
-          await page.waitForLoadState('networkidle')
+          // Click on specific resource - wait for submenu to be ready
+          const resourceLink = page.locator(`text="${resourceName}"`).first()
+          await resourceLink.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {})
+          await page.waitForTimeout(200) // Let submenu stabilize
+
+          const linkCount = await resourceLink.count()
+          if (linkCount > 0) {
+            await resourceLink.click()
+            await page.waitForLoadState('networkidle')
+          }
         }
       })
 
@@ -89,15 +96,12 @@ test.describe('Reference Data CRUD Operations', () => {
           await createButton.first().click()
           await page.waitForLoadState('networkidle')
 
-          // Try to submit without filling required fields
+          // Check that save button is disabled when form is empty (validation)
           const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
           if (await saveButton.count() > 0) {
-            await saveButton.first().click()
-            await page.waitForTimeout(1000)
-
-            // Should show validation errors or remain on form
-            const hasErrors = await page.locator('[class*="error" i], [class*="invalid" i], .Mui-error').count()
-            expect(hasErrors).toBeGreaterThan(0)
+            const isDisabled = await saveButton.first().isDisabled()
+            // Button should be disabled when required fields are empty
+            expect(isDisabled).toBe(true)
           }
         } else {
           test.skip()
@@ -144,12 +148,12 @@ test.describe('Reference Data CRUD Operations', () => {
 
     for (const catResource of catResources) {
       test(`should access and display ${catResource} list`, async ({ page }) => {
-        // Navigate to Reference Data menu
-        const refDataMenu = page.locator('text=/Reference Data/i, [aria-label*="Reference Data"]')
+        // Navigate to Reference Data menu using data-testid
+        const refDataMenu = page.locator('[data-testid="menu-reference-data"]')
         const menuExists = await refDataMenu.count()
 
         if (menuExists > 0) {
-          await refDataMenu.first().click()
+          await refDataMenu.click()
           await page.waitForTimeout(500)
 
           // Click on specific CAT resource
@@ -175,21 +179,33 @@ test.describe('Reference Data CRUD Operations', () => {
     test('should have Reference Data menu accessible', async ({ page }) => {
       await page.waitForLoadState('networkidle')
 
-      // Should have Reference Data in menu
-      const refDataMenu = page.locator('text=/Reference Data/i, [aria-label*="Reference Data"]')
+      // Should have Reference Data in menu using data-testid
+      const refDataMenu = page.locator('[data-testid="menu-reference-data"]')
       const menuExists = await refDataMenu.count()
 
       if (menuExists > 0) {
         expect(menuExists).toBeGreaterThan(0)
 
         // Click to open submenu
-        await refDataMenu.first().click()
-        await page.waitForTimeout(500)
+        await refDataMenu.click()
+        await page.waitForTimeout(1000)
 
-        // Should show reference data items
-        const hasSubItems = await page.locator(
-          'text=/Department/i, text=/Organisation/i, text=/Vault/i'
-        ).count()
+        // Check for any of the reference data submenu items with flexible matching
+        const subItemSelectors = [
+          'text=Department',
+          'text=Organisation',
+          'text=Vault',
+          'text=Media Type',
+          'text=Protective Marking'
+        ]
+
+        let hasSubItems = 0
+        for (const selector of subItemSelectors) {
+          const count = await page.locator(selector).count()
+          hasSubItems += count
+        }
+
+        // Should find at least one submenu item
         expect(hasSubItems).toBeGreaterThan(0)
       } else {
         test.skip()

@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { login, navigateToResource, TEST_USERS } from '../helpers/auth-helpers'
+import { login, navigateToResourceByTestId, TEST_USERS } from '../helpers/auth-helpers'
 
 test.describe('Items CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
-    await navigateToResource(page, 'Items')
+    await navigateToResourceByTestId(page, 'menu-items')
   })
 
   test.describe('Item Creation', () => {
