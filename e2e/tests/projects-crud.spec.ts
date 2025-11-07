@@ -14,6 +14,9 @@ test.describe('Projects CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
+
+      // Wait for navigation to create page
+      await page.waitForURL(/.*\/create/, { timeout: 3000 })
       await page.waitForLoadState('networkidle')
 
       // Should show create form
@@ -32,16 +35,15 @@ test.describe('Projects CRUD Operations', () => {
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Try to submit without filling required fields
+      // Wait for form to load
+      await page.waitForTimeout(500)
+
+      // Save button should be disabled when required fields are empty
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
-      await saveButton.first().click()
-      await page.waitForTimeout(1000)
 
-      // Should show validation errors
-      const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
-      await errors.first().waitFor({ state: 'visible', timeout: 5000 })
-      await expect(errors.first()).toBeVisible()
+      // React-Admin disables save button when form validation fails
+      await expect(saveButton.first()).toBeDisabled()
     })
 
     test('should create new project with valid data', async ({ page }) => {
@@ -56,6 +58,21 @@ test.describe('Projects CRUD Operations', () => {
       await nameField.first().waitFor({ state: 'visible' })
       const testName = `Test Project ${Date.now()}`
       await nameField.first().fill(testName)
+
+      // Fill in start date (required)
+      const startDateField = page.locator('input[name="startDate"]').or(page.locator('[id*="startDate"]'))
+      await startDateField.first().waitFor({ state: 'visible' })
+      const today = new Date()
+      const startDate = today.toISOString().split('T')[0]
+      await startDateField.first().fill(startDate)
+
+      // Fill in end date (required)
+      const endDateField = page.locator('input[name="endDate"]').or(page.locator('[id*="endDate"]'))
+      await endDateField.first().waitFor({ state: 'visible' })
+      const oneYearLater = new Date(today)
+      oneYearLater.setFullYear(today.getFullYear() + 1)
+      const endDate = oneYearLater.toISOString().split('T')[0]
+      await endDateField.first().fill(endDate)
 
       // Save the form
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))

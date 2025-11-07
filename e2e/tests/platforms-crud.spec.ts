@@ -32,16 +32,15 @@ test.describe('Platforms CRUD Operations', () => {
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Try to submit without filling required fields
+      // Wait for form to load
+      await page.waitForTimeout(500)
+
+      // Save button should be disabled when required fields are empty
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
-      await saveButton.first().click()
-      await page.waitForTimeout(1000)
 
-      // Should show validation errors
-      const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
-      await errors.first().waitFor({ state: 'visible', timeout: 5000 })
-      await expect(errors.first()).toBeVisible()
+      // React-Admin disables save button when form validation fails
+      await expect(saveButton.first()).toBeDisabled()
     })
 
     test('should create new platform with valid data', async ({ page }) => {

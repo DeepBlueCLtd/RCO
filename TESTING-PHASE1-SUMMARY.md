@@ -857,6 +857,645 @@ expect(something).toBe(true)
 
 ---
 
+## Critical Business Process Testing Requirements
+
+### Overview
+
+Beyond basic CRUD operations, VAL has three critical business workflows that require comprehensive E2E testing:
+1. **Welcome Page Shortcuts** - Alternative entry points for common operations
+2. **Destruction Workflow** - Complete item destruction lifecycle (9 steps)
+3. **Dispatch Workflows** - Complete item dispatch lifecycle with receipt and hastener management (2 processes: 12 + 16 steps)
+
+### 1. Welcome Page Shortcut Testing
+
+**Purpose:** Test shortcut buttons on Welcome page that provide quick access to create forms.
+
+**Shortcut Buttons:**
+- "New Projekt" - Creates new project
+- "New Batch" - Creates new batch
+- "New Dispatch" - Creates new dispatch
+
+**Test Requirements:**
+
+#### Test: Welcome Page Shortcut - New Projekt
+```typescript
+test('should create new project via Welcome page shortcut', async ({ page }) => {
+  // Navigate to Welcome page
+  await navigateToWelcome(page)
+
+  // Click "New Projekt" shortcut button
+  const newProjektButton = page.locator('[data-testid="welcome-new-projekt"]')
+  await newProjektButton.waitFor({ state: 'visible' })
+  await newProjektButton.click()
+  await page.waitForLoadState('networkidle')
+
+  // Should navigate to project create form
+  expect(page.url()).toContain('/project/create')
+
+  // Form should be visible
+  const form = page.locator('form')
+  await expect(form).toBeVisible()
+})
+```
+
+#### Test: Welcome Page Shortcut - New Batch
+```typescript
+test('should create new batch via Welcome page shortcut', async ({ page }) => {
+  // Navigate to Welcome page
+  await navigateToWelcome(page)
+
+  // Click "New Batch" shortcut button
+  const newBatchButton = page.locator('[data-testid="welcome-new-batch"]')
+  await newBatchButton.waitFor({ state: 'visible' })
+  await newBatchButton.click()
+  await page.waitForLoadState('networkidle')
+
+  // Should navigate to batch create form
+  expect(page.url()).toContain('/batch/create')
+
+  // Form should be visible
+  const form = page.locator('form')
+  await expect(form).toBeVisible()
+})
+```
+
+#### Test: Welcome Page Shortcut - New Dispatch
+```typescript
+test('should create new dispatch via Welcome page shortcut', async ({ page }) => {
+  // Navigate to Welcome page
+  await navigateToWelcome(page)
+
+  // Click "New Dispatch" shortcut button
+  const newDispatchButton = page.locator('[data-testid="welcome-new-dispatch"]')
+  await newDispatchButton.waitFor({ state: 'visible' })
+  await newDispatchButton.click()
+  await page.waitForLoadState('networkidle')
+
+  // Should navigate to dispatch create form
+  expect(page.url()).toContain('/dispatch/create')
+
+  // Form should be visible
+  const form = page.locator('form')
+  await expect(form).toBeVisible()
+})
+```
+
+**Required data-testid Attributes:**
+- `welcome-new-projekt` - New Projekt button on Welcome page
+- `welcome-new-batch` - New Batch button on Welcome page
+- `welcome-new-dispatch` - New Dispatch button on Welcome page
+
+---
+
+### 2. Destruction Business Process (9 Steps)
+
+**Purpose:** Complete item destruction workflow from creation to finalization.
+
+**Business Process Overview:**
+1. Create new destruction record
+2. Add items to destruction
+3. Print destruction form
+4. Finalize destruction (updates item states)
+
+**Complete Test Workflow:**
+
+```typescript
+test.describe('Destruction Business Process', () => {
+  test('should complete full destruction workflow', async ({ page }) => {
+    // STEP 1: Create "New Destruction"
+    await navigateToResourceByTestId(page, 'menu-destruction')
+    const createButton = page.locator('[data-testid="destruction-create-button"]')
+    await createButton.waitFor({ state: 'visible' })
+    await createButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // Fill destruction form (remarks, etc.)
+    const remarksField = page.locator('[name="remarks"]')
+    await remarksField.fill(`Test Destruction ${Date.now()}`)
+
+    // STEP 3: Click "Save" to create destruction
+    const saveButton = page.locator('button:has-text("Save")')
+    await saveButton.click()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(1000)
+
+    // Should redirect to destruction show page
+    expect(page.url()).toContain('/destruction/')
+    expect(page.url()).not.toContain('/create')
+
+    // STEP 2 & 4: Select items for destruction
+    // Navigate to items page
+    await navigateToResourceByTestId(page, 'menu-items')
+    await page.waitForLoadState('networkidle')
+
+    // STEP 5: Select items from list
+    const firstItemCheckbox = page.locator('[data-testid="item-list-table"] tbody tr').first().locator('input[type="checkbox"]')
+    await firstItemCheckbox.waitFor({ state: 'visible' })
+    await firstItemCheckbox.check()
+
+    // Click "Destroy" from toolbar
+    const destroyButton = page.locator('[data-testid="items-destroy-button"]')
+    await destroyButton.waitFor({ state: 'visible' })
+    await destroyButton.click()
+    await page.waitForTimeout(500)
+
+    // STEP 4: Dialog shows - Choose which live Destruction to add to
+    const destructionDialog = page.locator('[role="dialog"]')
+    await destructionDialog.waitFor({ state: 'visible' })
+
+    // Select the destruction we just created from dropdown
+    const destructionDropdown = page.locator('[data-testid="destruction-select-dropdown"]')
+    await destructionDropdown.click()
+    await page.locator('[role="option"]').first().click()
+
+    // Confirm adding items
+    const confirmButton = page.locator('button:has-text("Confirm")')
+    await confirmButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 5: Verify audit log entry created for "adding items to destruction"
+    // (This happens server-side, verified via later checks)
+
+    // STEP 6: Open "Destruction" list and navigate to our destruction
+    await navigateToResourceByTestId(page, 'menu-destruction')
+    await page.waitForLoadState('networkidle')
+
+    // Find and click our destruction
+    const destructionRow = page.locator('tbody tr').first()
+    await destructionRow.click()
+    await page.waitForLoadState('networkidle')
+
+    // Verify items are in destruction
+    const itemsTab = page.locator('button:has-text("Items")')
+    await itemsTab.click()
+    const itemInDestruction = page.locator('[data-testid="destruction-items-list"] tbody tr')
+    await expect(itemInDestruction.first()).toBeVisible()
+
+    // STEP 7: Print off destruction form
+    const printButton = page.locator('[data-testid="destruction-print-button"]')
+    await printButton.waitFor({ state: 'visible' })
+    // Note: Actual print would open print dialog, we just verify button exists and is clickable
+    await expect(printButton).toBeEnabled()
+
+    // STEP 8: Click on "Finalize"
+    const finalizeButton = page.locator('[data-testid="destruction-finalize-button"]')
+    await finalizeButton.waitFor({ state: 'visible' })
+    await finalizeButton.click()
+    await page.waitForTimeout(500)
+
+    // Confirm finalization dialog
+    const confirmDialog = page.locator('[role="dialog"]')
+    await confirmDialog.waitFor({ state: 'visible' })
+    const confirmFinalizeButton = page.locator('button:has-text("Yes")').or(page.locator('button:has-text("Confirm")'))
+    await confirmFinalizeButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 9: Destruction fields finalized
+    // Verify destruction status changed to finalized
+    const statusField = page.locator('[data-testid="destruction-status"]')
+    await expect(statusField).toContainText('Finalized')
+
+    // Verify finalize button is now disabled/hidden
+    await expect(finalizeButton).not.toBeVisible()
+
+    // Verify audit history shows finalization event
+    const historyTab = page.locator('button:has-text("History")').or(page.locator('button:has-text("Audit")'))
+    await historyTab.click()
+    const finalizeEvent = page.locator('text=/finalize/i')
+    await expect(finalizeEvent).toBeVisible()
+  })
+})
+```
+
+**Required data-testid Attributes:**
+- `destruction-create-button` - Create button on Destruction list
+- `items-destroy-button` - Destroy button on Items list toolbar
+- `destruction-select-dropdown` - Dropdown to select destruction in dialog
+- `destruction-items-list` - Items table in destruction show page
+- `destruction-print-button` - Print button on Destruction show page
+- `destruction-finalize-button` - Finalize button on Destruction show page
+- `destruction-status` - Status field showing finalized state
+
+**Key Assertions:**
+1. Destruction creation redirects to show page
+2. Items can be added to destruction from Items list
+3. Dialog shows list of active destructions
+4. Items appear in destruction's item list
+5. Print button is accessible
+6. Finalize button updates destruction status
+7. Finalize button disappears after finalization
+8. Audit history records finalization event
+
+---
+
+### 3. Dispatch Business Process 1: Creating and Dispatching Items (12 Steps)
+
+**Purpose:** Complete item dispatch workflow from creation to printing dispatch note.
+
+**Business Process Overview:**
+1. Create new dispatch record with recipient details
+2. Add items to dispatch from Items list
+3. Print dispatch note
+4. Mark as dispatched
+
+**Complete Test Workflow:**
+
+```typescript
+test.describe('Dispatch Business Process 1: Create and Dispatch', () => {
+  test('should complete full dispatch creation workflow', async ({ page }) => {
+    // STEP 1: Create "Dispatch"
+    await navigateToResourceByTestId(page, 'menu-dispatch')
+    const createButton = page.locator('[data-testid="dispatch-create-button"]')
+    await createButton.waitFor({ state: 'visible' })
+    await createButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 2: Provide "to" fields (recipient details)
+    const toNameField = page.locator('[name="toName"]')
+    await toNameField.waitFor({ state: 'visible' })
+    await toNameField.fill('Test Recipient Organisation')
+
+    const toAddressField = page.locator('[name="toAddress"]')
+    await toAddressField.fill('123 Test Street, Test City')
+
+    const remarksField = page.locator('[name="remarks"]')
+    await remarksField.fill(`Test Dispatch ${Date.now()}`)
+
+    // STEP 3: Click "Create"
+    const saveButton = page.locator('button:has-text("Save")')
+    await saveButton.click()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(1000)
+
+    // Should redirect to dispatch show page
+    expect(page.url()).toContain('/dispatch/')
+    expect(page.url()).not.toContain('/create')
+
+    // STEP 4: Prompt says "Please add items" from Items page
+    // (Application should show notification or empty state)
+    const notification = page.locator('[role="alert"]')
+    // May contain text about adding items
+
+    // STEP 5: Navigate to Items List and select items
+    await navigateToResourceByTestId(page, 'menu-items')
+    await page.waitForLoadState('networkidle')
+
+    // Select first item from list
+    const firstItemCheckbox = page.locator('[data-testid="item-list-table"] tbody tr').first().locator('input[type="checkbox"]')
+    await firstItemCheckbox.waitFor({ state: 'visible' })
+    await firstItemCheckbox.check()
+
+    // STEP 6: Select "Dispatch" from toolbar
+    const dispatchButton = page.locator('[data-testid="items-dispatch-button"]')
+    await dispatchButton.waitFor({ state: 'visible' })
+    await dispatchButton.click()
+    await page.waitForTimeout(500)
+
+    // STEP 7: Dialog with drop-down of "live" Dispatch items
+    // Shows: Dispatch reference, toName, and remarks columns
+    const dispatchDialog = page.locator('[role="dialog"]')
+    await dispatchDialog.waitFor({ state: 'visible' })
+
+    // Dropdown shows dispatch reference and remarks as combined field
+    const dispatchDropdown = page.locator('[data-testid="dispatch-select-dropdown"]')
+    await dispatchDropdown.click()
+
+    // Verify dropdown shows dispatch details (reference + toName + remarks)
+    const firstOption = page.locator('[role="option"]').first()
+    await expect(firstOption).toBeVisible()
+    // Should contain dispatch reference or toName
+
+    // Select the dispatch we just created
+    await firstOption.click()
+
+    // Confirm adding items to dispatch
+    const confirmButton = page.locator('button:has-text("Confirm")')
+    await confirmButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 8: "dispatched" field populated for Item
+    // Navigate back to item to verify dispatched field is set
+    const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
+    await firstRow.click()
+    await page.waitForLoadState('networkidle')
+
+    // Verify dispatched field shows dispatch reference
+    const dispatchedField = page.locator('[data-testid="item-dispatched-field"]')
+    await expect(dispatchedField).toBeVisible()
+    // Should contain dispatch reference or "Dispatched" indicator
+
+    // STEP 9: Open "Dispatches" tab
+    await navigateToResourceByTestId(page, 'menu-dispatch')
+    await page.waitForLoadState('networkidle')
+
+    // STEP 10: Select relevant dispatch
+    const dispatchRow = page.locator('tbody tr').first()
+    await dispatchRow.click()
+    await page.waitForLoadState('networkidle')
+
+    // Verify items are in dispatch
+    const itemsTab = page.locator('button:has-text("Items")')
+    await itemsTab.click()
+    const itemInDispatch = page.locator('[data-testid="dispatch-items-list"] tbody tr')
+    await expect(itemInDispatch.first()).toBeVisible()
+
+    // STEP 11: Click on "Print Note"
+    const printNoteButton = page.locator('[data-testid="dispatch-print-note-button"]')
+    await printNoteButton.waitFor({ state: 'visible' })
+    // Note: Actual print would open print dialog, we just verify button exists
+    await expect(printNoteButton).toBeEnabled()
+
+    // STEP 12: Click on "Dispatch" (mark as dispatched)
+    const markDispatchedButton = page.locator('[data-testid="dispatch-mark-dispatched-button"]')
+    await markDispatchedButton.waitFor({ state: 'visible' })
+    await markDispatchedButton.click()
+    await page.waitForTimeout(500)
+
+    // Confirm dispatch action
+    const confirmDialog = page.locator('[role="dialog"]')
+    await confirmDialog.waitFor({ state: 'visible' })
+    const confirmDispatchButton = page.locator('button:has-text("Yes")').or(page.locator('button:has-text("Confirm")'))
+    await confirmDispatchButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // Verify dispatch status updated
+    const statusField = page.locator('[data-testid="dispatch-status"]')
+    await expect(statusField).toContainText('Dispatched')
+  })
+})
+```
+
+**Required data-testid Attributes:**
+- `dispatch-create-button` - Create button on Dispatch list
+- `items-dispatch-button` - Dispatch button on Items list toolbar
+- `dispatch-select-dropdown` - Dropdown to select dispatch in dialog
+- `item-dispatched-field` - Dispatched field on Item show page
+- `dispatch-items-list` - Items table in dispatch show page
+- `dispatch-print-note-button` - Print Note button on Dispatch show page
+- `dispatch-mark-dispatched-button` - Mark as Dispatched button
+- `dispatch-status` - Status field showing dispatched state
+
+**Key Assertions:**
+1. Dispatch creation with recipient details
+2. Items can be added to dispatch from Items list
+3. Dialog shows list of active dispatches with reference + toName + remarks
+4. Item's dispatched field updated after adding to dispatch
+5. Items appear in dispatch's item list
+6. Print Note button is accessible
+7. Mark Dispatched button updates dispatch status
+8. Status field shows "Dispatched" after confirmation
+
+---
+
+### 4. Dispatch Business Process 2: Receipt Notes and Hasteners (16 Steps)
+
+**Purpose:** Complete dispatch receipt and hastener workflow, including item returns.
+
+**Business Process Overview:**
+1. Mark receipt note as received
+2. Monitor hasteners required (overdue dispatches)
+3. Send hasteners for outstanding dispatches
+4. Return dispatched items
+
+**Complete Test Workflow:**
+
+```typescript
+test.describe('Dispatch Business Process 2: Receipts and Hasteners', () => {
+  test('should handle receipt notes and hastener workflow', async ({ page }) => {
+    // PREREQUISITE: Create a dispatched item (use helper or previous test)
+    // For this test, assume we have a dispatch created in previous test
+
+    // STEP 1: Receipt Note Received (external event - simulated)
+
+    // STEP 2: From Welcome Page select "Receipt Notes"
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    const receiptNotesButton = page.locator('[data-testid="welcome-receipt-notes"]')
+    await receiptNotesButton.waitFor({ state: 'visible' })
+    await receiptNotesButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 3: Dispatch list shown, filtered for receiptReceived = undefined
+    // URL should indicate filtered view
+    expect(page.url()).toContain('/dispatch')
+
+    // Verify list shows only dispatches without receipt
+    const dispatchList = page.locator('[data-testid="dispatch-list-table"]')
+    await dispatchList.waitFor({ state: 'visible' })
+
+    // STEP 4: Select row
+    const firstDispatch = page.locator('tbody tr').first()
+    await firstDispatch.waitFor({ state: 'visible' })
+    await firstDispatch.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 5: Click "Receipt Note Received" from toolbar
+    const receiptReceivedButton = page.locator('[data-testid="dispatch-receipt-received-button"]')
+    await receiptReceivedButton.waitFor({ state: 'visible' })
+    await receiptReceivedButton.click()
+    await page.waitForTimeout(500)
+
+    // Dialog should appear
+    const receiptDialog = page.locator('[role="dialog"]')
+    await receiptDialog.waitFor({ state: 'visible' })
+
+    // STEP 6: Populate "receipt Received" value (date field)
+    const receiptDateField = page.locator('[data-testid="receipt-received-date"]')
+    await receiptDateField.waitFor({ state: 'visible' })
+
+    // Fill with today's date
+    const today = new Date().toISOString().split('T')[0]
+    await receiptDateField.fill(today)
+
+    // Confirm
+    const confirmButton = page.locator('button:has-text("Confirm")')
+    await confirmButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // Verify receipt received field updated
+    const receiptField = page.locator('[data-testid="dispatch-receipt-received-field"]')
+    await expect(receiptField).toContainText(today)
+  })
+
+  test('should display and manage hasteners required', async ({ page }) => {
+    // STEP 7: Welcome page shows "Hasteners Required"
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // List of dispatches where receiptReceived is null
+    // Formatted red if created more than a month ago
+    const hastenersSection = page.locator('[data-testid="welcome-hasteners-required"]')
+    await hastenersSection.waitFor({ state: 'visible' })
+
+    // Verify section shows dispatches needing hasteners
+    const hastenersList = page.locator('[data-testid="hasteners-list"]')
+    await expect(hastenersList).toBeVisible()
+
+    // STEP 8: Select Item from list
+    const firstHastener = page.locator('[data-testid="hasteners-list"] tbody tr').first()
+
+    // Check if item is red (overdue - more than 1 month old)
+    const isOverdue = await firstHastener.evaluate((el) => {
+      const style = window.getComputedStyle(el)
+      return style.color.includes('rgb(255') || style.backgroundColor.includes('rgb(255')
+    })
+    // Red formatting indicates overdue
+
+    await firstHastener.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 9: Click on "Print Hastener"
+    const printHastenerButton = page.locator('[data-testid="dispatch-print-hastener-button"]')
+    await printHastenerButton.waitFor({ state: 'visible' })
+    await printHastenerButton.click()
+    await page.waitForTimeout(500)
+
+    // Confirm print hastener
+    const confirmDialog = page.locator('[role="dialog"]')
+    await confirmDialog.waitFor({ state: 'visible' })
+    const confirmButton = page.locator('button:has-text("Yes")').or(page.locator('button:has-text("Confirm")'))
+    await confirmButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 10: Value of "last hastener sent" updated
+    const lastHastenerField = page.locator('[data-testid="dispatch-last-hastener-sent"]')
+    await expect(lastHastenerField).toBeVisible()
+    // Should contain today's date
+    const today = new Date().toISOString().split('T')[0]
+    await expect(lastHastenerField).toContainText(today)
+
+    // STEP 11: "Hastener sent" added to history for this dispatch
+    const historyTab = page.locator('button:has-text("History")').or(page.locator('button:has-text("Audit")'))
+    await historyTab.click()
+    const hastenerEvent = page.locator('text=/hastener.*sent/i')
+    await expect(hastenerEvent).toBeVisible()
+  })
+
+  test('should return dispatched items', async ({ page }) => {
+    // STEP 12: Dispatched item(s) returned (external event)
+
+    // STEP 13: Open Dispatch
+    await navigateToResourceByTestId(page, 'menu-dispatch')
+    await page.waitForLoadState('networkidle')
+
+    // Find dispatch with items
+    const firstDispatch = page.locator('tbody tr').first()
+    await firstDispatch.click()
+    await page.waitForLoadState('networkidle')
+
+    // Navigate to items tab
+    const itemsTab = page.locator('button:has-text("Items")')
+    await itemsTab.click()
+
+    // STEP 14: Select item(s)
+    const firstItemCheckbox = page.locator('[data-testid="dispatch-items-list"] tbody tr').first().locator('input[type="checkbox"]')
+    await firstItemCheckbox.waitFor({ state: 'visible' })
+    await firstItemCheckbox.check()
+
+    // STEP 15: Click "Return"
+    const returnButton = page.locator('[data-testid="dispatch-return-items-button"]')
+    await returnButton.waitFor({ state: 'visible' })
+    await returnButton.click()
+    await page.waitForTimeout(500)
+
+    // Confirm return
+    const confirmDialog = page.locator('[role="dialog"]')
+    await confirmDialog.waitFor({ state: 'visible' })
+    const confirmButton = page.locator('button:has-text("Yes")').or(page.locator('button:has-text("Confirm")'))
+    await confirmButton.click()
+    await page.waitForLoadState('networkidle')
+
+    // STEP 16: Verify events triggered
+
+    // 16a: "Item returned" event for Dispatch
+    const historyTab = page.locator('button:has-text("History")').or(page.locator('button:has-text("Audit")'))
+    await historyTab.click()
+    const itemReturnedEvent = page.locator('text=/item.*returned/i')
+    await expect(itemReturnedEvent).toBeVisible()
+
+    // 16b: "Dispatched Item returned" event for Item
+    // Navigate to the item to check its history
+    await navigateToResourceByTestId(page, 'menu-items')
+    const returnedItem = page.locator('[data-testid="item-list-table"] tbody tr').first()
+    await returnedItem.click()
+    await page.waitForLoadState('networkidle')
+
+    const itemHistoryTab = page.locator('button:has-text("History")').or(page.locator('button:has-text("Audit")'))
+    await itemHistoryTab.click()
+    const dispatchedItemReturnedEvent = page.locator('text=/dispatched.*item.*returned/i')
+    await expect(dispatchedItemReturnedEvent).toBeVisible()
+
+    // 16c: "Dispatched value" cleared for Item
+    const detailsTab = page.locator('button:has-text("Details")').or(page.locator('button:has-text("Summary")'))
+    await detailsTab.click()
+    const dispatchedField = page.locator('[data-testid="item-dispatched-field"]')
+
+    // Field should be empty or show "Not Dispatched"
+    const dispatchedValue = await dispatchedField.textContent()
+    expect(dispatchedValue).not.toContain('DISP-') // Should not contain dispatch reference
+  })
+})
+```
+
+**Required data-testid Attributes:**
+- `welcome-receipt-notes` - Receipt Notes button on Welcome page
+- `dispatch-list-table` - Dispatch list table
+- `dispatch-receipt-received-button` - Receipt Received button on toolbar
+- `receipt-received-date` - Date field in receipt dialog
+- `dispatch-receipt-received-field` - Receipt received field on show page
+- `welcome-hasteners-required` - Hasteners Required section on Welcome page
+- `hasteners-list` - List of dispatches requiring hasteners
+- `dispatch-print-hastener-button` - Print Hastener button
+- `dispatch-last-hastener-sent` - Last hastener sent date field
+- `dispatch-return-items-button` - Return items button on dispatch
+- `item-dispatched-field` - Dispatched field on Item show page
+
+**Key Assertions:**
+1. Receipt Notes button filters dispatches without receipts
+2. Receipt Received dialog updates receiptReceived field
+3. Welcome page shows Hasteners Required section
+4. Overdue dispatches (>1 month) formatted in red
+5. Print Hastener updates "last hastener sent" field
+6. Hastener event added to dispatch audit history
+7. Return button clears item's dispatched field
+8. Return creates audit events for both Dispatch and Item
+9. Item no longer shows dispatch reference after return
+
+---
+
+### Implementation Priority
+
+**High Priority (Core Workflows):**
+1. Destruction workflow - Critical for data lifecycle management
+2. Dispatch workflow 1 - Essential for item movement tracking
+3. Welcome page shortcuts - High-frequency user actions
+
+**Medium Priority:**
+4. Dispatch workflow 2 - Important for receipt and hastener management
+
+**Recommended Approach:**
+1. Add all required data-testid attributes first
+2. Implement tests incrementally (one workflow at a time)
+3. Test each workflow independently before combining
+4. Follow patterns from batch.spec.ts (fail-fast, no conditional skips)
+5. Use serial execution (workers: 1) for stability
+
+**Test File Organization:**
+- `e2e/tests/welcome-shortcuts.spec.ts` - Welcome page shortcut tests (3 tests)
+- `e2e/tests/destruction-workflow.spec.ts` - Complete destruction process (1 comprehensive test)
+- `e2e/tests/dispatch-workflow-create.spec.ts` - Dispatch creation and dispatching (1 comprehensive test)
+- `e2e/tests/dispatch-workflow-receipts.spec.ts` - Receipt notes and hasteners (3 comprehensive tests)
+
+**Estimated Test Count:**
+- Welcome shortcuts: 3 tests
+- Destruction workflow: 1 comprehensive test
+- Dispatch workflow 1: 1 comprehensive test
+- Dispatch workflow 2: 3 comprehensive tests
+- **Total: 8 new comprehensive business process tests**
+
+---
+
 ## Conclusion
 
 ### Phase-1 System Testing Implementation Status
