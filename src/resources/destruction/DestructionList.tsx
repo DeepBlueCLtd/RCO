@@ -38,7 +38,7 @@ export default function DestructionList(): React.ReactElement {
           ? { finalisedAt_eq: false }
           : { finalisedAt__null: true }
       }>
-      <Datagrid rowClick='show' bulkActionButtons={false}>
+      <Datagrid data-testid="destruction-list-table" rowClick='show' bulkActionButtons={false}>
         <TextField<Destruction> source='name' label='Reference' />
         <ConditionalDateField<Destruction>
           label='Finalised at'
