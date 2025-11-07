@@ -4,218 +4,165 @@ import { login, navigateToResourceByTestId, TEST_USERS } from '../helpers/auth-h
 test.describe('Projects CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
-    // Navigate to Projects using data-testid
     await navigateToResourceByTestId(page, 'menu-projects')
+    await page.waitForLoadState('networkidle')
   })
 
   test.describe('Project Creation', () => {
     test('should open create project form', async ({ page }) => {
+      // Find and click create button - fail if not found
+      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Find and click create button
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
-      const buttonExists = await createButton.count()
+      // Should show create form
+      const form = page.locator('form, [role="form"]')
+      await form.waitFor({ state: 'visible' })
+      await expect(form).toBeVisible()
 
-      if (buttonExists > 0) {
-        await createButton.first().click()
-        await page.waitForLoadState('networkidle')
-
-        // Should show create form
-        const hasForm = await page.locator('form, [role="form"]').count()
-        expect(hasForm).toBeGreaterThan(0)
-
-        // URL should indicate create page
-        const url = page.url()
-        expect(url).toContain('/create')
-      } else {
-        test.skip()
-      }
+      // URL should indicate create page
+      expect(page.url()).toContain('/create')
     })
 
     test('should validate required fields on project creation', async ({ page }) => {
+      // Open create form
+      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
-      const buttonExists = await createButton.count()
+      // Try to submit without filling required fields
+      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+      await page.waitForTimeout(1000)
 
-      if (buttonExists > 0) {
-        await createButton.first().click()
-        await page.waitForLoadState('networkidle')
-
-        // Try to submit without filling required fields
-        const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-        if (await saveButton.count() > 0) {
-          await saveButton.first().click()
-          await page.waitForTimeout(1000)
-
-          // Should show validation errors or remain on form
-          const hasErrors = await page.locator('[class*="error" i], [class*="invalid" i], .Mui-error').count()
-          expect(hasErrors).toBeGreaterThan(0)
-        }
-      } else {
-        test.skip()
-      }
+      // Should show validation errors
+      const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
+      await errors.first().waitFor({ state: 'visible', timeout: 5000 })
+      await expect(errors.first()).toBeVisible()
     })
 
     test('should create new project with valid data', async ({ page }) => {
+      // Open create form
+      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
+      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create"), button:has-text("ADD NEW")')
-      const buttonExists = await createButton.count()
+      // Fill in name field (required)
+      const nameField = page.locator('input[name="name"], [id*="name"]')
+      await nameField.first().waitFor({ state: 'visible' })
+      const testName = `Test Project ${Date.now()}`
+      await nameField.first().fill(testName)
 
-      if (buttonExists > 0) {
-        await createButton.first().click()
-        await page.waitForLoadState('networkidle')
+      // Save the form
+      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-        // Fill in name field (likely required)
-        const nameField = page.locator('input[name="name"], [id*="name"]')
-        if (await nameField.count() > 0) {
-          const testName = `Test Project ${Date.now()}`
-          await nameField.first().fill(testName)
+      // Give time for save to complete
+      await page.waitForTimeout(1000)
 
-          // Save the form
-          const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-          if (await saveButton.count() > 0) {
-            await saveButton.first().click()
-            await page.waitForLoadState('networkidle')
-
-            // Should redirect to list or show page
-            const url = page.url()
-            expect(url).not.toContain('/create')
-          }
-        }
-      } else {
-        test.skip()
-      }
+      // Should redirect away from create page
+      expect(page.url()).not.toContain('/create')
     })
   })
 
   test.describe('Project Editing', () => {
     test('should open edit form for existing project', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Navigate to first project
       const firstRow = page.locator('[role="row"]').nth(1)
-      const rowExists = await firstRow.count()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+      await page.waitForLoadState('networkidle')
 
-      if (rowExists > 0) {
-        await firstRow.click()
-        await page.waitForLoadState('networkidle')
+      // Look for edit button
+      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-        // Look for edit button
-        const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
-        const editExists = await editButton.count()
+      // Should show edit form
+      const form = page.locator('form, [role="form"]')
+      await form.waitFor({ state: 'visible' })
+      await expect(form).toBeVisible()
 
-        if (editExists > 0) {
-          await editButton.first().click()
-          await page.waitForLoadState('networkidle')
-
-          // Should show edit form
-          const hasForm = await page.locator('form, [role="form"]').count()
-          expect(hasForm).toBeGreaterThan(0)
-
-          // URL should indicate edit page
-          const url = page.url()
-          expect(url).toMatch(/\/project\/\d+/)
-        }
-      } else {
-        test.skip()
-      }
+      // URL should indicate project edit page
+      expect(page.url()).toMatch(/\/project\/\d+/)
     })
 
     test('should save edits to project', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Navigate to first project
       const firstRow = page.locator('[role="row"]').nth(1)
-      const rowExists = await firstRow.count()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+      await page.waitForLoadState('networkidle')
 
-      if (rowExists > 0) {
-        await firstRow.click()
-        await page.waitForLoadState('networkidle')
+      // Click edit button
+      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-        const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
-        if (await editButton.count() > 0) {
-          await editButton.first().click()
-          await page.waitForLoadState('networkidle')
+      // Look for name or remarks field to edit
+      const editableField = page.locator('input[name="name"], input[name="remarks"], textarea[name="remarks"]')
+      await editableField.first().waitFor({ state: 'visible' })
+      const currentValue = await editableField.first().inputValue()
+      const testValue = `${currentValue} - Updated ${Date.now()}`
+      await editableField.first().fill(testValue)
 
-          // Look for name or remarks field to edit
-          const editableField = page.locator('input[name="name"], input[name="remarks"], textarea[name="remarks"]')
-          if (await editableField.count() > 0) {
-            const currentValue = await editableField.first().inputValue()
-            const testValue = `${currentValue} - Updated ${Date.now()}`
-            await editableField.first().fill(testValue)
+      // Save the form
+      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-            // Save the form
-            const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-            if (await saveButton.count() > 0) {
-              await saveButton.first().click()
-              await page.waitForLoadState('networkidle')
+      // Give time for save to complete
+      await page.waitForTimeout(1000)
 
-              // Should redirect or show success
-              const hasSuccessOrDetail = await page.locator(
-                '[role="alert"], .MuiAlert-root, [class*="Snackbar"]'
-              ).count()
-              // Success notification or detail page indicates save worked
-              expect(hasSuccessOrDetail >= 0).toBe(true)
-            }
-          }
-        }
-      } else {
-        test.skip()
-      }
+      // Should not be on create page anymore (indicates save worked)
+      expect(page.url()).not.toContain('/create')
     })
   })
 
   test.describe('Project Details View', () => {
     test('should display project details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Navigate to first project
       const firstRow = page.locator('[role="row"]').nth(1)
-      const rowExists = await firstRow.count()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+      await page.waitForLoadState('networkidle')
 
-      if (rowExists > 0) {
-        await firstRow.click()
-        await page.waitForLoadState('networkidle')
+      // Should show project details (main content area)
+      const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
+      await details.first().waitFor({ state: 'visible' })
+      await expect(details.first()).toBeVisible()
 
-        // Should show project details
-        const hasDetails = await page.locator('[role="main"], .MuiPaper-root, [class*="show" i]').count()
-        expect(hasDetails).toBeGreaterThan(0)
-
-        // URL should indicate show page
-        const url = page.url()
-        expect(url).toContain('/project')
-      } else {
-        test.skip()
-      }
+      // URL should indicate project page
+      expect(page.url()).toContain('/project')
     })
   })
 
   test.describe('Project List', () => {
     test('should display projects list', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Should have list table
-      const hasList = await page.locator('table').count()
-      expect(hasList).toBeGreaterThan(0)
+      const table = page.locator('table')
+      await table.waitFor({ state: 'visible' })
+      await expect(table).toBeVisible()
     })
 
     test('should allow filtering projects', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Look for filter controls
       const filterButton = page.locator(
         'button:has-text("Filter"), [aria-label*="filter" i], input[type="search"]'
       )
-      const filterExists = await filterButton.count()
+      await filterButton.first().waitFor({ state: 'visible' })
 
-      if (filterExists > 0) {
-        // Filter functionality exists
-        expect(filterExists).toBeGreaterThan(0)
-      } else {
-        test.skip()
-      }
+      // Filter functionality exists
+      await expect(filterButton.first()).toBeVisible()
     })
   })
 })

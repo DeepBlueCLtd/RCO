@@ -5,186 +5,136 @@ test.describe('Destruction CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
     await navigateToResourceByTestId(page, 'menu-destruction')
+    await page.waitForLoadState('networkidle')
   })
 
   test.describe('Destruction Creation', () => {
     test('should open create destruction form', async ({ page }) => {
+      // Find and click create button - fail if not found
+      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
+      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Find and click create button
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
-      const buttonExists = await createButton.count()
+      // Should show create form
+      const form = page.locator('form, [role="form"]')
+      await form.waitFor({ state: 'visible' })
+      await expect(form).toBeVisible()
 
-      if (buttonExists > 0) {
-        await createButton.first().click()
-        await page.waitForLoadState('networkidle')
-
-        // Should show create form
-        const hasForm = await page.locator('form, [role="form"]').count()
-        expect(hasForm).toBeGreaterThan(0)
-
-        // URL should indicate create page
-        const url = page.url()
-        expect(url).toContain('/create')
-      } else {
-        test.skip()
-      }
+      // URL should indicate create page
+      expect(page.url()).toContain('/create')
     })
 
     test('should validate required fields on destruction creation', async ({ page }) => {
+      // Open create form
+      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
+      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
-      const buttonExists = await createButton.count()
+      // Try to submit without filling required fields
+      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+      await page.waitForTimeout(1000)
 
-      if (buttonExists > 0) {
-        await createButton.first().click()
-        await page.waitForLoadState('networkidle')
-
-        // Try to submit without filling required fields
-        const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-        if (await saveButton.count() > 0) {
-          await saveButton.first().click()
-          await page.waitForTimeout(1000)
-
-          // Should show validation errors or remain on form
-          const hasErrors = await page.locator('[class*="error" i], [class*="invalid" i], .Mui-error').count()
-          expect(hasErrors).toBeGreaterThan(0)
-        }
-      } else {
-        test.skip()
-      }
+      // Should show validation errors
+      const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
+      await errors.first().waitFor({ state: 'visible', timeout: 5000 })
+      await expect(errors.first()).toBeVisible()
     })
   })
 
   test.describe('Destruction Editing', () => {
     test('should open edit form for existing destruction', async ({ page }) => {
+      // Navigate to first destruction row
+      const firstRow = page.locator('[role="row"]').nth(1)
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
       await page.waitForLoadState('networkidle')
 
-      // Navigate to first destruction
-      const firstRow = page.locator('[role="row"]').nth(1)
-      const rowExists = await firstRow.count()
+      // Look for edit button
+      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-      if (rowExists > 0) {
-        await firstRow.click()
-        await page.waitForLoadState('networkidle')
+      // Should show edit form
+      const form = page.locator('form, [role="form"]')
+      await form.waitFor({ state: 'visible' })
+      await expect(form).toBeVisible()
 
-        // Look for edit button
-        const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
-        const editExists = await editButton.count()
-
-        if (editExists > 0) {
-          await editButton.first().click()
-          await page.waitForLoadState('networkidle')
-
-          // Should show edit form
-          const hasForm = await page.locator('form, [role="form"]').count()
-          expect(hasForm).toBeGreaterThan(0)
-
-          // URL should indicate edit page
-          const url = page.url()
-          expect(url).toMatch(/\/destruction\/\d+/)
-        }
-      } else {
-        test.skip()
-      }
+      // URL should indicate edit page
+      expect(page.url()).toMatch(/\/destruction\/\d+/)
     })
 
     test('should save edits to destruction', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Navigate to first destruction
       const firstRow = page.locator('[role="row"]').nth(1)
-      const rowExists = await firstRow.count()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+      await page.waitForLoadState('networkidle')
 
-      if (rowExists > 0) {
-        await firstRow.click()
-        await page.waitForLoadState('networkidle')
+      // Click edit button
+      const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
+      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-        const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
-        if (await editButton.count() > 0) {
-          await editButton.first().click()
-          await page.waitForLoadState('networkidle')
+      // Edit the remarks field
+      const remarksField = page.locator('input[name="remarks"], textarea[name="remarks"], [id*="remarks"]')
+      await remarksField.first().waitFor({ state: 'visible' })
+      const testValue = `Test edit ${Date.now()}`
+      await remarksField.first().fill(testValue)
 
-          // Look for a text input field to edit
-          const remarksField = page.locator('input[name="remarks"], textarea[name="remarks"], [id*="remarks"]')
-          if (await remarksField.count() > 0) {
-            const testValue = `Test edit ${Date.now()}`
-            await remarksField.first().fill(testValue)
+      // Save the form
+      const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+      await page.waitForLoadState('networkidle')
 
-            // Save the form
-            const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-            if (await saveButton.count() > 0) {
-              await saveButton.first().click()
-              await page.waitForLoadState('networkidle')
+      // Give time for save to complete
+      await page.waitForTimeout(1000)
 
-              // Should redirect or show success
-              const hasSuccessOrDetail = await page.locator(
-                '[role="alert"], .MuiAlert-root, [class*="Snackbar"]'
-              ).count()
-              // Success notification or detail page indicates save worked
-              expect(hasSuccessOrDetail >= 0).toBe(true)
-            }
-          }
-        }
-      } else {
-        test.skip()
-      }
+      // Should redirect to show page
+      expect(page.url()).toContain('/destruction')
+      expect(page.url()).not.toContain('/create')
     })
   })
 
   test.describe('Destruction Details View', () => {
     test('should display destruction details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Navigate to first destruction
       const firstRow = page.locator('[role="row"]').nth(1)
-      const rowExists = await firstRow.count()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+      await page.waitForLoadState('networkidle')
 
-      if (rowExists > 0) {
-        await firstRow.click()
-        await page.waitForLoadState('networkidle')
+      // Should show destruction details
+      const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
+      await details.first().waitFor({ state: 'visible' })
+      await expect(details.first()).toBeVisible()
 
-        // Should show destruction details
-        const hasDetails = await page.locator('[role="main"], .MuiPaper-root, [class*="show" i]').count()
-        expect(hasDetails).toBeGreaterThan(0)
-
-        // URL should indicate show page
-        const url = page.url()
-        expect(url).toContain('/destruction')
-      } else {
-        test.skip()
-      }
+      // URL should indicate show page
+      expect(page.url()).toContain('/destruction')
     })
   })
 
   test.describe('Destruction List', () => {
     test('should display destructions list', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
-      // Should have list table or empty state message
-      const hasList = await page.locator('table').count()
-      const hasEmptyState = await page.locator('text=/no.*found/i, text=/empty/i').count()
-
-      // Either table exists or empty state is shown
-      expect(hasList + hasEmptyState).toBeGreaterThan(0)
+      // Should have list table
+      const table = page.locator('table')
+      await table.waitFor({ state: 'visible' })
+      await expect(table).toBeVisible()
     })
 
     test('should allow filtering destructions', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Look for filter controls
       const filterButton = page.locator(
         'button:has-text("Filter"), [aria-label*="filter" i], input[type="search"]'
       )
-      const filterExists = await filterButton.count()
-
-      if (filterExists > 0) {
-        // Filter functionality exists
-        expect(filterExists).toBeGreaterThan(0)
-      } else {
-        test.skip()
-      }
+      await filterButton.first().waitFor({ state: 'visible' })
+      await expect(filterButton.first()).toBeVisible()
     })
   })
 })
