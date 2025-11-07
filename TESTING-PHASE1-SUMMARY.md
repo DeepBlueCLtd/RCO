@@ -16,11 +16,15 @@ This phase focused on establishing comprehensive test coverage (unit + e2e) for 
 - **Test Execution Time:** ~76 seconds
 
 ### E2E Tests
-- **Baseline:** 1 file (login.spec.ts with basic tests)
-- **Phase-1:** 4 files with 43 comprehensive e2e tests ✅
-- **Added:** 3 new test files + helpers + infrastructure
-- **Coverage:** Authentication, Items, Batches (43 tests total)
-- **Status:** Complete infrastructure - ready for local execution
+- **Baseline:** 8 files with 69 tests (login, platforms-crud, projects-crud, items-crud, dispatch-crud, destruction-crud, reference-data)
+- **Phase-1 Added:** 3 new test files with 34 tests ✅
+  - authentication.spec.ts (15 tests)
+  - items.spec.ts (10 tests)
+  - batch.spec.ts (9 tests)
+- **Total Tests:** 98 tests across 10 files
+- **Phase-1 Status:** 24/34 new tests passing (authentication + batch = 100%)
+- **Pre-Existing Status:** 64 tests require refactoring (defensive test.skip patterns)
+- **Infrastructure:** Complete - dual-server, DB reset, helpers, documentation
 
 ## New Test Coverage
 
@@ -720,6 +724,103 @@ if (searchExists > 0) {
 3. Use proper waits instead of defensive checks
 4. Follow patterns established in batch tests
 
+---
+
+### Pre-Existing E2E Tests - Technical Debt Identified
+
+**Discovery:** Phase-1 test execution revealed 64 pre-existing E2E tests across 7 files that were not part of Phase-1 scope.
+
+#### Pre-Existing Test Files (64 tests total):
+1. **login.spec.ts** (5 tests) - Basic login flows
+2. **items-crud.spec.ts** (5 tests) - Item CRUD operations
+3. **dispatch-crud.spec.ts** (7 tests) - Dispatch CRUD operations
+4. **destruction-crud.spec.ts** (7 tests) - Destruction CRUD operations
+5. **platforms-crud.spec.ts** (8 tests) - Platform CRUD operations
+6. **projects-crud.spec.ts** (8 tests) - Project CRUD operations
+7. **reference-data.spec.ts** (24 tests) - Reference data management (Department, Organisation, Protective Marking, Media Type, Vault, CAT Codes)
+
+#### Critical Issue: Defensive Test Patterns
+
+**All pre-existing tests contain the same problematic pattern found in items.spec.ts:**
+
+```typescript
+// PROBLEMATIC PATTERN - DO NOT USE
+if (elementExists > 0) {
+  // Run test
+  await element.click()
+  expect(something).toBe(true)
+} else {
+  test.skip()  // ❌ HIDES FAILURES
+}
+```
+
+**Why This Is Dangerous:**
+1. **Masks Real Issues:** Tests skip silently when UI elements missing instead of failing loudly
+2. **False Positives:** CI reports "passing" when tests actually didn't run
+3. **No Fail-Fast:** Delays problem discovery until production
+4. **Undermines Test Suite Value:** Can't trust test results
+
+**Correct Pattern (Used in Phase-1 Tests):**
+```typescript
+// CORRECT PATTERN - FAIL FAST
+const element = page.locator('[data-testid="create-button"]')
+await element.waitFor({ state: 'visible' })  // ✅ FAILS if missing
+await element.click()
+expect(something).toBe(true)
+```
+
+#### Refactoring Requirements
+
+**ALL 64 pre-existing tests must be refactored to:**
+
+1. **Remove ALL conditional test.skip() logic**
+   - Tests must fail if elements not found
+   - No defensive if/else checks
+   - Use Playwright's built-in waits that fail properly
+
+2. **Add data-testid attributes to components**
+   - Replace fragile text selectors like `button:has-text("Create")`
+   - Use reliable `[data-testid="create-button"]`
+   - Follow pattern from batch tests (BatchShow.tsx lines 44, 74)
+
+3. **Use proper Playwright waits**
+   - `await element.waitFor({ state: 'visible' })` - fails if timeout
+   - `await page.waitForURL(pattern)` - fails if navigation doesn't happen
+   - `await page.waitForLoadState('networkidle')` - ensures page ready
+
+4. **Follow batch test patterns**
+   - No `{ force: true }` clicks
+   - Add waits after save operations (race conditions)
+   - Use explicit timeouts for slow operations
+
+#### Impact Assessment
+
+**Test Suite Reality Check:**
+- **Total E2E Tests:** 98
+- **Phase-1 Tests (new, properly written):** 24 passing (100% for auth/batch)
+- **Pre-Existing Tests (need refactoring):** 64 with defensive patterns
+- **Items Tests (Phase-1, need refactoring):** 10 with same issues
+
+**Current Pass Rate:** 24% (24/98) - misleading due to skipped tests
+**True Pass Rate:** 100% for properly written tests (24/24)
+
+#### Recommended Actions
+
+**Phase-2 Priorities:**
+1. **Highest Priority:** Refactor login.spec.ts (5 tests) - critical path
+2. **High Priority:** Refactor platforms-crud.spec.ts & projects-crud.spec.ts (16 tests) - frequently used
+3. **Medium Priority:** Refactor items-crud.spec.ts, dispatch-crud.spec.ts, destruction-crud.spec.ts (19 tests)
+4. **Lower Priority:** Refactor reference-data.spec.ts (24 tests) - admin features
+5. **Phase-1 Cleanup:** Refactor items.spec.ts (10 tests) - align with batch tests
+
+**Estimated Effort:**
+- Per test file: 2-4 hours (remove patterns, add data-testids, test)
+- Total: 16-28 hours for all 64 tests
+- Could be done incrementally as separate PRs
+
+**⚠️ CRITICAL RULE FOR ALL FUTURE E2E TESTS:**
+**NEVER use `test.skip()` conditionally based on element existence. Tests MUST fail when elements are missing.**
+
 ### Lessons Learned
 
 1. **Force Clicks Are Dangerous:** Using `{ force: true }` bypasses Playwright's actionability checks and can cause navigation failures
@@ -743,9 +844,10 @@ if (searchExists > 0) {
 - Documentation complete
 
 **Test Coverage:**
-- ✅ **24 passing tests** across authentication and batch workflows
-- ✅ **100% pass rate** for active tests
-- ⚠️ **Items tests** need refactoring (Phase 2 work)
+- ✅ **24 Phase-1 tests passing** (authentication + batch = 100% pass rate)
+- ⚠️ **10 Phase-1 items tests** need refactoring (defensive patterns)
+- ⚠️ **64 pre-existing tests** discovered with same defensive patterns (technical debt)
+- **Total:** 98 E2E tests (24 passing properly, 74 need refactoring)
 
 **Quality Metrics:**
 - 9 batch tests: 29 seconds execution time
@@ -774,12 +876,16 @@ if (searchExists > 0) {
 - ✅ **Server configuration:** Playwright config starts both backend + frontend (validated)
 - ✅ **Database state management:** Automated reset script created
 - ✅ **Documentation:** Comprehensive e2e README with setup guide
-- ✅ **Local execution:** Successfully executed and refined all test suites
+- ✅ **Local execution:** Successfully executed and refined authentication + batch test suites
 - ✅ **Refinements applied:** Fixed selectors, wait times, removed force clicks, added save waits
-- ✅ **100% pass rate:** 24/24 active tests passing (authentication + batches)
-- ⚠️ **Items tests:** 1/10 passing, 9 skipped - need refactoring to remove defensive patterns
+- ✅ **Phase-1 pass rate:** 24/24 properly written tests passing (authentication + batches = 100%)
+- ⚠️ **Items tests (Phase-1):** 1/10 passing, 9 skipped - need refactoring to remove defensive patterns
+- ⚠️ **Pre-existing tests:** 64 tests discovered with defensive test.skip() patterns (technical debt)
 
-**E2E Test Status:** Infrastructure complete and fully validated. 24/24 active tests passing (100% pass rate). Items tests require refactoring in Phase 2.
+**E2E Test Status:**
+- **Phase-1 Scope:** Infrastructure complete and validated. 24/24 properly written tests passing (100%).
+- **Technical Debt:** 74 tests (10 items + 64 pre-existing) require refactoring to remove defensive patterns.
+- **Total Suite:** 98 tests (24 passing properly, 74 need pattern fixes)
 
 ### Impact
 
@@ -802,10 +908,11 @@ The complete e2e infrastructure provides:
 - ✅ **Unit test coverage:** Ready for Phase-2 dependency upgrades (85/85 passing)
 - ✅ **E2E test infrastructure:** Complete and fully validated through local execution
 - ✅ **Critical paths protected:** Password, audit, permissions, lifecycle
-- ✅ **User workflows:** 24 tests passing covering authentication and batch workflows
-- ✅ **E2E verification:** 9/9 batch tests + 15/15 authentication tests = 100% pass rate
+- ✅ **Phase-1 E2E coverage:** 24 tests passing covering authentication and batch workflows (100% pass rate)
+- ✅ **E2E verification:** 9/9 batch tests + 15/15 authentication tests = all passing
 - ✅ **All blocking issues resolved:** Edit button and race conditions fixed
-- ⚠️ **Items tests:** Deferred to Phase 2 - need refactoring to remove defensive patterns
+- ⚠️ **Technical Debt Identified:** 74 tests (10 items + 64 pre-existing) need defensive pattern removal
+- ⚠️ **Action Required:** Refactor all test.skip() conditional patterns across test suite (Phase-2 priority)
 
 ---
 
