@@ -74,21 +74,14 @@ test.describe('Destruction CRUD Operations', () => {
 
       // Wait for form to properly load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.waitForTimeout(500)
 
-      // Try to submit without filling required fields
+      // Save button should be disabled when required fields are empty
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
-      await saveButton.first().click()
 
-      // Wait for validation to process
-      await page.waitForTimeout(1000)
-
-      // Should show validation errors
-      const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
-      await errors.first().waitFor({ state: 'visible', timeout: 10000 })
-
-      const errorCount = await errors.count()
-      expect(errorCount).toBeGreaterThan(0)
+      // React-Admin disables save button when form validation fails
+      await expect(saveButton.first()).toBeDisabled()
     })
   })
 
@@ -191,10 +184,13 @@ test.describe('Destruction CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should redirect to show page
-      const url = page.url()
-      expect(url).toContain('/destruction')
-      expect(url).not.toContain('/create')
+      // Verify save success: page title includes "Destruction Show"
+      const pageTitle = page.locator('h5, h1, h2, h3')
+      await expect(pageTitle.filter({ hasText: /Destruction Show/i })).toBeVisible()
+
+      // Verify EDIT button is visible on show page
+      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButtonOnShow.first()).toBeVisible()
     })
   })
 })

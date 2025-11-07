@@ -83,8 +83,13 @@ test.describe('Projects CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should redirect away from create page
-      expect(page.url()).not.toContain('/create')
+      // Verify creation success: page title includes "Projekt Show"
+      const pageTitle = page.locator('h5, h1, h2, h3')
+      await expect(pageTitle.filter({ hasText: /Projekt Show/i })).toBeVisible()
+
+      // Verify EDIT button is visible on show page
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButton.first()).toBeVisible()
     })
   })
 
@@ -132,12 +137,23 @@ test.describe('Projects CRUD Operations', () => {
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Look for name or remarks field to edit
-      const editableField = page.locator('input[name="name"], input[name="remarks"], textarea[name="remarks"]')
-      await editableField.first().waitFor({ state: 'visible' })
-      const currentValue = await editableField.first().inputValue()
-      const testValue = `${currentValue} - Updated ${Date.now()}`
-      await editableField.first().fill(testValue)
+      // Update Start date to today (yyyy-MM-dd for input[type="date"])
+      const startDateField = page.locator('input[name="startDate"]')
+      await startDateField.waitFor({ state: 'visible' })
+      const today = new Date()
+      const todayISO = today.toISOString().split('T')[0] // yyyy-MM-dd format
+      await startDateField.fill(todayISO)
+
+      // Update End date to tomorrow (endDate must be after startDate)
+      const endDateField = page.locator('input[name="endDate"]')
+      await endDateField.waitFor({ state: 'visible' })
+      const tomorrow = new Date(today)
+      tomorrow.setDate(today.getDate() + 1)
+      const tomorrowISO = tomorrow.toISOString().split('T')[0]
+      await endDateField.fill(tomorrowISO)
+
+      // Wait for form validation to complete
+      await page.waitForTimeout(500)
 
       // Save the form
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
@@ -148,8 +164,13 @@ test.describe('Projects CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should not be on create page anymore (indicates save worked)
-      expect(page.url()).not.toContain('/create')
+      // Verify save success: page title includes "Projekt Show"
+      const pageTitle = page.locator('h5, h1, h2, h3')
+      await expect(pageTitle.filter({ hasText: /Projekt Show/i })).toBeVisible()
+
+      // Verify EDIT button is visible on show page
+      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButtonOnShow.first()).toBeVisible()
     })
   })
 

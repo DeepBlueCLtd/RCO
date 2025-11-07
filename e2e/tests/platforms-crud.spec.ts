@@ -73,9 +73,13 @@ test.describe('Platforms CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should redirect to show page
+      // Verify creation success: URL contains platform ID (show page, not create)
+      expect(page.url()).toMatch(/\/platform\/\d+(\/show)?$/)
       expect(page.url()).not.toContain('/create')
-      expect(page.url()).toContain('/platform')
+
+      // Verify EDIT button is visible on show page
+      const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButton.first()).toBeVisible()
     })
   })
 
@@ -139,8 +143,13 @@ test.describe('Platforms CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should redirect to show page
-      expect(page.url()).toContain('/show')
+      // Verify save success: URL contains platform ID (show page, not edit)
+      expect(page.url()).toMatch(/\/platform\/\d+(\/show)?$/)
+      expect(page.url()).not.toContain('/edit')
+
+      // Verify EDIT button is visible on show page
+      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButtonOnShow.first()).toBeVisible()
     })
 
     test('should toggle platform active status', async ({ page }) => {
@@ -180,8 +189,13 @@ test.describe('Platforms CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should redirect successfully
-      expect(page.url()).toContain('/platform')
+      // Verify save success: URL contains platform ID (show page, not edit)
+      expect(page.url()).toMatch(/\/platform\/\d+(\/show)?$/)
+      expect(page.url()).not.toContain('/edit')
+
+      // Verify EDIT button is visible on show page
+      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButtonOnShow.first()).toBeVisible()
     })
   })
 

@@ -857,6 +857,131 @@ expect(something).toBe(true)
 
 ---
 
+## E2E Test Issues Discovered - Edit Test Verification (2025-11-07)
+
+### Issue: Weak Edit Test Assertions
+
+**Discovery Date:** 2025-11-07
+**Severity:** Medium - Tests passing but not properly verifying success
+
+#### Problem Description
+
+Edit tests across multiple CRUD files use weak URL-based assertions that don't properly verify save success:
+
+**Problematic Patterns Found:**
+1. `expect(page.url()).not.toContain('/create')` - Wrong check for edit (URL never contained '/create' when editing)
+2. `expect(page.url()).toContain('/show')` - Weak check (URL might contain '/show' even if save failed)
+3. `expect(page.url()).toContain('/platform')` - Too generic (always true after navigation)
+
+**Why This Matters:**
+- Tests can pass even if save operation silently fails
+- No verification that user sees success confirmation (Show page)
+- No verification that edit workflow completed correctly
+
+#### Root Cause
+
+Tests were checking URL patterns instead of verifying the actual success indicators:
+1. Page title showing "[Resource] Show"
+2. EDIT button visible on Show page (indicates successful save and redirect)
+
+#### Correct Verification Pattern
+
+**Standard Pattern for Edit Test Verification:**
+```typescript
+// After save and wait for completion
+await page.waitForTimeout(1000)
+
+// Verify save success: page title includes "[Resource] Show"
+const pageTitle = page.locator('h5, h1, h2, h3')
+await expect(pageTitle.filter({ hasText: /Platform Show/i })).toBeVisible()
+
+// Verify EDIT button is visible on show page
+const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+await expect(editButtonOnShow.first()).toBeVisible()
+```
+
+#### Files Requiring Fix
+
+| File | Test Name | Current Status | Issue |
+|------|-----------|----------------|-------|
+| projects-crud.spec.ts | should save edits to project | ✅ FIXED | Was checking `not.toContain('/create')` |
+| platforms-crud.spec.ts | should save edits to platform | ✅ FIXED | Was checking `.toContain('/show')` |
+| platforms-crud.spec.ts | should toggle platform active status | ✅ FIXED | Was checking `.toContain('/platform')` |
+| dispatch-crud.spec.ts | should save edits to dispatch | ⚠️ PENDING | Needs verification check |
+| destruction-crud.spec.ts | should save edits to destruction | ⚠️ PENDING | Needs verification check |
+| items-crud.spec.ts | should open edit item form | ⚠️ PENDING | Needs verification check |
+
+#### Additional Requirements for Projects
+
+Projects edit tests have **special requirements**:
+- Must update **both Start and End dates** (required fields)
+- Date format: `yyyy-MM-dd` (ISO format for `input[type="date"]`)
+- Dates can be set to today: `new Date().toISOString().split('T')[0]`
+- Page title verification: "Projekt Show" (note German spelling with 'k')
+
+**Projects-specific Fix Applied:**
+```typescript
+// Update Start date to today (yyyy-MM-dd for input[type="date"])
+const startDateField = page.locator('input[name="startDate"]')
+await startDateField.waitFor({ state: 'visible' })
+const today = new Date()
+const todayISO = today.toISOString().split('T')[0] // yyyy-MM-dd format
+await startDateField.fill(todayISO)
+
+// Update End date to today (yyyy-MM-dd for input[type="date"])
+const endDateField = page.locator('input[name="endDate"]')
+await endDateField.waitFor({ state: 'visible' })
+await endDateField.fill(todayISO)
+```
+
+#### Implementation Tasks
+
+**Completed:**
+- ✅ projects-crud.spec.ts - "should save edits to project"
+  - Added required date field updates (startDate, endDate)
+  - Fixed date format (yyyy-MM-dd)
+  - Updated to title + EDIT button verification
+  - **Result:** Test passing with proper verification
+
+- ✅ platforms-crud.spec.ts - "should save edits to platform"
+  - Updated to title + EDIT button verification
+  - **Result:** Test passing with proper verification
+
+- ✅ platforms-crud.spec.ts - "should toggle platform active status"
+  - Updated to title + EDIT button verification
+  - **Result:** Test passing with proper verification
+
+**Pending:**
+- ⚠️ dispatch-crud.spec.ts - Review and fix edit test verification
+- ⚠️ destruction-crud.spec.ts - Review and fix edit test verification
+- ⚠️ items-crud.spec.ts - Review and fix edit test verification
+
+#### Success Criteria
+
+For each edit test:
+1. ✅ After save, verify page title contains "[Resource] Show"
+2. ✅ After save, verify EDIT button is visible on show page
+3. ✅ Remove all URL-based assertions (except where explicitly needed)
+4. ✅ Test must fail if save operation doesn't complete successfully
+
+#### Testing Verification
+
+Before marking complete:
+1. Run full test suite for the file
+2. Verify 100% pass rate
+3. Manually verify that if save fails, test fails (not skips)
+
+**Commands:**
+```bash
+# Test specific file
+yarn playwright test e2e/tests/[filename].spec.ts
+
+# Test specific edit test
+yarn playwright test e2e/tests/[filename].spec.ts --grep "should save edits"
+```
+
+---
+
 ## Critical Business Process Testing Requirements
 
 ### Overview

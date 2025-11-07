@@ -36,17 +36,14 @@ test.describe('Items CRUD Operations', () => {
 
       // Wait for form to properly load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible' })
+      await page.waitForTimeout(500)
 
-      // Try to submit without filling required fields
+      // Save button should be disabled when required fields are empty
       const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
       await saveButton.first().waitFor({ state: 'visible' })
-      await saveButton.first().click()
-      await page.waitForTimeout(1000)
 
-      // Should show validation errors - wait for them
-      const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
-      await errors.first().waitFor({ state: 'visible', timeout: 5000 })
-      await expect(errors.first()).toBeVisible()
+      // React-Admin disables save button when form validation fails
+      await expect(saveButton.first()).toBeDisabled()
     })
   })
 
@@ -106,9 +103,13 @@ test.describe('Items CRUD Operations', () => {
       // Give time for save to complete
       await page.waitForTimeout(1000)
 
-      // Should redirect or show success - verify page has updated
-      const showPageContent = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
-      await showPageContent.first().waitFor({ state: 'visible', timeout: 5000 })
+      // Verify save success: page title includes "Item Show"
+      const pageTitle = page.locator('h5, h1, h2, h3')
+      await expect(pageTitle.filter({ hasText: /Item Show/i })).toBeVisible()
+
+      // Verify EDIT button is visible on show page
+      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
+      await expect(editButtonOnShow.first()).toBeVisible()
     })
   })
 
