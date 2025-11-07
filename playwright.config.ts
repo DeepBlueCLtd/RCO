@@ -1,11 +1,13 @@
 import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e/tests',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !(process.env.CI == null),
   retries: 0,
   reporter: 'html',
-  timeout: 30000, // Increased for slower operations
+  timeout: 20000, // Timeout for tests with complex navigation
+  workers: 1, // Run tests serially to avoid "Target closed" errors
+  globalTeardown: './e2e/global-teardown.ts', // Reset database after all tests
   // Run both backend and frontend servers before starting tests
   webServer: [
     {
