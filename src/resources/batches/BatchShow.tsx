@@ -41,7 +41,7 @@ const ShowActions = (): React.ReactElement => {
           render={(record) => `${record.vault?.[0]}${record.batchNumber}`}
         />
       </TopToolbarField>
-      {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton />}
+      {hasAccess(constants.R_BATCHES, { write: true }) && <EditButton data-testid="batch-edit-button" />}
       <HistoryButton
         onClick={() => {
           if (record) {
@@ -71,6 +71,7 @@ const ItemActions = ({
         <CreateButton
           label='ADD ITEM'
           to={`/${constants.R_RICH_ITEMS}/create?batch=${batch}`}
+          data-testid="batch-add-item-button"
         />
       ) : (
         <></>

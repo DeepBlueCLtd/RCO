@@ -175,7 +175,8 @@ export default function BatchList(): React.ReactElement {
         omit={omitColumns}
         rowClick='show'
         bulkActionButtons={false}
-        preferenceKey={preferenceKey}>
+        preferenceKey={preferenceKey}
+        data-testid='batch-list-table'>
         <TextField<Batch> source='id' />
         <FunctionField<Batch>
           label='Reference'
