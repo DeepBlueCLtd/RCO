@@ -28,9 +28,9 @@ export async function login(page: Page, credentials: LoginCredentials): Promise<
   await page.locator('#username').fill(credentials.username)
   await page.locator('#password').fill(credentials.password)
 
-  // Submit and wait for navigation
+  // Submit and wait for dashboard/menu to appear
   await page.locator('button[type="submit"]').click()
-  await page.waitForLoadState('networkidle')
+  await page.locator('.RaLayout-appFrame, [role="main"], .RaMenu-root').first().waitFor({ state: 'visible', timeout: 5000 })
 }
 
 /**
@@ -90,14 +90,15 @@ export async function waitForErrorNotification(page: Page, message?: string): Pr
  * Navigate to a resource via the menu
  */
 export async function navigateToResource(page: Page, resourceName: string): Promise<void> {
-  // Wait for page to be ready
-  await page.waitForLoadState('networkidle')
+  // Wait for menu item to be visible
+  const menuItem = page.locator(`text=${resourceName}`).first()
+  await menuItem.waitFor({ state: 'visible', timeout: 5000 })
 
   // Click on the menu item
-  await page.locator(`text=${resourceName}`).first().click()
+  await menuItem.click()
 
-  // Wait for navigation
-  await page.waitForLoadState('networkidle')
+  // Wait for list page to load
+  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 5000 })
 }
 
 /**
@@ -125,14 +126,14 @@ export async function navigateToResourceByTestId(page: Page, testId: string): Pr
     throw new Error(`Unknown test ID: ${testId}. Add it to resourceMap in auth-helpers.ts`)
   }
 
-  // Click menu item by text
-  await page.waitForLoadState('networkidle')
+  // Wait for menu item to be visible
+  const menuItem = page.locator(`text=${resourceText}`).first()
+  await menuItem.waitFor({ state: 'visible', timeout: 5000 })
 
-  // Small delay to let React-Admin routing fully initialize
-  await page.waitForTimeout(100)
+  await menuItem.click()
 
-  await page.locator(`text=${resourceText}`).first().click()
-  await page.waitForLoadState('networkidle')
+  // Wait for list page to load - look for table or main content area
+  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 5000 })
 }
 
 /**
@@ -164,8 +165,12 @@ export async function navigateToReferenceDataResource(page: Page, resourceName: 
   await navigateToResourceByTestId(page, 'menu-reference-data')
 
   // Then click the specific resource card
-  await page.locator(`text=${cardTitle}`).first().click()
-  await page.waitForLoadState('networkidle')
+  const card = page.locator(`text=${cardTitle}`).first()
+  await card.waitFor({ state: 'visible', timeout: 5000 })
+  await card.click()
+
+  // Wait for list page to load
+  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 5000 })
 }
 
 /**
