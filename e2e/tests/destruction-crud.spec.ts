@@ -5,91 +5,188 @@ test.describe('Destruction CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
     await navigateToResourceByTestId(page, 'menu-destruction')
-    await page.waitForLoadState('networkidle')
+  })
+
+  test.describe('Destruction List', () => {
+    test('should display destructions list', async ({ page }) => {
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Should have destruction list table
+      const hasTable = await page.locator('table').count()
+      expect(hasTable).toBeGreaterThan(0)
+    })
+
+    test('should allow filtering destructions', async ({ page }) => {
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Look for filter controls - wait for them to be visible
+      const filterButton = page.locator(
+        'button:has-text("Filter"), [aria-label*="filter" i], input[type="search"]'
+      )
+      await filterButton.first().waitFor({ state: 'visible', timeout: 10000 })
+
+      // Filter functionality should exist
+      const filterExists = await filterButton.count()
+      expect(filterExists).toBeGreaterThan(0)
+    })
   })
 
   test.describe('Destruction Creation', () => {
     test('should open create destruction form', async ({ page }) => {
-      // Find and click create button - fail if not found
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render first
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Find and click create button - wait for it to be visible
       const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
-      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
+
+      // Wait for form to properly load
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
 
       // Should show create form
       const form = page.locator('form, [role="form"]')
-      await form.waitFor({ state: 'visible' })
       await expect(form).toBeVisible()
 
       // URL should indicate create page
-      expect(page.url()).toContain('/create')
+      const url = page.url()
+      expect(url).toContain('/create')
     })
 
     test('should validate required fields on destruction creation', async ({ page }) => {
-      // Open create form
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render first
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Find and click create button - wait for it to be visible
       const createButton = page.locator('button:has-text("Create"), a:has-text("Create")')
-      await createButton.first().waitFor({ state: 'visible' })
+      await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
       await page.waitForLoadState('networkidle')
 
+      // Wait for form to properly load
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
+
       // Try to submit without filling required fields
       const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await saveButton.first().click()
+
+      // Wait for validation to process
       await page.waitForTimeout(1000)
 
       // Should show validation errors
       const errors = page.locator('[class*="error" i], [class*="invalid" i], .Mui-error')
-      await errors.first().waitFor({ state: 'visible', timeout: 5000 })
-      await expect(errors.first()).toBeVisible()
+      await errors.first().waitFor({ state: 'visible', timeout: 10000 })
+
+      const errorCount = await errors.count()
+      expect(errorCount).toBeGreaterThan(0)
+    })
+  })
+
+  test.describe('Destruction Details View', () => {
+    test('should display destruction details', async ({ page }) => {
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Wait for first data row to render
+      const firstRow = page.locator('[role="row"]').nth(1)
+      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+
+      await firstRow.click()
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction detail page content to render
+      await page.locator('[role="main"], .MuiPaper-root, [class*="show" i]').first().waitFor({ state: 'visible', timeout: 10000 })
+
+      // Should show destruction details
+      const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
+      const hasDetails = await details.count()
+      expect(hasDetails).toBeGreaterThan(0)
+
+      // URL should indicate show page
+      const url = page.url()
+      expect(url).toContain('/destruction')
     })
   })
 
   test.describe('Destruction Editing', () => {
     test('should open edit form for existing destruction', async ({ page }) => {
-      // Navigate to first destruction row
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Wait for first data row to render
       const firstRow = page.locator('[role="row"]').nth(1)
-      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+
       await firstRow.click()
       await page.waitForLoadState('networkidle')
 
-      // Look for edit button
+      // Look for edit button - wait for it to be visible
       const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
-      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
+
+      // Wait for form to properly load
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
 
       // Should show edit form
       const form = page.locator('form, [role="form"]')
-      await form.waitFor({ state: 'visible' })
       await expect(form).toBeVisible()
 
       // URL should indicate edit page
-      expect(page.url()).toMatch(/\/destruction\/\d+/)
+      const url = page.url()
+      expect(url).toMatch(/\/destruction\/\d+/)
     })
 
     test('should save edits to destruction', async ({ page }) => {
-      // Navigate to first destruction
+      await page.waitForLoadState('networkidle')
+
+      // Wait for destruction list table to render
+      await page.locator('table').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Wait for first data row to render
       const firstRow = page.locator('[role="row"]').nth(1)
-      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+
       await firstRow.click()
       await page.waitForLoadState('networkidle')
 
-      // Click edit button
+      // Look for edit button - wait for it to be visible
       const editButton = page.locator('button:has-text("Edit"), a:has-text("Edit"), [aria-label*="edit" i]')
-      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().click()
       await page.waitForLoadState('networkidle')
 
-      // Edit the remarks field
+      // Wait for form to properly load
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
+
+      // Edit the remarks field - wait for it to be visible
       const remarksField = page.locator('input[name="remarks"], textarea[name="remarks"], [id*="remarks"]')
-      await remarksField.first().waitFor({ state: 'visible' })
+      await remarksField.first().waitFor({ state: 'visible', timeout: 10000 })
+
+      // Generate unique test value
       const testValue = `Test edit ${Date.now()}`
       await remarksField.first().fill(testValue)
 
-      // Save the form
+      // Save the form - wait for save button to be visible
       const saveButton = page.locator('button:has-text("Save"), button[type="submit"]')
-      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await saveButton.first().click()
       await page.waitForLoadState('networkidle')
 
@@ -97,44 +194,9 @@ test.describe('Destruction CRUD Operations', () => {
       await page.waitForTimeout(1000)
 
       // Should redirect to show page
-      expect(page.url()).toContain('/destruction')
-      expect(page.url()).not.toContain('/create')
-    })
-  })
-
-  test.describe('Destruction Details View', () => {
-    test('should display destruction details', async ({ page }) => {
-      // Navigate to first destruction
-      const firstRow = page.locator('[role="row"]').nth(1)
-      await firstRow.waitFor({ state: 'visible' })
-      await firstRow.click()
-      await page.waitForLoadState('networkidle')
-
-      // Should show destruction details
-      const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
-      await details.first().waitFor({ state: 'visible' })
-      await expect(details.first()).toBeVisible()
-
-      // URL should indicate show page
-      expect(page.url()).toContain('/destruction')
-    })
-  })
-
-  test.describe('Destruction List', () => {
-    test('should display destructions list', async ({ page }) => {
-      // Should have list table
-      const table = page.locator('table')
-      await table.waitFor({ state: 'visible' })
-      await expect(table).toBeVisible()
-    })
-
-    test('should allow filtering destructions', async ({ page }) => {
-      // Look for filter controls
-      const filterButton = page.locator(
-        'button:has-text("Filter"), [aria-label*="filter" i], input[type="search"]'
-      )
-      await filterButton.first().waitFor({ state: 'visible' })
-      await expect(filterButton.first()).toBeVisible()
+      const url = page.url()
+      expect(url).toContain('/destruction')
+      expect(url).not.toContain('/create')
     })
   })
 })
