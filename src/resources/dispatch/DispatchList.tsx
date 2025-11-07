@@ -124,6 +124,7 @@ export default function DispatchList(props: DatagridProps): React.ReactElement {
           : { dispatchedAt__null: true }
       }>
       <Datagrid
+        data-testid="dispatch-list-table"
         rowClick='show'
         bulkActionButtons={props.bulkActionButtons ?? <BulkActions />}>
         <TextField<Dispatch> source='name' />
