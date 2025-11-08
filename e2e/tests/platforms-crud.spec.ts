@@ -5,7 +5,6 @@ test.describe('Platforms CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
     await navigateToReferenceDataResource(page, 'platforms')
-    await page.waitForLoadState('networkidle')
   })
 
   test.describe('Platform Creation', () => {
@@ -14,7 +13,6 @@ test.describe('Platforms CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Should show create form
       const form = page.locator('form, [role="form"]')
@@ -30,7 +28,6 @@ test.describe('Platforms CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to load
       await page.waitForTimeout(500)
@@ -48,7 +45,6 @@ test.describe('Platforms CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Fill in name field (required per schema)
       const nameField = page.locator('input[name="name"]').or(page.locator('[id*="name"]'))
@@ -68,7 +64,6 @@ test.describe('Platforms CRUD Operations', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Give time for save to complete
       await page.waitForTimeout(1000)
@@ -93,13 +88,11 @@ test.describe('Platforms CRUD Operations', () => {
       const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Look for edit button
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Should show edit form
       const form = page.locator('form, [role="form"]')
@@ -119,13 +112,11 @@ test.describe('Platforms CRUD Operations', () => {
       const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Click edit button
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Edit the name field
       const nameField = page.locator('input[name="name"]')
@@ -138,7 +129,6 @@ test.describe('Platforms CRUD Operations', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Give time for save to complete
       await page.waitForTimeout(1000)
@@ -161,13 +151,11 @@ test.describe('Platforms CRUD Operations', () => {
       const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Click edit button
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Toggle the active checkbox
       const activeCheckbox = page.locator('input[name="active"]').or(page.locator('[type="checkbox"][name="active"]'))
@@ -184,7 +172,6 @@ test.describe('Platforms CRUD Operations', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Give time for save to complete
       await page.waitForTimeout(1000)

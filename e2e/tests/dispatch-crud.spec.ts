@@ -9,7 +9,6 @@ test.describe('Dispatch CRUD Operations', () => {
 
   test.describe('Dispatch List', () => {
     test('should display dispatches list', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for dispatch list table to render (use first table due to multiple tables on page)
       const table = page.locator('table').first()
@@ -21,7 +20,6 @@ test.describe('Dispatch CRUD Operations', () => {
     })
 
     test('should allow filtering dispatches', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for table to render first (use first table due to multiple tables on page)
       await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -37,7 +35,6 @@ test.describe('Dispatch CRUD Operations', () => {
 
   test.describe('Dispatch Details View', () => {
     test('should display dispatch details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for table to render (use first table due to multiple tables on page)
       const table = page.locator('table').first()
@@ -47,7 +44,6 @@ test.describe('Dispatch CRUD Operations', () => {
       const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for details page content to render
       await page.locator('h5, button, .MuiPaper-root').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -64,7 +60,6 @@ test.describe('Dispatch CRUD Operations', () => {
 
   test.describe('Dispatch Creation', () => {
     test('should open create dispatch form', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for table to render first (use first table due to multiple tables on page)
       await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -73,7 +68,6 @@ test.describe('Dispatch CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       const form = page.locator('form, [role="form"]')
@@ -86,7 +80,6 @@ test.describe('Dispatch CRUD Operations', () => {
     })
 
     test('should validate required fields on dispatch creation', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for table to render first (use first table due to multiple tables on page)
       await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -95,7 +88,6 @@ test.describe('Dispatch CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -112,7 +104,6 @@ test.describe('Dispatch CRUD Operations', () => {
 
   test.describe('Dispatch Editing', () => {
     test('should open edit form for existing dispatch', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for table to render (use first table due to multiple tables on page)
       const table = page.locator('table').first()
@@ -122,7 +113,6 @@ test.describe('Dispatch CRUD Operations', () => {
       const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for page content to load
       await page.locator('h5, button').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -132,7 +122,6 @@ test.describe('Dispatch CRUD Operations', () => {
       await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().scrollIntoViewIfNeeded()
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to load
       const form = page.locator('form, [role="form"]')
@@ -145,7 +134,6 @@ test.describe('Dispatch CRUD Operations', () => {
     })
 
     test('should save edits to dispatch', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for table to render (use first table due to multiple tables on page)
       const table = page.locator('table').first()
@@ -155,7 +143,6 @@ test.describe('Dispatch CRUD Operations', () => {
       const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for page content to load
       await page.locator('h5, button').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -165,7 +152,6 @@ test.describe('Dispatch CRUD Operations', () => {
       await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().scrollIntoViewIfNeeded()
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -181,11 +167,7 @@ test.describe('Dispatch CRUD Operations', () => {
       await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await saveButton.first().click()
 
-      // Wait for navigation after save
-      await page.waitForURL('**/dispatch/**', { timeout: 10000 })
-      await page.waitForLoadState('networkidle')
-
-      // Give time for save to complete
+      // Wait for page load to complete
       await page.waitForTimeout(1000)
 
       // Verify save success: URL doesn't contain /edit (returned to show page)

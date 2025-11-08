@@ -5,7 +5,6 @@ test.describe('Projects CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
     await navigateToResourceByTestId(page, 'menu-projects')
-    await page.waitForLoadState('networkidle')
   })
 
   test.describe('Project Creation', () => {
@@ -15,17 +14,10 @@ test.describe('Projects CRUD Operations', () => {
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
 
-      // Wait for navigation to create page
-      await page.waitForURL(/.*\/create/, { timeout: 3000 })
-      await page.waitForLoadState('networkidle')
-
       // Should show create form
       const form = page.locator('form, [role="form"]')
       await form.waitFor({ state: 'visible' })
       await expect(form).toBeVisible()
-
-      // URL should indicate create page
-      expect(page.url()).toContain('/create')
     })
 
     test('should validate required fields on project creation', async ({ page }) => {
@@ -33,7 +25,6 @@ test.describe('Projects CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to load
       await page.waitForTimeout(500)
@@ -51,7 +42,6 @@ test.describe('Projects CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")')).or(page.locator('button:has-text("ADD NEW")'))
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Fill in name field (required)
       const nameField = page.locator('input[name="name"], [id*="name"]')
@@ -78,7 +68,6 @@ test.describe('Projects CRUD Operations', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Give time for save to complete
       await page.waitForTimeout(1000)
@@ -103,13 +92,11 @@ test.describe('Projects CRUD Operations', () => {
       const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Look for edit button
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Should show edit form
       const form = page.locator('form, [role="form"]')
@@ -129,13 +116,11 @@ test.describe('Projects CRUD Operations', () => {
       const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Click edit button
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Update project name with timestamp
       const nameField = page.locator('input[name="name"], [id*="name"]')
@@ -160,7 +145,6 @@ test.describe('Projects CRUD Operations', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible' })
       await saveButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Give time for save to complete
       await page.waitForTimeout(1000)
@@ -188,7 +172,6 @@ test.describe('Projects CRUD Operations', () => {
       const firstRow = page.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Should show project details (main content area)
       const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')

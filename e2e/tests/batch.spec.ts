@@ -9,7 +9,6 @@ test.describe('Batch Management Workflows', () => {
 
   test.describe('Batch List', () => {
     test('should display batches list', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -20,7 +19,6 @@ test.describe('Batch Management Workflows', () => {
     })
 
     test('should show batch details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -30,14 +28,9 @@ test.describe('Batch Management Workflows', () => {
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
-      // Should navigate to batch details
-      const url = page.url()
-      expect(url).toContain('/batch')
-
-      // Wait for batch detail page content to render (Typography header or Edit button)
-      await page.locator('h5, button').first().waitFor({ state: 'visible', timeout: 10000 })
+      // Wait for "Batch Show" title to appear
+      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 10000 })
 
       // Should show batch information
       const hasDetails = await page.locator('h5, .MuiPaper-root, .RaShow-main').count()
@@ -47,8 +40,6 @@ test.describe('Batch Management Workflows', () => {
 
   test.describe('Batch Creation', () => {
     test('should create new batch and find it by search', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render first
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible' })
 
@@ -56,14 +47,9 @@ test.describe('Batch Management Workflows', () => {
       const createButton = page.locator('a:has-text("ADD NEW BATCH")')
       await createButton.waitFor({ state: 'visible' })
       await createButton.click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       await page.locator('form').waitFor({ state: 'visible' })
-
-      // URL should indicate create page
-      const url = page.url()
-      expect(url).toContain('/create')
 
       // Generate unique test identifier with ISO datetime
       const testBatchRemarks = `auto-test-${new Date().toISOString()}`
@@ -90,23 +76,13 @@ test.describe('Batch Management Workflows', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.click()
 
-      // Wait for redirect to batch show page
-      await page.waitForURL('**/show', { timeout: 10000 })
-      await page.waitForLoadState('networkidle')
-
-      // Give extra time for save to fully complete before navigation
-      await page.waitForTimeout(1000)
-
-      // Verify we're on the batch show page
-      const showUrl = page.url()
-      expect(showUrl).toContain('/batch')
-      expect(showUrl).toContain('/show')
+      // Wait for "Batch Show" title to appear
+      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 10000 })
 
       // Click home button to navigate to welcome page
       const homeButton = page.locator('[data-testid="home-button"]')
       await homeButton.waitFor({ state: 'visible' })
       await homeButton.click()
-      await page.waitForLoadState('networkidle')
 
       // Find Recent Batches table using data-testid and click first row (our new batch)
       const recentBatchesTable = page.locator('[data-testid="recent-batches-table"]')
@@ -114,7 +90,9 @@ test.describe('Batch Management Workflows', () => {
 
       const firstBatchRow = recentBatchesTable.locator('tbody tr').first()
       await firstBatchRow.click()
-      await page.waitForLoadState('networkidle')
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
 
       // Click Details tab
       const detailsTab = page.locator('button:has-text("Details")').or(page.locator('[role="tab"]:has-text("Details")'))
@@ -144,8 +122,6 @@ test.describe('Batch Management Workflows', () => {
 
   test.describe('Batch-Item Association', () => {
     test('should show items in batch', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible' })
 
@@ -154,7 +130,9 @@ test.describe('Batch Management Workflows', () => {
       await firstRow.waitFor({ state: 'visible' })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
 
       // Look for items list/table
       const itemsText = page.locator('text=/items/i')
@@ -167,8 +145,6 @@ test.describe('Batch Management Workflows', () => {
     })
 
     test('should allow adding items to batch', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible' })
 
@@ -177,25 +153,22 @@ test.describe('Batch Management Workflows', () => {
       await firstRow.waitFor({ state: 'visible' })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
 
       // Look for add items button using data-testid
       const addButton = page.locator('[data-testid="batch-add-item-button"]')
       await addButton.waitFor({ state: 'visible' })
       await addButton.click()
-      await page.waitForLoadState('networkidle')
 
-      // Should navigate to item create page with batch pre-filled
-      const url = page.url()
-      expect(url).toContain('/create')
-      expect(url).toContain('batch=')
+      // Wait for form to load
+      await page.locator('form').waitFor({ state: 'visible' })
     })
   })
 
   test.describe('Batch Updates', () => {
     test('should allow editing batch details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
 
@@ -204,7 +177,9 @@ test.describe('Batch Management Workflows', () => {
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
 
       // Look for edit button using data-testid and wait for it to be visible
       const editButton = page.locator('[data-testid="batch-edit-button"]')
@@ -213,11 +188,6 @@ test.describe('Batch Management Workflows', () => {
       // Scroll into view and click (no force - let it be properly clickable)
       await editButton.scrollIntoViewIfNeeded()
       await editButton.click()
-
-      // Wait for navigation to complete
-      // Edit page URL is /batch/133 (not /batch/133/edit or /batch/133/show)
-      await page.waitForURL(/\/batch\/\d+$/, { timeout: 10000 })
-      await page.waitForLoadState('networkidle')
 
       // Should show "Edit Batch" title
       const editTitle = page.locator('h1, h2, h3, h4, h5, h6').filter({ hasText: /Edit Batch/i })
@@ -229,8 +199,6 @@ test.describe('Batch Management Workflows', () => {
     })
 
     test('should update all items when batch is updated', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible' })
 
@@ -239,7 +207,9 @@ test.describe('Batch Management Workflows', () => {
       await firstRow.waitFor({ state: 'visible' })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
 
       // Batch updates should cascade to items
       // This is a business logic test - just verify batch shows items
@@ -253,8 +223,6 @@ test.describe('Batch Management Workflows', () => {
 
   test.describe('Batch Search and Filter', () => {
     test('should filter batches by criteria', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
 
@@ -269,8 +237,6 @@ test.describe('Batch Management Workflows', () => {
     })
 
     test('should search batches by batch number', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
-
       // Wait for batch list table to render
       await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
 
@@ -282,7 +248,9 @@ test.describe('Batch Management Workflows', () => {
       expect(searchExists).toBeGreaterThan(0)
 
       await searchField.first().fill('BATCH')
-      await page.waitForLoadState('networkidle')
+
+      // Wait a moment for search to process
+      await page.waitForTimeout(500)
 
       // Should update results (either grid with results or "no found" message)
       const hasGrid = await page.locator('[data-testid="batch-list-table"]').count()

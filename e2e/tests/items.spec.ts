@@ -9,7 +9,6 @@ test.describe('Item Workflows', () => {
 
   test.describe('Item List', () => {
     test('should display items list', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render - fail if not found
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -20,7 +19,6 @@ test.describe('Item Workflows', () => {
     })
 
     test('should filter items by search', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render first
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -29,7 +27,6 @@ test.describe('Item Workflows', () => {
       const searchField = page.locator('input[type="search"], input[placeholder*="Search"], [aria-label*="search" i]')
       await searchField.first().waitFor({ state: 'visible' })
       await searchField.first().fill('test')
-      await page.waitForLoadState('networkidle')
 
       // Results should update - either grid with results or "no found" message
       const hasGrid = await page.locator('[data-testid="item-list-table"]').count()
@@ -38,7 +35,6 @@ test.describe('Item Workflows', () => {
     })
 
     test('should navigate to item details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -48,7 +44,6 @@ test.describe('Item Workflows', () => {
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Should navigate to detail page
       expect(page.url()).toContain('/items/')
@@ -64,7 +59,6 @@ test.describe('Item Workflows', () => {
 
   test.describe('Item Creation', () => {
     test('should open create item form', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render first
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -77,7 +71,6 @@ test.describe('Item Workflows', () => {
       )
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       await page.locator('form').waitFor({ state: 'visible' })
@@ -91,7 +84,6 @@ test.describe('Item Workflows', () => {
     })
 
     test('should validate required fields', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render first
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -102,7 +94,6 @@ test.describe('Item Workflows', () => {
       )
       await createButton.first().waitFor({ state: 'visible' })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       await page.locator('form').waitFor({ state: 'visible' })
@@ -124,7 +115,6 @@ test.describe('Item Workflows', () => {
 
   test.describe('Item Editing', () => {
     test('should open edit item form', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -133,7 +123,6 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Click edit button - fail if not found
       const editButton = page.locator('[data-testid="item-edit-button"]').or(
@@ -145,7 +134,6 @@ test.describe('Item Workflows', () => {
       )
       await editButton.first().waitFor({ state: 'visible' })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Should show edit form
       const form = page.locator('form, [role="form"]')
@@ -154,7 +142,6 @@ test.describe('Item Workflows', () => {
     })
 
     test('should preserve data when navigating away and back', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -163,18 +150,15 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Store the URL
       const itemUrl = page.url()
 
       // Navigate away
       await navigateToResourceByTestId(page, 'menu-items')
-      await page.waitForLoadState('networkidle')
 
       // Navigate back
       await page.goto(itemUrl)
-      await page.waitForLoadState('networkidle')
 
       // Should still show same item
       expect(page.url()).toBe(itemUrl)
@@ -183,7 +167,6 @@ test.describe('Item Workflows', () => {
 
   test.describe('Item Deletion', () => {
     test('should show delete confirmation', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -192,7 +175,6 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Look for delete button - fail if not found
       const deleteButton = page.locator('button:has-text("Delete")').or(
@@ -219,7 +201,6 @@ test.describe('Item Workflows', () => {
 
   test.describe('Item State Management', () => {
     test('should track item lifecycle states', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -228,7 +209,6 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Check for status/state fields - fail if not found
       const statusElement = page.locator(
@@ -239,7 +219,6 @@ test.describe('Item Workflows', () => {
     })
 
     test('should show audit history', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
@@ -248,7 +227,6 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Look for history/audit tab or section - fail if not found
       const historyElement = page.locator(

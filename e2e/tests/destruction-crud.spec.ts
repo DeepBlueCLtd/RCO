@@ -9,7 +9,6 @@ test.describe('Destruction CRUD Operations', () => {
 
   test.describe('Destruction List', () => {
     test('should display destructions list', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
       await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -20,7 +19,6 @@ test.describe('Destruction CRUD Operations', () => {
     })
 
     test('should allow filtering destructions', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
       await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -37,7 +35,6 @@ test.describe('Destruction CRUD Operations', () => {
 
   test.describe('Destruction Creation', () => {
     test('should open create destruction form', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render first
       await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -46,7 +43,6 @@ test.describe('Destruction CRUD Operations', () => {
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
       await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await createButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -63,7 +59,6 @@ test.describe('Destruction CRUD Operations', () => {
 
   test.describe('Destruction Details View', () => {
     test('should display destruction details', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
       const table = page.locator('table').first()
@@ -74,7 +69,6 @@ test.describe('Destruction CRUD Operations', () => {
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction detail page content to render
       await page.locator('[role="main"], .MuiPaper-root, [class*="show" i]').first().waitFor({ state: 'visible', timeout: 10000 })
@@ -92,7 +86,6 @@ test.describe('Destruction CRUD Operations', () => {
 
   test.describe('Destruction Editing', () => {
     test('should open edit form for existing destruction', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
       const table = page.locator('table').first()
@@ -103,13 +96,11 @@ test.describe('Destruction CRUD Operations', () => {
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Look for edit button - wait for it to be visible
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -124,7 +115,6 @@ test.describe('Destruction CRUD Operations', () => {
     })
 
     test('should save edits to destruction', async ({ page }) => {
-      await page.waitForLoadState('networkidle')
 
       // Wait for destruction list table to render
       const table = page.locator('table').first()
@@ -135,13 +125,11 @@ test.describe('Destruction CRUD Operations', () => {
       await firstRow.waitFor({ state: 'visible', timeout: 10000 })
 
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Look for edit button - wait for it to be visible
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
       await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await editButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Wait for form to properly load
       await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
@@ -158,7 +146,6 @@ test.describe('Destruction CRUD Operations', () => {
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
       await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
       await saveButton.first().click()
-      await page.waitForLoadState('networkidle')
 
       // Verify save success: presence of "Items to be destroyed" title
       const pageTitle = page.locator('h5, h1, h2, h3').filter({ hasText: /Items to be destroyed/i })

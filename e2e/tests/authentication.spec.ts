@@ -91,7 +91,6 @@ test.describe('Authentication Flows', () => {
 
       // Navigate to a protected page
       await page.goto('/items')
-      await page.waitForLoadState('networkidle')
 
       // Logout
       await logout(page)
@@ -135,7 +134,6 @@ test.describe('Authentication Flows', () => {
 
       // Refresh page
       await page.reload()
-      await page.waitForLoadState('networkidle')
 
       // Should still be logged in
       const loggedIn = await isLoggedIn(page)
@@ -183,15 +181,12 @@ test.describe('Authentication Flows', () => {
 
       // Navigate to multiple pages
       await page.goto('/items')
-      await page.waitForLoadState('networkidle')
       expect(await isLoggedIn(page)).toBe(true)
 
       await page.goto('/batches')
-      await page.waitForLoadState('networkidle')
       expect(await isLoggedIn(page)).toBe(true)
 
       await page.goto('/dispatch')
-      await page.waitForLoadState('networkidle')
       expect(await isLoggedIn(page)).toBe(true)
 
       // Should still be logged in

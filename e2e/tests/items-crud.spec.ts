@@ -5,7 +5,6 @@ test.describe('Items CRUD Operations', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, TEST_USERS.admin)
     await navigateToResourceByTestId(page, 'menu-items')
-    await page.waitForLoadState('networkidle')
   })
 
   // NOTE: Items are created through Batch workflow, not directly via Create button
@@ -21,7 +20,6 @@ test.describe('Items CRUD Operations', () => {
       const firstRow = table.locator('tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
-      await page.waitForLoadState('networkidle')
 
       // Should show item details - wait for content to render
       const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
