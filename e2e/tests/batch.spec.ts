@@ -184,15 +184,13 @@ test.describe('Batch Management Workflows', () => {
       // Wait for form to load
       await page.locator('form').waitFor({ state: 'visible' })
 
-      // Try to submit without filling required fields
+      // Save button should be disabled when required fields are empty
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
-      await saveButton.first().waitFor({ state: 'visible' })
-      await saveButton.first().click()
+      await saveButton.first().waitFor({ state: 'visible', timeout: 2000 })
 
-      // Should show validation errors
-      const errors = page.locator('text=/required/i, .Mui-error, [role="alert"]')
-      await errors.first().waitFor({ state: 'visible', timeout: 2000 })
-      await expect(errors.first()).toBeVisible()
+      // Verify button is disabled (form validation preventing submission)
+      const isDisabled = await saveButton.first().isDisabled()
+      expect(isDisabled).toBe(true)
     })
 
     test('should create item and display in batch items list', async ({ page }) => {

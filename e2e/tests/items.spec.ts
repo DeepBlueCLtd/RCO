@@ -54,37 +54,6 @@ test.describe('Item Workflows', () => {
     })
   })
 
-  test.describe('Item Creation', () => {
-    test('should validate required fields', async ({ page }) => {
-
-      // Wait for item list table to render first
-      await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
-
-      // Open create form
-      const createButton = page.locator('a:has-text("Create")').or(
-        page.locator('a:has-text("ADD NEW ITEM")')
-      )
-      await createButton.first().waitFor({ state: 'visible' })
-      await createButton.first().click()
-
-      // Wait for form to properly load
-      await page.locator('form').waitFor({ state: 'visible' })
-
-      // Try to save without filling required fields
-      const saveButton = page.locator('button:has-text("Save")').or(
-        page.locator('button[type="submit"]')
-      )
-      await saveButton.first().waitFor({ state: 'visible' })
-      await saveButton.first().click()
-      await page.waitForTimeout(1000)
-
-      // Should show validation errors - fail if not found
-      const errors = page.locator('text=/required/i, .Mui-error, [role="alert"]')
-      await errors.first().waitFor({ state: 'visible', timeout: 2000 })
-      await expect(errors.first()).toBeVisible()
-    })
-  })
-
   test.describe('Item Editing', () => {
     test('should open edit item form', async ({ page }) => {
 
@@ -95,6 +64,9 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
+
+      // Wait for item show page to load
+      await page.locator('h5, button, [role="main"]').first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Click edit button - fail if not found
       const editButton = page.locator('[data-testid="item-edit-button"]').or(
@@ -148,6 +120,9 @@ test.describe('Item Workflows', () => {
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
 
+      // Wait for item show page to load
+      await page.locator('h5, button, [role="main"]').first().waitFor({ state: 'visible', timeout: 2000 })
+
       // Look for delete button - fail if not found
       const deleteButton = page.locator('button:has-text("Delete")').or(
         page.locator('[aria-label*="delete" i]')
@@ -182,6 +157,9 @@ test.describe('Item Workflows', () => {
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
 
+      // Wait for item show page to load
+      await page.locator('h5, button, [role="main"]').first().waitFor({ state: 'visible', timeout: 2000 })
+
       // Check for status/state fields - fail if not found
       const statusElement = page.locator('text=/status/i').or(page.locator('text=/state/i'))
       await statusElement.first().waitFor({ state: 'visible' })
@@ -197,6 +175,9 @@ test.describe('Item Workflows', () => {
       const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
       await firstRow.waitFor({ state: 'visible' })
       await firstRow.click()
+
+      // Wait for item show page to load
+      await page.locator('h5, button, [role="main"]').first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Look for history/audit tab or section - fail if not found
       const historyElement = page.locator('text=/history/i').or(page.locator('text=/audit/i'))

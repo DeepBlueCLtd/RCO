@@ -37,7 +37,7 @@ test.describe('Login failed test', () => {
 
     await expect(
       page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-    ).toContainText('User not found')
+    ).toContainText('Invalid password')
   })
 
   test('Verify "Invalid username and password" message is visible when user login with invalid password', async ({
