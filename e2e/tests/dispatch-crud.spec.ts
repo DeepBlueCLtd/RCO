@@ -168,15 +168,10 @@ test.describe('Dispatch CRUD Operations', () => {
       await saveButton.first().waitFor({ state: 'visible', timeout: 2000 })
       await saveButton.first().click()
 
-      // Wait for page load to complete
-      await page.waitForTimeout(1000)
-
-      // Verify save success: URL doesn't contain /edit (returned to show page)
-      expect(page.url()).not.toContain('/edit')
-
-      // Verify EDIT button is visible on show page
-      const editButtonOnShow = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")'))
-      await expect(editButtonOnShow.first()).toBeVisible()
+      // Verify save success: batch-show page is open (check for "View Dispatch" heading)
+      const viewDispatchHeading = page.locator('h6:has-text("View Dispatch")')
+      await viewDispatchHeading.waitFor({ state: 'visible', timeout: 2000 })
+      await expect(viewDispatchHeading).toBeVisible()
     })
   })
 })

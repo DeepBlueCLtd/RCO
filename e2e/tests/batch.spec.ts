@@ -111,7 +111,7 @@ test.describe('Batch Management Workflows', () => {
       console.log('Actual:', actualRemarks)
 
       if (actualRemarks !== testBatchRemarks) {
-        console.log('❌ Remarks mismatch!')
+        console.log('❌ Remarks mismatch!', testBatchRemarks, actualRemarks)
       } else {
         console.log('✅ Remarks match!')
       }
@@ -164,6 +164,88 @@ test.describe('Batch Management Workflows', () => {
 
       // Wait for form to load
       await page.locator('form').waitFor({ state: 'visible' })
+    })
+
+    test('should validate required fields when adding item to batch', async ({ page }) => {
+      // Navigate to first batch
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible' })
+      const firstRow = page.locator('[data-testid="batch-list-table"] tbody tr').first()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
+
+      // Click Add Item button
+      const addButton = page.locator('[data-testid="batch-add-item-button"]')
+      await addButton.waitFor({ state: 'visible' })
+      await addButton.click()
+
+      // Wait for form to load
+      await page.locator('form').waitFor({ state: 'visible' })
+
+      // Try to submit without filling required fields
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+
+      // Should show validation errors
+      const errors = page.locator('text=/required/i, .Mui-error, [role="alert"]')
+      await errors.first().waitFor({ state: 'visible', timeout: 2000 })
+      await expect(errors.first()).toBeVisible()
+    })
+
+    test('should create item and display in batch items list', async ({ page }) => {
+      // Navigate to first batch
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible' })
+      const firstRow = page.locator('[data-testid="batch-list-table"] tbody tr').first()
+      await firstRow.waitFor({ state: 'visible' })
+      await firstRow.click()
+
+      // Wait for Batch Show page to load
+      await page.getByText('Batch Show').waitFor({ state: 'visible' })
+
+      // Get initial item count from Items tab
+      const itemsTab = page.locator('text=/items/i').first()
+      await itemsTab.waitFor({ state: 'visible' })
+
+      const itemsTable = page.locator('table').first()
+      await itemsTable.waitFor({ state: 'visible' })
+      const initialRowCount = await itemsTable.locator('tbody tr').count()
+
+      // Click Add Item button
+      const addButton = page.locator('[data-testid="batch-add-item-button"]')
+      await addButton.waitFor({ state: 'visible' })
+      await addButton.click()
+
+      // Wait for form to load
+      await page.locator('form').waitFor({ state: 'visible' })
+
+      // Fill required fields (adjust field names based on actual form)
+      const referenceField = page.locator('input[name="reference"], [id*="reference"]').first()
+      await referenceField.waitFor({ state: 'visible' })
+      const testReference = `TEST-ITEM-${Date.now()}`
+      await referenceField.fill(testReference)
+
+      // Fill other required fields as needed
+      // (Add more fields based on actual form requirements)
+
+      // Save the form
+      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
+      await saveButton.first().waitFor({ state: 'visible' })
+      await saveButton.first().click()
+
+      // Wait for form to close and return to Batch Show page
+      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 2000 })
+
+      // Verify item appears in Items list
+      await itemsTable.waitFor({ state: 'visible' })
+      const newRowCount = await itemsTable.locator('tbody tr').count()
+      expect(newRowCount).toBeGreaterThan(initialRowCount)
+
+      // Verify the new item reference is visible in the table
+      const newItemRow = page.locator(`text=${testReference}`)
+      await expect(newItemRow).toBeVisible()
     })
   })
 

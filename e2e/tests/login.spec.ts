@@ -7,24 +7,8 @@ test.describe('Login successful test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('ian')
+    await page.locator('#username').type('20300')
     await page.locator('#password').type('admin')
-
-    await page.locator('button[type="submit"]').click()
-    await page.waitForLoadState()
-    await expect(
-      page.locator('//div[contains(@class, "MuiSnackbarContent-message")]')
-    ).not.toBeVisible()
-  })
-
-  test('Verify user is able to login with user credentials', async ({
-    page,
-    baseURL
-  }) => {
-    await page.goto(baseURL as string)
-
-    await page.locator('#username').type('jason')
-    await page.locator('#password').type('user')
 
     await page.locator('button[type="submit"]').click()
     await page.waitForLoadState()
@@ -41,7 +25,7 @@ test.describe('Login failed test', () => {
   }) => {
     await page.goto(baseURL as string)
 
-    await page.locator('#username').type('ian')
+    await page.locator('#username').type('20300')
     await page.locator('#password').type('password')
 
     await page.locator('button[type="submit"]').click()

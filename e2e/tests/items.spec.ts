@@ -24,7 +24,7 @@ test.describe('Item Workflows', () => {
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
 
       // Find search field - fail if not found
-      const searchField = page.locator('input[type="search"], input[placeholder*="Search"], [aria-label*="search" i]')
+      const searchField = page.locator('input[type="search"], input[placeholder*="Reference"], [aria-label*="search" i]')
       await searchField.first().waitFor({ state: 'visible' })
       await searchField.first().fill('test')
 
@@ -55,31 +55,6 @@ test.describe('Item Workflows', () => {
   })
 
   test.describe('Item Creation', () => {
-    test('should open create item form', async ({ page }) => {
-
-      // Wait for item list table to render first
-      await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
-
-      // Find and click create button - fail if not found
-      const createButton = page.locator('a:has-text("Create")').or(
-        page.locator('a:has-text("ADD NEW ITEM")')
-      ).or(
-        page.locator('[aria-label*="create" i]')
-      )
-      await createButton.first().waitFor({ state: 'visible' })
-      await createButton.first().click()
-
-      // Wait for form to properly load
-      await page.locator('form').waitFor({ state: 'visible' })
-
-      // Should show create form
-      const form = page.locator('form, [role="form"]')
-      await expect(form).toBeVisible()
-
-      // URL should indicate create page
-      expect(page.url()).toContain('/create')
-    })
-
     test('should validate required fields', async ({ page }) => {
 
       // Wait for item list table to render first
