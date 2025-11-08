@@ -271,3 +271,4 @@ yarn test path/to/test-file.test.ts
   - `_filters` - Key:value pairs with operators (`__eq`, `__neq`, `__null`, etc.)
   - `_search` - Full-text search
 - memory - we should move away from using `waitForLoadState('networkidle')`. It is proving fragile.  We should examine the relevant component, and look for actual UI text, or better still, class-names or data-ids.  Where we have failing tests because it looks like we are waiting for something, it's more likely that we have an invalid selector - and we should specify a data-id.
+- memory - no UI operation takes more than 2 seconds.  It is NEVER necessary to specify timeouts greater than 2 seconds - this just delays the process of us finding out that a test is broken,
