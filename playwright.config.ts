@@ -5,8 +5,8 @@ export default defineConfig({
   forbidOnly: !(process.env.CI == null),
   retries: 0,
   reporter: 'html',
-  timeout: 15000, // Allow time for parallel login/navigation in beforeEach
-  workers: 2, // Run 2 tests in parallel - balance speed vs stability
+  timeout: 15000, // Test timeout - allow time for login/navigation in beforeEach
+  workers: 1, // Run tests serially to avoid race conditions and "Target closed" errors
   globalTeardown: './e2e/global-teardown.ts', // Reset database after all tests
   // Run both backend and frontend servers before starting tests
   webServer: [
