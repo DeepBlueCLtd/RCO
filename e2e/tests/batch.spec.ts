@@ -11,7 +11,7 @@ test.describe('Batch Management Workflows', () => {
     test('should display batches list', async ({ page }) => {
 
       // Wait for batch list table to render
-      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Should have batch list table
       const hasList = await page.locator('[data-testid="batch-list-table"]').count()
@@ -21,16 +21,16 @@ test.describe('Batch Management Workflows', () => {
     test('should show batch details', async ({ page }) => {
 
       // Wait for batch list table to render
-      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Wait for first data row to render
       const firstRow = page.locator('[data-testid="batch-list-table"] tbody tr').first()
-      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+      await firstRow.waitFor({ state: 'visible', timeout: 2000 })
 
       await firstRow.click()
 
       // Wait for "Batch Show" title to appear
-      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 10000 })
+      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 2000 })
 
       // Should show batch information
       const hasDetails = await page.locator('h5, .MuiPaper-root, .RaShow-main').count()
@@ -77,7 +77,7 @@ test.describe('Batch Management Workflows', () => {
       await saveButton.click()
 
       // Wait for "Batch Show" title to appear
-      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 10000 })
+      await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 2000 })
 
       // Click home button to navigate to welcome page
       const homeButton = page.locator('[data-testid="home-button"]')
@@ -170,11 +170,11 @@ test.describe('Batch Management Workflows', () => {
   test.describe('Batch Updates', () => {
     test('should allow editing batch details', async ({ page }) => {
       // Wait for batch list table to render
-      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Navigate to first batch
       const firstRow = page.locator('[data-testid="batch-list-table"] tbody tr').first()
-      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+      await firstRow.waitFor({ state: 'visible', timeout: 2000 })
 
       await firstRow.click()
 
@@ -214,7 +214,7 @@ test.describe('Batch Management Workflows', () => {
       // Batch updates should cascade to items
       // This is a business logic test - just verify batch shows items
       const itemsRef = page.locator('text=/items/i')
-      await itemsRef.first().waitFor({ state: 'visible', timeout: 10000 })
+      await itemsRef.first().waitFor({ state: 'visible', timeout: 2000 })
 
       const hasItemsRef = await itemsRef.count()
       expect(hasItemsRef).toBeGreaterThan(0)
@@ -224,7 +224,7 @@ test.describe('Batch Management Workflows', () => {
   test.describe('Batch Search and Filter', () => {
     test('should filter batches by criteria', async ({ page }) => {
       // Wait for batch list table to render
-      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Look for filter controls
       const filterButton = page.locator(
@@ -238,7 +238,7 @@ test.describe('Batch Management Workflows', () => {
 
     test('should search batches by batch number', async ({ page }) => {
       // Wait for batch list table to render
-      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('[data-testid="batch-list-table"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Look for search field
       const searchField = page.locator('input[type="search"], input[placeholder*="Search"]')

@@ -11,7 +11,7 @@ test.describe('Destruction CRUD Operations', () => {
     test('should display destructions list', async ({ page }) => {
 
       // Wait for destruction list table to render
-      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Should have destruction list table
       const hasTable = await page.locator('table').count()
@@ -21,11 +21,11 @@ test.describe('Destruction CRUD Operations', () => {
     test('should allow filtering destructions', async ({ page }) => {
 
       // Wait for destruction list table to render
-      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Look for filter controls - wait for them to be visible
       const filterButton = page.locator('button:has-text("Filter")').or(page.locator('[aria-label*="filter" i]')).or(page.locator('input[type="search"]'))
-      await filterButton.first().waitFor({ state: 'visible', timeout: 10000 })
+      await filterButton.first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Filter functionality should exist
       const filterExists = await filterButton.count()
@@ -37,15 +37,15 @@ test.describe('Destruction CRUD Operations', () => {
     test('should open create destruction form', async ({ page }) => {
 
       // Wait for destruction list table to render first
-      await page.locator('table').first().waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('table').first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Find and click create button - wait for it to be visible
       const createButton = page.locator('button:has-text("Create")').or(page.locator('a:has-text("Create")'))
-      await createButton.first().waitFor({ state: 'visible', timeout: 10000 })
+      await createButton.first().waitFor({ state: 'visible', timeout: 2000 })
       await createButton.first().click()
 
       // Wait for form to properly load
-      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Should show create form
       const form = page.locator('form, [role="form"]')
@@ -62,16 +62,16 @@ test.describe('Destruction CRUD Operations', () => {
 
       // Wait for destruction list table to render
       const table = page.locator('table').first()
-      await table.waitFor({ state: 'visible', timeout: 10000 })
+      await table.waitFor({ state: 'visible', timeout: 2000 })
 
       // Wait for first data row to render (tbody tr to skip header)
       const firstRow = table.locator('tbody tr').first()
-      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+      await firstRow.waitFor({ state: 'visible', timeout: 2000 })
 
       await firstRow.click()
 
       // Wait for destruction detail page content to render
-      await page.locator('[role="main"], .MuiPaper-root, [class*="show" i]').first().waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('[role="main"], .MuiPaper-root, [class*="show" i]').first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Should show destruction details
       const details = page.locator('[role="main"], .MuiPaper-root, [class*="show" i]')
@@ -89,21 +89,21 @@ test.describe('Destruction CRUD Operations', () => {
 
       // Wait for destruction list table to render
       const table = page.locator('table').first()
-      await table.waitFor({ state: 'visible', timeout: 10000 })
+      await table.waitFor({ state: 'visible', timeout: 2000 })
 
       // Wait for first data row to render (tbody tr to skip header)
       const firstRow = table.locator('tbody tr').first()
-      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+      await firstRow.waitFor({ state: 'visible', timeout: 2000 })
 
       await firstRow.click()
 
       // Look for edit button - wait for it to be visible
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
-      await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
+      await editButton.first().waitFor({ state: 'visible', timeout: 2000 })
       await editButton.first().click()
 
       // Wait for form to properly load
-      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Should show edit form
       const form = page.locator('form, [role="form"]')
@@ -118,25 +118,25 @@ test.describe('Destruction CRUD Operations', () => {
 
       // Wait for destruction list table to render
       const table = page.locator('table').first()
-      await table.waitFor({ state: 'visible', timeout: 10000 })
+      await table.waitFor({ state: 'visible', timeout: 2000 })
 
       // Wait for first data row to render (tbody tr to skip header)
       const firstRow = table.locator('tbody tr').first()
-      await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+      await firstRow.waitFor({ state: 'visible', timeout: 2000 })
 
       await firstRow.click()
 
       // Look for edit button - wait for it to be visible
       const editButton = page.locator('button:has-text("Edit")').or(page.locator('a:has-text("Edit")')).or(page.locator('[aria-label*="edit" i]'))
-      await editButton.first().waitFor({ state: 'visible', timeout: 10000 })
+      await editButton.first().waitFor({ state: 'visible', timeout: 2000 })
       await editButton.first().click()
 
       // Wait for form to properly load
-      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 10000 })
+      await page.locator('form, [role="form"]').waitFor({ state: 'visible', timeout: 2000 })
 
       // Edit the remarks field - wait for it to be visible
       const remarksField = page.locator('input[name="remarks"], textarea[name="remarks"], [id*="remarks"]')
-      await remarksField.first().waitFor({ state: 'visible', timeout: 10000 })
+      await remarksField.first().waitFor({ state: 'visible', timeout: 2000 })
 
       // Generate unique test value
       const testValue = `Test edit ${Date.now()}`
@@ -144,12 +144,12 @@ test.describe('Destruction CRUD Operations', () => {
 
       // Save the form - wait for save button to be visible
       const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
-      await saveButton.first().waitFor({ state: 'visible', timeout: 10000 })
+      await saveButton.first().waitFor({ state: 'visible', timeout: 2000 })
       await saveButton.first().click()
 
       // Verify save success: presence of "Items to be destroyed" title
       const pageTitle = page.locator('h5, h1, h2, h3').filter({ hasText: /Items to be destroyed/i })
-      await pageTitle.waitFor({ state: 'visible', timeout: 10000 })
+      await pageTitle.waitFor({ state: 'visible', timeout: 2000 })
       await expect(pageTitle).toBeVisible()
 
       // Verify remarks field contains the test value
