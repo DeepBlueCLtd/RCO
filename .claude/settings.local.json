@@ -32,7 +32,11 @@
       "Bash(git restore:*)",
       "Bash(yarn e2e:*)",
       "Bash(cat:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(tee:*)",
+      "Bash(while ! grep:*)",
+      "Bash(do sleep 5)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
