@@ -66,8 +66,11 @@ export default function DatagridConfigurableWithShow(
   }
   const sx = itemsStoreKeys.includes(storeKey as string) ? styles : null
 
+  // Map resource names to test-friendly IDs (richItem -> item)
+  const testId = resource === 'richItem' ? 'item' : resource
+
   return (
-    <DatagridConfigurable sx={sx} {...rest}>
+    <DatagridConfigurable sx={sx} data-testid={`${testId}-list-table`} {...rest}>
       <PreviewButton resource={resource} />
       {children}
     </DatagridConfigurable>
