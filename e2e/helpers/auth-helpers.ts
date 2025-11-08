@@ -30,7 +30,7 @@ export async function login(page: Page, credentials: LoginCredentials): Promise<
 
   // Submit and wait for dashboard/menu to appear
   await page.locator('button[type="submit"]').click()
-  await page.locator('.RaLayout-appFrame, [role="main"], .RaMenu-root').first().waitFor({ state: 'visible', timeout: 5000 })
+  await page.locator('.RaLayout-appFrame, [role="main"], .RaMenu-root').first().waitFor({ state: 'visible', timeout: 2000 })
 }
 
 /**
@@ -92,13 +92,13 @@ export async function waitForErrorNotification(page: Page, message?: string): Pr
 export async function navigateToResource(page: Page, resourceName: string): Promise<void> {
   // Wait for menu item to be visible
   const menuItem = page.locator(`text=${resourceName}`).first()
-  await menuItem.waitFor({ state: 'visible', timeout: 5000 })
+  await menuItem.waitFor({ state: 'visible', timeout: 2000 })
 
   // Click on the menu item
   await menuItem.click()
 
   // Wait for list page to load
-  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 5000 })
+  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 2000 })
 }
 
 /**
@@ -128,12 +128,12 @@ export async function navigateToResourceByTestId(page: Page, testId: string): Pr
 
   // Wait for menu item to be visible
   const menuItem = page.locator(`text=${resourceText}`).first()
-  await menuItem.waitFor({ state: 'visible', timeout: 5000 })
+  await menuItem.waitFor({ state: 'visible', timeout: 2000 })
 
   await menuItem.click()
 
   // Wait for list page to load - look for table or main content area
-  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 5000 })
+  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 2000 })
 }
 
 /**
@@ -161,16 +161,21 @@ export async function navigateToReferenceDataResource(page: Page, resourceName: 
     throw new Error(`Unknown reference data resource: ${resourceName}. Add it to referenceDataMap in auth-helpers.ts`)
   }
 
-  // First navigate to Reference Data page
-  await navigateToResourceByTestId(page, 'menu-reference-data')
+  // Navigate to Reference Data menu item
+  const menuItem = page.locator('text=Reference Data').first()
+  await menuItem.waitFor({ state: 'visible', timeout: 2000 })
+  await menuItem.click()
+
+  // Wait for Reference Data page to load - look for the page heading
+  await page.locator('h1:has-text("Maintain Reference Data")').waitFor({ state: 'visible', timeout: 2000 })
 
   // Then click the specific resource card
   const card = page.locator(`text=${cardTitle}`).first()
-  await card.waitFor({ state: 'visible', timeout: 5000 })
+  await card.waitFor({ state: 'visible', timeout: 2000 })
   await card.click()
 
-  // Wait for list page to load
-  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 5000 })
+  // Wait for resource list page to load
+  await page.locator('table, [role="main"], .RaList-main').first().waitFor({ state: 'visible', timeout: 2000 })
 }
 
 /**
