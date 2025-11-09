@@ -40,35 +40,35 @@ describe('Password Validation Schema', () => {
 
     it('should reject passwords with common patterns', async () => {
       // Use longer passwords that meet length requirement
-      await expect(common.validate('MyPassword123!')).rejects.toThrow(
+      await expect(common.validate('MyPassword123!')).rejects.toThrow( // NOSONAR
         'Password cannot match common patterns'
       )
 
-      await expect(common.validate('AdminAccount1!')).rejects.toThrow(
+      await expect(common.validate('AdminAccount1!')).rejects.toThrow( // NOSONAR
         'Password cannot match common patterns'
       )
 
-      await expect(common.validate('Qwerty123456!')).rejects.toThrow(
+      await expect(common.validate('Qwerty123456!')).rejects.toThrow( // NOSONAR
         'Password cannot match common patterns'
       )
     })
 
     it('should reject passwords with 4 consecutive ascending characters', async () => {
-      await expect(common.validate('Abcd1234!Test')).rejects.toThrow(
+      await expect(common.validate('Abcd1234!Test')).rejects.toThrow( // NOSONAR
         'Password cannot include 4 consecutive characters'
       )
 
-      await expect(common.validate('Test!5678More')).rejects.toThrow(
+      await expect(common.validate('Test!5678More')).rejects.toThrow( // NOSONAR
         'Password cannot include 4 consecutive characters'
       )
     })
 
     it('should reject passwords with 4 consecutive descending characters', async () => {
-      await expect(common.validate('Zyxw9876!Test')).rejects.toThrow(
+      await expect(common.validate('Zyxw9876!Test')).rejects.toThrow( // NOSONAR
         'Password cannot include 4 consecutive characters'
       )
 
-      await expect(common.validate('Test!8765More')).rejects.toThrow(
+      await expect(common.validate('Test!8765More')).rejects.toThrow( // NOSONAR
         'Password cannot include 4 consecutive characters'
       )
     })
@@ -79,7 +79,7 @@ describe('Password Validation Schema', () => {
     })
 
     it('should accept passwords with non-consecutive repeated characters', async () => {
-      const validPassword = 'Aa!1Bb@2Cc#3Dd'
+      const validPassword = 'Aa!1Bb@2Cc#3Dd' // NOSONAR
       await expect(common.validate(validPassword)).resolves.toBe(validPassword)
     })
   })

@@ -27,8 +27,8 @@ describe('Permissions Module', () => {
       const roleId = await getRoleId('rco-user')
 
       expect(roleId).toBe(1)
-      const getMock = mockedAxios.get
-      expect(getMock).toHaveBeenCalledWith(
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockedAxios.get).toHaveBeenCalledWith(
         expect.stringContaining('/api/tables/_roles/rows?_filters=name:rco-user')
       )
     })
@@ -73,6 +73,7 @@ describe('Permissions Module', () => {
       const response = await getPermissionsByRoleId(1)
 
       expect(response.data.data).toEqual(mockPermissions)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockedAxios.get).toHaveBeenCalledWith(
         expect.stringContaining('/api/tables/_roles_permissions/rows?_filters=role_id:1')
       )
