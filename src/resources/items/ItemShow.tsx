@@ -37,7 +37,9 @@ const ShowForm = ({ setRecord }: ShowFormProps): React.ReactElement => {
     if (!isLoading) setRecord(record)
   }, [isLoading])
 
-  if (isLoading !== undefined && isLoading) return <Loading />
+  if (isLoading !== undefined && isLoading) {
+    return <Loading />
+  }
 
   const pageTitle = 'View Item'
 
