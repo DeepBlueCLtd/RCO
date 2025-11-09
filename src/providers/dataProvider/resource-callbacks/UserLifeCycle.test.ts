@@ -72,7 +72,7 @@ describe('UserLifeCycle', () => {
         hashed_password: null,
         createdAt: '2024-01-01',
         createdBy: 1
-      } as _Users
+      } as unknown as _Users
       const updateParams: UpdateParams<_Users> = {
         id: 1,
         data: newData,
@@ -138,7 +138,7 @@ describe('UserLifeCycle', () => {
         hashed_password: null,
         createdAt: '2024-01-01',
         createdBy: 1
-      } as _Users
+      } as unknown as _Users
       const updateParams: UpdateParams<_Users> = {
         id: 42,
         data: newData,
