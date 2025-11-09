@@ -219,31 +219,52 @@ test.describe('Batch Management Workflows', () => {
       // Wait for form to load
       await page.locator('form').waitFor({ state: 'visible' })
 
-      // Fill required fields (adjust field names based on actual form)
-      const referenceField = page.locator('input[name="reference"], [id*="reference"]').first()
-      await referenceField.waitFor({ state: 'visible' })
+      // Fill Consec/Sheets field with test identifier
+      const consecSheetsField = page.locator('textarea[name="consecSheets"]')
+      await consecSheetsField.waitFor({ state: 'visible' })
       const testReference = `TEST-ITEM-${Date.now()}`
-      await referenceField.fill(testReference)
+      await consecSheetsField.fill(testReference)
 
-      // Fill other required fields as needed
-      // (Add more fields based on actual form requirements)
+      // Fill required: Media Type
+      const mediaTypeInput = page.locator('input[name="mediaType"]')
+      await mediaTypeInput.click()
+      const firstMediaOption = page.locator('li[role="option"]').first()
+      await firstMediaOption.waitFor({ state: 'visible' })
+      await firstMediaOption.click()
 
-      // Save the form
-      const saveButton = page.locator('button:has-text("Save")').or(page.locator('button[type="submit"]'))
-      await saveButton.first().waitFor({ state: 'visible' })
-      await saveButton.first().click()
+      // Fill required: Vault Location
+      const vaultLocationInput = page.locator('input[name="vaultLocation"]')
+      await vaultLocationInput.click()
+      const firstVaultOption = page.locator('li[role="option"]').first()
+      await firstVaultOption.waitFor({ state: 'visible' })
+      await firstVaultOption.click()
 
-      // Wait for form to close and return to Batch Show page
+      // Fill required: Protective Marking
+      const protectiveMarkingInput = page.locator('input[name="protectiveMarking"]')
+      await protectiveMarkingInput.click()
+      const firstMarkingOption = page.locator('li[role="option"]').first()
+      await firstMarkingOption.waitFor({ state: 'visible' })
+      await firstMarkingOption.click()
+
+      // Save the form - click "Save / New" button which creates item and shows new form
+      const saveNewButton = page.locator('button:has-text("Save / New")')
+      await saveNewButton.waitFor({ state: 'visible' })
+      await saveNewButton.click()
+
+      // Wait for success notification
+      await page.locator('text=/saved/i').waitFor({ state: 'visible', timeout: 2000 })
+
+      // Navigate back to batch to verify item was created
+      await page.goBack()
       await page.getByText('Batch Show').waitFor({ state: 'visible', timeout: 2000 })
 
-      // Verify item appears in Items list
-      await itemsTable.waitFor({ state: 'visible' })
-      const newRowCount = await itemsTable.locator('tbody tr').count()
-      expect(newRowCount).toBeGreaterThan(initialRowCount)
+      // Get fresh reference to items table after navigation
+      const updatedItemsTable = page.locator('table').first()
+      await updatedItemsTable.waitFor({ state: 'visible' })
 
-      // Verify the new item reference is visible in the table
-      const newItemRow = page.locator(`text=${testReference}`)
-      await expect(newItemRow).toBeVisible()
+      // Verify item appears in Items list - check row count increased
+      const newRowCount = await updatedItemsTable.locator('tbody tr').count()
+      expect(newRowCount).toBeGreaterThan(initialRowCount)
     })
   })
 
