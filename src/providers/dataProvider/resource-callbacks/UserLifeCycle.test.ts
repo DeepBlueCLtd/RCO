@@ -64,7 +64,7 @@ describe('UserLifeCycle', () => {
   describe('beforeUpdate', () => {
     it('should detect password assignment when previousData had no password', async () => {
       const newData = {
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const oldData = {
         id: 1,
@@ -87,7 +87,7 @@ describe('UserLifeCycle', () => {
 
     it('should detect password assignment when previousData had undefined password', async () => {
       const newData = {
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const oldData = {
         id: 1,
@@ -107,12 +107,12 @@ describe('UserLifeCycle', () => {
 
     it('should not flag password change as assignment if previousData had a password', async () => {
       const newData = {
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const oldData = {
         id: 1,
         username: 'testuser',
-        hashed_password: 'old_hashed_password_value'
+        hashed_password: 'old_hashed_password_value' // NOSONAR
       } as _Users
       const updateParams: UpdateParams<_Users> = {
         id: 1,
@@ -130,7 +130,7 @@ describe('UserLifeCycle', () => {
     it('should create security audit when password is assigned', async () => {
       // First, trigger password assignment detection in beforeUpdate
       const newData = {
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const oldData = {
         id: 42,
@@ -151,7 +151,7 @@ describe('UserLifeCycle', () => {
       const resultData = {
         id: 42,
         username: 'testuser',
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const updateResult: UpdateResult<_Users> = {
         data: resultData
@@ -178,12 +178,12 @@ describe('UserLifeCycle', () => {
     it('should not create audit when password is changed (not initially assigned)', async () => {
       // Password change (not assignment)
       const newData = {
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const oldData = {
         id: 42,
         username: 'testuser',
-        hashed_password: 'old_hashed_password_value'
+        hashed_password: 'old_hashed_password_value' // NOSONAR
       } as _Users
       const updateParams: UpdateParams<_Users> = {
         id: 42,
@@ -196,7 +196,7 @@ describe('UserLifeCycle', () => {
       const resultData = {
         id: 42,
         username: 'testuser',
-        hashed_password: 'new_hashed_password_value'
+        hashed_password: 'new_hashed_password_value' // NOSONAR
       } as _Users
       const updateResult: UpdateResult<_Users> = {
         data: resultData
@@ -219,7 +219,7 @@ describe('UserLifeCycle', () => {
         id: 42,
         username: 'testuser',
         name: 'Old Name',
-        hashed_password: 'existing_password'
+        hashed_password: 'existing_password' // NOSONAR
       } as _Users
       const updateParams: UpdateParams<_Users> = {
         id: 42,

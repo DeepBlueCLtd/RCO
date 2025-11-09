@@ -74,7 +74,7 @@ describe('Password Validation Schema', () => {
     })
 
     it('should accept valid passwords meeting all criteria', async () => {
-      const validPassword = 'MyS3cure!P@ss'
+      const validPassword = 'MyS3cure!P@ss' // NOSONAR
       await expect(common.validate(validPassword)).resolves.toBe(validPassword)
     })
 
@@ -96,7 +96,7 @@ describe('Password Validation Schema', () => {
         userFormSchema.validate({
           name: 'JohnDoe',
           username: 'jdoe',
-          hashed_password: 'JohnDoe123!'
+          hashed_password: 'JohnDoe123!' // NOSONAR
         })
       ).rejects.toThrow('Password cannot include name or staff number')
     })
@@ -112,7 +112,7 @@ describe('Password Validation Schema', () => {
         userFormSchema.validate({
           name: 'John Doe',
           username: 'staff123',
-          hashed_password: 'Staff123!Pwd'
+          hashed_password: 'Staff123!Pwd' // NOSONAR
         })
       ).rejects.toThrow('Password cannot include name or staff number')
     })
@@ -127,7 +127,7 @@ describe('Password Validation Schema', () => {
       const validData = {
         name: 'John Doe',
         username: 'jdoe',
-        hashed_password: 'MyS3cure!P@ss'
+        hashed_password: 'MyS3cure!P@ss' // NOSONAR
       }
 
       await expect(userFormSchema.validate(validData)).resolves.toMatchObject(validData)
@@ -144,7 +144,7 @@ describe('Password Validation Schema', () => {
         userFormSchema.validate({
           name: 'Alice',
           username: 'asmith',
-          hashed_password: 'ALICE123!test'
+          hashed_password: 'ALICE123!test' // NOSONAR
         })
       ).rejects.toThrow('Password cannot include name or staff number')
 
@@ -152,7 +152,7 @@ describe('Password Validation Schema', () => {
         userFormSchema.validate({
           name: 'Alice',
           username: 'asmith',
-          hashed_password: 'ASMITH456!test'
+          hashed_password: 'ASMITH456!test' // NOSONAR
         })
       ).rejects.toThrow('Password cannot include name or staff number')
     })
@@ -167,8 +167,8 @@ describe('Password Validation Schema', () => {
 
       await expect(
         resetFormSchema.validate({
-          newPassword: 'MyS3cure!P@ss',
-          confirmPassword: 'DifferentP@ss123'
+          newPassword: 'MyS3cure!P@ss', // NOSONAR
+          confirmPassword: 'DifferentP@ss123' // NOSONAR
         })
       ).rejects.toThrow('Passwords do not match')
     })
@@ -180,8 +180,8 @@ describe('Password Validation Schema', () => {
       })
 
       const validData = {
-        newPassword: 'MyS3cure!P@ss',
-        confirmPassword: 'MyS3cure!P@ss'
+        newPassword: 'MyS3cure!P@ss', // NOSONAR
+        confirmPassword: 'MyS3cure!P@ss' // NOSONAR
       }
 
       await expect(resetFormSchema.validate(validData)).resolves.toMatchObject(validData)
