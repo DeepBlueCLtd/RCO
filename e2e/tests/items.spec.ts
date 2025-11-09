@@ -55,34 +55,44 @@ test.describe('Item Workflows', () => {
   })
 
   test.describe('Item Editing', () => {
-    test('should open edit item form', async ({ page }) => {
-
+    test('should open edit item form', async ({ page, context }) => {
       // Wait for item list table to render
       await page.locator('[data-testid="item-list-table"]').waitFor({ state: 'visible' })
 
-      // Find and click first item - fail if not found
-      const firstRow = page.locator('[data-testid="item-list-table"] tbody tr').first()
-      await firstRow.waitFor({ state: 'visible' })
-      await firstRow.click()
+      // Find preview button in first row (eye icon opens new tab for richItem)
+      const previewButton = page.locator('[data-testid="item-list-table"] tbody tr').first().locator('button').first()
+      await previewButton.waitFor({ state: 'visible' })
 
-      // Wait for item show page to load
-      await page.locator('h5, button, [role="main"]').first().waitFor({ state: 'visible', timeout: 2000 })
+      // Click preview button opens new tab - capture it
+      const [newPage] = await Promise.all([
+        context.waitForEvent('page'),
+        previewButton.click()
+      ])
 
-      // Click edit button - fail if not found
-      const editButton = page.locator('[data-testid="item-edit-button"]').or(
-        page.locator('button:has-text("Edit")')
+      // Wait for new tab to load
+      await newPage.waitForLoadState('domcontentloaded')
+
+      // Switch to new page for remaining test
+      const itemPage = newPage
+
+      // Click edit button in new tab - fail if not found
+      const editButton = itemPage.locator('[data-testid="item-edit-button"]').or(
+        itemPage.locator('button:has-text("Edit")')
       ).or(
-        page.locator('a:has-text("Edit")')
+        itemPage.locator('a:has-text("Edit")')
       ).or(
-        page.locator('[aria-label*="edit" i]')
+        itemPage.locator('[aria-label*="edit" i]')
       )
-      await editButton.first().waitFor({ state: 'visible' })
+      await editButton.first().waitFor({ state: 'visible', timeout: 2000 })
       await editButton.first().click()
 
-      // Should show edit form
-      const form = page.locator('form, [role="form"]')
-      await form.waitFor({ state: 'visible' })
+      // Should show edit form in new tab
+      const form = itemPage.locator('form, [role="form"]')
+      await form.waitFor({ state: 'visible', timeout: 2000 })
       await expect(form).toBeVisible()
+
+      // Clean up - close new tab
+      await newPage.close()
     })
 
     test('should preserve data when navigating away and back', async ({ page }) => {
