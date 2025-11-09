@@ -27,7 +27,8 @@ describe('Permissions Module', () => {
       const roleId = await getRoleId('rco-user')
 
       expect(roleId).toBe(1)
-      expect(mockedAxios.get).toHaveBeenCalledWith(
+      const getMock = mockedAxios.get
+      expect(getMock).toHaveBeenCalledWith(
         expect.stringContaining('/api/tables/_roles/rows?_filters=name:rco-user')
       )
     })
@@ -88,7 +89,7 @@ describe('Permissions Module', () => {
   })
 
   describe('mapPermissions', () => {
-    it('should map database permissions to resource permissions for regular user', () => {
+    it('should map database permissions to resource permissions for regular user', async () => {
       const dbPermissions = [
         {
           id: 1,
@@ -114,7 +115,7 @@ describe('Permissions Module', () => {
         }
       ]
 
-      const { mapPermissions } = require('./permissions')
+      const { mapPermissions } = await import('./permissions')
       const mapped = mapPermissions(dbPermissions)
 
       // Note: delete uses !!permission.delete which converts "0" to true (bug in implementation)
@@ -133,7 +134,7 @@ describe('Permissions Module', () => {
       expect(mapped['welcome-page']).toEqual({ read: true })
     })
 
-    it('should create allItems permission when item permission exists', () => {
+    it('should create allItems permission when item permission exists', async () => {
       const dbPermissions = [
         {
           id: 1,
@@ -148,7 +149,7 @@ describe('Permissions Module', () => {
         }
       ]
 
-      const { mapPermissions } = require('./permissions')
+      const { mapPermissions } = await import('./permissions')
       const mapped = mapPermissions(dbPermissions)
 
       // The constant R_ALL_ITEMS = 'allItems' (camelCase, not snake_case)
@@ -160,7 +161,7 @@ describe('Permissions Module', () => {
       })
     })
 
-    it('should set reference-data permissions for rco-user (role_id 1)', () => {
+    it('should set reference-data permissions for rco-user (role_id 1)', async () => {
       const dbPermissions = [
         {
           id: 1,
@@ -175,7 +176,7 @@ describe('Permissions Module', () => {
         }
       ]
 
-      const { mapPermissions } = require('./permissions')
+      const { mapPermissions } = await import('./permissions')
       const mapped = mapPermissions(dbPermissions)
 
       expect(mapped['reference-data']).toEqual({
@@ -185,7 +186,7 @@ describe('Permissions Module', () => {
       })
     })
 
-    it('should set reference-data permissions for rco-power-user (role_id 2)', () => {
+    it('should set reference-data permissions for rco-power-user (role_id 2)', async () => {
       const dbPermissions = [
         {
           id: 1,
@@ -200,7 +201,7 @@ describe('Permissions Module', () => {
         }
       ]
 
-      const { mapPermissions } = require('./permissions')
+      const { mapPermissions } = await import('./permissions')
       const mapped = mapPermissions(dbPermissions)
 
       expect(mapped['reference-data']).toEqual({
@@ -210,7 +211,7 @@ describe('Permissions Module', () => {
       })
     })
 
-    it('should set reference-data permissions for superuser (role_id 3)', () => {
+    it('should set reference-data permissions for superuser (role_id 3)', async () => {
       const dbPermissions = [
         {
           id: 1,
@@ -225,7 +226,7 @@ describe('Permissions Module', () => {
         }
       ]
 
-      const { mapPermissions } = require('./permissions')
+      const { mapPermissions } = await import('./permissions')
       const mapped = mapPermissions(dbPermissions)
 
       expect(mapped['reference-data']).toEqual({
