@@ -36,7 +36,10 @@
       "Bash(tee:*)",
       "Bash(while ! grep:*)",
       "Bash(do sleep 5)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(npx playwright:*)",
+      "Bash(unzip:*)",
+      "Bash(timeout 60 yarn playwright test:*)"
     ],
     "deny": [],
     "ask": []
