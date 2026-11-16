@@ -53,7 +53,12 @@ class Client {
     } catch (err) {
       json = undefined
     }
-    return { status: res.status, body: json, text, setCookies }
+    return {
+      status: res.status,
+      body: json,
+      text: text,
+      setCookies: setCookies
+    }
   }
 
   get(url) {
