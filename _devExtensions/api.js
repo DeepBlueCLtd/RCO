@@ -5,6 +5,7 @@ const passwordValidationSchema = require('./password-validation.schema')
 const loginController = require('./login-controller')
 const editPasswordController = require('./editPassword-controller')
 const updateBeforeController = require('./updateBefore-controller')
+const { authenticateRequest } = require('./auth-helper')
 const tableName = 'passwords'
 
 const getIp = {
@@ -72,55 +73,38 @@ const insertPasswordRecord = {
     let mainDb
 
     try {
+      // Callers must be logged in, and may only change their own password
+      const { userId: callerId } = authenticateRequest(req)
+
+      const { userId, currentPassword, password } = req.body.fields
+      if (Number(userId) !== callerId) {
+        return res.status(403).json({
+          message: 'You can only change your own password.'
+        })
+      }
+
       securityDb = new BS3Database(
         path.join(process.cwd(), 'db/Security.sqlite')
       )
 
       mainDb = new BS3Database(path.join(process.cwd(), 'db/RCO2.sqlite'))
 
-      const { fields: queryFields } = req.body
-      queryFields.createdAt = new Date().toISOString()
-
-      const { userId, currentPassword, password } = queryFields
-
       // if currentPassword present, validate it
       if (currentPassword !== undefined) {
-        validateCurrentPassword(mainDb, userId, currentPassword)
+        validateCurrentPassword(mainDb, callerId, currentPassword)
       }
 
       await passwordValidationSchema.validate(password)
-      checkAgainstLastFivePassowrds(securityDb, userId, password)
-      removeOldPasswords(securityDb, userId)
+      checkAgainstLastFivePassowrds(securityDb, callerId, password)
+      removeOldPasswords(securityDb, callerId)
 
-      queryFields.password = bcrypt.hashSync(password)
-
-      const fields = Object.fromEntries(
-        Object.entries(queryFields).filter(
-          ([name, value]) => (value !== null) & (name !== 'currentPassword')
+      const data = securityDb
+        .prepare(
+          `INSERT INTO ${tableName} (userId, password, createdAt) VALUES (?, ?, ?)`
         )
-      )
+        .run(callerId, bcrypt.hashSync(password), new Date().toISOString())
 
-      const fieldsString = Object.keys(fields).join(', ')
-
-      const valuesString = Object.values(fields)
-        .map((value) => {
-          if (typeof value === 'string') {
-            return `'${value}'`
-          }
-          return value
-        })
-        .join(', ')
-
-      let values = `(${fieldsString}) VALUES (${valuesString})`
-      if (valuesString === '') {
-        values = 'DEFAULT VALUES'
-      }
-
-      const query = `INSERT INTO ${tableName} ${values}`
-
-      const data = securityDb.prepare(query).run()
-
-      updateUserPassword(mainDb, userId, password)
+      updateUserPassword(mainDb, callerId, password)
 
       res.status(201).json({
         message: 'Password updated!',
