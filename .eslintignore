@@ -4,3 +4,5 @@ e2e
 playwright.config.ts
 _extensions
 _devExtensions
+integration
+jest.integration.config.cjs

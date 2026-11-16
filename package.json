@@ -22,6 +22,7 @@
     "format": "prettier . --write",
     "deploy": "gh-pages -d build",
     "test": "jest",
+    "test:integration": "jest -c jest.integration.config.cjs",
     "e2e": "yarn playwright test",
     "e2e-ui": "yarn playwright test --ui"
   },
@@ -112,7 +113,8 @@
       "\\.(css|less)$": "identity-obj-proxy"
     },
     "testPathIgnorePatterns": [
-      "e2e"
+      "e2e",
+      "<rootDir>/integration/"
     ],
     "setupFiles": [
       "<rootDir>/.jest/env.js"
