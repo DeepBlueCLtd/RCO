@@ -75,7 +75,7 @@ describe('RCO login check (/api/login)', () => {
   })
 
   test('counts failed attempts, resets on success, and locks after 5 failures', async () => {
-    const { username } = USERS.other
+    const username = USERS.other.username
     const c = client()
 
     await c.post('/api/login', { username, password: 'wrong' })
