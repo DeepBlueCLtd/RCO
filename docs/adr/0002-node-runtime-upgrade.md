@@ -172,7 +172,7 @@ walk through every logic path.
 use it as the safety net for refactoring the UI code. Move logic out of
 the React components into plain functions that unit tests can reach, and
 confirm each refactor with e2e. RCO has already started down this road:
-#1160 pulled operations out into `*-operations.ts` with unit tests.
+PR #1160 pulled operations out into `*-operations.ts` with unit tests.
 Three cautions:
 
 - **e2e only protects the paths it exercises.** Measure e2e coverage
