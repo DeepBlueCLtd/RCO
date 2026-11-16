@@ -50,7 +50,7 @@ class Client {
     let json
     try {
       json = JSON.parse(text)
-    } catch {
+    } catch (err) {
       json = undefined
     }
     return { status: res.status, body: json, text, setCookies }
