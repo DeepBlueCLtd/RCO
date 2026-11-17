@@ -39,7 +39,11 @@ const USERS = {
     role: ROLES.RCO_USER,
     updateBefore: '2000-01-01T00:00:00.000Z'
   },
-  noRole: { username: 'it-norole', role: null }
+  noRole: { username: 'it-norole', role: null },
+  // used only by the admin-reset end-to-end flow
+  resetAdmin: { username: 'it-reset-admin', role: ROLES.RCO_POWER_USER },
+  resetA: { username: 'it-reset-a', role: ROLES.RCO_USER },
+  resetB: { username: 'it-reset-b', role: ROLES.RCO_USER }
 }
 
 const freePort = () =>
