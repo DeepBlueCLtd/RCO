@@ -134,6 +134,17 @@ itself.
   the upgrade ships, and the test work could take months. Agree the
   minimum tests that gate the upgrade (auth integration tests and the
   main workflows), and let the rest follow.
+- **Account rules at token issuance:** lockout after failed attempts,
+  departed users and the password-update deadline should be enforced
+  where soul issues and refreshes tokens. Plan: move them into a small
+  RCO plugin once soul's plugin API lands (thevahidal/soul#278, middleware
+  before core routes), with integration tests for each rule at both token
+  routes. Accepted for now; part of the longer-term work.
+- **Rate limiting:** do not enable soul's `-r` flag on soul-cli 0.7.8.
+  Its rate-limit settings are not applied, so the library default (5
+  requests per minute per IP, on every route) would block normal use.
+  Fixed in 0.9.x; revisit after the upgrade, ideally limited to the
+  auth routes.
 
 ## Test coverage
 
@@ -222,6 +233,9 @@ air-gapped clients.
       package, so any client can be rolled back
 - [ ] Ops: plan new deployment packages and a Node 24 install for each
       client server
+- [ ] Follow-on, after the upgrade: enforce account rules at token
+      issuance via an RCO soul plugin, and consider rate limiting the auth
+      routes (soul-cli 0.9.x)
 - [ ] Follow-on, after the upgrade: refactor UI logic out of components
       into unit-testable functions, with e2e confirming each step
 - [x] soul-cli: dependencies, `engines` and CI updated upstream
