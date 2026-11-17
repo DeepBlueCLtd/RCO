@@ -172,4 +172,67 @@ describe('self-service password change (/api/insert-password)', () => {
     expect(res.status).toBe(400)
     expect(res.body.message).toBe('Invalid current password')
   })
+
+  const hashOf = (id) =>
+    withDb(server.dbPath, (db) =>
+      db.prepare('SELECT hashed_password FROM _users WHERE id = ?').get(id)
+    ).hashed_password
+
+  test('the forced-reset dialog can set a new password without the current one', async () => {
+    // src/App.tsx sends only { userId, password } for the logged-in user
+    const c = await loggedIn('default')
+    const res = await c.post('/api/insert-password', {
+      fields: { userId: server.ids.default, password: 'Tz8!kQm4Wr2#' }
+    })
+    expect(res.status).toBe(201)
+  })
+
+  test('requires a logged-in caller', async () => {
+    const before = hashOf(server.ids.user)
+    const res = await new Client(server.baseUrl).post('/api/insert-password', {
+      fields: { userId: server.ids.user, password: 'Hv3$pLx9Nd6@' }
+    })
+    expect(res.status).toBe(400)
+    expect(res.body.message).toBe('No authentication token provided')
+    expect(hashOf(server.ids.user)).toBe(before)
+  })
+
+  test("refuses to change another user's password", async () => {
+    const c = await loggedIn('user')
+    const before = hashOf(server.ids.other)
+    const res = await c.post('/api/insert-password', {
+      fields: { userId: server.ids.other, password: 'Hv3$pLx9Nd6@' }
+    })
+    expect(res.status).toBe(403)
+    expect(hashOf(server.ids.other)).toBe(before)
+  })
+
+  test('refuses a userId that is not the caller, whatever its form', async () => {
+    const c = await loggedIn('user')
+    const res = await c.post('/api/insert-password', {
+      fields: { userId: `${server.ids.user}'`, password: 'Hv3$pLx9Nd6@' }
+    })
+    expect(res.status).toBe(403)
+  })
+
+  test('records the new password in the history table', async () => {
+    const c = await loggedIn('user')
+    const res = await c.post('/api/insert-password', {
+      fields: {
+        userId: server.ids.user,
+        currentPassword: PASSWORD,
+        password: 'Hv3$pLx9Nd6@'
+      }
+    })
+    expect(res.status).toBe(201)
+    const history = withDb(
+      require('path').join(server.workDir, 'db', 'Security.sqlite'),
+      (db) =>
+        db
+          .prepare('SELECT userId, password FROM passwords WHERE userId = ?')
+          .all(server.ids.user)
+    )
+    expect(history).toHaveLength(1)
+    expect(history[0].password).toMatch(/^\$2[aby]\$/)
+  })
 })
