@@ -250,7 +250,7 @@ describe('admin reset to a temporary password, end to end', () => {
   const anon = () => new Client(server.baseUrl)
 
   test('locked-out user gets a temporary password and replaces it', async () => {
-    const { username } = USERS.resetA
+    const username = USERS.resetA.username
     const id = server.ids.resetA
 
     // the user locks themselves out
@@ -317,7 +317,7 @@ describe('admin reset to a temporary password, end to end', () => {
   })
 
   test('a temporary password stops working once its deadline passes', async () => {
-    const { username } = USERS.resetB
+    const username = USERS.resetB.username
     const id = server.ids.resetB
     const admin = await loggedIn('resetAdmin')
 
