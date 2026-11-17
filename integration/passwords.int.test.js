@@ -236,3 +236,110 @@ describe('self-service password change (/api/insert-password)', () => {
     expect(history[0].password).toMatch(/^\$2[aby]\$/)
   })
 })
+
+describe('admin reset to a temporary password, end to end', () => {
+  // The flow a locked-out user goes through:
+  // 1. an admin sets a temporary password (UserShow.tsx -> /api/editpassword)
+  // 2. the user logs in with it and sees the "update your password" banner
+  //    (Welcome.tsx, shown while updateBefore is set)
+  // 3. the user changes it via Change Password (ChangePassword.tsx), which
+  //    sends the temporary password as the current one, then clears the
+  //    deadline (/api/insert-password, then /api/update-before)
+  const TEMP = 'Tz8!kQm4Wr2#'
+  const CHOSEN = 'Hv3$pLx9Nd6@'
+  const anon = () => new Client(server.baseUrl)
+
+  test('locked-out user gets a temporary password and replaces it', async () => {
+    const username = USERS.resetA.username
+    const id = server.ids.resetA
+
+    // the user locks themselves out
+    for (let i = 0; i < 5; i++) {
+      await anon().post('/api/login', { username, password: 'wrong' })
+    }
+    const locked = await anon().post('/api/login', {
+      username,
+      password: PASSWORD
+    })
+    expect(locked.body.message).toMatch(/account is locked/)
+
+    // 1. admin resets to a temporary password
+    const admin = await loggedIn('resetAdmin')
+    const reset = await admin.post('/api/editpassword', {
+      fields: { userId: id, newPassword: TEMP }
+    })
+    expect(reset.status).toBe(201)
+
+    // the old password no longer works
+    const old = await anon().post('/api/login', {
+      username,
+      password: PASSWORD
+    })
+    expect(old.status).toBe(400)
+    expect(old.body.message).toBe('Invalid password')
+
+    // 2. the user logs in with the temporary password; updateBefore is set,
+    //    which is what shows the banner
+    const user = new Client(server.baseUrl)
+    const check = await user.post('/api/login', { username, password: TEMP })
+    expect(check.status).toBe(200)
+    expect(check.body.data.updateBefore).toBeTruthy()
+    const token = await user.post('/api/auth/token/obtain', {
+      fields: { username, password: TEMP }
+    })
+    expect(token.status).toBe(201)
+
+    // 3. the user chooses their own password, then clears the deadline
+    const change = await user.post('/api/insert-password', {
+      fields: { userId: id, currentPassword: TEMP, password: CHOSEN }
+    })
+    expect(change.status).toBe(201)
+    const clear = await user.post('/api/update-before', {
+      data: { userId: id }
+    })
+    expect(clear.status).toBe(201)
+    expect(clear.body.userDetails.updateBefore).toBe('')
+
+    // the temporary password is dead; the chosen one works, with no deadline
+    const tempAgain = await anon().post('/api/login', {
+      username,
+      password: TEMP
+    })
+    expect(tempAgain.status).toBe(400)
+    const chosen = await anon().post('/api/login', {
+      username,
+      password: CHOSEN
+    })
+    expect(chosen.status).toBe(200)
+    expect(chosen.body.data.updateBefore).toBe('')
+    // (the reply shows the counter as it was before this login reset it)
+    expect(userRow(id).lockoutAttempts).toBe(0)
+  })
+
+  test('a temporary password stops working once its deadline passes', async () => {
+    const username = USERS.resetB.username
+    const id = server.ids.resetB
+    const admin = await loggedIn('resetAdmin')
+
+    await admin.post('/api/editpassword', {
+      fields: { userId: id, newPassword: TEMP }
+    })
+    // simulate the hour passing without the user changing it
+    withDb(server.dbPath, (db) =>
+      db
+        .prepare('UPDATE _users SET updateBefore = ? WHERE id = ?')
+        .run(new Date(Date.now() - 60000).toISOString(), id)
+    )
+    const late = await anon().post('/api/login', { username, password: TEMP })
+    expect(late.status).toBe(400)
+    expect(late.body.message).toMatch(/not updated the password/)
+
+    // a fresh reset gives a new hour
+    const again = await admin.post('/api/editpassword', {
+      fields: { userId: id, newPassword: TEMP }
+    })
+    expect(again.status).toBe(201)
+    const ok = await anon().post('/api/login', { username, password: TEMP })
+    expect(ok.status).toBe(200)
+  })
+})
