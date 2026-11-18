@@ -11,13 +11,14 @@ April 2025. **Update, 15 Nov 2026:** the soul-cli blocker is gone.
 soul-cli 0.9.3, on npm since 14 Nov 2026, uses `better-sqlite3`
 ^13.0.3 and `bcrypt` ^6, supports Node 22–26, and is tested in CI on
 22, 24 and 26. The remaining work is in RCO: moving from soul-cli
-0.7.8 to 0.9.3, which changes how extensions load and adds security
+0.7.8 to 0.12.0 (the latest release, re-checked 17 Nov 2026), which
+changes how extensions load and adds security
 headers (see Upgrade review).
 
 **Decision needed from project leads:**
 
 1. Approve moving RCO to Node 24.
-2. Approve upgrading soul-cli from 0.7.8 to 0.9.3, subject to the checks
+2. Approve upgrading soul-cli from 0.7.8 to 0.12.0, subject to the checks
    in the Upgrade review.
 3. Approve the test work before the upgrade (see Test coverage). It is
    most of the effort, so leads should agree its scope.
@@ -47,12 +48,13 @@ Node 22 is too close to end of life to be worth targeting.
 ## Findings
 
 The blocker was one native database module inside soul-cli. soul-cli
-0.9.3 now ships a supported version, so RCO no longer needs to override
+0.9.3 and later ship a supported version, so RCO no longer needs to override
 it.
 
 | soul-cli | Released | better-sqlite3 it requires | Node (`engines`) |
 | --- | --- | --- | --- |
-| 0.9.3 (latest) | Nov 2026 | ^13.0.3 | 22, 24, 26 (CI-tested) |
+| 0.12.0 (latest) | Nov 2026 | ^13.0.3 | 22, 24, 26 (CI-tested) |
+| 0.9.3 | Nov 2026 | ^13.0.3 | 22, 24, 26 (CI-tested) |
 | 0.8.2 | Oct 2025 | ^8.1.0 | not stated |
 | 0.8.1 | Jun 2024 | ^8.1.0 | not stated |
 | 0.7.8 (RCO today) | May 2024 | ^8.1.0 | not stated |
@@ -72,7 +74,7 @@ Tests run on Node 22 on 30 Oct 2026:
 Test coverage), full create/update/audit paths, Node 24 and 26, and
 air-gapped packaging.
 
-### Upgrade review: soul-cli 0.7.8 → 0.9.3
+### Upgrade review: soul-cli 0.7.8 → 0.12.0
 
 Reviewed on 15 Nov 2026 by comparing the soul-cli source at both
 versions with RCO's code. RCO's routes still load, but helmet's default
@@ -88,6 +90,15 @@ headers are the most likely thing to break the production frontend.
 | Rows/tables: column and table names checked against the live schema | RCO's filter, extend and ordering queries could be rejected | Not covered yet: e2e only tests login. Add integration tests using RCO's real queries |
 | Express 4 → Express 5 | `_extensions/api.js` requires `express` without listing it, so it silently gets Express 5 | Add `express` to RCO's dependencies |
 | `_users_roles` unique constraint corrected (0.9.1) | Effect on an existing `RCO2.sqlite` unknown | Test the upgrade on a copy of a client database |
+
+**Re-checked against 0.12.0 on 17 Nov 2026** (Node 22, `better-sqlite3`
+13): all 42 integration tests pass, and the query shapes RCO's data
+provider sends (lists, null/not-null, dates, ordering and paging,
+search) return the same results as on 0.7.8. Releases 0.10 to 0.12 add
+OR/NOT filter groups, quoted filter values, aggregates, an optional
+anonymous role (off unless configured) and an atomic batch endpoint for
+row writes. None changes RCO's behaviour; the batch endpoint could make
+RCO's multi-row operations (loans, dispatch, destruction) atomic.
 
 RCO also lists `better-sqlite3` ^8.1.0 as its own dependency, which its
 extensions use. Bump it to ^13 to match soul-cli.
@@ -106,24 +117,24 @@ is a normal dependency upgrade in RCO.
 
 ## Risks and open questions
 
-The main risk is now the soul-cli 0.7.8 → 0.9.3 upgrade, not Node
+The main risk is now the soul-cli 0.7.8 → 0.12.0 upgrade, not Node
 itself.
 
 - **Maintenance:** soul-cli went 16 months between 0.8.1 and 0.8.2.
-  Since Aug 2026, though, the maintainer has released 0.9.0–0.9.3, with
+  Since Aug 2026, though, the maintainer has released 0.9.0–0.12.0, with
   a security hardening pass, CI on Node 22/24/26 and automated npm
   publishing. The risk is lower, but it is still a single maintainer.
 - **Who can publish to npm?** Answered: releases publish to npm
   automatically from GitHub releases. The timing is still the
   maintainer's.
-- **Version jump:** RCO goes from 0.7.8 to 0.9.3. The changes that
+- **Version jump:** RCO goes from 0.7.8 to 0.12.0. The changes that
   affect RCO are listed in the Upgrade review. No 0.7.x backport is
   needed.
 - **Client deployments:** native modules are built for each OS, so every
   air-gapped client needs a new deployment package, and target servers
   need the new Node installed.
 - **Test coverage:** the 30 Oct smoke test used 0.7.8 with an override,
-  so it must be repeated on 0.9.3. The full Jest and e2e suites must
+  so it must be repeated on 0.12.0. The full Jest and e2e suites must
   pass on Node 24 before release.
 - **Longer term:** RCO's `_devExtensions` already implements most of the
   auth layer. If soul-cli stalls again, forking it or replacing it are
@@ -174,8 +185,8 @@ pass.
   Not run for this review.
 
 **Approach:** write integration tests against a real soul-cli first, get
-them passing on 0.7.8, then run them on 0.9.3. A test that passes on
-0.7.8 and fails on 0.9.3 points straight at a change in soul's
+them passing on 0.7.8, then run them on 0.12.0. A test that passes on
+0.7.8 and fails on 0.12.0 points straight at a change in soul's
 behaviour. That makes the upgrade review checkable, rather than a manual
 walk through every logic path.
 
@@ -196,7 +207,7 @@ Three cautions:
 
 ## Recommendation
 
-Target Node 24 and upgrade soul-cli to 0.9.3; use the override only as a
+Target Node 24 and upgrade soul-cli to 0.12.0; use the override only as a
 short test step. Node 24 is supported until April 2028 and has been an
 LTS release for a year. Node 26 became LTS on 28 Oct 2026, so let it
 settle.
@@ -206,7 +217,7 @@ maintenance. If the work runs into 2027, Node 26 (supported to April
 2029) gives a year more support for the same cost of redeploying to
 air-gapped clients.
 
-- [ ] Leads endorse the plan (Node 24 + soul-cli 0.9.3)
+- [ ] Leads endorse the plan (Node 24 + soul-cli 0.12.0)
 - [ ] RCO: add integration tests against a real soul-cli, using RCO's
       extensions and a fixture database. Cover token get, refresh,
       expiry and revoke; cookie settings; table permissions for each of
@@ -222,7 +233,7 @@ air-gapped clients.
 - [ ] RCO: measure e2e coverage of the UI code (instrumented build), and
       run e2e against a fixed fixture database
 - [ ] RCO: add a coverage threshold to CI
-- [ ] RCO: soul-cli → 0.9.3, `better-sqlite3` → ^13, add `express`;
+- [ ] RCO: soul-cli → 0.12.0, `better-sqlite3` → ^13, add `express`;
       update `engines`, the CI workflows and the README to Node 24
 - [ ] RCO: run the integration, Jest and e2e suites on Node 24 and fix
       any failures
