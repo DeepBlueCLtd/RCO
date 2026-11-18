@@ -224,59 +224,12 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       })
   },
 
-  getManyReference: async (resource: string, params: any) => {
-    const { page, perPage } = params.pagination
-    const { field, order } = params.sort
-
-    const ordering = order === 'ASC' ? `${field}` : `-${field}`
-
-    // converting boolean to 1 and 0 for filters
-    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
-      if (typeof params.filter[key] === 'boolean') {
-        acc[key] = params.filter[key] ? 1 : 0
-      } else {
-        acc[key] = params.filter[key]
-      }
-      return acc
-    }, {})
-
-    // converting single score operators to double score operators for soul-cli compatibility
-    params.filter = Object.keys(params.filter).reduce((acc: any, key) => {
-      const foundOperator = operators.find((operator) => key.includes(operator))
-      if (foundOperator) {
-        const modifiedKey = key.replace(
-          foundOperator,
-          `__${foundOperator.slice(1)}`
-        )
-        acc[modifiedKey] = params.filter[key]
-      } else {
-        acc[key] = params.filter[key]
-      }
-
-      return acc
-    }, {})
-
-    const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
-    const query = {
-      _page: page,
-      _limit: perPage,
-      _ordering: field !== 'id' ? ordering : undefined,
-      _filters: filter ? `${filter},${params.target}:${params.id}` : undefined
-    }
-
-    const url = `${apiUrl}/${resource}/rows?${JSON.stringify(query)}`
-
-    return await axios
-      .get(url)
-      .then((response) => {
-        const { data } = response.data
-
-        return { data, total: response.data.total }
-      })
-      .catch(async (err) => {
-        const { message, status, data } = getErrorDetails(err) ?? {}
-        return await Promise.reject(new HttpError(message, status, data))
-      })
+  // Not used by RCO. The previous implementation sent the query as raw
+  // JSON in the URL, which soul rejects (400), so it never worked.
+  getManyReference: async () => {
+    return await Promise.reject(
+      new HttpError('getManyReference is not supported', 501)
+    )
   },
 
   create: async (resource: string, params: any) => {
