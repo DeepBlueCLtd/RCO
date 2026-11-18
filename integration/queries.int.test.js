@@ -187,10 +187,9 @@ describe('writing rows', () => {
     })
     expect(upd.status).toBe(200)
 
-    const many = await power.put(
-      `/api/tables/department/rows/${created.join(',')}`,
-      { fields: { active: 0 } }
-    )
+    const manyUrl = `/api/tables/department/rows/${created.join(',')}`
+    const deactivate = { fields: { active: 0 } }
+    const many = await power.put(manyUrl, deactivate)
     expect(many.status).toBe(200)
 
     expect(
