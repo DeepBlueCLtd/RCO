@@ -109,11 +109,15 @@ const waitForServer = async (baseUrl, child, getLog, timeoutMs = 15000) => {
 
 /**
  * Start soul-cli with RCO's _devExtensions and auth enabled.
+ * Options: token expiry times; `port` (default: any free port); `cors`
+ * (comma-separated origins, needed when a browser calls soul directly).
  * @returns {Promise<{baseUrl, ids, dbPath, workDir, stop}>}
  */
 const startSoul = async ({
   accessTokenExpiry = '15m',
-  refreshTokenExpiry = '60m'
+  refreshTokenExpiry = '60m',
+  port: fixedPort,
+  cors
 } = {}) => {
   const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rco-it-'))
   fs.mkdirSync(path.join(workDir, 'db'))
@@ -126,7 +130,7 @@ const startSoul = async ({
   const dbPath = path.join(workDir, 'db', 'RCO2.sqlite')
   const ids = seedUsers(dbPath)
 
-  const port = await freePort()
+  const port = fixedPort || (await freePort())
   const args = [
     SOUL_ENTRY,
     '-d',
@@ -145,6 +149,7 @@ const startSoul = async ({
     '--env',
     path.join(workDir, '.env')
   ]
+  if (cors) args.push('-c', cors)
   let log = ''
   const child = spawn(process.execPath, args, {
     cwd: workDir,
