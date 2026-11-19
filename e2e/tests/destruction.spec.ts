@@ -32,6 +32,9 @@ const itemDestruction = (
 test('a power user creates a destruction, adds items, prints the certificate and destroys them', async ({
   page
 }) => {
+  // a long multi-step workflow; the first tests also wait for the Vite dev
+  // server to compile each page on first use
+  test.slow()
   const remarks = `E2E destruction ${Date.now()}`
   const { batchId, itemIds, itemNumbers } = seedBatch(2)
   await stubPrint(page)
