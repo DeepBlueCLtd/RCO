@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { prodBaseURL } from './e2e/prod-url'
 
 // Optional: point at an already-installed Chromium instead of downloading one
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_PATH
@@ -10,7 +11,7 @@ export default defineConfig({
   retries: 0,
   reporter: process.env.CI == null ? 'html' : 'line',
   timeout: 30000,
-  // starts soul (port 8000) on a temporary copy of the database
+  // starts soul (dev: port 8000, production: 8100) on temporary database copies
   globalSetup: './e2e/global-setup.ts',
   // the frontend in development mode, talking to soul on port 8000
   webServer: {
@@ -26,9 +27,21 @@ export default defineConfig({
   },
   projects: [
     {
+      // the dev frontend (Vite) against soul with _devExtensions
       name: 'chromium',
+      testIgnore: /production\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: executablePath ? { executablePath } : {}
+      }
+    },
+    {
+      // the built frontend served by soul with _extensions, as `yarn serve`
+      name: 'production',
+      testMatch: /production\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: prodBaseURL(),
         launchOptions: executablePath ? { executablePath } : {}
       }
     }

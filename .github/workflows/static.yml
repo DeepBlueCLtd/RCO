@@ -44,6 +44,20 @@ jobs:
         env:
           VITE_KEY: 68adsqf-poac-154s-adqkc-05s8q2c5a65s
           MOCK: true
+      # Frontend coverage from the e2e tests, published at /coverage/.
+      # A failure here must not block the demo deployment; the e2e tests
+      # themselves are gated by the Node.js CI workflow.
+      - name: Install Chromium for e2e coverage
+        run: ./node_modules/.bin/playwright install chromium
+      - name: Measure e2e coverage
+        id: coverage
+        continue-on-error: true
+        run: yarn e2e:coverage
+      - name: Add coverage report to the site
+        if: steps.coverage.outcome == 'success'
+        run: |
+          rm -rf coverage-e2e/raw
+          cp -r coverage-e2e dist/coverage
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
