@@ -78,11 +78,11 @@ air-gapped packaging.
 
 Reviewed on 15 Nov 2026 by comparing the soul-cli source at both
 versions with RCO's code. RCO's routes still load, but helmet's default
-headers are the most likely thing to break the production frontend.
+headers break the production frontend on plain HTTP (see below).
 
 | Change in soul-cli | Effect on RCO | Action |
 | --- | --- | --- |
-| `helmet()` is on by default, adding a Content-Security-Policy and other headers | Applies to the RCO frontend served by the `rcoClient` route in production | Test the `yarn serve` build in a browser; if blocked, ask upstream for a CSP option |
+| `helmet()` is always on, adding a Content-Security-Policy and other headers | Tested 19 Nov: over plain HTTP on a non-localhost address the app does not load. The CSP's `upgrade-insecure-requests` rewrites `/assets/*.js` and `.css` to `https://`, which fail. Works on localhost and over HTTPS. Otherwise the CSP blocks nothing | Unless clients use HTTPS, strip that one directive in the `rcoClient` route (tested: app then works on 0.12.0). The `production` e2e project catches this |
 | Extensions: every `.js` file in the folder is loaded, not just `api.js` | Simulated on `_devExtensions`: all 5 routes register, plus about 15 harmless "Skipping" warnings from helper and yup schema exports | Optional: move helpers into a subfolder |
 | CORS allows only the `Content-Type` and `Authorization` request headers | Any other custom request headers from the frontend are blocked | Check the frontend's requests |
 | Auth cookie is `SameSite=lax` by default (`COOKIE_SAMESITE`) | Fine for same-site use; check client deployment URLs | Set `COOKIE_SAMESITE` if needed |
@@ -151,6 +151,11 @@ itself.
   RCO plugin once soul's plugin API lands (thevahidal/soul#278, middleware
   before core routes), with integration tests for each rule at both token
   routes. Accepted for now; part of the longer-term work.
+- **Plain-HTTP deployments:** soul-cli 0.12.0's CSP stops the frontend
+  loading over plain HTTP (see Upgrade review). Confirm whether client
+  servers use HTTPS; if not, ship the `rcoClient` workaround with the
+  upgrade. HSTS and COOP headers are ignored over HTTP, so they do no
+  harm.
 - **Rate limiting:** do not enable soul's `-r` flag on soul-cli 0.7.8.
   Its rate-limit settings are not applied, so the library default (5
   requests per minute per IP, on every route) would block normal use.
@@ -228,7 +233,7 @@ air-gapped clients.
 - [ ] RCO: run the same tests on Node 24 with soul-cli 0.7.8 and the
       `better-sqlite3` override. This changes only Node, so any failure
       is Node's; then upgrade soul-cli as a separate step
-- [ ] RCO: extend e2e beyond login to the item, dispatch and destruction
+- [x] RCO: extend e2e beyond login to the item, dispatch and destruction
       workflows, and run e2e in CI
 - [ ] RCO: measure e2e coverage of the UI code (instrumented build), and
       run e2e against a fixed fixture database
@@ -237,8 +242,9 @@ air-gapped clients.
       update `engines`, the CI workflows and the README to Node 24
 - [ ] RCO: run the integration, Jest and e2e suites on Node 24 and fix
       any failures
-- [ ] RCO: test the production build in a browser for helmet/CSP, CORS
-      headers and cookies
+- [x] RCO: test the production build in a browser for helmet/CSP, CORS
+      headers and cookies (`production` e2e project; on 0.12.0 it fails
+      until `upgrade-insecure-requests` is handled)
 - [ ] RCO: test the upgrade on a copy of an existing client database
 - [ ] Ops: back up each client database and keep the previous deployment
       package, so any client can be rolled back

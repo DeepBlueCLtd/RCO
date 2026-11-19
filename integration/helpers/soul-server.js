@@ -111,16 +111,19 @@ const waitForServer = async (baseUrl, child, getLog, timeoutMs = 15000) => {
 }
 
 /**
- * Start soul-cli with RCO's _devExtensions and auth enabled.
+ * Start soul-cli with RCO's extensions and auth enabled.
  * Options: token expiry times; `port` (default: any free port); `cors`
- * (comma-separated origins, needed when a browser calls soul directly).
+ * (comma-separated origins, needed when a browser calls soul directly);
+ * `extensions`: '_devExtensions' (default) or '_extensions', the production
+ * set, which also serves the built frontend from dist/.
  * @returns {Promise<{baseUrl, ids, dbPath, workDir, stop}>}
  */
 const startSoul = async ({
   accessTokenExpiry = '15m',
   refreshTokenExpiry = '60m',
   port: fixedPort,
-  cors
+  cors,
+  extensions = '_devExtensions'
 } = {}) => {
   const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rco-it-'))
   fs.mkdirSync(path.join(workDir, 'db'))
@@ -141,7 +144,7 @@ const startSoul = async ({
     '-p',
     String(port),
     '-e',
-    path.join(REPO_ROOT, '_devExtensions'),
+    path.join(REPO_ROOT, extensions),
     '-a',
     '--ts',
     TOKEN_SECRET,
