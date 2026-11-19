@@ -12,6 +12,19 @@ const HARMLESS = [
   /Cross-Origin-Opener-Policy header has been ignored/
 ]
 
+/**
+ * Records requests that failed, ignoring ones the browser cancelled itself
+ * (net::ERR_ABORTED), e.g. in-flight calls dropped when the app navigates.
+ */
+const recordFailedRequests = (page: Page, failed: string[]): void => {
+  page.on('requestfailed', (r) => {
+    const error = r.failure()?.errorText ?? ''
+    if (error !== 'net::ERR_ABORTED') {
+      failed.push(`request failed: ${r.url()} ${error}`)
+    }
+  })
+}
+
 /** Collects browser-side problems: errors, CSP violations, failed requests. */
 const watchForProblems = async (page: Page): Promise<string[]> => {
   const problems: string[] = []
@@ -27,9 +40,7 @@ const watchForProblems = async (page: Page): Promise<string[]> => {
       problems.push(`console: ${text}`)
     }
   })
-  page.on('requestfailed', (r) =>
-    problems.push(`request failed: ${r.url()} ${r.failure()?.errorText}`)
-  )
+  recordFailedRequests(page, problems)
   page.on('response', (r) => {
     if (r.status() >= 400) problems.push(`HTTP ${r.status()}: ${r.url()}`)
   })
@@ -38,9 +49,7 @@ const watchForProblems = async (page: Page): Promise<string[]> => {
 
 test('the production build loads and logs in', async ({ page }) => {
   const failed: string[] = []
-  page.on('requestfailed', (r) =>
-    failed.push(`${r.url()} ${r.failure()?.errorText}`)
-  )
+  recordFailedRequests(page, failed)
   await page.goto('/')
   // e.g. assets rewritten to https:// by a CSP `upgrade-insecure-requests`
   expect(failed, 'requests failed while loading the app').toEqual([])
