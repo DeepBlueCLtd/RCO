@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '../fixtures'
 import { USERS, login, expectWelcome, querySql, userId } from '../helpers'
 
 test('a power user creates a batch and adds items to it', async ({ page }) => {

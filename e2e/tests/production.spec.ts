@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Page } from '../fixtures'
 import { USERS, login, expectWelcome } from '../helpers'
 
 // Runs in the "production" project: the built frontend (dist/) served by

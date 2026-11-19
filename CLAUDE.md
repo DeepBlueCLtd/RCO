@@ -43,8 +43,13 @@ with role-based access control and comprehensive audit logging.
   server (temporary copy of `db/`, seeded test users)
 - `yarn e2e` - Run Playwright e2e tests. Starts soul on port 8000 (same
   harness as the integration tests) and the Vite dev server itself; set
-  `PLAYWRIGHT_CHROMIUM_PATH` to use an existing Chromium
+  `PLAYWRIGHT_CHROMIUM_PATH` to use an existing Chromium. The `production`
+  project also tests the built app (run `yarn build` first), served by soul
+  with `_extensions` on port 8100, as `yarn serve` does
 - `yarn e2e-ui` - Run Playwright tests in UI mode
+- `yarn e2e:coverage` - Run the dev e2e tests while recording Chromium's
+  JavaScript coverage, then report it against `src/` (HTML in
+  `coverage-e2e/`). Files no test loads count as 0%
 
 ### Code Quality
 

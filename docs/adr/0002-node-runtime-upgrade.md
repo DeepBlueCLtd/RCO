@@ -235,8 +235,9 @@ air-gapped clients.
       is Node's; then upgrade soul-cli as a separate step
 - [x] RCO: extend e2e beyond login to the item, dispatch and destruction
       workflows, and run e2e in CI
-- [ ] RCO: measure e2e coverage of the UI code (instrumented build), and
-      run e2e against a fixed fixture database
+- [x] RCO: measure e2e coverage of the UI code (`yarn e2e:coverage`;
+      baseline 19 Nov: 58% of lines, 58% of functions in `src/`)
+- [ ] RCO: run e2e against a fixed fixture database
 - [ ] RCO: add a coverage threshold to CI
 - [ ] RCO: soul-cli → 0.12.0, `better-sqlite3` → ^13, add `express`;
       update `engines`, the CI workflows and the README to Node 24

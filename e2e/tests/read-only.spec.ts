@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '../fixtures'
 import { USERS, login, seedBatch } from '../helpers'
 
 // Users with only the default role can look but not change anything.
