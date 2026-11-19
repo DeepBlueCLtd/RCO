@@ -81,12 +81,19 @@ const seedUsers = (dbPath) => {
         u.username,
         hash,
         u.username,
-        u.isSuperuser ? 1 : 0,
+        0,
         u.departedDate ?? notDeparted,
         u.updateBefore ?? null,
         now
       )
       ids[key] = Number(lastInsertRowid)
+      // promoted afterwards, as the soul CLI does: the database refuses
+      // new users that are superusers (db/Scripts/migrations)
+      if (u.isSuperuser) {
+        db.prepare('UPDATE _users SET is_superuser = 1 WHERE id = ?').run(
+          ids[key]
+        )
+      }
       if (u.role) insertRole.run(ids[key], u.role, now, now)
     }
   })()
