@@ -6,8 +6,8 @@
 //   http://localhost:8000, with CORS open to the Vite dev server.
 // - port 8100, _extensions: the production setup (as `yarn serve`), which
 //   serves the built frontend from dist/. Needs `yarn build` first.
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import { type FullConfig } from '@playwright/test'
 import { PROD_PORT, prodOrigins } from './prod-url'
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -8,8 +8,8 @@
 // 0% covered, so the total covers all of src/, not just what was loaded.
 // Output: summary on the console, HTML + lcov + JSON in coverage-e2e/.
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const esbuild = require('esbuild')
 const traceMapping = require('@jridgewell/trace-mapping')
 const v8toIstanbul = require('v8-to-istanbul')
@@ -77,64 +77,76 @@ const toIstanbul = async (file, source, functions) => {
   return onlyCodeLines(converter.toIstanbul(), codeLines(sourcemap))
 }
 
-const main = async () => {
-  if (!fs.existsSync(RAW_DIR)) {
-    console.error('No raw coverage: run `E2E_COVERAGE=1 yarn e2e` first')
-    process.exit(1)
-  }
-  const map = libCoverage.createCoverageMap({})
-  const seen = new Set()
-
-  for (const name of fs.readdirSync(RAW_DIR)) {
-    const entries = JSON.parse(
-      fs.readFileSync(path.join(RAW_DIR, name), 'utf8')
+// Coverage of the modules the tests loaded, from the raw Chromium data
+const loadedCoverage = async () => {
+  const entries = fs
+    .readdirSync(RAW_DIR)
+    .flatMap((name) =>
+      JSON.parse(fs.readFileSync(path.join(RAW_DIR, name), 'utf8'))
     )
-    for (const entry of entries) {
-      const file = path.join(
-        ROOT,
-        decodeURIComponent(new URL(entry.url).pathname)
-      )
-      if (!fs.existsSync(file) || !isAppSource(file)) continue
-      const coverage = await toIstanbul(file, entry.source, entry.functions)
-      if (coverage) {
-        map.merge(coverage)
-        seen.add(file)
-      }
-    }
-  }
+    .map((entry) => ({
+      ...entry,
+      file: path.join(ROOT, decodeURIComponent(new URL(entry.url).pathname))
+    }))
+    .filter((entry) => fs.existsSync(entry.file) && isAppSource(entry.file))
+  const results = await Promise.all(
+    entries.map((entry) =>
+      toIstanbul(entry.file, entry.source, entry.functions)
+    )
+  )
+  return entries
+    .map((entry, i) => ({ file: entry.file, coverage: results[i] }))
+    .filter((result) => result.coverage)
+}
 
-  // files never loaded: compile them as Vite would, with nothing executed
-  const unloaded = listSources(path.join(ROOT, 'src'))
-    .filter(isAppSource)
-    .filter((file) => !seen.has(file))
-  for (const file of unloaded) {
-    const result = await esbuild.transform(fs.readFileSync(file, 'utf8'), {
-      loader: file.endsWith('x') ? 'tsx' : 'ts',
-      jsx: 'automatic',
-      sourcemap: 'inline',
-      sourcefile: file
-    })
-    // v8-to-istanbul's marker for "report every line as not covered"
-    const range = { startOffset: 0, endOffset: result.code.length, count: 0 }
-    const functions = [
-      { functionName: '(empty-report)', isBlockCoverage: true, ranges: [range] }
-    ]
-    const coverage = await toIstanbul(file, result.code, functions)
-    if (coverage) map.merge(coverage)
-  }
+// A file never loaded: compile it as Vite would, with nothing executed
+const unloadedCoverage = async (file) => {
+  const result = await esbuild.transform(fs.readFileSync(file, 'utf8'), {
+    loader: file.endsWith('x') ? 'tsx' : 'ts',
+    jsx: 'automatic',
+    sourcemap: 'inline',
+    sourcefile: file
+  })
+  // v8-to-istanbul's marker for "report every line as not covered"
+  const range = { startOffset: 0, endOffset: result.code.length, count: 0 }
+  const functions = [
+    { functionName: '(empty-report)', isBlockCoverage: true, ranges: [range] }
+  ]
+  return toIstanbul(file, result.code, functions)
+}
 
+const writeReports = (map) => {
   const context = libReport.createContext({ dir: OUT_DIR, coverageMap: map })
   for (const reporter of ['html', 'lcovonly', 'json-summary']) {
     reports.create(reporter).execute(context)
   }
   reports.create('text', { maxCols: 100 }).execute(context)
   reports.create('text-summary').execute(context)
+}
+
+const main = async () => {
+  if (!fs.existsSync(RAW_DIR)) {
+    console.error('No raw coverage: run `yarn e2e:coverage`')
+    process.exit(1)
+  }
+  const map = libCoverage.createCoverageMap({})
+  const seen = new Set()
+  for (const result of await loadedCoverage()) {
+    map.merge(result.coverage)
+    seen.add(result.file)
+  }
+
+  const unloaded = listSources(path.join(ROOT, 'src'))
+    .filter(isAppSource)
+    .filter((file) => !seen.has(file))
+  const empty = await Promise.all(unloaded.map(unloadedCoverage))
+  empty.filter(Boolean).forEach((coverage) => map.merge(coverage))
+
+  writeReports(map)
+  const report = path.relative(process.cwd(), path.join(OUT_DIR, 'index.html'))
   console.log(
-    `\n${seen.size} source files loaded by the tests, ${unloaded.length} never loaded.` +
-      `\nHTML report: ${path.relative(
-        process.cwd(),
-        path.join(OUT_DIR, 'index.html')
-      )}`
+    `\n${seen.size} source files loaded by the tests, ` +
+      `${unloaded.length} never loaded.\nHTML report: ${report}`
   )
 }
 

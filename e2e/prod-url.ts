@@ -1,4 +1,4 @@
-import os from 'os'
+import os from 'node:os'
 
 export const PROD_PORT = 8100
 

@@ -1,9 +1,9 @@
 // The e2e `test` and `expect`. With E2E_COVERAGE=1, each test also records
 // Chromium's JavaScript coverage and saves it to coverage-e2e/raw/ for
 // e2e/coverage-report.js.
-import fs from 'fs'
-import path from 'path'
-import { test as base, expect, type Page } from '@playwright/test'
+import fs from 'node:fs'
+import path from 'node:path'
+import { test as base } from '@playwright/test'
 
 const RAW_DIR = path.join(__dirname, '..', 'coverage-e2e', 'raw')
 
@@ -36,4 +36,4 @@ export const test = base.extend<{ jsCoverage: void }>({
   ]
 })
 
-export { expect, type Page }
+export { expect, type Page } from '@playwright/test'
