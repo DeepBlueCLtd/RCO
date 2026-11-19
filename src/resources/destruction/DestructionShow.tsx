@@ -32,6 +32,7 @@ import { ConditionalDateField } from '../dispatch/DispatchList'
 import { getUser } from '../../providers/authProvider'
 import {
   executeDestruction,
+  isFinalised,
   type UpdateManyFunction
 } from './destruction-operations'
 import { saveDestructionReportPrinted } from '../items/item-operations'
@@ -39,8 +40,7 @@ import { saveDestructionReportPrinted } from '../items/item-operations'
 const Finalised = (): React.ReactElement => {
   const record = useRecordContext<Destruction>()
 
-  const label =
-    typeof record?.finalisedAt !== 'undefined' ? 'Finalised' : 'Pending'
+  const label = isFinalised(record) ? 'Finalised' : 'Pending'
 
   return <Typography variant='body2'>{label}</Typography>
 }
@@ -48,10 +48,7 @@ const Finalised = (): React.ReactElement => {
 const ShowActions = (): React.ReactElement => {
   const { hasAccess } = useCanAccess()
   const record = useRecordContext<Destruction>()
-  const finalised =
-    typeof record?.finalisedAt !== 'undefined' &&
-    record?.finalisedAt !== null &&
-    record?.finalisedAt !== 'null'
+  const finalised = isFinalised(record)
   const redirect = useRedirect()
 
   return (
@@ -88,11 +85,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const { data } = useGetIdentity()
   const { handleOpen, destroy } = props
   const user = getUser()
-  const destroyed: boolean =
-    !hasWritePermission ||
-    (typeof record?.finalisedAt !== 'undefined' &&
-      record?.finalisedAt !== null &&
-      record?.finalisedAt !== 'null')
+  const destroyed: boolean = !hasWritePermission || isFinalised(record)
 
   const handleDestroy = (): void => {
     setOpen(true)
@@ -250,7 +243,7 @@ function DestructionItemList(
 
   const destroyed: boolean = useMemo(() => {
     const permission = hasAccess(constants.R_ITEMS, { write: true })
-    return permission && !!data?.finalisedAt
+    return permission && isFinalised(data)
   }, [data])
 
   const bulkActionButtons: false | React.ReactElement = destroyed ? (

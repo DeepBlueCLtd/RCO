@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals'
-import { executeDestruction } from './destruction-operations'
+import { executeDestruction, isFinalised } from './destruction-operations'
 import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
 import {
@@ -168,5 +168,21 @@ describe('executeDestruction', () => {
     )
 
     expect(mockUpdate).toHaveBeenCalledWith(constants.R_DESTRUCTION, updateParams)
+  })
+})
+
+describe('isFinalised', () => {
+  it('is false until finalisedAt is set', () => {
+    expect(isFinalised({ finalisedAt: null })).toBe(false)
+    expect(isFinalised(undefined)).toBe(false)
+    expect(isFinalised({})).toBe(false)
+  })
+
+  it('is false for the string null used in mock mode', () => {
+    expect(isFinalised({ finalisedAt: 'null' })).toBe(false)
+  })
+
+  it('is true once finalisedAt is set', () => {
+    expect(isFinalised({ finalisedAt: '2026-11-19T10:00:00.000Z' })).toBe(true)
   })
 })

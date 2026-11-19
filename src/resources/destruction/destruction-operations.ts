@@ -22,6 +22,18 @@ export type NotifyFunction = (
 ) => void
 
 /**
+ * Whether a destruction has been finalised (its items destroyed).
+ * `finalisedAt` is null until then; mock mode stores the string 'null'.
+ */
+export const isFinalised = (destruction: unknown): boolean => {
+  const finalisedAt = (destruction as Partial<Destruction> | undefined)
+    ?.finalisedAt
+  return (
+    finalisedAt !== undefined && finalisedAt !== null && finalisedAt !== 'null'
+  )
+}
+
+/**
  * Executes destruction workflow for all items in a destruction job.
  * This function processes ALL items regardless of batch size by:
  * 1. Creating an audit entry for the destruction job
