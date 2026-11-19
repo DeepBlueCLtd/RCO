@@ -110,14 +110,19 @@ For deploying to secure/air-gapped client environments:
    previously deployed release, oldest (earliest date) first:
 
    ```bash
-   sqlite3 db/RCO2.sqlite < db/Scripts/migrations/2026-11-19-item-protection-permissions.sql
+   sqlite3 db/RCO2.sqlite \
+     < db/Scripts/migrations/2026-11-19-item-protection-permissions.sql
    ```
 
    If the `sqlite3` tool isn't installed, use Node (already on the server
    for soul):
 
    ```bash
-   node -e "new (require('better-sqlite3'))('db/RCO2.sqlite').exec(require('fs').readFileSync(process.argv[1], 'utf8'))" db/Scripts/migrations/2026-11-19-item-protection-permissions.sql
+   node -e "
+     const Database = require('better-sqlite3')
+     const sql = require('fs').readFileSync(process.argv[1], 'utf8')
+     new Database('db/RCO2.sqlite').exec(sql)
+   " db/Scripts/migrations/2026-11-19-item-protection-permissions.sql
    ```
 
    The release notes list new migrations; if in doubt, applying one again
