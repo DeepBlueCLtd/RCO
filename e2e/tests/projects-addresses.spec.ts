@@ -59,3 +59,20 @@ test('a power user adds an address, which is offered for dispatches', async ({
   await page.getByLabel('To address').fill(fullAddress)
   await expect(page.getByRole('option', { name: fullAddress })).toBeVisible()
 })
+
+test('a new address typed while the page is still loading is kept', async ({
+  page
+}) => {
+  // a slow server: the form used to reset as its data arrived, wiping the
+  // typed text and leaving Save disabled
+  await page.route('**/api/tables/**', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await route.continue()
+  })
+  await page.goto('/#/address/create')
+  const field = page.getByLabel('Full address')
+  await field.fill('1 Slow Street')
+  await page.waitForTimeout(4000)
+  await expect(field).toHaveValue('1 Slow Street')
+  await expect(page.getByRole('button', { name: 'Save' })).toBeEnabled()
+})

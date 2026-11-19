@@ -2,6 +2,9 @@ import { test, expect } from '../fixtures'
 import { USERS, login, expectWelcome, querySql, userId } from '../helpers'
 
 test('a power user creates a batch and adds items to it', async ({ page }) => {
+  // a long multi-step workflow; the first tests also wait for the Vite dev
+  // server to compile each page on first use
+  test.slow()
   await login(page, USERS.power.username)
   await expectWelcome(page)
 

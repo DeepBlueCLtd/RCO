@@ -1,7 +1,7 @@
 import { BooleanInput, DateInput, SimpleForm, TextInput } from 'react-admin'
 import { R_ADDRESSES } from '../../constants'
 import { DateTime } from 'luxon'
-import React from 'react'
+import React, { useMemo } from 'react'
 import EditToolBar from '../../components/EditToolBar'
 import { Typography } from '@mui/material'
 
@@ -16,10 +16,15 @@ const sx = { width: '100%' }
 export default function AddressForm(props: Props): React.ReactElement {
   const { show, isEdit, create } = props
 
-  const defaultValues: Partial<Address> = {
-    createdAt: DateTime.now().toISO() ?? undefined,
-    active: true
-  }
+  // built once: a new object on each render (createdAt changes every time)
+  // made react-admin reset the form, wiping what the user had typed
+  const defaultValues: Partial<Address> = useMemo(
+    () => ({
+      createdAt: DateTime.now().toISO() ?? undefined,
+      active: true
+    }),
+    []
+  )
   const showForm = typeof show !== 'undefined' && show
   const formTitle = isEdit
     ? 'Edit Address'
