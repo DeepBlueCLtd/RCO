@@ -43,7 +43,9 @@ const USERS = {
   // used only by the admin-reset end-to-end flow
   resetAdmin: { username: 'it-reset-admin', role: ROLES.RCO_POWER_USER },
   resetA: { username: 'it-reset-a', role: ROLES.RCO_USER },
-  resetB: { username: 'it-reset-b', role: ROLES.RCO_USER }
+  resetB: { username: 'it-reset-b', role: ROLES.RCO_USER },
+  // departed during the e2e user-management test
+  leaver: { username: 'it-leaver', role: ROLES.RCO_USER }
 }
 
 const freePort = () =>
