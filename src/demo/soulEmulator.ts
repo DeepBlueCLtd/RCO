@@ -185,8 +185,8 @@ export const createSoulEmulator = (
 
   // controllers/rows.js listTableRows
   const listRows = (table: string, query: URLSearchParams): any => {
-    const page = parseInt(query.get('_page') ?? '1')
-    const limit = parseInt(query.get('_limit') ?? '10')
+    const page = Number.parseInt(query.get('_page') ?? '1')
+    const limit = Number.parseInt(query.get('_limit') ?? '10')
     const filtersParam = query.get('_filters') ?? ''
     const search = query.get('_search')
     const ordering = query.get('_ordering')
@@ -323,7 +323,7 @@ export const createSoulEmulator = (
     query: URLSearchParams
   ): any => {
     const lookupField = query.get('_lookup_field') ?? primaryKey(db, table)
-    const updates = { ...(fields ?? {}) }
+    const updates = { ...fields }
     if (table === '_users') {
       delete updates.salt
       delete updates.is_superuser
@@ -369,6 +369,11 @@ export const createSoulEmulator = (
     return { message: 'Row deleted', data }
   }
 
+  const withoutPasswords = (table: string, payload: any): any => {
+    if (table === '_users') stripPasswords(payload.data)
+    return payload
+  }
+
   const rows = (
     method: string,
     table: string,
@@ -377,29 +382,54 @@ export const createSoulEmulator = (
     body: any
   ): EmulatorResponse => {
     checkAccess(table, method)
-    if (method === 'GET' && pks === undefined) {
-      const payload = listRows(table, query)
-      if (table === '_users') stripPasswords(payload.data)
-      return { status: 200, data: payload }
+    const route = `${method} ${pks === undefined ? 'table' : 'rows'}`
+    switch (route) {
+      case 'GET table':
+        return {
+          status: 200,
+          data: withoutPasswords(table, listRows(table, query))
+        }
+      case 'GET rows':
+        return {
+          status: 200,
+          data: withoutPasswords(table, getRows(table, pks as string, query))
+        }
+      case 'POST table':
+        return {
+          status: 201,
+          data:
+            table === '_users'
+              ? registerUser(body?.fields)
+              : insertRow(table, body?.fields)
+        }
+      case 'PUT rows':
+        return {
+          status: 200,
+          data: updateRows(table, pks as string, body?.fields, query)
+        }
+      case 'DELETE rows':
+        return { status: 200, data: deleteRows(table, pks as string, query) }
+      default:
+        throw new HttpError(404, `Cannot ${method} ${table}`)
     }
-    if (method === 'GET' && pks !== undefined) {
-      const payload = getRows(table, pks, query)
-      if (table === '_users') stripPasswords(payload.data)
-      return { status: 200, data: payload }
+  }
+
+  // /api/tables/<table>/rows[/<pks>] -> [table, pks], or null
+  const parseRowsPath = (path: string): [string, string | undefined] | null => {
+    const parts = path.split('/')
+    // ['', 'api', 'tables', table, 'rows', pks?]
+    if (
+      parts.length < 5 ||
+      parts.length > 6 ||
+      parts[1] !== 'api' ||
+      parts[2] !== 'tables' ||
+      parts[4] !== 'rows'
+    ) {
+      return null
     }
-    if (method === 'POST' && pks === undefined) {
-      if (table === '_users') {
-        return { status: 201, data: registerUser(body?.fields) }
-      }
-      return { status: 201, data: insertRow(table, body?.fields) }
-    }
-    if (method === 'PUT' && pks !== undefined) {
-      return { status: 200, data: updateRows(table, pks, body?.fields, query) }
-    }
-    if (method === 'DELETE' && pks !== undefined) {
-      return { status: 200, data: deleteRows(table, pks, query) }
-    }
-    throw new HttpError(404, `Cannot ${method} ${table}`)
+    const pks =
+      parts[5] === undefined ? undefined : decodeURIComponent(parts[5])
+    return [decodeURIComponent(parts[3]), pks]
   }
 
   // controllers/auth/token.js obtainAccessToken
@@ -581,18 +611,12 @@ export const createSoulEmulator = (
 
   return ({ method, url, body }: EmulatorRequest): EmulatorResponse => {
     const verb = method.toUpperCase()
-    const parsed = new URL(url, 'http://demo.invalid')
+    const parsed = new URL(url, 'https://demo.invalid')
     const path = parsed.pathname.replace(/\/+$/, '')
     try {
-      const tableMatch = /^\/api\/tables\/([^/]+)\/rows(?:\/([^/]+))?$/.exec(
-        path
-      )
-      if (tableMatch) {
-        const table = decodeURIComponent(tableMatch[1])
-        const pks =
-          tableMatch[2] !== undefined
-            ? decodeURIComponent(tableMatch[2])
-            : undefined
+      const rowsPath = parseRowsPath(path)
+      if (rowsPath) {
+        const [table, pks] = rowsPath
         if (!/^\w+$/.test(table)) throw new HttpError(400, 'Invalid table name')
         return rows(verb, table, pks, parsed.searchParams, body)
       }

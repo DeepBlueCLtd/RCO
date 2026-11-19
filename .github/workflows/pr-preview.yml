@@ -34,8 +34,12 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
+      # Install scripts run only for the packages that need them (native
+      # modules and esbuild's binary), not for every dependency.
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: |
+          yarn --frozen-lockfile --ignore-scripts
+          npm rebuild better-sqlite3 bcrypt esbuild
       - name: Build the demo
         run: |
           yarn build:demo

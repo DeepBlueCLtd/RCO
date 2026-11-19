@@ -233,7 +233,7 @@
       const cell = (content) => {
         const td = document.createElement('td')
         if (typeof content === 'string') td.textContent = content
-        else if (content) td.append(...[].concat(content))
+        else if (content) td.append(...[content].flat())
         return td
       }
       const link = (text, href) => {

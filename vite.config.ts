@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react'
 import preval from 'vite-plugin-babel-macros'
 import EnvironmentPlugin from 'vite-plugin-environment'
 import dotenv from 'dotenv'
-import fs from 'fs'
+import fs from 'node:fs'
 import { type Plugin } from 'vite'
 
 dotenv.config()

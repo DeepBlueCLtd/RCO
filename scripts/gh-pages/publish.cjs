@@ -25,9 +25,11 @@ const BRANCH = 'gh-pages'
 const ROOT = path.join(__dirname, '..', '..')
 const WORK = path.join(ROOT, '.gh-pages-work')
 const ATTEMPTS = 5
+// a fixed path, not a PATH lookup: this runs on GitHub's Ubuntu runners
+const GIT = '/usr/bin/git'
 
 const git = (args, opts = {}) =>
-  execFileSync('git', args, {
+  execFileSync(GIT, args, {
     cwd: ROOT,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'inherit'],
@@ -202,7 +204,12 @@ const main = () => {
         return
       }
       console.warn(`Push rejected (attempt ${attempt}): retrying`)
-      execFileSync('sleep', [String(attempt * 3)])
+      Atomics.wait(
+        new Int32Array(new SharedArrayBuffer(4)),
+        0,
+        0,
+        attempt * 3000
+      )
     }
     throw new Error(`Could not publish to ${BRANCH}`)
   } finally {
