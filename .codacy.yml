@@ -1,0 +1,5 @@
+---
+# Codacy's SQL linter (TSQLLint) targets SQL Server; RCO's scripts are
+# SQLite, where its required statements (SET NOCOUNT ON etc.) are invalid.
+exclude_paths:
+  - '**/*.sql'
