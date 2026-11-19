@@ -95,7 +95,10 @@ const all = (db: Database, sql: string, params: SqlValue[] = []): Row[] => {
   try {
     stmt.bind(params)
     const rows: Row[] = []
-    while (stmt.step()) rows.push(stmt.getAsObject())
+    while (stmt.step()) {
+      const row: Row = stmt.getAsObject()
+      rows.push(row)
+    }
     return rows
   } finally {
     stmt.free()
