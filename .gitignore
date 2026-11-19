@@ -30,3 +30,4 @@ playwright-report/
 /e2e/playwright/.cache/
 coverage-e2e
 .gh-pages-work
+*.tsbuildinfo
