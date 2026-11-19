@@ -25,4 +25,6 @@ jobs:
       - run: yarn build
       - run: yarn test
       - run: yarn test:integration --ci
+      - run: ./node_modules/.bin/playwright install chromium
+      - run: yarn e2e
 

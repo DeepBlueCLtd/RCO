@@ -39,7 +39,11 @@ with role-based access control and comprehensive audit logging.
 ### Testing
 
 - `yarn test` - Run Jest unit tests
-- `yarn e2e` - Run Playwright e2e tests
+- `yarn test:integration` - Run integration tests against a real soul-cli
+  server (temporary copy of `db/`, seeded test users)
+- `yarn e2e` - Run Playwright e2e tests. Starts soul on port 8000 (same
+  harness as the integration tests) and the Vite dev server itself; set
+  `PLAYWRIGHT_CHROMIUM_PATH` to use an existing Chromium
 - `yarn e2e-ui` - Run Playwright tests in UI mode
 
 ### Code Quality
