@@ -62,8 +62,8 @@ exports[`the permissions matrix matches the reviewed snapshot 1`] = `
     "vaultLocation": "-R--",
   },
   "3": {
-    "_roles": "CRU-",
-    "_roles_permissions": "CRU-",
+    "_roles": "-R--",
+    "_roles_permissions": "-R--",
     "_users": "CRU-",
     "_users_roles": "CRU-",
     "address": "CRU-",
