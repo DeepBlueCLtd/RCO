@@ -18,7 +18,7 @@ export interface EmulatorRequest {
   method: string
   /** path plus query string, e.g. /api/tables/item/rows?_page=1 */
   url: string
-  body?: any
+  body?: unknown
 }
 
 export interface EmulatorResponse {
@@ -72,20 +72,29 @@ class HttpError extends Error {
   }
 }
 
+type Row = Record<string, SqlValue>
+type Fields = Record<string, unknown>
+
+/** The object under `key` in a request body ({ fields } or { data }), or {} */
+const section = (body: unknown, key?: string): Fields => {
+  const value: unknown =
+    key === undefined ? body : (body as Fields | undefined)?.[key]
+  return typeof value === 'object' && value !== null ? (value as Fields) : {}
+}
+
+const text = (value: unknown): string =>
+  typeof value === 'string' ? value : String(value ?? '')
+
 const toBoolean = (value: unknown): boolean =>
   value === true || value === 1 || value === 'true' || value === '1'
 
 // --- thin better-sqlite3-like helpers over sql.js ---------------------------
 
-const all = (
-  db: Database,
-  sql: string,
-  params: SqlValue[] = []
-): Array<Record<string, any>> => {
+const all = (db: Database, sql: string, params: SqlValue[] = []): Row[] => {
   const stmt = db.prepare(sql)
   try {
     stmt.bind(params)
-    const rows: Array<Record<string, any>> = []
+    const rows: Row[] = []
     while (stmt.step()) rows.push(stmt.getAsObject())
     return rows
   } finally {
@@ -97,7 +106,7 @@ const get = (
   db: Database,
   sql: string,
   params: SqlValue[] = []
-): Record<string, any> | undefined => all(db, sql, params)[0]
+): Row | undefined => all(db, sql, params)[0]
 
 const run = (
   db: Database,
@@ -133,10 +142,10 @@ const bindable = (value: unknown): SqlValue => {
 const primaryKey = (db: Database, table: string): string => {
   const pk = all(db, `PRAGMA table_info(${table})`).find((f) => f.pk === 1)
   if (!pk) throw new HttpError(400, 'Primary key not found')
-  return pk.name
+  return text(pk.name)
 }
 
-const stripPasswords = (rows: Array<Record<string, any>>): void => {
+const stripPasswords = (rows: Row[]): void => {
   rows.forEach((row) => {
     delete row.hashed_password
     delete row.salt
@@ -184,7 +193,10 @@ export const createSoulEmulator = (
     )
 
   // controllers/rows.js listTableRows
-  const listRows = (table: string, query: URLSearchParams): any => {
+  const listRows = (
+    table: string,
+    query: URLSearchParams
+  ): { data: Row[]; total: number } => {
     const page = Number.parseInt(query.get('_page') ?? '1')
     const limit = Number.parseInt(query.get('_limit') ?? '10')
     const filtersParam = query.get('_filters') ?? ''
@@ -255,7 +267,11 @@ export const createSoulEmulator = (
   }
 
   // controllers/rows.js getRowInTableByPK
-  const getRows = (table: string, pks: string, query: URLSearchParams): any => {
+  const getRows = (
+    table: string,
+    pks: string,
+    query: URLSearchParams
+  ): { data: Row[] } => {
     const lookupField = query.get('_lookup_field') ?? primaryKey(db, table)
     const keys = pks.split(',')
     const data = all(
@@ -270,9 +286,12 @@ export const createSoulEmulator = (
   }
 
   // controllers/rows.js insertRowInTable / rowService.save
-  const insertRow = (table: string, queryFields: Record<string, any>): any => {
+  const insertRow = (
+    table: string,
+    queryFields: Fields
+  ): { message: string; data: ReturnType<typeof run> } => {
     const fields = Object.fromEntries(
-      Object.entries(queryFields ?? {}).filter(([, value]) => value !== null)
+      Object.entries(queryFields).filter(([, value]) => value !== null)
     )
     const names = Object.keys(fields)
     const values = Object.values(fields).map(bindable)
@@ -286,15 +305,15 @@ export const createSoulEmulator = (
   }
 
   // controllers/auth/user.js registerUser (POST /api/tables/_users/rows)
-  const registerUser = (queryFields: Record<string, any>): any => {
-    const { username, password, ...optionalFields } = queryFields ?? {}
+  const registerUser = (queryFields: Fields): { message: string } => {
+    const { username, password, ...optionalFields } = queryFields
     if (!username) throw new HttpError(400, 'username is required')
     if (!password) throw new HttpError(400, 'password is required')
-    if (get(db, 'SELECT id FROM _users WHERE username = ?', [username])) {
+    if (get(db, 'SELECT id FROM _users WHERE username = ?', [text(username)])) {
       throw new HttpError(409, 'This username is taken')
     }
     const salt = bcrypt.genSaltSync(10)
-    const hashed = bcrypt.hashSync(password, 10)
+    const hashed = bcrypt.hashSync(text(password), 10)
     const { data } = insertRow('_users', {
       username,
       salt,
@@ -319,9 +338,9 @@ export const createSoulEmulator = (
   const updateRows = (
     table: string,
     pks: string,
-    fields: Record<string, any>,
+    fields: Fields,
     query: URLSearchParams
-  ): any => {
+  ): { message: string; data: ReturnType<typeof run> } => {
     const lookupField = query.get('_lookup_field') ?? primaryKey(db, table)
     const updates = { ...fields }
     if (table === '_users') {
@@ -334,7 +353,7 @@ export const createSoulEmulator = (
       .map((key) => {
         const value = updates[key]
         return `'${key}' = ${
-          typeof value === 'string' ? `'${value}'` : String(value)
+          typeof value === 'string' ? `'${value}'` : String(value as SqlValue)
         }`
       })
       .join(', ')
@@ -355,7 +374,7 @@ export const createSoulEmulator = (
     table: string,
     pks: string,
     query: URLSearchParams
-  ): any => {
+  ): { message: string; data: ReturnType<typeof run> } => {
     const lookupField = query.get('_lookup_field') ?? primaryKey(db, table)
     const keys = pks.split(',')
     const data = run(
@@ -369,7 +388,10 @@ export const createSoulEmulator = (
     return { message: 'Row deleted', data }
   }
 
-  const withoutPasswords = (table: string, payload: any): any => {
+  const withoutPasswords = <T extends { data: Row[] }>(
+    table: string,
+    payload: T
+  ): T => {
     if (table === '_users') stripPasswords(payload.data)
     return payload
   }
@@ -379,39 +401,41 @@ export const createSoulEmulator = (
     table: string,
     pks: string | undefined,
     query: URLSearchParams,
-    body: any
+    body: unknown
   ): EmulatorResponse => {
     checkAccess(table, method)
-    const route = `${method} ${pks === undefined ? 'table' : 'rows'}`
-    switch (route) {
-      case 'GET table':
+    if (pks === undefined) {
+      if (method === 'GET') {
         return {
           status: 200,
           data: withoutPasswords(table, listRows(table, query))
         }
-      case 'GET rows':
-        return {
-          status: 200,
-          data: withoutPasswords(table, getRows(table, pks as string, query))
-        }
-      case 'POST table':
+      }
+      if (method === 'POST') {
+        const fields = section(body, 'fields')
         return {
           status: 201,
           data:
-            table === '_users'
-              ? registerUser(body?.fields)
-              : insertRow(table, body?.fields)
+            table === '_users' ? registerUser(fields) : insertRow(table, fields)
         }
-      case 'PUT rows':
-        return {
-          status: 200,
-          data: updateRows(table, pks as string, body?.fields, query)
-        }
-      case 'DELETE rows':
-        return { status: 200, data: deleteRows(table, pks as string, query) }
-      default:
-        throw new HttpError(404, `Cannot ${method} ${table}`)
+      }
+    } else {
+      switch (method) {
+        case 'GET':
+          return {
+            status: 200,
+            data: withoutPasswords(table, getRows(table, pks, query))
+          }
+        case 'PUT':
+          return {
+            status: 200,
+            data: updateRows(table, pks, section(body, 'fields'), query)
+          }
+        case 'DELETE':
+          return { status: 200, data: deleteRows(table, pks, query) }
+      }
     }
+    throw new HttpError(404, `Cannot ${method} ${table}`)
   }
 
   // /api/tables/<table>/rows[/<pks>] -> [table, pks], or null
@@ -433,10 +457,15 @@ export const createSoulEmulator = (
   }
 
   // controllers/auth/token.js obtainAccessToken
-  const obtainToken = (body: any): EmulatorResponse => {
-    const { username, password } = body?.fields ?? {}
-    const user = get(db, 'SELECT * FROM _users WHERE username = ?', [username])
-    if (!user || !bcrypt.compareSync(String(password), user.hashed_password)) {
+  const obtainToken = (body: unknown): EmulatorResponse => {
+    const { username, password } = section(body, 'fields')
+    const user = get(db, 'SELECT * FROM _users WHERE username = ?', [
+      text(username)
+    ])
+    if (
+      !user ||
+      !bcrypt.compareSync(text(password), text(user.hashed_password))
+    ) {
       throw new HttpError(401, 'Invalid username or password')
     }
     const isSuperuser = toBoolean(user.is_superuser)
@@ -446,7 +475,7 @@ export const createSoulEmulator = (
     }
     sessions.set({
       userId: Number(user.id),
-      username: user.username,
+      username: text(user.username),
       isSuperuser,
       roleIds
     })
@@ -457,12 +486,14 @@ export const createSoulEmulator = (
   }
 
   // _devExtensions/login-controller.js
-  const login = (body: any): EmulatorResponse => {
-    const { password, username } = body ?? {}
+  const login = (body: unknown): EmulatorResponse => {
+    const { password, username } = section(body)
     if (!password || !username) {
       throw new HttpError(400, 'password and username is required')
     }
-    const user = get(db, 'SELECT * FROM _users WHERE username=?', [username])
+    const user = get(db, 'SELECT * FROM _users WHERE username=?', [
+      text(username)
+    ])
     if (!user) throw new HttpError(400, 'User not found')
     if (Number(user.lockoutAttempts) >= 5) {
       throw new HttpError(
@@ -472,7 +503,7 @@ export const createSoulEmulator = (
         )}]`
       )
     }
-    if (user.departedDate && new Date() > new Date(user.departedDate)) {
+    if (user.departedDate && new Date() > new Date(text(user.departedDate))) {
       throw new HttpError(400, 'User has departed organisation')
     }
     const updateBefore = user.updateBefore
@@ -482,16 +513,16 @@ export const createSoulEmulator = (
         'You have not updated the password. Please contact your administrator'
       )
     }
-    if (!bcrypt.compareSync(String(password), user.hashed_password)) {
+    if (!bcrypt.compareSync(text(password), text(user.hashed_password))) {
       run(db, 'UPDATE _users SET lockoutAttempts = ? where username = ?', [
         Number(user.lockoutAttempts) + 1,
-        username
+        text(username)
       ])
       throw new HttpError(400, 'Invalid password')
     }
     run(db, 'UPDATE _users SET lockoutAttempts = ? where username = ?', [
       0,
-      username
+      text(username)
     ])
     delete user.hashed_password
     return { status: 200, data: { data: user } }
@@ -512,9 +543,9 @@ export const createSoulEmulator = (
   const passwordHistory: Array<{ userId: number; password: string }> = []
 
   // _devExtensions/api.js insertPasswordRecord
-  const insertPassword = (body: any): EmulatorResponse => {
+  const insertPassword = (body: unknown): EmulatorResponse => {
     const session = requireSession()
-    const { userId, currentPassword, password } = body?.fields ?? {}
+    const { userId, currentPassword, password } = section(body, 'fields')
     if (Number(userId) !== session.userId) {
       throw new HttpError(403, 'You can only change your own password.')
     }
@@ -523,7 +554,9 @@ export const createSoulEmulator = (
         session.userId
       ])
       if (!user) throw new HttpError(400, 'User not found')
-      if (!bcrypt.compareSync(String(currentPassword), user.hashed_password)) {
+      if (
+        !bcrypt.compareSync(text(currentPassword), text(user.hashed_password))
+      ) {
         throw new HttpError(400, 'Invalid current password')
       }
     }
@@ -554,7 +587,7 @@ export const createSoulEmulator = (
   }
 
   // _devExtensions/editPassword-controller.js
-  const editPassword = (body: any): EmulatorResponse => {
+  const editPassword = (body: unknown): EmulatorResponse => {
     const session = requireSession()
     if (!canManagePasswords(session.roleIds)) {
       throw new HttpError(
@@ -562,7 +595,7 @@ export const createSoulEmulator = (
         'Insufficient permissions. Password management requires rco-user or rco-power-user role.'
       )
     }
-    const { userId, newPassword } = body?.fields ?? {}
+    const { userId, newPassword } = section(body, 'fields')
     if (session.userId === userId) {
       throw new HttpError(
         403,
@@ -588,9 +621,9 @@ export const createSoulEmulator = (
   }
 
   // _devExtensions/updateBefore-controller.js
-  const updateBefore = (body: any): EmulatorResponse => {
+  const updateBefore = (body: unknown): EmulatorResponse => {
     const session = requireSession()
-    const { userId } = body?.data ?? {}
+    const { userId } = section(body, 'data')
     if (session.userId !== userId && !canManagePasswords(session.roleIds)) {
       throw new HttpError(
         403,

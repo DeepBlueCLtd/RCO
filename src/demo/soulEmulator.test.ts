@@ -212,8 +212,10 @@ describe('axios adapter', () => {
     })
     expect(ok.data.data.username).toBe('demo')
 
-    const err = await client.get('/api/tables/item/rows').catch((e) => e)
-    expect(axios.isAxiosError(err)).toBe(true)
+    const err: unknown = await client
+      .get('/api/tables/item/rows')
+      .catch((e: unknown) => e)
+    if (!axios.isAxiosError(err)) throw new Error('expected an AxiosError')
     expect(getErrorDetails(err)).toEqual({
       message: 'Error Code: 401, Message: Invalid access token',
       status: 401,
