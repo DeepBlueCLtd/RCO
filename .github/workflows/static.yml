@@ -1,31 +1,24 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Publishes the demo of main, and its frontend coverage report, to the
+# gh-pages branch (served by GitHub Pages). See docs/gh-pages.md.
+#   /          landing page (pages/index.html) with the PR preview list
+#   /demo/     the app, with its backend running in the browser
+#   /coverage/ e2e coverage of the frontend
+name: Publish demo to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ['main']
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Allow one concurrent deployment
 concurrency:
-  group: 'pages'
+  group: pages-main
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,19 +27,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: 'yarn'
       - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Build the demo
         run: |
-          npm install --global yarn
-          yarn
-      - name: Build
-        run: npm run build
-        env:
-          VITE_KEY: 68adsqf-poac-154s-adqkc-05s8q2c5a65s
-          MOCK: true
-      # Frontend coverage from the e2e tests, published at /coverage/.
-      # A failure here must not block the demo deployment; the e2e tests
-      # themselves are gated by the Node.js CI workflow.
+          yarn build:demo
+          mkdir -p site
+          cp -r dist site/demo
+      # A failure here must not block the demo; the e2e tests themselves
+      # are gated by the Node.js CI workflow.
       - name: Install Chromium for e2e coverage
         run: ./node_modules/.bin/playwright install chromium
       - name: Measure e2e coverage
@@ -57,14 +47,25 @@ jobs:
         if: steps.coverage.outcome == 'success'
         run: |
           rm -rf coverage-e2e/raw
-          cp -r coverage-e2e dist/coverage
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+          cp -r coverage-e2e site/coverage
+      - uses: actions/upload-artifact@v4
         with:
-          # Upload dist repository
-          path: './dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          name: site
+          path: site
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: site
+      - name: Publish to gh-pages
+        # coverage/ is kept as it was if this run could not measure it
+        run: node scripts/gh-pages/publish.cjs --copy site/demo:demo --copy site/coverage:coverage

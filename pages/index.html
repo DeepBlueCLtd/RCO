@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!--
+  Landing page of the project's GitHub Pages site (gh-pages branch).
+  Published by scripts/gh-pages/publish.cjs; the PR list comes from prs.json,
+  which the publish script maintains. See docs/gh-pages.md.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VAL demo and previews</title>
+    <link rel="icon" href="demo/favicon.ico" />
+    <style>
+      :root {
+        --bg: #f5f7fa;
+        --panel: #ffffff;
+        --text: #1d2733;
+        --muted: #5b6878;
+        --line: #d9e0e8;
+        --brand: #213a5c;
+        --link: #1f5fbf;
+        --open: #1a7f37;
+        --merged: #8250df;
+        --closed: #cf222e;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f1419;
+          --panel: #182029;
+          --text: #e4e9ef;
+          --muted: #9aa7b6;
+          --line: #2c3845;
+          --brand: #2c4a73;
+          --link: #7fb0ff;
+          --open: #3fb950;
+          --merged: #a371f7;
+          --closed: #f85149;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      header {
+        background: var(--brand);
+        color: #fff;
+        padding: 24px 16px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 1.6rem;
+      }
+      header p {
+        margin: 4px 0 0;
+        opacity: 0.85;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin: 16px 0;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+      a {
+        color: var(--link);
+      }
+      .button {
+        display: inline-block;
+        background: var(--brand);
+        color: #fff;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        margin: 4px 8px 4px 0;
+      }
+      code {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 1px 6px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px 6px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .state {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .state.open {
+        color: var(--open);
+      }
+      .state.merged {
+        color: var(--merged);
+      }
+      .state.closed {
+        color: var(--closed);
+      }
+      .links a {
+        margin-right: 10px;
+        white-space: nowrap;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>VAL &mdash; Vault Asset Log</h1>
+      <p>Hosted demo, pull request previews and test coverage</p>
+    </header>
+    <main>
+      <section>
+        <h2>Welcome</h2>
+        <p>
+          VAL is a secure asset register: it tracks media items, batches,
+          projects, vault locations, loans, dispatch and destruction, with
+          role-based access and a full audit log. The source is on
+          <a href="https://github.com/DeepBlueCLtd/RCO">GitHub</a>.
+        </p>
+        <p>
+          The versions on this site run entirely in your browser: an in-memory
+          copy of the development database stands in for the server. Nothing you
+          enter leaves your browser, and the data is reset each time the page is
+          reloaded.
+        </p>
+      </section>
+
+      <section id="demo">
+        <h2>Current demo</h2>
+        <p>The latest version on the <code>main</code> branch.</p>
+        <p>
+          <a
+            class="button"
+            href="demo/?username=demo&amp;password=Demo-Vault-2468!"
+            >Open the demo (signed in)</a
+          >
+          <a href="demo/">Open the sign-in page</a>
+        </p>
+        <p>Sign in with any of these accounts:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>demo</code></td>
+              <td><code>Demo-Vault-2468!</code></td>
+              <td>Power user (full access)</td>
+            </tr>
+            <tr>
+              <td><code>demo-user</code></td>
+              <td><code>Demo-Vault-2468!</code></td>
+              <td>User</td>
+            </tr>
+            <tr>
+              <td><code>demo-viewer</code></td>
+              <td><code>Demo-Vault-2468!</code></td>
+              <td>Read only</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted">
+          Frontend test coverage of <code>main</code>:
+          <a href="coverage/">coverage report</a>
+        </p>
+      </section>
+
+      <section id="previews">
+        <h2>Pull request previews</h2>
+        <p class="muted">
+          Each pull request gets its own preview, kept after the pull request
+          closes. The same demo accounts work in every preview.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pull request</th>
+                <th>Status</th>
+                <th>Updated</th>
+                <th>Links</th>
+              </tr>
+            </thead>
+            <tbody id="pr-rows">
+              <tr>
+                <td colspan="4" class="muted">Loading&hellip;</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <script>
+      const rows = document.getElementById('pr-rows')
+      const cell = (content) => {
+        const td = document.createElement('td')
+        if (typeof content === 'string') td.textContent = content
+        else if (content) td.append(...[].concat(content))
+        return td
+      }
+      const link = (text, href) => {
+        const a = document.createElement('a')
+        a.textContent = text
+        a.href = href
+        return a
+      }
+      const showMessage = (text) => {
+        rows.replaceChildren()
+        const tr = document.createElement('tr')
+        const td = cell(text)
+        td.colSpan = 4
+        td.className = 'muted'
+        tr.append(td)
+        rows.append(tr)
+      }
+      fetch('prs.json', { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : []))
+        .then((prs) => {
+          if (!Array.isArray(prs) || prs.length === 0) {
+            showMessage('No pull request previews yet.')
+            return
+          }
+          rows.replaceChildren()
+          prs
+            .slice()
+            .sort((a, b) => b.number - a.number)
+            .forEach((pr) => {
+              const tr = document.createElement('tr')
+              const title = document.createElement('div')
+              title.append(link(`#${pr.number} ${pr.title}`, pr.url))
+              const by = document.createElement('div')
+              by.className = 'muted'
+              by.textContent = `${pr.author} · ${pr.branch}`
+              const state = document.createElement('span')
+              state.className = `state ${pr.state}`
+              state.textContent = pr.state
+              const links = [
+                link('Pull request', pr.url),
+                link('Preview', `pr/${pr.number}/`)
+              ]
+              if (pr.coverage) {
+                links.push(link('Coverage', `pr/${pr.number}/coverage/`))
+              }
+              const linkCell = cell(links)
+              linkCell.className = 'links'
+              const updated = pr.updatedAt
+                ? new Date(pr.updatedAt).toLocaleString()
+                : ''
+              tr.append(
+                cell([title, by]),
+                cell([state]),
+                cell(updated),
+                linkCell
+              )
+              rows.append(tr)
+            })
+        })
+        .catch(() => showMessage('Could not load the pull request list.'))
+    </script>
+  </body>
+</html>

@@ -27,6 +27,9 @@ with role-based access control and comprehensive audit logging.
 - `yarn build:prod` - Same as `yarn build`
 - `yarn build:test` - Build test instance with cosmetic changes
   (different color scheme/title)
+- `yarn build:demo` - Build the hosted demo: the backend runs in the browser
+  (sql.js over `db/RCO2.sqlite`, see `src/demo/`). Published to GitHub Pages
+  for `main` and for each pull request (`docs/gh-pages.md`)
 
 ### Production Server
 
@@ -49,9 +52,9 @@ with role-based access control and comprehensive audit logging.
 - `yarn e2e-ui` - Run Playwright tests in UI mode
 - `yarn e2e:coverage` - Run the dev e2e tests while recording Chromium's
   JavaScript coverage, then report it against `src/` (HTML in
-  `coverage-e2e/`). Files no test loads count as 0%. On each push to `main`
-  the report is published with the demo site, under `/coverage/` on GitHub
-  Pages (`.github/workflows/static.yml`)
+  `coverage-e2e/`). Files no test loads count as 0%. Published to GitHub
+  Pages with the demo: `/coverage/` for `main`, `/pr/<number>/coverage/`
+  for pull requests (`docs/gh-pages.md`)
 
 ### Code Quality
 
@@ -74,6 +77,7 @@ git push origin v1.0.2
 ```
 
 The GitHub Actions release workflow (`.github/workflows/release.yml`) automatically:
+
 1. Updates `package.json` version from the tag
 2. Runs tests (must pass)
 3. Creates GitHub Release with source code
@@ -106,6 +110,7 @@ For deploying to secure/air-gapped client environments:
 4. Start server: `yarn serve`
 
 **Important Notes:**
+
 - **DO NOT** copy `db/` folder or `.env` from build machine - these contain target-specific data
 - Build machine OS must match target OS (native modules like `better-sqlite3` are platform-specific)
 - For database schema changes, manually apply SQL migrations to target database
@@ -136,6 +141,8 @@ between React-Admin and the backend:
 
 - In production: REST API via soul-cli (`/api/tables`)
 - In mock mode: LocalForage (IndexedDB) for offline development
+- In the hosted demo (`yarn build:demo`): the production REST code, answered
+  in the browser by `src/demo/` (an axios adapter emulating soul-cli)
 - Wraps base provider with lifecycle callbacks for audit logging
 - Custom methods for loan operations (`loanItems`, `returnItems`)
 - Configuration data fetched from `_config` table
