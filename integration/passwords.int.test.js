@@ -276,7 +276,7 @@ describe('admin reset to a temporary password, end to end', () => {
       password: PASSWORD
     })
     expect(old.status).toBe(400)
-    expect(old.body.message).toBe('Invalid password')
+    expect(old.body.message).toBe('Invalid username or password')
 
     // 2. the user logs in with the temporary password; updateBefore is set,
     //    which is what shows the banner

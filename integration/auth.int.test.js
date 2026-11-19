@@ -53,7 +53,21 @@ describe('RCO login check (/api/login)', () => {
       password: PASSWORD
     })
     expect(res.status).toBe(400)
-    expect(res.body.message).toBe('User not found')
+    expect(res.body.message).toBe('Invalid username or password')
+  })
+
+  test('does not reveal whether a username exists', async () => {
+    const unknown = await client().post('/api/login', {
+      username: 'nobody',
+      password: 'Wrong-Password-1'
+    })
+    const wrongPassword = await client().post('/api/login', {
+      username: USERS.departed.username,
+      password: 'Wrong-Password-1'
+    })
+    // the departed user's status is only shown with the right password
+    expect(wrongPassword.status).toBe(unknown.status)
+    expect(wrongPassword.body.message).toBe(unknown.body.message)
   })
 
   test('rejects a departed user', async () => {
@@ -88,7 +102,7 @@ describe('RCO login check (/api/login)', () => {
 
     for (let i = 0; i < 5; i++) {
       const res = await c.post('/api/login', { username, password: 'wrong' })
-      expect(res.body.message).toBe('Invalid password')
+      expect(res.body.message).toBe('Invalid username or password')
     }
     const locked = await c.post('/api/login', { username, password: PASSWORD })
     expect(locked.status).toBe(400)
