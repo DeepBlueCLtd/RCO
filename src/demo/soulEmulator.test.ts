@@ -142,7 +142,7 @@ describe('rows API', () => {
     expect(call('GET', '/api/tables/item/rows/999999').status).toBe(404)
   })
 
-  it('inserts and updates; refuses deletes without permission', () => {
+  it('inserts, updates and deletes as the role permissions allow', () => {
     const created = call('POST', '/api/tables/itemCode/rows', {
       fields: { item: 1, catCode: 1, extra: null }
     })
@@ -159,8 +159,12 @@ describe('rows API', () => {
       `it${Q}s here`
     )
 
-    // no role may delete in the development data: soul refuses (as in production)
-    expect(call('DELETE', `/api/tables/itemCode/rows/${id}`)).toEqual({
+    // item codes may be deleted (replaced) by the roles that edit items
+    // (db/Scripts/migrations/2026-11-19-item-protection-permissions.sql)
+    expect(call('DELETE', `/api/tables/itemCode/rows/${id}`).status).toBe(200)
+
+    // business records are never deleted: soul refuses (as in production)
+    expect(call('DELETE', '/api/tables/item/rows/1')).toEqual({
       status: 403,
       data: { message: 'Not authorized' }
     })
