@@ -158,7 +158,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       {}
     )
 
-    const filter = toSoulFilters(params.filter)
+    const filter = toSoulFilters(params.filter as unknown)
     query = {
       ...query,
       _page: page,
