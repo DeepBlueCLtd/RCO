@@ -460,9 +460,7 @@ describe('Login Controller Security Tests', () => {
     })
 
     it("reveals a departed or overdue user's status only with the right password", () => {
-      const yesterday = new Date(
-        Date.now() - 24 * 60 * 60 * 1000
-      ).toISOString()
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       insertUser('gone', 'ValidP@ssw0rd123', { departedDate: yesterday })
       insertUser('late', 'ValidP@ssw0rd123', { updateBefore: yesterday })
       expect(attempt('gone', 'Wrong-P@ss1')).toBe(
