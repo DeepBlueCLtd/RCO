@@ -270,6 +270,9 @@ yarn test path/to/test-file.test.ts
 ### Database Changes
 
 - Database schema is managed in SQLite files in `db/` directory
+- Changes that client databases need (schema or data, e.g. permissions) go
+  in `db/Scripts/migrations/` as dated `.sql` files, applied to
+  `db/RCO2.sqlite` in the repo and manually to each client database
 - Increment `VITE_DATA_VERSION` in `.env` to trigger data reload
 - Use `loadDefaultData()` in `src/utils/init-data.ts` for seed data
 

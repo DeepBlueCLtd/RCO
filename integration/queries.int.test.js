@@ -206,40 +206,52 @@ describe('writing rows', () => {
 
 describe('protective-marking codes on an item (useRefTable)', () => {
   // Editing an item's codes deletes its rows in itemCode/itemCave/
-  // itemHandle and recreates them (src/hooks/useRefTable.ts). These tests
-  // record what each role can actually do on a real server today.
-  const itemCodeIds = () => {
-    const item = one('SELECT item FROM itemCode LIMIT 1').item
-    return sql('SELECT id FROM itemCode WHERE item = ?', item).map((r) => r.id)
-  }
+  // itemHandle and recreates them (src/hooks/useRefTable.ts), so the roles
+  // that can edit items need create and delete on these tables
+  // (db/Scripts/migrations/2026-11-19-item-protection-permissions.sql).
+  // read once the server (and its database copy) is up
+  const codes = () =>
+    sql('SELECT id FROM catCode ORDER BY id LIMIT 2').map((r) => r.id)
+
+  // a fresh code row on an item of its own, so tests do not interfere
+  const seedCode = (itemId) =>
+    withDb(server.dbPath, (db) =>
+      Number(
+        db
+          .prepare('INSERT INTO itemCode (item, catCode) VALUES (?, ?)')
+          .run(itemId, codes()[0]).lastInsertRowid
+      )
+    )
 
   test.each([
-    ['rco-user', 'user', ROLES.RCO_USER],
-    ['rco-power-user', 'power', ROLES.RCO_POWER_USER]
-  ])(
-    'an %s cannot delete existing codes (no role has delete permission)',
-    async (_label, key) => {
-      const c = new Client(server.baseUrl)
-      await c.login(USERS[key].username, PASSWORD)
-      const res = await c.delete(`/api/tables/itemCode/rows/${itemCodeIds()}`)
-      expect(res.status).toBe(403)
-    }
-  )
-
-  test('an rco-user cannot add codes (no create permission)', async () => {
+    ['rco-user', 'user', 1],
+    ['rco-power-user', 'power', 2]
+  ])("an %s can replace an item's codes", async (_label, key, itemId) => {
     const c = new Client(server.baseUrl)
-    await c.login(USERS.user.username, PASSWORD)
-    const res = await c.post('/api/tables/itemCode/rows', {
-      fields: { item: 1, catCode: 'code-1' }
+    await c.login(USERS[key].username, PASSWORD)
+    const rowId = seedCode(itemId)
+
+    const del = await c.delete(`/api/tables/itemCode/rows/${rowId}`)
+    expect(del.status).toBe(200)
+    const add = await c.post('/api/tables/itemCode/rows', {
+      fields: { item: itemId, catCode: codes()[1] }
     })
-    expect(res.status).toBe(403)
+    expect(add.status).toBe(201)
+    expect(
+      sql('SELECT catCode FROM itemCode WHERE id = ?', rowId)
+    ).toHaveLength(0)
   })
 
-  test('a superuser can delete and recreate codes', async () => {
+  test('the default role cannot change codes', async () => {
     const c = new Client(server.baseUrl)
-    await c.login(USERS.superuser.username, PASSWORD)
-    const before = itemCodeIds()
-    const del = await c.delete(`/api/tables/itemCode/rows/${before}`)
-    expect([401, 403]).not.toContain(del.status)
+    await c.login(USERS.default.username, PASSWORD)
+    const rowId = seedCode(3)
+
+    const del = await c.delete(`/api/tables/itemCode/rows/${rowId}`)
+    expect(del.status).toBe(403)
+    const add = await c.post('/api/tables/itemCode/rows', {
+      fields: { item: 3, catCode: codes()[1] }
+    })
+    expect(add.status).toBe(403)
   })
 })
