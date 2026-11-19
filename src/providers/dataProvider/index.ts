@@ -15,6 +15,7 @@ import { customMethods } from './resource-callbacks/LoanCustomMethods'
 import ReferenceItemLifeCycle from './resource-callbacks/ReferenceItemLifeCycle'
 import DispatchLifeCycle from './resource-callbacks/DispatchLifeCycle'
 import DestructionLifeCycle from './resource-callbacks/DestructionLifeCycle'
+import { toSoulFilters } from './soul-filters'
 import axios from 'axios'
 import queryString from 'query-string'
 import localForageDataProvider from 'ra-data-local-forage'
@@ -157,7 +158,7 @@ export const dataProvider = (apiUrl: string): DataProvider => ({
       {}
     )
 
-    const filter = JSON.stringify(params.filter).replace(/[{} ""]/g, '')
+    const filter = toSoulFilters(params.filter as unknown)
     query = {
       ...query,
       _page: page,
