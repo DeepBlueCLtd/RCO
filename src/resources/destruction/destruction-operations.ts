@@ -4,9 +4,10 @@ import { AuditType } from '../../utils/activity-types'
 import * as constants from '../../constants'
 import { nowDate } from '../../providers/dataProvider/dataprovider-utils'
 
-export type UpdateFunction<
-  RecordType extends RaRecord<Identifier> = RaRecord<Identifier>
-> = (resource: string, params: UpdateParams<RecordType>) => Promise<unknown>
+export type UpdateFunction<RecordType extends RaRecord<Identifier> = RaRecord<Identifier>> = (
+  resource: string,
+  params: UpdateParams<RecordType>
+) => Promise<unknown>
 
 export type UpdateManyFunction = (
   resource?: string,
@@ -24,10 +25,9 @@ export type NotifyFunction = (
  * Whether a destruction has been finalised (its items destroyed).
  * `finalisedAt` is null until then; mock mode stores the string 'null'.
  */
-export const isFinalised = (
-  destruction?: Pick<Destruction, 'finalisedAt'>
-): boolean => {
-  const finalisedAt = destruction?.finalisedAt
+export const isFinalised = (destruction: unknown): boolean => {
+  const finalisedAt = (destruction as Partial<Destruction> | undefined)
+    ?.finalisedAt
   return (
     finalisedAt !== undefined && finalisedAt !== null && finalisedAt !== 'null'
   )
@@ -61,6 +61,7 @@ export const executeDestruction = async (
   audit: AuditFunction,
   notify: NotifyFunction
 ): Promise<void> => {
+
   // Audit the destruction job itself
   await audit({
     activityType: AuditType.DESTROY,

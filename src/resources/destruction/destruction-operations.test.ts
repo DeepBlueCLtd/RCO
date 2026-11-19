@@ -11,18 +11,13 @@ import {
 describe('executeDestruction', () => {
   it('should process all 50 items in a batch', async () => {
     const mockItems = createMockItems(50, 1, { destruction: 1 })
-    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } =
-      createMockOperationDependencies()
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDestruction(
       mockItems,
       1, // destructionId
       1, // recordId
-      {
-        id: 1,
-        data: { finalisedAt: '2025-01-01', finalisedBy: 1 },
-        previousData: {}
-      },
+      { id: 1, data: { finalisedAt: '2025-01-01', finalisedBy: 1 }, previousData: {} },
       mockUpdate,
       mockUpdateMany,
       mockAudit,
@@ -40,15 +35,12 @@ describe('executeDestruction', () => {
     const updateManyParams = getUpdateManyCallParams(mockUpdateMany)
     expect(updateManyParams.ids).toHaveLength(50)
     expect(mockAudit).toHaveBeenCalledTimes(51) // 1 + 50
-    expect(mockNotify).toHaveBeenCalledWith('Element destroyed', {
-      type: 'success'
-    })
+    expect(mockNotify).toHaveBeenCalledWith('Element destroyed', { type: 'success' })
   })
 
   it('should handle exactly 25 items (boundary condition)', async () => {
     const mockItems = createMockItems(25, 1, { destruction: 1 })
-    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } =
-      createMockOperationDependencies()
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDestruction(
       mockItems,
@@ -68,8 +60,7 @@ describe('executeDestruction', () => {
 
   it('should handle 26 items (edge case beyond default pagination)', async () => {
     const mockItems = createMockItems(26, 1, { destruction: 1 })
-    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } =
-      createMockOperationDependencies()
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDestruction(
       mockItems,
@@ -90,8 +81,7 @@ describe('executeDestruction', () => {
   it('should handle 69 items (real-world case from issue #1137)', async () => {
     // This matches the actual bug scenario: 69 items (IDs 256-324)
     const mockItems = createMockItems(69, 256, { destruction: 1 })
-    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } =
-      createMockOperationDependencies()
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDestruction(
       mockItems,
@@ -120,8 +110,7 @@ describe('executeDestruction', () => {
 
   it('should create correct audit entries for destruction job', async () => {
     const mockItems = createMockItems(1, 1, { destruction: 1 })
-    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } =
-      createMockOperationDependencies()
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     await executeDestruction(
       mockItems,
@@ -159,8 +148,7 @@ describe('executeDestruction', () => {
 
   it('should call update with correct destruction record data', async () => {
     const mockItems = createMockItems(1, 1, { destruction: 1 })
-    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } =
-      createMockOperationDependencies()
+    const { mockUpdate, mockUpdateMany, mockAudit, mockNotify } = createMockOperationDependencies()
 
     const updateParams = {
       id: 5,
@@ -179,10 +167,7 @@ describe('executeDestruction', () => {
       mockNotify
     )
 
-    expect(mockUpdate).toHaveBeenCalledWith(
-      constants.R_DESTRUCTION,
-      updateParams
-    )
+    expect(mockUpdate).toHaveBeenCalledWith(constants.R_DESTRUCTION, updateParams)
   })
 })
 
@@ -190,7 +175,7 @@ describe('isFinalised', () => {
   it('is false until finalisedAt is set', () => {
     expect(isFinalised({ finalisedAt: null })).toBe(false)
     expect(isFinalised(undefined)).toBe(false)
-    expect(isFinalised({} as unknown as Destruction)).toBe(false)
+    expect(isFinalised({})).toBe(false)
   })
 
   it('is false for the string null used in mock mode', () => {

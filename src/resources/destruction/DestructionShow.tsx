@@ -156,16 +156,11 @@ export default function DestructionShow(): React.ReactElement {
   const notify = useNotify()
   const audit = useAudit()
   const { id } = useParams()
-  const { data: itemsAdded = [] as Item[] } = useGetList<Item>(
-    constants.R_ITEMS,
-    {
-      filter: { destruction: id },
-      pagination: { page: 1, perPage: 1000 }
-    }
-  )
-  const { data: record } = useGetOne<Destruction>(constants.R_DESTRUCTION, {
-    id: Number(id)
+  const { data: itemsAdded = [] as Item[] } = useGetList<Item>(constants.R_ITEMS, {
+    filter: { destruction: id },
+    pagination: { page: 1, perPage: 1000 }
   })
+  const { data: record } = useGetOne<Destruction>(constants.R_DESTRUCTION, { id: Number(id) })
 
   const handleOpen = (value: DestructionModal): void => {
     setOpen(value)
@@ -188,7 +183,11 @@ export default function DestructionShow(): React.ReactElement {
 
   const saveReportPrinted = (): void => {
     if (!record) return
-    saveDestructionReportPrinted(record.id, record, update)
+    saveDestructionReportPrinted(
+      record.id,
+      record,
+      update
+    )
       .then(console.log)
       .catch(console.error)
   }
