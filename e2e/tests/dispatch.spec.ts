@@ -33,6 +33,9 @@ const itemDispatch = (
 test('a power user creates a dispatch, adds items, prints, dispatches and records the receipt', async ({
   page
 }) => {
+  // a long multi-step workflow; the first tests also wait for the Vite dev
+  // server to compile each page on first use
+  test.slow()
   const recipient = `E2E Recipient ${Date.now()}`
   const { batchId, itemIds, itemNumbers } = seedBatch(2)
   await stubPrint(page)
