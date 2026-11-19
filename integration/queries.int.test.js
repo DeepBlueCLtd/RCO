@@ -31,9 +31,9 @@ const sql = (query, ...args) =>
   withDb(server.dbPath, (db) => db.prepare(query).all(...args))
 const one = (query, ...args) => sql(query, ...args)[0]
 
-// How getList turns a react-admin filter object into soul's _filters
-// (dataProvider/index.ts): JSON with braces, spaces and quotes stripped.
-const filterString = (filter) => JSON.stringify(filter).replace(/[{} ""]/g, '')
+// The data provider's own builder for soul's _filters (compiled by babel-jest)
+const filterString =
+  require('../src/providers/dataProvider/soul-filters').toSoulFilters
 
 const list = async (table, query) => {
   const qs = Object.entries(query)
@@ -123,10 +123,14 @@ describe('getList filters', () => {
     await check({ createdAt__gte: iso }, 'createdAt >= ?', iso)
   })
 
-  test('filter values lose their spaces (data provider quirk)', () => {
-    // getList's JSON-based builder strips spaces, so a value with a space
-    // never matches. Recorded here so a fix to the builder is deliberate.
-    expect(filterString({ name: 'Big Box' })).toBe('name:BigBox')
+  test('a value containing a space matches', async () => {
+    const name = 'Prot Mark-1'
+    const body = await list('protectiveMarking', {
+      _filters: filterString({ name })
+    })
+    const want = sql('SELECT id FROM protectiveMarking WHERE name = ?', name)
+    expect(want.length).toBe(1)
+    expect(ids(body.data)).toEqual(ids(want))
   })
 
   test('less-or-equal on a number', async () => {

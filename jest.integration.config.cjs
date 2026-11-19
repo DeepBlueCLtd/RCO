@@ -4,6 +4,7 @@ module.exports = {
   rootDir: __dirname,
   testEnvironment: 'node',
   testMatch: ['<rootDir>/integration/**/*.int.test.js'],
-  transform: {},
+  // plain JS tests; .ts app modules they import go through babel
+  transform: { '\\.ts$': 'babel-jest' },
   testTimeout: 30000
 }
