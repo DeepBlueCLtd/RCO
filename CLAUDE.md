@@ -96,6 +96,8 @@ For deploying to secure/air-gapped client environments:
    - `_devExtensions/` - Authentication implementation (required by `_extensions/`)
    - `node_modules/` - All dependencies (includes platform-specific native modules)
    - `package.json` - Package metadata
+   - `db/Scripts/migrations/` - SQL migrations (scripts only, not the
+     databases)
 5. Zip the package for transfer
 
 **On Target Server:**
@@ -103,12 +105,30 @@ For deploying to secure/air-gapped client environments:
 1. Extract deployment package
 2. Ensure `.env` file exists with required variables (`TOKEN_SECRET`, etc.)
 3. Ensure `db/` folder exists with `RCO2.sqlite` and `Security.sqlite` databases
-4. Start server: `yarn serve`
+4. Back up `db/RCO2.sqlite` (with the server stopped)
+5. Apply every migration in `db/Scripts/migrations/` added since the
+   previously deployed release, oldest (earliest date) first:
+
+   ```bash
+   sqlite3 db/RCO2.sqlite < db/Scripts/migrations/2026-11-19-item-protection-permissions.sql
+   ```
+
+   If the `sqlite3` tool isn't installed, use Node (already on the server
+   for soul):
+
+   ```bash
+   node -e "new (require('better-sqlite3'))('db/RCO2.sqlite').exec(require('fs').readFileSync(process.argv[1], 'utf8'))" db/Scripts/migrations/2026-11-19-item-protection-permissions.sql
+   ```
+
+   The release notes list new migrations; if in doubt, applying one again
+   is safe (see Database Changes)
+6. Start server: `yarn serve`
 
 **Important Notes:**
 - **DO NOT** copy `db/` folder or `.env` from build machine - these contain target-specific data
 - Build machine OS must match target OS (native modules like `better-sqlite3` are platform-specific)
-- For database schema changes, manually apply SQL migrations to target database
+- Database changes (schema or data such as permissions) only reach a client
+  through step 5: the code deploys, but the client's own database does not change
 - For `.env` changes, manually update target `.env` file
 
 ## Architecture
@@ -271,8 +291,12 @@ yarn test path/to/test-file.test.ts
 
 - Database schema is managed in SQLite files in `db/` directory
 - Changes that client databases need (schema or data, e.g. permissions) go
-  in `db/Scripts/migrations/` as dated `.sql` files, applied to
-  `db/RCO2.sqlite` in the repo and manually to each client database
+  in `db/Scripts/migrations/` as dated `.sql` files
+  (`YYYY-MM-DD-description.sql`), applied to `db/RCO2.sqlite` in the repo
+  and manually to each client database at deployment
+- Write migrations so running them twice does no harm (e.g. `UPDATE ... SET`,
+  `CREATE TABLE IF NOT EXISTS`), and mention each new one in the PR and
+  release notes
 - Increment `VITE_DATA_VERSION` in `.env` to trigger data reload
 - Use `loadDefaultData()` in `src/utils/init-data.ts` for seed data
 
