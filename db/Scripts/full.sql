@@ -139,6 +139,14 @@ CREATE TABLE _users (
 	PRIMARY KEY(id AUTOINCREMENT),
 	FOREIGN KEY(createdBy) REFERENCES _users(id)
 );
+-- new users are never superusers; promote an existing user with the soul CLI
+-- (migrations/2026-11-19-no-superuser-on-create.sql)
+CREATE TRIGGER users_insert_not_superuser
+BEFORE INSERT ON _users
+WHEN lower(CAST(NEW.is_superuser AS TEXT)) IN ('1', 'true')
+BEGIN
+	SELECT RAISE(ABORT, 'new users cannot be superusers');
+END;
 -- "_users_roles" definition
 CREATE TABLE _users_roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
