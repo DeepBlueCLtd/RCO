@@ -52,8 +52,8 @@ test('a power user adds an address, which is offered for dispatches', async ({
     )
     .toBe(1)
 
-  // as a user would; jumping straight to #/dispatch/create from here can
-  // freeze the page (seen only with direct URL navigation)
+  // through the UI: after a save, Playwright 1.33's page.goto to a hash URL
+  // can hang (a Playwright quirk, not an app bug; see #1182)
   await page.getByRole('menuitem', { name: 'Welcome' }).click()
   await page.getByRole('link', { name: 'New Dispatch' }).click()
   await page.getByLabel('To address').fill(fullAddress)
