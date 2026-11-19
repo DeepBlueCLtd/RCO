@@ -47,6 +47,10 @@ test('a power user creates a destruction, adds items, prints the certificate and
   const destructionId = Number(
     /destruction\/(\d+)\/show/.exec(destructionUrl)?.[1]
   )
+  const status = page
+    .getByRole('group', { name: 'Destruction', exact: true })
+    .getByText(/^(Pending|Finalised)$/)
+  await expect(status).toHaveText('Pending')
 
   // add the items to it from their batch
   await page.goto(`/#/batch/${batchId}/show`)
@@ -81,6 +85,7 @@ test('a power user creates a destruction, adds items, prints the certificate and
   await expect
     .poll(() => destructionRow(destructionId).finalisedAt)
     .not.toBeNull()
+  await expect(status).toHaveText('Finalised')
   await expect
     .poll(() =>
       itemDestruction(itemIds).every((i) => i.destructionDate !== null)
