@@ -51,12 +51,12 @@ test.describe('refused login', () => {
 
   test('wrong password', async ({ page }) => {
     await login(page, USERS.other.username, 'Wrong-Password-1')
-    await expectRefused(page, /Invalid password/)
+    await expectRefused(page, /Invalid username or password/)
   })
 
   test('unknown user', async ({ page }) => {
     await login(page, 'no-such-user')
-    await expectRefused(page, /User not found/)
+    await expectRefused(page, /Invalid username or password/)
   })
 
   test('departed user', async ({ page }) => {

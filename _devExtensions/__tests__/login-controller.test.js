@@ -86,7 +86,7 @@ describe('Login Controller Security Tests', () => {
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: expect.stringContaining('Invalid password')
+          message: 'Invalid username or password'
         })
       )
     })
@@ -117,7 +117,7 @@ describe('Login Controller Security Tests', () => {
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'Invalid password'
+          message: 'Invalid username or password'
         })
       )
     })
@@ -304,7 +304,7 @@ describe('Login Controller Security Tests', () => {
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'User not found'
+          message: 'Invalid username or password'
         })
       )
     })
@@ -428,6 +428,56 @@ describe('Login Controller Security Tests', () => {
         expect.objectContaining({
           message: expect.stringContaining('password and username is required')
         })
+      )
+    })
+  })
+
+  describe('Username enumeration', () => {
+    const attempt = (username, password) => {
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() }
+      loginController({ body: { username, password } }, res)
+      return res.json.mock.calls[0][0].message
+    }
+
+    const insertUser = (username, password, extra = {}) => {
+      db.prepare(
+        `INSERT INTO _users (username, hashed_password, lockoutAttempts, departedDate, updateBefore)
+         VALUES (?, ?, ?, ?, ?)`
+      ).run(
+        username,
+        bcrypt.hashSync(password, 10),
+        extra.lockoutAttempts ?? 0,
+        extra.departedDate ?? null,
+        extra.updateBefore ?? null
+      )
+    }
+
+    it('gives the same message for an unknown user and a wrong password', () => {
+      insertUser('realuser', 'ValidP@ssw0rd123')
+      expect(attempt('nosuchuser', 'Wrong-P@ss1')).toBe(
+        attempt('realuser', 'Wrong-P@ss1')
+      )
+    })
+
+    it("reveals a departed or overdue user's status only with the right password", () => {
+      const yesterday = new Date(Date.now() - 86400000).toISOString()
+      insertUser('gone', 'ValidP@ssw0rd123', { departedDate: yesterday })
+      insertUser('late', 'ValidP@ssw0rd123', { updateBefore: yesterday })
+      expect(attempt('gone', 'Wrong-P@ss1')).toBe(
+        'Invalid username or password'
+      )
+      expect(attempt('late', 'Wrong-P@ss1')).toBe(
+        'Invalid username or password'
+      )
+      expect(attempt('gone', 'ValidP@ssw0rd123')).toBe(
+        'User has departed organisation'
+      )
+    })
+
+    it('does not show the failed-attempt count for a locked account', () => {
+      insertUser('locked', 'ValidP@ssw0rd123', { lockoutAttempts: 7 })
+      expect(attempt('locked', 'ValidP@ssw0rd123')).toBe(
+        'Your account is locked. Please contact your administrator'
       )
     })
   })

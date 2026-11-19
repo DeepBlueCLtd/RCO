@@ -15,21 +15,39 @@ const updateLockoutAttempts = (db, val, username) => {
   db.prepare(updateLockoutAttemptsQuery).run(val, username)
 }
 
+// One message for "no such user" and "wrong password", so a failed login
+// does not reveal which usernames exist.
+const INVALID_LOGIN = 'Invalid username or password'
+
+// Compared against when the username is unknown, so that response takes
+// about as long as a wrong password for a real user.
+const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', 10)
+
 const validateUser = (username, hashed_password, db) => {
   const query = `SELECT * FROM _users WHERE username=?`
   const user = db.prepare(query).get(username)
 
   if (!user) {
-    throw new Error('User not found')
+    bcrypt.compareSync(hashed_password, DUMMY_HASH)
+    throw new Error(INVALID_LOGIN)
   }
 
+  // Checked before the password, so a locked account cannot be used to
+  // confirm guesses.
   if (user.lockoutAttempts >= 5)
-    throw new Error(
-      'Your account is locked. Please contact your administrator [' +
-        user.lockoutAttempts +
-        ']'
-    )
+    throw new Error('Your account is locked. Please contact your administrator')
 
+  const ishashed_passwordCorrect = bcrypt.compareSync(
+    hashed_password,
+    user.hashed_password
+  )
+
+  if (!ishashed_passwordCorrect) {
+    updateLockoutAttempts(db, user.lockoutAttempts + 1, username)
+    throw new Error(INVALID_LOGIN)
+  }
+
+  // Account status is only revealed to someone who knows the password.
   const hasUserDeparted =
     user.departedDate !== undefined &&
     user.departedDate !== null &&
@@ -43,16 +61,6 @@ const validateUser = (username, hashed_password, db) => {
     throw new Error(
       'You have not updated the password. Please contact your administrator'
     )
-  }
-
-  const ishashed_passwordCorrect = bcrypt.compareSync(
-    hashed_password,
-    user.hashed_password
-  )
-
-  if (!ishashed_passwordCorrect) {
-    updateLockoutAttempts(db, user.lockoutAttempts + 1, username)
-    throw new Error('Invalid password')
   }
 
   updateLockoutAttempts(db, 0, username)
