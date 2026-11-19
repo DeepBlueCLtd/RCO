@@ -8,8 +8,8 @@
  * stripped every space, quote and brace from the JSON, so a value such as
  * "Big Box" was sent as "BigBox" and never matched.)
  */
-export const toSoulFilters = (filter: Record<string, unknown>): string =>
-  Object.entries(filter)
+export const toSoulFilters = (filter: unknown): string =>
+  Object.entries((filter ?? {}) as Record<string, unknown>)
     // as JSON.stringify did: undefined means "no filter"
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}:${formatValue(value)}`)
@@ -18,5 +18,6 @@ export const toSoulFilters = (filter: Record<string, unknown>): string =>
 const formatValue = (value: unknown): string => {
   if (Array.isArray(value)) return `[${value.map(String).join(',')}]`
   if (value === null) return ''
+  if (typeof value === 'object') return JSON.stringify(value)
   return String(value)
 }
