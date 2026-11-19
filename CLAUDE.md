@@ -49,7 +49,9 @@ with role-based access control and comprehensive audit logging.
 - `yarn e2e-ui` - Run Playwright tests in UI mode
 - `yarn e2e:coverage` - Run the dev e2e tests while recording Chromium's
   JavaScript coverage, then report it against `src/` (HTML in
-  `coverage-e2e/`). Files no test loads count as 0%
+  `coverage-e2e/`). Files no test loads count as 0%. On each push to `main`
+  the report is published with the demo site, under `/coverage/` on GitHub
+  Pages (`.github/workflows/static.yml`)
 
 ### Code Quality
 
