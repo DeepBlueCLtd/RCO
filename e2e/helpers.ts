@@ -35,3 +35,84 @@ export const expectWelcome = async (page: Page): Promise<void> => {
   await expect(page.getByRole('link', { name: 'New Batch' })).toBeVisible()
   await expect(page.locator('#username')).toHaveCount(0)
 }
+
+/** Read rows from the e2e server's database copy. */
+export const querySql = <T = Record<string, unknown>>(
+  query: string,
+  ...args: unknown[]
+): T[] =>
+  harness.withDb(process.env.E2E_DB_PATH, (db: any) =>
+    db.prepare(query).all(...args)
+  )
+
+/**
+ * Insert a batch with `count` plain items (not loaned, dispatched or
+ * destroyed), copying reference values from an existing item.
+ * Item numbers are unique per call, e.g. E2E-131/1.
+ */
+export const seedBatch = (
+  count: number
+): { batchId: number; itemIds: number[]; itemNumbers: string[] } =>
+  harness.withDb(process.env.E2E_DB_PATH, (db: any) => {
+    const ref = db
+      .prepare(
+        `SELECT mediaType, vaultLocation, protectiveMarking, protectionString
+         FROM item WHERE vaultLocation IS NOT NULL LIMIT 1`
+      )
+      .get()
+    const now = new Date().toISOString()
+    const creator = userId('power')
+    const batchId = Number(
+      db
+        .prepare(
+          `INSERT INTO batch (vault, batchNumber, yearOfReceipt, createdAt, createdBy)
+           VALUES ('VAULT', ?, 2026, ?, ?)`
+        )
+        .run(`E2E-${Date.now()}`, now, creator).lastInsertRowid
+    )
+    db.prepare('UPDATE batch SET batchNumber = ? WHERE id = ?').run(
+      `E2E-${batchId}`,
+      batchId
+    )
+    const insert = db.prepare(
+      `INSERT INTO item (mediaType, batch, itemNumber, vaultLocation,
+         protectiveMarking, protectionString, createdAt, createdBy)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    const itemIds: number[] = []
+    const itemNumbers: string[] = []
+    for (let i = 1; i <= count; i++) {
+      const itemNumber = `E2E-${batchId}/${i}`
+      const result = insert.run(
+        ref.mediaType,
+        batchId,
+        itemNumber,
+        ref.vaultLocation,
+        ref.protectiveMarking,
+        ref.protectionString,
+        now,
+        creator
+      )
+      itemIds.push(Number(result.lastInsertRowid))
+      itemNumbers.push(itemNumber)
+    }
+    return { batchId, itemIds, itemNumbers }
+  })
+
+/** Tick the list rows for the given item numbers. */
+export const selectItems = async (
+  page: Page,
+  itemNumbers: string[]
+): Promise<void> => {
+  for (const itemNumber of itemNumbers) {
+    const row = page.getByRole('row').filter({ hasText: itemNumber })
+    await row.getByRole('checkbox').check()
+  }
+}
+
+/** Replace window.print, which would otherwise open the print dialog. */
+export const stubPrint = async (page: Page): Promise<void> => {
+  await page.addInitScript(() => {
+    window.print = () => undefined
+  })
+}

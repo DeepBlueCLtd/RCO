@@ -61,6 +61,9 @@ const seedUsers = (dbPath) => {
   const db = new BS3Database(dbPath)
   const hash = bcrypt.hashSync(PASSWORD, 10)
   const now = new Date().toISOString()
+  // as the app does on user creation (UserLifeCycle): departs in 10 years
+  const tenYears = new Date(Date.now() + 10 * 365 * 24 * 3600 * 1000)
+  const notDeparted = tenYears.toISOString()
   const insertUser = db.prepare(
     `INSERT INTO _users (name, hashed_password, username, is_superuser,
        departedDate, updateBefore, createdAt, createdBy, lockoutAttempts)
@@ -77,7 +80,7 @@ const seedUsers = (dbPath) => {
         hash,
         u.username,
         u.isSuperuser ? 1 : 0,
-        u.departedDate ?? null,
+        u.departedDate ?? notDeparted,
         u.updateBefore ?? null,
         now
       )
