@@ -4,7 +4,8 @@ const {
   insertPasswordRecord,
   login,
   editPassword,
-  updateBefore
+  updateBefore,
+  setUserRole
 } = require('../_devExtensions/api')
 
 const getIp = {
@@ -31,5 +32,6 @@ module.exports = {
   insertPasswordRecord,
   login,
   editPassword,
-  updateBefore
+  updateBefore,
+  setUserRole
 }

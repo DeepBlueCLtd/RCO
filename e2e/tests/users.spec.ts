@@ -82,3 +82,39 @@ test('a departed user can no longer log in', async ({ page, browser }) => {
   await expect(errorMessage(other)).toHaveText(/User has departed organisation/)
   await other.close()
 })
+
+test('an rco-user can only assign roles up to their own', async ({ page }) => {
+  test.slow()
+  const username = `e2e-user-made-${Date.now()}`
+  await login(page, USERS.user.username)
+  await expectWelcome(page)
+
+  await page.goto('/#/_users/create')
+  await page.getByLabel('Name', { exact: true }).fill('E2E User Made')
+  await page.getByLabel('Username').fill(username)
+  await page.getByLabel('Password').fill('Nw7#pLq2Xv9!')
+  await page.locator('#demo-simple-select-filled').click()
+  await expect(page.getByRole('option', { name: 'RCO User' })).toBeVisible()
+  await expect(
+    page.getByRole('option', { name: 'RCO Power User' })
+  ).toHaveCount(0)
+  await page.getByRole('option', { name: 'RCO User' }).click()
+  await page.getByRole('button', { name: 'Save' }).click()
+
+  await expect.poll(() => userRow(username)).toBeDefined()
+  const created = userRow(username) as UserRow
+  await expect.poll(() => roleOf(created.id)).toBe(2)
+})
+
+test("an rco-user cannot change a power user's role", async ({ page }) => {
+  await login(page, USERS.user.username)
+  await expectWelcome(page)
+  await page.goto(`/#/_users/${userId('power')}`)
+  await expect(page.locator('#demo-simple-select-filled')).toHaveAttribute(
+    'aria-disabled',
+    'true'
+  )
+  await expect(page.locator('#demo-simple-select-filled')).toHaveText(
+    'RCO Power User'
+  )
+})

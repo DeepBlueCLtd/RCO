@@ -645,6 +645,59 @@ export const createSoulEmulator = (
     return { status: 201, data: { userDetails: user } }
   }
 
+  // _devExtensions/setUserRole-controller.js: superuser, else highest role
+  const levelOf = (userId: number): number | undefined => {
+    const user = get(db, 'SELECT is_superuser FROM _users WHERE id = ?', [
+      userId
+    ])
+    if (!user) return undefined
+    const flag = String(user.is_superuser).toLowerCase()
+    if (flag === '1' || flag === 'true') return Number.MAX_SAFE_INTEGER
+    return Math.max(0, ...roleIdsFor(userId))
+  }
+
+  const setUserRole = (body: unknown): EmulatorResponse => {
+    const session = requireSession()
+    const fields = section(body, 'fields')
+    const userId = Number(fields.userId)
+    const roleId = Number(fields.roleId)
+    if (!Number.isInteger(userId) || !Number.isInteger(roleId)) {
+      throw new HttpError(400, 'userId and roleId are required.')
+    }
+    if (!get(db, 'SELECT id FROM _roles WHERE id = ?', [roleId])) {
+      throw new HttpError(400, 'Unknown role.')
+    }
+    const callerLevel = levelOf(session.userId) ?? 0
+    if (callerLevel < 2) {
+      throw new HttpError(403, 'You do not have permission to set user roles.')
+    }
+    if (roleId > callerLevel) {
+      throw new HttpError(403, 'You cannot assign a role above your own.')
+    }
+    const targetLevel = levelOf(userId)
+    if (targetLevel === undefined) throw new HttpError(404, 'User not found.')
+    if (targetLevel > callerLevel) {
+      throw new HttpError(
+        403,
+        'You cannot change the role of a user above your own level.'
+      )
+    }
+    const now = new Date().toISOString()
+    const updated = run(
+      db,
+      'UPDATE _users_roles SET role_id = ?, updatedAt = ? WHERE user_id = ?',
+      [roleId, now, userId]
+    )
+    if (updated.changes === 0) {
+      run(
+        db,
+        'INSERT INTO _users_roles (user_id, role_id, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
+        [userId, roleId, now, now]
+      )
+    }
+    return { status: 200, data: { message: 'Role updated', userId, roleId } }
+  }
+
   return ({ method, url, body }: EmulatorRequest): EmulatorResponse => {
     const verb = method.toUpperCase()
     const parsed = new URL(url, 'https://demo.invalid')
@@ -681,6 +734,8 @@ export const createSoulEmulator = (
           return editPassword(body)
         case 'POST /api/update-before':
           return updateBefore(body)
+        case 'POST /api/set-user-role':
+          return setUserRole(body)
         default:
           return { status: 404, data: { message: `Cannot ${verb} ${path}` } }
       }
