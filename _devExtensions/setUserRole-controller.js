@@ -1,5 +1,5 @@
 const BS3Database = require('better-sqlite3')
-const path = require('path')
+const path = require('node:path')
 const { authenticateRequest, ROLES } = require('./auth-helper')
 
 // Role ids rank the roles: default (1) < rco-user (2) < rco-power-user (3).
@@ -22,6 +22,22 @@ const levelOf = (db, userId) => {
   return Number(row.level ?? 0)
 }
 
+const roleName = (db, roleId) =>
+  roleId === undefined
+    ? 'none'
+    : db.prepare('SELECT name FROM _roles WHERE id = ?').get(roleId)?.name ??
+      String(roleId)
+
+// Written here, with the change, so every role change is audited
+const auditRoleChange = (db, { req, callerId, userId, from, to, now }) => {
+  const detail = `Role changed from ${roleName(db, from)} to ${roleName(db, to)}`
+  db.prepare(
+    `INSERT INTO audit (user, resource, dataId, activityType, dateTime, label,
+       activityDetail, securityRelated, subjectId, subjectResource, ip)
+     VALUES (?, '_users', ?, 'ROLE_CHANGED', ?, 'ROLE_CHANGED', ?, 1, NULL, NULL, ?)`
+  ).run(callerId, userId, now, detail, req.headers['x-forwarded-for'] ?? null)
+}
+
 /**
  * POST /api/set-user-role { fields: { userId, roleId } }
  *
@@ -38,7 +54,7 @@ const setUserRoleController = (req, res) => {
       return res.status(401).json({ message: error.message })
     }
 
-    const fields = (req.body && req.body.fields) || {}
+    const fields = req.body?.fields ?? {}
     const userId = Number(fields.userId)
     const roleId = Number(fields.roleId)
     if (!Number.isInteger(userId) || !Number.isInteger(roleId)) {
@@ -74,15 +90,23 @@ const setUserRoleController = (req, res) => {
     }
 
     const now = new Date().toISOString()
-    const updated = db
-      .prepare(
-        'UPDATE _users_roles SET role_id = ?, updatedAt = ? WHERE user_id = ?'
-      )
-      .run(roleId, now, userId)
-    if (updated.changes === 0) {
-      db.prepare(
-        'INSERT INTO _users_roles (user_id, role_id, createdAt, updatedAt) VALUES (?, ?, ?, ?)'
-      ).run(userId, roleId, now, now)
+    const current = db
+      .prepare('SELECT role_id FROM _users_roles WHERE user_id = ?')
+      .get(userId)
+    const from = current === undefined ? undefined : Number(current.role_id)
+    if (from !== roleId) {
+      db.transaction(() => {
+        if (current === undefined) {
+          db.prepare(
+            'INSERT INTO _users_roles (user_id, role_id, createdAt, updatedAt) VALUES (?, ?, ?, ?)'
+          ).run(userId, roleId, now, now)
+        } else {
+          db.prepare(
+            'UPDATE _users_roles SET role_id = ?, updatedAt = ? WHERE user_id = ?'
+          ).run(roleId, now, userId)
+        }
+        auditRoleChange(db, { req, callerId, userId, from, to: roleId, now })
+      })()
     }
 
     return res.status(200).json({ message: 'Role updated', userId, roleId })

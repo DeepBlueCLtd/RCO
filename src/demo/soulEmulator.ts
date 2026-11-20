@@ -683,16 +683,41 @@ export const createSoulEmulator = (
       )
     }
     const now = new Date().toISOString()
-    const updated = run(
+    const current = get(
       db,
-      'UPDATE _users_roles SET role_id = ?, updatedAt = ? WHERE user_id = ?',
-      [roleId, now, userId]
+      'SELECT role_id FROM _users_roles WHERE user_id = ?',
+      [userId]
     )
-    if (updated.changes === 0) {
+    const from = current === undefined ? undefined : Number(current.role_id)
+    if (from !== roleId) {
+      if (current === undefined) {
+        run(
+          db,
+          'INSERT INTO _users_roles (user_id, role_id, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
+          [userId, roleId, now, now]
+        )
+      } else {
+        run(
+          db,
+          'UPDATE _users_roles SET role_id = ?, updatedAt = ? WHERE user_id = ?',
+          [roleId, now, userId]
+        )
+      }
+      const name = (id: number | undefined): string =>
+        id === undefined
+          ? 'none'
+          : text(get(db, 'SELECT name FROM _roles WHERE id = ?', [id])?.name)
       run(
         db,
-        'INSERT INTO _users_roles (user_id, role_id, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [userId, roleId, now, now]
+        `INSERT INTO audit (user, resource, dataId, activityType, dateTime, label,
+           activityDetail, securityRelated, subjectId, subjectResource, ip)
+         VALUES (?, '_users', ?, 'ROLE_CHANGED', ?, 'ROLE_CHANGED', ?, 1, NULL, NULL, NULL)`,
+        [
+          session.userId,
+          userId,
+          now,
+          `Role changed from ${name(from)} to ${name(roleId)}`
+        ]
       )
     }
     return { status: 200, data: { message: 'Role updated', userId, roleId } }

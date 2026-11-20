@@ -140,3 +140,47 @@ describe.each(['user', 'power'])('direct writes to _users_roles by %s', (key) =>
     expect(roleOf(server.ids.noRole)).toBe(ROLES.DEFAULT)
   })
 })
+
+describe('auditing', () => {
+  const audits = (userId) =>
+    withDb(server.dbPath, (db) =>
+      db
+        .prepare(
+          "SELECT * FROM audit WHERE activityType = 'ROLE_CHANGED' AND dataId = ? ORDER BY id"
+        )
+        .all(userId)
+    )
+
+  test('records who changed which role, from what to what', async () => {
+    const c = await loggedIn('power')
+    const before = audits(server.ids.other).length
+    expect((await setRole(c, 'other', ROLES.RCO_POWER_USER)).status).toBe(200)
+    const added = audits(server.ids.other).slice(before)
+    expect(added).toHaveLength(1)
+    expect(added[0]).toMatchObject({
+      user: server.ids.power,
+      resource: '_users',
+      label: 'ROLE_CHANGED',
+      activityDetail: 'Role changed from rco-user to rco-power-user',
+      securityRelated: 1
+    })
+  })
+
+  test('records a first role as changed from none', async () => {
+    const c = await loggedIn('user')
+    expect((await setRole(c, 'noRole', ROLES.DEFAULT)).status).toBe(200)
+    expect(audits(server.ids.noRole).at(-1).activityDetail).toBe(
+      'Role changed from none to default'
+    )
+  })
+
+  test('records nothing for refused or unchanged roles', async () => {
+    const c = await loggedIn('user')
+    const before = audits(server.ids.power).length
+    expect((await setRole(c, 'power', ROLES.DEFAULT)).status).toBe(403)
+    const unchanged = audits(server.ids.other).length
+    expect((await setRole(c, 'other', ROLES.RCO_USER)).status).toBe(200)
+    expect(audits(server.ids.power)).toHaveLength(before)
+    expect(audits(server.ids.other)).toHaveLength(unchanged)
+  })
+})

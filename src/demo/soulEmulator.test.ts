@@ -228,6 +228,25 @@ describe('setting user roles', () => {
     expect(roleOf(viewer)).toBe(3)
   })
 
+  it('audits role changes, and not unchanged roles', () => {
+    loginAs('demo')
+    const viewer = idOf('demo-viewer')
+    const audits = (): Array<Record<string, unknown>> =>
+      call(
+        'GET',
+        `/api/tables/audit/rows?_filters=activityType:ROLE_CHANGED,dataId:${viewer}`
+      ).data.data
+    expect(setRole(viewer, 2).status).toBe(200)
+    expect(setRole(viewer, 2).status).toBe(200)
+    expect(audits()).toHaveLength(1)
+    expect(audits()[0]).toMatchObject({
+      user: idOf('demo'),
+      resource: '_users',
+      activityDetail: 'Role changed from default to rco-user',
+      securityRelated: 1
+    })
+  })
+
   it('limits an rco-user to roles up to their own', () => {
     loginAs('demo-user')
     const viewer = idOf('demo-viewer')

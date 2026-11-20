@@ -104,6 +104,18 @@ test('an rco-user can only assign roles up to their own', async ({ page }) => {
   await expect.poll(() => userRow(username)).toBeDefined()
   const created = userRow(username) as UserRow
   await expect.poll(() => roleOf(created.id)).toBe(2)
+  // audited as the rco-user's change (soul gives new users the default role)
+  expect(
+    querySql<{ user: number; activityDetail: string }>(
+      "SELECT user, activityDetail FROM audit WHERE activityType = 'ROLE_CHANGED' AND dataId = ?",
+      created.id
+    )
+  ).toEqual([
+    {
+      user: userId('user'),
+      activityDetail: 'Role changed from default to rco-user'
+    }
+  ])
 })
 
 test("an rco-user cannot change a power user's role", async ({ page }) => {
