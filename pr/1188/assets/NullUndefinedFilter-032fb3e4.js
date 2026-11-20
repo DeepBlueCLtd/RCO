@@ -1,0 +1,1 @@
+import{u as i,K as l,j as n,Y as u}from"./index-afed312f.js";const m=s=>{const{label:t,source:e}=s,{setFilters:r,displayedFilters:o,filterValues:a}=i();return l.useEffect(()=>{r({...a,[e]:"dummy"},o)},[]),n(u,{sx:{marginBottom:1},label:t})};export{m as N};

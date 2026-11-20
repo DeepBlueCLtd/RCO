@@ -1,0 +1,52 @@
+[
+  {
+    "number": 1191,
+    "title": "build: upgrade to Node 24 and soul-cli 0.12.0",
+    "author": "IanMayo",
+    "url": "https://github.com/DeepBlueCLtd/RCO/pull/1191",
+    "branch": "claude/soul-0.12-upgrade",
+    "state": "merged",
+    "coverage": true,
+    "updatedAt": "2026-11-20T08:31:05.852Z"
+  },
+  {
+    "number": 1190,
+    "title": "feat: limit role assignment to the assigner's own level, and audit role changes",
+    "author": "IanMayo",
+    "url": "https://github.com/DeepBlueCLtd/RCO/pull/1190",
+    "branch": "claude/role-assignment-limits",
+    "state": "merged",
+    "coverage": true,
+    "updatedAt": "2026-11-20T06:44:06.713Z"
+  },
+  {
+    "number": 1189,
+    "title": "fix: make the role and permission tables read-only for power users",
+    "author": "IanMayo",
+    "url": "https://github.com/DeepBlueCLtd/RCO/pull/1189",
+    "branch": "claude/readonly-permission-tables",
+    "state": "merged",
+    "coverage": true,
+    "updatedAt": "2026-11-19T22:41:13.704Z"
+  },
+  {
+    "number": 1188,
+    "title": "fix: new user accounts are always ordinary users",
+    "author": "IanMayo",
+    "url": "https://github.com/DeepBlueCLtd/RCO/pull/1188",
+    "branch": "claude/harden-user-create",
+    "state": "merged",
+    "coverage": true,
+    "updatedAt": "2026-11-19T22:12:20.623Z"
+  },
+  {
+    "number": 1183,
+    "title": "feat: hosted demo and persistent PR previews on GitHub Pages",
+    "author": "IanMayo",
+    "url": "https://github.com/DeepBlueCLtd/RCO/pull/1183",
+    "branch": "claude/magical-curie-3imnua",
+    "state": "merged",
+    "coverage": true,
+    "updatedAt": "2026-11-19T21:06:23.075Z"
+  }
+]
