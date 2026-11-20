@@ -1,6 +1,6 @@
 // Roles and the permission matrix are read-only for every role
-// (db/Scripts/migrations/2026-11-19-roles-tables-read-only.sql); assigning a
-// role to a user (_users_roles) stays with power users.
+// (db/Scripts/migrations/2026-11-19-roles-tables-read-only.sql). Users'
+// roles are set through /api/set-user-role (role-assignment.int.test.js).
 const harness = require('./helpers/soul-server')
 const Client = require('./helpers/client').Client
 
@@ -78,19 +78,15 @@ describe('an rco-power-user', () => {
     ).toBe(403)
   })
 
-  test("can still set a user's role", async () => {
-    const roleRow = one(
-      'SELECT id, role_id FROM _users_roles WHERE user_id = ?',
-      server.ids.noRole
-    )
-    const target = roleRow
-      ? await power.put(`/api/tables/_users_roles/rows/${roleRow.id}`, {
-          fields: { role_id: 2 }
-        })
-      : await power.post('/api/tables/_users_roles/rows', {
-          fields: { user_id: server.ids.noRole, role_id: 2 }
-        })
-    expect([200, 201]).toContain(target.status)
+  test("can set a user's role, through the endpoint only", async () => {
+    const direct = await power.post('/api/tables/_users_roles/rows', {
+      fields: { user_id: server.ids.noRole, role_id: 2 }
+    })
+    expect(direct.status).toBe(403)
+    const res = await power.post('/api/set-user-role', {
+      fields: { userId: server.ids.noRole, roleId: 2 }
+    })
+    expect(res.status).toBe(200)
     expect(
       one(
         'SELECT role_id FROM _users_roles WHERE user_id = ?',

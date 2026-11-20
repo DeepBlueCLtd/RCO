@@ -207,6 +207,72 @@ describe('password endpoints', () => {
   })
 })
 
+describe('setting user roles', () => {
+  const idOf = (username: string): number =>
+    Number(
+      call('GET', `/api/tables/_users/rows?_filters=username:${username}`).data
+        .data[0].id
+    )
+  const roleOf = (userId: number): number =>
+    Number(
+      call('GET', `/api/tables/_users_roles/rows?_filters=user_id:${userId}`)
+        .data.data[0]?.role_id
+    )
+  const setRole = (userId: number, roleId: number): EmulatorResponse =>
+    call('POST', '/api/set-user-role', { fields: { userId, roleId } })
+
+  it('lets a power user assign any role', () => {
+    loginAs('demo')
+    const viewer = idOf('demo-viewer')
+    expect(setRole(viewer, 3).status).toBe(200)
+    expect(roleOf(viewer)).toBe(3)
+  })
+
+  it('audits role changes, and not unchanged roles', () => {
+    loginAs('demo')
+    const viewer = idOf('demo-viewer')
+    const audits = (): Array<Record<string, unknown>> =>
+      call(
+        'GET',
+        `/api/tables/audit/rows?_filters=activityType:ROLE_CHANGED,dataId:${viewer}`
+      ).data.data
+    expect(setRole(viewer, 2).status).toBe(200)
+    expect(setRole(viewer, 2).status).toBe(200)
+    expect(audits()).toHaveLength(1)
+    expect(audits()[0]).toMatchObject({
+      user: idOf('demo'),
+      resource: '_users',
+      activityDetail: 'Role changed from default to rco-user',
+      securityRelated: 1
+    })
+  })
+
+  it('limits an rco-user to roles up to their own', () => {
+    loginAs('demo-user')
+    const viewer = idOf('demo-viewer')
+    expect(setRole(viewer, 3).status).toBe(403)
+    expect(setRole(viewer, 2).status).toBe(200)
+    expect(roleOf(viewer)).toBe(2)
+  })
+
+  it('stops an rco-user changing a power user', () => {
+    loginAs('demo-user')
+    const power = idOf('demo')
+    expect(setRole(power, 1).status).toBe(403)
+    expect(roleOf(power)).toBe(3)
+  })
+
+  it('refuses direct writes to user roles', () => {
+    loginAs('demo')
+    const viewer = idOf('demo-viewer')
+    expect(
+      call('POST', '/api/tables/_users_roles/rows', {
+        fields: { user_id: viewer, role_id: 3 }
+      }).status
+    ).toBe(403)
+  })
+})
+
 describe('axios adapter', () => {
   it('resolves successes and rejects errors like a server would', async () => {
     const client = axios.create({ adapter: demoAdapter(handle) })

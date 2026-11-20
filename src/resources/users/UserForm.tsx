@@ -7,7 +7,8 @@ import {
   SaveButton,
   useCreate,
   SaveContextProvider,
-  useRedirect
+  useRedirect,
+  useNotify
 } from 'react-admin'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -23,10 +24,15 @@ import FlexBox from '../../components/FlexBox'
 import { DateTime } from 'luxon'
 import axios from 'axios'
 
-import { R_USERS, PASSWORD_INSTRUCTION_TITLE, PASSWORD_VALIDATION_CRITERIA } from '../../constants'
+import {
+  R_USERS,
+  PASSWORD_INSTRUCTION_TITLE,
+  PASSWORD_VALIDATION_CRITERIA
+} from '../../constants'
 import useAudit from '../../hooks/useAudit'
 import { AuditType } from '../../utils/activity-types'
 import { common } from '../../utils/password-validation.schema'
+import { getUser } from '../../providers/authProvider'
 
 const schema = yup.object({
   name: yup.string().required(),
@@ -49,6 +55,32 @@ interface UserDetails {
 const BASE_URL =
   process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : ''
 
+const ROLE_OPTIONS = [
+  { value: '1', label: 'None' },
+  { value: '2', label: 'RCO User' },
+  { value: '3', label: 'RCO Power User' }
+]
+
+// Superusers outrank every role
+const SUPERUSER_LEVEL = ROLE_OPTIONS.length + 1
+
+// The highest role the logged-in user may assign: their own
+const currentUserLevel = (): number => {
+  const user = getUser()
+  if (user === undefined) return 0
+  if (user.is_superuser) return SUPERUSER_LEVEL
+  if (user.userRole === 'rco-power-user') return 3
+  if (user.userRole === 'rco-user') return 2
+  return 1
+}
+
+// The server checks the caller may assign this role to this user
+const setUserRole = async (userId: number, roleId: string): Promise<void> => {
+  await axios.post(`${BASE_URL}/api/set-user-role`, {
+    fields: { userId, roleId: Number(roleId) }
+  })
+}
+
 const SaveButtonContext: React.FC<any> = (props: {
   selectUser: string
   children: React.ReactNode
@@ -67,20 +99,7 @@ const SaveButtonContext: React.FC<any> = (props: {
     if (!userId) {
       return
     }
-    const roleResponse = await axios.get(
-      `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${userId}`
-    )
-    const roleId = roleResponse.data.data[0]?.id
-    if (!roleId) {
-      // no existing user_role, create a new one
-      await axios.post(`${BASE_URL}/api/tables/_users_roles/rows`, {
-        fields: { user_id: val.id, role_id: selectUser }
-      })
-    } else {
-      await axios.put(`${BASE_URL}/api/tables/_users_roles/rows/${roleId}`, {
-        fields: { role_id: selectUser }
-      })
-    }
+    await setUserRole(Number(userId), selectUser)
 
     redirect(`/${R_USERS}/${userId}/show`)
   }
@@ -121,6 +140,7 @@ const CustomSaveButton: React.FC<{
   isEdit: boolean
   touched: boolean
 }> = ({ updateUserRole, selectUser, touched, isEdit }) => {
+  const notify = useNotify()
   return (
     <div style={{ padding: '10px 15px' }}>
       <SaveButtonContext selectUser={selectUser}>
@@ -130,9 +150,11 @@ const CustomSaveButton: React.FC<{
           onClick={() => {
             if (isEdit) {
               updateUserRole()
-                .then(() => { })
-                .catch((error) => {
-                  console.error('Error updating user role:', error)
+                .then(() => {})
+                .catch(() => {
+                  notify('The user role could not be changed', {
+                    type: 'error'
+                  })
                 })
             }
           }}
@@ -177,17 +199,25 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
     'Note: the new user will need to login using this temporary password within 60 minutes. If they fail to do that, they will need to be provided with a new temporary password.'
   const [selectUser, setSelectUser] = useState<string>('1')
   const [touched, setTouched] = useState(false)
-  let originalUser: any = null
-  const [userRoleId, setUserRoleId] = useState<string>('')
+  const [originalRole, setOriginalRole] = useState<string>('')
+  const level = currentUserLevel()
+  const roleOptions = ROLE_OPTIONS.filter(
+    (option) => Number(option.value) <= level
+  )
+  // users above your own level keep their role
+  const roleLocked =
+    isEdit &&
+    ((Boolean(record?.is_superuser) && level < SUPERUSER_LEVEL) ||
+      Number(originalRole || 0) > level)
 
   const fetchData = async (): Promise<void> => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/tables/_users_roles/rows?_filters=user_id:${record.id}`
       )
-      setUserRoleId(response.data.data[0]?.id as string)
-      setSelectUser((response.data.data[0]?.role_id as string) || '')
-      originalUser = (response.data.data[0]?.role_id as string) || ''
+      const roleId = String(response.data.data[0]?.role_id ?? '')
+      setSelectUser(roleId)
+      setOriginalRole(roleId)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
@@ -202,22 +232,10 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
   }, [isEdit])
 
   const updateUserRole: UpdateUserRoleFunction = async (): Promise<void> => {
+    if (roleLocked || selectUser === '' || selectUser === originalRole) return
     try {
-      if (userRoleId === undefined) {
-        const response = await axios.post(
-          `${BASE_URL}/api/tables/_users_roles/rows`,
-          { fields: { user_id: record.id, role_id: selectUser } }
-        )
-        console.log('User role created successfully:', response.data)
-        return response.data
-      } else {
-        const response = await axios.put(
-          `${BASE_URL}/api/tables/_users_roles/rows/${userRoleId}`,
-          { fields: { role_id: selectUser } }
-        )
-        console.log('User role updated successfully:', response.data)
-        return response.data
-      }
+      await setUserRole(Number(record.id), selectUser)
+      setOriginalRole(selectUser)
     } catch (error) {
       console.error('Error updating user role:', error)
       throw error
@@ -272,15 +290,16 @@ export default function UserForm({ isEdit }: FormProps): React.ReactElement {
           labelId='demo-simple-select-filled-label'
           id='demo-simple-select-filled'
           value={selectUser}
+          disabled={roleLocked}
           onChange={(e) => {
-            if (e.target.value !== originalUser) setTouched((prev) => !prev)
+            if (e.target.value !== originalRole) setTouched((prev) => !prev)
             setSelectUser(e.target.value)
           }}>
-          <MenuItem value='1'>
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value='2'>RCO User</MenuItem>
-          <MenuItem value='3'>RCO Power User</MenuItem>
+          {(roleLocked ? ROLE_OPTIONS : roleOptions).map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.value === '1' ? <em>{option.label}</em> : option.label}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       <Typography

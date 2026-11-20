@@ -65,7 +65,7 @@ exports[`the permissions matrix matches the reviewed snapshot 1`] = `
     "_roles": "-R--",
     "_roles_permissions": "-R--",
     "_users": "CRU-",
-    "_users_roles": "CRU-",
+    "_users_roles": "-R--",
     "address": "CRU-",
     "audit": "CR--",
     "batch": "CRU-",

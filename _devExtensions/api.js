@@ -5,6 +5,7 @@ const passwordValidationSchema = require('./password-validation.schema')
 const loginController = require('./login-controller')
 const editPasswordController = require('./editPassword-controller')
 const updateBeforeController = require('./updateBefore-controller')
+const setUserRoleController = require('./setUserRole-controller')
 const { authenticateRequest } = require('./auth-helper')
 const tableName = 'passwords'
 
@@ -139,10 +140,17 @@ const updateBefore = {
   handler: updateBeforeController
 }
 
+const setUserRole = {
+  method: 'POST',
+  path: '/api/set-user-role',
+  handler: setUserRoleController
+}
+
 module.exports = {
   getIp,
   insertPasswordRecord,
   login,
   editPassword,
-  updateBefore
+  updateBefore,
+  setUserRole
 }
