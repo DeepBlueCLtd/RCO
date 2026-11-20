@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const express = require('express')
 const {
   insertPasswordRecord,
@@ -16,13 +16,36 @@ const getIp = {
   }
 }
 
+const distPath = path.join(__dirname, '../dist')
+const serveDist = express.static(distPath)
+let distServed = false
+
+// soul applies helmet's default Content-Security-Policy, whose
+// `upgrade-insecure-requests` makes browsers fetch the app's assets over
+// https://. Clients serve RCO over plain HTTP, where that fails, so drop
+// that directive. Everything is same-origin, so HTTPS deployments lose
+// nothing.
+const allowPlainHttp = (res) => {
+  const csp = res.getHeader('Content-Security-Policy')
+  if (typeof csp !== 'string') return
+  const directives = csp
+    .split(';')
+    .map((directive) => directive.trim())
+    .filter((directive) => directive && directive !== 'upgrade-insecure-requests')
+  res.setHeader('Content-Security-Policy', directives.join(';'))
+}
+
 const rcoClient = {
   method: 'GET',
   path: '/',
   handler: (req, res) => {
-    const clientPath = path.join(__dirname, '../dist', 'index.html')
-    res.app.use(express.static(path.join(__dirname, '../dist')))
-    res.sendFile(path.join(clientPath))
+    // soul has no hook for static files: add them once, on first page load
+    if (!distServed) {
+      res.app.use(serveDist)
+      distServed = true
+    }
+    allowPlainHttp(res)
+    res.sendFile(path.join(distPath, 'index.html'))
   }
 }
 

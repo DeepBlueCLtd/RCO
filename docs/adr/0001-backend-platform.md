@@ -6,7 +6,8 @@
 
 ## Context
 
-RCO uses [soul-cli](https://github.com/thevahidal/soul) (v0.7.8) as its
+RCO uses [soul-cli](https://github.com/thevahidal/soul) (v0.7.8 when
+written; v0.12.0 since 20 Nov 2026) as its
 backend: a Node process exposing `db/RCO2.sqlite` over REST. Soul was
 chosen before alternatives such as PocketBase or Supabase were known to
 the team. This ADR records whether an architectural refactor should

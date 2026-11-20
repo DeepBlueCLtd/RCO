@@ -1,10 +1,14 @@
 # ADR 0002: Node.js runtime upgrade
 
-- **Status:** Proposed
+- **Status:** Accepted; implemented 20 Nov 2026 (Node 24, soul-cli 0.12.0)
 - **Date:** 2026-11-15
 - **Deciders:** RCO project leads
 
 ## Summary
+
+**Implemented, 20 Nov 2026:** RCO now runs on Node 24 with soul-cli
+0.12.0 (still the latest release; nothing merged upstream since 17 Nov).
+See Implementation below.
 
 RCO runs on Node 18, which stopped receiving security fixes on 30
 April 2025. **Update, 15 Nov 2026:** the soul-cli blocker is gone.
@@ -222,15 +226,15 @@ maintenance. If the work runs into 2027, Node 26 (supported to April
 2029) gives a year more support for the same cost of redeploying to
 air-gapped clients.
 
-- [ ] Leads endorse the plan (Node 24 + soul-cli 0.12.0)
-- [ ] RCO: add integration tests against a real soul-cli, using RCO's
+- [x] Leads endorse the plan (Node 24 + soul-cli 0.12.0)
+- [x] RCO: add integration tests against a real soul-cli, using RCO's
       extensions and a fixture database. Cover token get, refresh,
       expiry and revoke; cookie settings; table permissions for each of
       the 3 roles; lockout; password change, history and `updateBefore`;
       WebSocket if used
-- [ ] RCO: get the integration tests passing on soul-cli 0.7.8 on Node
+- [x] RCO: get the integration tests passing on soul-cli 0.7.8 on Node
       18 as a baseline, before upgrading
-- [ ] RCO: run the same tests on Node 24 with soul-cli 0.7.8 and the
+- [ ] (skipped) RCO: run the same tests on Node 24 with soul-cli 0.7.8 and the
       `better-sqlite3` override. This changes only Node, so any failure
       is Node's; then upgrade soul-cli as a separate step
 - [x] RCO: extend e2e beyond login to the item, dispatch and destruction
@@ -263,3 +267,22 @@ air-gapped clients.
 
 Working copy: [Claude
 Doc](https://claude.ai/artifact/GR43KTmxXHrxbADwn8R3PY)
+
+## Implementation
+
+Done on 20 Nov 2026, in one step: Node 18 → 24 and soul-cli 0.7.8 →
+0.12.0. The Node-only intermediate step was skipped because every suite
+passed first time on the combined change (72 unit, 93 integration, 31
+e2e tests, including the production build on a non-localhost address).
+
+| Upgrade review item | Outcome |
+| --- | --- |
+| CSP `upgrade-insecure-requests` | Reproduced (assets fetched over `https://` and failed), then fixed: `rcoClient` drops that one directive and keeps the rest of the CSP. The `production` e2e project checks both |
+| Extensions load every `.js` file | `_extensions/` holds only `api.js`; `_devExtensions/` loads with harmless "Skipping" warnings |
+| Express 5 | `express` (and `jsonwebtoken`, also used by the extensions) added to RCO's dependencies; `better-sqlite3` bumped to ^13 |
+| `_users_roles` constraint (0.9.1) | No effect: soul only creates its auth tables when missing. On first start it adds `_revoked_refresh_tokens` to an existing database, which needs no migration |
+| Rows/tables name checks | All of RCO's queries pass in the integration and e2e suites |
+| Demo emulator (`src/demo/`) | List response shape and auth errors match 0.12.0; the 0.10+ query features RCO doesn't use are not emulated |
+
+Still open: account rules at token issuance (above); rate limiting, now
+safe to try on the auth routes.

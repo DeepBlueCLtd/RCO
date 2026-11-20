@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "homepage": ".",
   "scripts": {
@@ -42,11 +42,13 @@
     "@vitejs/plugin-react": "^3.1.0",
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^8.1.0",
+    "better-sqlite3": "^13.0.3",
     "cross-env": "^7.0.3",
     "cross-var": "^1.1.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "luxon": "^3.3.0",
     "mitt": "^3.0.0",
     "preval.macro": "^5.0.0",
@@ -57,7 +59,7 @@
     "react-dom": "^18.2.0",
     "react-idle-timer": "^5.7.2",
     "react-router-dom": "^6.9.0",
-    "soul-cli": "0.7.8",
+    "soul-cli": "0.12.0",
     "sql.js": "1.11.0",
     "vite": "^4.2.0",
     "vite-plugin-babel-macros": "^1.0.6",

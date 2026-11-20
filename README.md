@@ -6,7 +6,7 @@ Secure asset register (Vault Asset Log)
 
 ## Install dependencies
 
-- Ensure build machine has Node v18.x and yarn v1.22.x installed
+- Ensure build machine has Node v24.x and yarn v1.22.x installed
 - Download a zip snapshot from GitHub (probably from the newest Release)
 - run `yarn` command in root project folder to install/update dependencies
 
