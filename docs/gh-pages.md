@@ -35,7 +35,9 @@ workflow token cannot write to the repository).
 So the demo runs the production code paths: the same data provider, auth
 provider and role permissions (from `_roles_permissions`) as a real server.
 Changes last until the page is reloaded. The emulator follows soul-cli
-0.7.8; if soul is upgraded, check `soulEmulator.ts` against it
+0.12.0 for what RCO uses (it does not emulate OR/NOT filter groups,
+aggregates or the batch endpoint); if soul is upgraded, check
+`soulEmulator.ts` against it
 (`src/demo/soulEmulator.test.ts` covers the behaviour the app relies on).
 
 Demo accounts (all with password `Demo-Vault-2468!`): `demo` (power user),

@@ -137,6 +137,8 @@ For deploying to secure/air-gapped client environments:
 
 - **DO NOT** copy `db/` folder or `.env` from build machine - these contain target-specific data
 - Build machine OS must match target OS (native modules like `better-sqlite3` are platform-specific)
+- Build machine and target server both need Node 24 (`engines` in
+  `package.json`); native modules are built for one Node version
 - Database changes (schema or data such as permissions) only reach a client
   through step 5: the code deploys, but the client's own database does not change
 - For `.env` changes, manually update target `.env` file
@@ -154,7 +156,7 @@ For deploying to secure/air-gapped client environments:
 
 ### Backend
 
-- **soul-cli** (v0.7.8) - Node.js backend serving SQLite database
+- **soul-cli** (v0.12.0, on Node 24) - Node.js backend serving SQLite database
   via REST API
 - Custom API extensions in `_extensions/` and `_devExtensions/`
 - SQLite database at `db/RCO2.sqlite`

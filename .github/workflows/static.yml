@@ -26,7 +26,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
           cache: 'yarn'
       # Install scripts run only for the packages that need them (native
       # modules and esbuild's binary), not for every dependency.

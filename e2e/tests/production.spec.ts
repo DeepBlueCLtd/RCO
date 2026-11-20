@@ -85,3 +85,11 @@ test('the main pages open without browser errors', async ({ page }) => {
   }
   expect(problems).toEqual([])
 })
+
+test('the page keeps its CSP, without upgrading requests to HTTPS', async ({
+  request
+}) => {
+  const csp = (await request.get('/')).headers()['content-security-policy']
+  expect(csp).toContain("default-src 'self'")
+  expect(csp).not.toContain('upgrade-insecure-requests')
+})
